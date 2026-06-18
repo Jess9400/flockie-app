@@ -6,6 +6,8 @@ import { Hotel, Plane, Ticket, Search, Users } from "lucide-react";
 
 // Travelpayouts affiliate marker (tracks commission on Hotellook / Aviasales).
 const MARKER = "540997";
+// Tracked Klook affiliate link (Travelpayouts) for activities/experiences.
+const KLOOK_LINK = "https://klook.tpo.li/vhFuivdk";
 
 export default function DealsSearch({ defaultCity }: { defaultCity: string }) {
   const [city, setCity] = useState(defaultCity ?? "");
@@ -33,12 +35,7 @@ export default function DealsSearch({ defaultCity }: { defaultCity: string }) {
   }
 
   function openActivities() {
-    if (!city.trim()) return;
-    window.open(
-      `https://www.getyourguide.com/s/?q=${encodeURIComponent(city.trim())}`,
-      "_blank",
-      "noopener"
-    );
+    window.open(KLOOK_LINK, "_blank", "noopener");
   }
 
   return (
@@ -112,15 +109,14 @@ export default function DealsSearch({ defaultCity }: { defaultCity: string }) {
           <h2 className="text-lg font-extrabold">Activities</h2>
         </div>
         <p className="mt-1 text-sm font-medium text-muted">
-          Tours and experiences via GetYourGuide. Find one, then match with
-          someone to do it together.
+          Tours and experiences via Klook. Find one, then match with someone to
+          do it together.
         </p>
         <button
           onClick={openActivities}
-          disabled={!city.trim()}
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3 font-bold text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
         >
-          <Search size={18} /> Search activities{city.trim() ? ` in ${city.trim()}` : ""}
+          <Search size={18} /> Browse activities on Klook
         </button>
         <Link
           href={`/vibes/new?city=${encodeURIComponent(city.trim())}`}
