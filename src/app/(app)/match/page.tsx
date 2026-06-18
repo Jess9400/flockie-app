@@ -3,7 +3,7 @@ import { Pencil, MapPin, CalendarClock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import SwipeDeck from "@/components/SwipeDeck";
 
-const DEST_THRESHOLD = 99;
+const MIN_PROFILES = 20; // need at least this many travelers per destination
 
 export default async function MatchPage() {
   const supabase = await createClient();
@@ -62,7 +62,7 @@ export default async function MatchPage() {
   }
 
   const { data: count } = await supabase.rpc("buddy_dest_count");
-  const enough = (count ?? 0) > DEST_THRESHOLD;
+  const enough = (count ?? 0) >= MIN_PROFILES;
 
   let body: React.ReactNode;
   if (!enough) {
