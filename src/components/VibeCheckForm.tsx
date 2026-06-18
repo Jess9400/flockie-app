@@ -62,8 +62,6 @@ export default function VibeCheckForm({ userId, initial }: Props) {
     activity_dealbreakers: initial.activity_dealbreakers ?? [],
     activity_one_liner: initial.activity_one_liner ?? "",
   });
-  const [showActivity, setShowActivity] = useState(false);
-
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
@@ -123,6 +121,10 @@ export default function VibeCheckForm({ userId, initial }: Props) {
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
+    if ((activity.activities ?? []).length === 0) {
+      setMsg("Pick at least one activity in your activity vibe check.");
+      return;
+    }
     setSaving(true);
     setMsg(null);
     const { error } = await supabase
@@ -299,30 +301,19 @@ export default function VibeCheckForm({ userId, initial }: Props) {
         </div>
       </section>
 
-      {/* Activity vibe check (optional, for local events) */}
-      <section className="rounded-3xl border-2 border-ink bg-white p-4">
-        <button
-          type="button"
-          onClick={() => setShowActivity((v) => !v)}
-          className="flex w-full items-center justify-between"
-        >
-          <span className="text-lg font-extrabold">
-            Activity vibe check (optional)
-          </span>
-          <span className="text-2xl leading-none">{showActivity ? "−" : "+"}</span>
-        </button>
-        <p className="mt-1 text-left text-sm font-medium text-muted">
-          For local meetups &amp; events: what you do, your level, and how you
-          like it.
+      {/* Activity vibe check (required) */}
+      <section>
+        <h2 className="text-lg font-extrabold">Activity vibe check</h2>
+        <p className="text-sm font-medium text-muted">
+          Required — this is how we match you for local meetups &amp; events.
+          Pick at least one activity.
         </p>
-        {showActivity && (
-          <div className="mt-4">
-            <ActivityQuestions
-              answers={activity}
-              onChange={(patch) => setActivity((a) => ({ ...a, ...patch }))}
-            />
-          </div>
-        )}
+        <div className="mt-4">
+          <ActivityQuestions
+            answers={activity}
+            onChange={(patch) => setActivity((a) => ({ ...a, ...patch }))}
+          />
+        </div>
       </section>
 
       {msg && (

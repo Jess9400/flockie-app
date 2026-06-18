@@ -34,9 +34,11 @@ export default async function VibeDetailPage({
 
   const { data: me } = await supabase
     .from("profiles")
-    .select("onboarding_complete")
+    .select("onboarding_complete, activities")
     .eq("id", user!.id)
     .maybeSingle();
+  const profileComplete =
+    !!me?.onboarding_complete && (me?.activities ?? []).length > 0;
 
   const { data: myInterest } = await supabase
     .from("vibe_interests")
@@ -243,7 +245,7 @@ export default async function VibeDetailPage({
           <InterestButton
             vibeId={vibe.id}
             userId={user!.id}
-            profileComplete={!!me?.onboarding_complete}
+            profileComplete={profileComplete}
             initialStatus={(myInterest?.status as InterestStatus) ?? null}
             invitationExpiresAt={myInterest?.invitation_expires_at ?? null}
             cancelled={vibe.status === "cancelled"}
