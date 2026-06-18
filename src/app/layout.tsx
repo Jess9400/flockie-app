@@ -10,7 +10,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://findflockie.com"),
+  metadataBase: new URL("https://app.findflockie.com"),
   applicationName: "Flockie",
   title: { default: "Flockie", template: "%s · Flockie" },
   description: "Find your flock. Your next trip needs a +1.",
