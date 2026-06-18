@@ -34,7 +34,7 @@ as $$
     select
       p.id,
       p.home_city,
-      (coalesce(p.favorite_activities, '{}') || coalesce(p.hobbies, '{}'))::text[] as my_tags
+      coalesce(p.activity_vibe, '{}')::text[] as my_tags
     from profiles p
     where p.id = auth.uid()
   )
