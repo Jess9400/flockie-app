@@ -32,6 +32,9 @@ export default function VibeCheckForm({ userId, initial }: Props) {
     gender: initial.gender ?? "",
     relationship_status: initial.relationship_status ?? "",
     home_city: initial.home_city ?? "",
+    instagram: initial.instagram ?? "",
+    x_handle: initial.x_handle ?? "",
+    tiktok: initial.tiktok ?? "",
   });
   const [photos, setPhotos] = useState<string[]>(initial.photos ?? []);
   const [videoUrl, setVideoUrl] = useState<string | null>(initial.video_url ?? null);
@@ -245,6 +248,38 @@ export default function VibeCheckForm({ userId, initial }: Props) {
             value={basics.home_city}
             onChange={(e) => setBasics({ ...basics, home_city: e.target.value })}
             placeholder="Where you're based"
+          />
+        </Field>
+      </section>
+
+      {/* Socials */}
+      <section className="space-y-3">
+        <h2 className="text-lg font-extrabold">Socials (optional)</h2>
+        <p className="text-sm font-medium text-muted">
+          Link your handles so matches can check you out.
+        </p>
+        <Field label="Instagram">
+          <input
+            className={inputCls}
+            value={basics.instagram}
+            onChange={(e) => setBasics({ ...basics, instagram: e.target.value })}
+            placeholder="@yourhandle"
+          />
+        </Field>
+        <Field label="X (Twitter)">
+          <input
+            className={inputCls}
+            value={basics.x_handle}
+            onChange={(e) => setBasics({ ...basics, x_handle: e.target.value })}
+            placeholder="@yourhandle"
+          />
+        </Field>
+        <Field label="TikTok">
+          <input
+            className={inputCls}
+            value={basics.tiktok}
+            onChange={(e) => setBasics({ ...basics, tiktok: e.target.value })}
+            placeholder="@yourhandle"
           />
         </Field>
       </section>

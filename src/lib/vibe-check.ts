@@ -288,6 +288,9 @@ export type Profile = VibeAnswers &
     gender: string | null;
     relationship_status: string | null;
     home_city: string | null;
+    instagram: string | null;
+    x_handle: string | null;
+    tiktok: string | null;
     photos: string[];
     video_url: string | null;
     vouch_token: string | null;
