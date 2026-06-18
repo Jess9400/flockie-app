@@ -86,6 +86,9 @@ export default function CreateVibeForm({
     if (!title || !description || !category || !startsAt || !deadline || !city) {
       return setErr("Please fill in all required fields.");
     }
+    if (!locationName.trim()) {
+      return setErr("A location is required — it's sent to attendees and pinned in the chat.");
+    }
     if (new Date(deadline) >= new Date(startsAt)) {
       return setErr("Signup deadline must be before the start time.");
     }
@@ -233,13 +236,28 @@ export default function CreateVibeForm({
             placeholder="Lisbon"
           />
         </Field>
-        <Field label="Specific location (optional)">
+        <Field label="Location (sent to attendees + pinned in chat)">
           <input
             className={inputCls}
             value={locationName}
             onChange={(e) => setLocationName(e.target.value)}
             placeholder="Café Lisboa, Bairro Alto"
+            required
           />
+          {locationName.trim().length > 2 && (
+            <iframe
+              title="Location preview"
+              src={`https://maps.google.com/maps?q=${encodeURIComponent(
+                `${locationName}${city ? ", " + city : ""}`
+              )}&z=15&output=embed`}
+              loading="lazy"
+              className="mt-2 h-44 w-full rounded-2xl border-2 border-ink"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          )}
+          <p className="mt-1 text-xs font-medium text-muted">
+            Check the pin is right. This map is shared with everyone who gets in.
+          </p>
         </Field>
       </section>
 
