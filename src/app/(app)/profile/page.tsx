@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import SignOutButton from "@/components/SignOutButton";
 import VibeCheckForm from "@/components/VibeCheckForm";
+import ProfileSocials from "@/components/ProfileSocials";
 import type { Profile } from "@/lib/vibe-check";
 
 export default async function ProfilePage() {
@@ -32,6 +33,14 @@ export default async function ProfilePage() {
           <p className="text-sm font-medium text-muted">{user?.email}</p>
         </div>
         <SignOutButton />
+      </div>
+
+      <div className="mt-3">
+        <ProfileSocials
+          instagram={profile?.instagram}
+          x_handle={profile?.x_handle}
+          tiktok={profile?.tiktok}
+        />
       </div>
 
       {(vouchCount ?? 0) > 0 && (
