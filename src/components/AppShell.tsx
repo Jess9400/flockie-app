@@ -8,6 +8,7 @@ import { Home, Compass, Sparkles, MessageCircle, Tag, User, Bell, Menu, X } from
 import SocialIcons from "@/components/SocialIcons";
 import SignOutButton from "@/components/SignOutButton";
 import Footer from "@/components/Footer";
+import LocationPrompt from "@/components/LocationPrompt";
 import { createClient } from "@/lib/supabase/client";
 
 const NAV = [
@@ -136,6 +137,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <div className="mx-auto w-full max-w-3xl flex-1">{children}</div>
         <Footer />
       </div>
+
+      <LocationPrompt />
     </div>
   );
 }
