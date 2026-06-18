@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { X, Heart, MapPin } from "lucide-react";
+import Link from "next/link";
+import { X, Heart, MapPin, CalendarClock } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 type Candidate = {
@@ -11,34 +12,36 @@ type Candidate = {
   age: number | null;
   photos: string[] | null;
   one_liner: string | null;
-  trip_vibe: string[] | null;
-  home_city: string | null;
+  destination: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  trip_type: string[] | null;
 };
 
 export default function SwipeDeck({ candidates }: { candidates: Candidate[] }) {
   const supabase = createClient();
   const [i, setI] = useState(0);
   const [busy, setBusy] = useState(false);
-  const [matchName, setMatchName] = useState<string | null>(null);
+  const [match, setMatch] = useState<{ name: string; chatId: string } | null>(null);
 
   const c = candidates[i];
 
   async function act(liked: boolean) {
     if (!c || busy) return;
     setBusy(true);
-    const { data } = await supabase.rpc("buddy_swipe", {
-      p_target: c.id,
-      p_liked: liked,
-    });
+    const { data } = await supabase.rpc("buddy_swipe", { p_target: c.id, p_liked: liked });
     setBusy(false);
-    if (liked && data === true) setMatchName(c.display_name || "this flockie");
+    const res = data as { matched: boolean; chat_id?: string } | null;
+    if (liked && res?.matched && res.chat_id) {
+      setMatch({ name: c.display_name || "this flockie", chatId: res.chat_id });
+    }
     setI((n) => n + 1);
   }
 
   if (!c) {
     return (
       <div className="mt-6 flex h-[55vh] items-center justify-center rounded-3xl border-2 border-dashed border-ink/30 px-8 text-center font-medium text-muted">
-        You&rsquo;re all caught up. Check back soon for new flockies in your city.
+        You&rsquo;re all caught up. Check back as more travelers post this trip.
       </div>
     );
   }
@@ -47,7 +50,7 @@ export default function SwipeDeck({ candidates }: { candidates: Candidate[] }) {
 
   return (
     <div className="mt-6">
-      <div className="relative h-[60vh] overflow-hidden rounded-3xl border-2 border-ink bg-cream shadow-[0_6px_0_0_rgba(26,26,26,1)]">
+      <div className="relative h-[58vh] overflow-hidden rounded-3xl border-2 border-ink bg-cream shadow-[0_6px_0_0_rgba(26,26,26,1)]">
         {cover ? (
           <Image src={cover} alt="" fill sizes="500px" className="object-cover" />
         ) : (
@@ -59,21 +62,21 @@ export default function SwipeDeck({ candidates }: { candidates: Candidate[] }) {
             {c.display_name || "Flockie"}
             {c.age ? `, ${c.age}` : ""}
           </p>
-          {c.home_city && (
+          {c.destination && (
             <p className="mt-0.5 flex items-center gap-1 text-sm font-semibold">
-              <MapPin size={14} /> {c.home_city}
+              <MapPin size={14} /> {c.destination}
             </p>
           )}
-          {c.one_liner && (
-            <p className="mt-1 text-sm font-medium text-white/90">{c.one_liner}</p>
+          {c.start_date && c.end_date && (
+            <p className="mt-0.5 flex items-center gap-1 text-xs font-medium text-white/90">
+              <CalendarClock size={13} /> {c.start_date} → {c.end_date}
+            </p>
           )}
-          {(c.trip_vibe?.length ?? 0) > 0 && (
+          {c.one_liner && <p className="mt-1 text-sm font-medium text-white/90">{c.one_liner}</p>}
+          {(c.trip_type?.length ?? 0) > 0 && (
             <div className="mt-2 flex flex-wrap gap-1.5">
-              {c.trip_vibe!.slice(0, 3).map((t) => (
-                <span
-                  key={t}
-                  className="rounded-full bg-white/25 px-2 py-0.5 text-[11px] font-bold backdrop-blur-sm"
-                >
+              {c.trip_type!.slice(0, 3).map((t) => (
+                <span key={t} className="rounded-full bg-white/25 px-2 py-0.5 text-[11px] font-bold backdrop-blur-sm">
                   {t}
                 </span>
               ))}
@@ -83,35 +86,28 @@ export default function SwipeDeck({ candidates }: { candidates: Candidate[] }) {
       </div>
 
       <div className="mt-4 flex items-center justify-center gap-6">
-        <button
-          onClick={() => act(false)}
-          disabled={busy}
-          aria-label="Pass"
-          className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-ink bg-white text-ink disabled:opacity-50"
-        >
+        <button onClick={() => act(false)} disabled={busy} aria-label="Pass"
+          className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-ink bg-white text-ink disabled:opacity-50">
           <X size={26} />
         </button>
-        <button
-          onClick={() => act(true)}
-          disabled={busy}
-          aria-label="Like"
-          className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-ink bg-flockie-orange text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50"
-        >
+        <button onClick={() => act(true)} disabled={busy} aria-label="Like"
+          className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-ink bg-flockie-orange text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50">
           <Heart size={28} fill="currentColor" />
         </button>
       </div>
 
-      {matchName && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-6" onClick={() => setMatchName(null)}>
+      {match && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-6">
           <div className="w-full max-w-sm rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_8px_0_0_rgba(26,26,26,1)]">
             <p className="text-3xl font-black">It&rsquo;s a match! 🎉</p>
             <p className="mt-2 font-medium text-ink/70">
-              You and {matchName} both liked each other.
+              You and {match.name} both want to go. Say hi and plan it.
             </p>
-            <button
-              onClick={() => setMatchName(null)}
-              className="mt-5 w-full rounded-full border-2 border-ink bg-flockie-orange py-3 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
-            >
+            <Link href={`/buddies/${match.chatId}`}
+              className="mt-5 block rounded-full border-2 border-ink bg-flockie-orange py-3 font-bold text-white shadow-[0_4px_0_0_#E0512C]">
+              Say hi 👋
+            </Link>
+            <button onClick={() => setMatch(null)} className="mt-2 w-full py-2 text-center text-sm font-bold text-muted">
               Keep swiping
             </button>
           </div>
