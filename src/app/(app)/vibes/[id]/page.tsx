@@ -70,6 +70,19 @@ export default async function VibeDetailPage({
   }
 
   const isHost = host?.id === user!.id;
+
+  // Host-only matching tally
+  const tally: Record<string, number> = {};
+  if (isHost) {
+    const { data: rows } = await supabase
+      .from("vibe_interests")
+      .select("status")
+      .eq("vibe_id", params.id);
+    rows?.forEach((r) => {
+      tally[r.status] = (tally[r.status] ?? 0) + 1;
+    });
+  }
+
   const rules = (vibe.dealbreaker_rules ?? {}) as Record<string, boolean>;
   const activeRules = DEALBREAKER_RULES.filter((r) => rules[r.key]);
 
@@ -177,6 +190,25 @@ export default async function VibeDetailPage({
                 </span>
               )
             )}
+          </div>
+        </div>
+      )}
+
+      {isHost && (
+        <div className="mt-6 rounded-2xl border-2 border-ink bg-white p-4">
+          <p className="text-sm font-extrabold">Matching results (host only)</p>
+          <div className="mt-3 grid grid-cols-4 gap-2 text-center">
+            {[
+              { k: "interested", label: "Interested" },
+              { k: "invited", label: "Invited" },
+              { k: "confirmed", label: "Going" },
+              { k: "standby", label: "Standby" },
+            ].map((s) => (
+              <div key={s.k} className="rounded-xl bg-cream py-2">
+                <p className="text-xl font-black">{tally[s.k] ?? 0}</p>
+                <p className="text-[11px] font-bold text-muted">{s.label}</p>
+              </div>
+            ))}
           </div>
         </div>
       )}
