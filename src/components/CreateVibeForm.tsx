@@ -17,15 +17,17 @@ export default function CreateVibeForm({
   userId,
   defaultCity,
   defaultActivityUrl = "",
+  defaultTitle = "",
 }: {
   userId: string;
   defaultCity: string;
   defaultActivityUrl?: string;
+  defaultTitle?: string;
 }) {
   const router = useRouter();
   const supabase = createClient();
 
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(defaultTitle);
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [activityUrl, setActivityUrl] = useState(defaultActivityUrl);

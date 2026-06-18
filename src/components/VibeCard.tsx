@@ -27,10 +27,12 @@ export default function VibeCard({
   vibe,
   confirmedCount,
   myStatus,
+  matchPct,
 }: {
   vibe: VibeCardData;
   confirmedCount: number;
   myStatus?: InterestStatus | null;
+  matchPct?: number;
 }) {
   const cover = vibe.photos?.[0];
   const hostName = vibe.host?.display_name || "A flockie";
@@ -59,6 +61,11 @@ export default function VibeCard({
         {myStatus && STATUS_LABEL[myStatus] && (
           <span className="absolute right-3 top-3 rounded-full border-2 border-ink bg-flockie-orange px-2.5 py-0.5 text-xs font-extrabold text-white">
             {STATUS_LABEL[myStatus]}
+          </span>
+        )}
+        {!myStatus && typeof matchPct === "number" && (
+          <span className="absolute right-3 top-3 rounded-full border-2 border-ink bg-flockie-coral px-2.5 py-0.5 text-xs font-extrabold text-white">
+            {matchPct}% your vibe
           </span>
         )}
       </div>

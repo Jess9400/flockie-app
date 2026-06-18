@@ -6,7 +6,7 @@ import CreateVibeForm from "@/components/CreateVibeForm";
 export default async function NewVibePage({
   searchParams,
 }: {
-  searchParams: { activity?: string; city?: string };
+  searchParams: { activity?: string; city?: string; title?: string };
 }) {
   const supabase = await createClient();
   const {
@@ -37,6 +37,7 @@ export default async function NewVibePage({
           userId={user!.id}
           defaultCity={searchParams.city ?? profile?.home_city ?? ""}
           defaultActivityUrl={searchParams.activity ?? ""}
+          defaultTitle={searchParams.title ?? ""}
         />
       </div>
     </main>

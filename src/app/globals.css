@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --flockie-blue: #4a9fd4;
-  --flockie-orange: #e8704e;
-  --ink: #1a1a1a;
+  --flockie-blue: #4da8da;
+  --flockie-coral: #ff6b4a;
+  --ink: #0a2545;
 }
 
 body {
   color: var(--ink);
-  background: #fbf8f3;
+  background: #f7f3ee;
   -webkit-font-smoothing: antialiased;
 }
 
