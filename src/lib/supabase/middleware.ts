@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
-const PUBLIC_PATHS = ["/login", "/auth"];
+const PUBLIC_PATHS = ["/login", "/auth", "/vouch"];
 
 // Refreshes the Supabase session on every request and gates the app behind
 // auth: signed-out users are redirected to /login (except public paths).
