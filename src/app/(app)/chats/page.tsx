@@ -82,72 +82,84 @@ export default async function ChatsPage() {
     <main className="px-5 pt-6">
       <h1 className="text-2xl font-black">Chats</h1>
       <p className="mt-1 text-sm font-medium text-muted">
-        Group chats for the Vibes you host or are going to.
+        Your conversations, by type.
       </p>
 
-      {buddies.length > 0 && (
-        <div className="mt-6 space-y-3">
-          <p className="text-xs font-bold uppercase tracking-wide text-muted">Buddy matches</p>
-          {buddies.map((b) => (
-            <Link
-              key={b.chatId}
-              href={`/buddies/${b.chatId}`}
-              className="flex items-center gap-3 rounded-2xl border-2 border-ink bg-white p-3 shadow-[0_3px_0_0_rgba(26,26,26,1)] transition-transform hover:-translate-y-0.5"
-            >
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-flockie-blue text-lg font-black text-white">
-                {b.name[0]}
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-extrabold">{b.name}</p>
-                <p className="truncate text-xs font-medium text-muted">Buddy match · say hi</p>
-              </div>
-              <span className="shrink-0 rounded-full bg-flockie-orange px-2.5 py-0.5 text-[11px] font-extrabold text-white">
-                Buddy
-              </span>
-            </Link>
-          ))}
-        </div>
-      )}
-
-      <div className="mt-6 space-y-3">
-        {list.length === 0 && buddies.length === 0 && (
-          <div className="rounded-3xl border-2 border-dashed border-ink/30 py-16 text-center font-medium text-muted">
-            No chats yet. Host a Vibe or confirm a spot to start talking.
-          </div>
-        )}
-        {list.map((v) => (
-          <Link
-            key={v.id}
-            href={`/vibes/${v.id}/chat`}
-            className="flex items-center gap-3 rounded-2xl border-2 border-ink bg-white p-3 shadow-[0_3px_0_0_rgba(26,26,26,1)] transition-transform hover:-translate-y-0.5"
-          >
-            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-cream">
-              {v.photos?.[0] ? (
-                <Image src={v.photos[0]} alt="" fill sizes="48px" className="object-cover" />
-              ) : (
-                <span className="flex h-full items-center justify-center">
-                  <MessageCircle size={20} className="text-muted" />
+      {/* Travel Buddies — trips & flocks */}
+      <section className="mt-6">
+        <p className="text-sm font-extrabold">Travel Buddies</p>
+        <p className="text-xs font-medium text-muted">From trips and flocks</p>
+        <div className="mt-3 space-y-3">
+          {buddies.length === 0 ? (
+            <div className="rounded-2xl border-2 border-dashed border-ink/30 py-8 text-center text-sm font-medium text-muted">
+              No travel-buddy chats yet. Match in Find a Buddy to start one.
+            </div>
+          ) : (
+            buddies.map((b) => (
+              <Link
+                key={b.chatId}
+                href={`/buddies/${b.chatId}`}
+                className="flex items-center gap-3 rounded-2xl border-2 border-ink bg-white p-3 shadow-[0_3px_0_0_rgba(26,26,26,1)] transition-transform hover:-translate-y-0.5"
+              >
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-flockie-blue text-lg font-black text-white">
+                  {b.name[0]}
                 </span>
-              )}
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-extrabold">{b.name}</p>
+                  <p className="truncate text-xs font-medium text-muted">Buddy match · say hi</p>
+                </div>
+                <span className="shrink-0 rounded-full bg-flockie-orange px-2.5 py-0.5 text-[11px] font-extrabold text-white">
+                  Buddy
+                </span>
+              </Link>
+            ))
+          )}
+        </div>
+      </section>
+
+      {/* Vibe Buddies — Vibes & Deals find-a-buddy */}
+      <section className="mt-8">
+        <p className="text-sm font-extrabold">Vibe Buddies</p>
+        <p className="text-xs font-medium text-muted">From Vibes and activity buddies</p>
+        <div className="mt-3 space-y-3">
+          {list.length === 0 ? (
+            <div className="rounded-2xl border-2 border-dashed border-ink/30 py-8 text-center text-sm font-medium text-muted">
+              No Vibe chats yet. Host a Vibe or confirm a spot to start talking.
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-extrabold">{v.title}</p>
-              <p className="truncate text-xs font-medium text-muted">
-                {formatVibeWhen(v.starts_at)} · {v.location_name || v.city}
-              </p>
-            </div>
-            <span
-              className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-extrabold ${
-                v.role === "host"
-                  ? "bg-flockie-orange text-white"
-                  : "bg-flockie-blue text-white"
-              }`}
-            >
-              {v.role === "host" ? "Host" : "Going"}
-            </span>
-          </Link>
-        ))}
-      </div>
+          ) : (
+            list.map((v) => (
+              <Link
+                key={v.id}
+                href={`/vibes/${v.id}/chat`}
+                className="flex items-center gap-3 rounded-2xl border-2 border-ink bg-white p-3 shadow-[0_3px_0_0_rgba(26,26,26,1)] transition-transform hover:-translate-y-0.5"
+              >
+                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-cream">
+                  {v.photos?.[0] ? (
+                    <Image src={v.photos[0]} alt="" fill sizes="48px" className="object-cover" />
+                  ) : (
+                    <span className="flex h-full items-center justify-center">
+                      <MessageCircle size={20} className="text-muted" />
+                    </span>
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-extrabold">{v.title}</p>
+                  <p className="truncate text-xs font-medium text-muted">
+                    {formatVibeWhen(v.starts_at)} · {v.location_name || v.city}
+                  </p>
+                </div>
+                <span
+                  className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-extrabold ${
+                    v.role === "host" ? "bg-flockie-orange text-white" : "bg-flockie-blue text-white"
+                  }`}
+                >
+                  {v.role === "host" ? "Host" : "Going"}
+                </span>
+              </Link>
+            ))
+          )}
+        </div>
+      </section>
     </main>
   );
 }
