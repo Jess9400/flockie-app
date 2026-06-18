@@ -26,11 +26,11 @@ export default async function MatchPage({
   const complete = !!profile?.onboarding_complete && (profile?.activities ?? []).length > 0;
 
   const subToggle = (
-    <div className="mt-3 grid grid-cols-2 gap-2 rounded-full border-2 border-ink bg-cream p-1 text-sm font-bold">
-      <Link href="/match?mode=trip" className={`rounded-full py-1.5 text-center ${!isActivity ? "bg-ink text-white" : "text-ink"}`}>
+    <div className="mt-3 inline-flex gap-1 rounded-full border-2 border-ink bg-cream p-1 text-xs font-bold">
+      <Link href="/match?mode=trip" className={`rounded-full px-4 py-1 ${!isActivity ? "bg-ink text-white" : "text-ink"}`}>
         Trip
       </Link>
-      <Link href="/match?mode=activity" className={`rounded-full py-1.5 text-center ${isActivity ? "bg-ink text-white" : "text-ink"}`}>
+      <Link href="/match?mode=activity" className={`rounded-full px-4 py-1 ${isActivity ? "bg-ink text-white" : "text-ink"}`}>
         Activity
       </Link>
     </div>
