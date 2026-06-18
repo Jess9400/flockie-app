@@ -76,7 +76,7 @@ export default async function VibeDetailPage({
     <main className="px-5 pt-6">
       <Link
         href="/vibes"
-        className="mb-3 inline-flex items-center gap-1 text-sm font-bold text-muted"
+        className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted"
       >
         <ChevronLeft size={16} /> Back
       </Link>
