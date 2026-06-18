@@ -12,12 +12,12 @@ import { createClient } from "@/lib/supabase/client";
 
 const NAV = [
   { href: "/home", label: "Home", icon: Home },
+  { href: "/profile", label: "Profile", icon: User },
   { href: "/match", label: "Find a match", icon: Compass },
   { href: "/vibes", label: "Vibes", icon: Sparkles },
   { href: "/chats", label: "Chats", icon: MessageCircle },
   { href: "/inbox", label: "Inbox", icon: Bell },
   { href: "/deals", label: "Deals", icon: Tag },
-  { href: "/profile", label: "Profile", icon: User },
 ];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
