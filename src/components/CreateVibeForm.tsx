@@ -91,6 +91,11 @@ export default function CreateVibeForm({
     }
 
     setSaving(true);
+    // Make sure a profile row exists (FK target) before creating the vibe.
+    await supabase
+      .from("profiles")
+      .upsert({ id: userId }, { onConflict: "id", ignoreDuplicates: true });
+
     const { data, error } = await supabase
       .from("vibes")
       .insert({
