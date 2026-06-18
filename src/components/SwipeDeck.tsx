@@ -12,7 +12,7 @@ type Candidate = {
   age: number | null;
   photos: string[] | null;
   one_liner: string | null;
-  destination: string | null;
+  destinations: string[] | null;
   start_date: string | null;
   end_date: string | null;
   trip_type: string[] | null;
@@ -62,9 +62,9 @@ export default function SwipeDeck({ candidates }: { candidates: Candidate[] }) {
             {c.display_name || "Flockie"}
             {c.age ? `, ${c.age}` : ""}
           </p>
-          {c.destination && (
+          {(c.destinations?.length ?? 0) > 0 && (
             <p className="mt-0.5 flex items-center gap-1 text-sm font-semibold">
-              <MapPin size={14} /> {c.destination}
+              <MapPin size={14} /> {c.destinations!.join(" · ")}
             </p>
           )}
           {c.start_date && c.end_date && (

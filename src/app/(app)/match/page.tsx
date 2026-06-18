@@ -42,7 +42,7 @@ export default async function MatchPage() {
 
   const { data: trip } = await supabase
     .from("trips")
-    .select("id, destination, start_date, end_date, group_size")
+    .select("id, destination, destinations, start_date, end_date, group_size")
     .eq("user_id", user!.id)
     .eq("status", "active")
     .order("created_at", { ascending: false })
@@ -63,17 +63,18 @@ export default async function MatchPage() {
 
   const { data: count } = await supabase.rpc("buddy_dest_count");
   const enough = (count ?? 0) >= MIN_PROFILES;
+  const destLabel = (trip.destinations ?? [trip.destination]).filter(Boolean).join(" · ");
 
   let body: React.ReactNode;
   if (!enough) {
     body = (
       <div className="mt-6 rounded-3xl border-2 border-ink bg-white p-8 text-center shadow-[0_5px_0_0_rgba(26,26,26,1)]">
         <p className="text-3xl">🌍</p>
-        <p className="mt-3 text-lg font-extrabold">Buddy matching isn&rsquo;t live for {trip.destination} yet</p>
+        <p className="mt-3 text-lg font-extrabold">Buddy matching isn&rsquo;t live for {destLabel} yet</p>
         <p className="mt-2 font-medium text-ink/70">
-          We&rsquo;re still gathering travelers heading to {trip.destination}.
-          We&rsquo;ll notify you the moment matching opens there. Meanwhile, create
-          or join a Vibe.
+          We&rsquo;re still gathering travelers heading to {destLabel}. We&rsquo;ll
+          notify you the moment matching opens there. Meanwhile, create or join a
+          Vibe.
         </p>
         <Link href="/vibes" className="mt-5 inline-block rounded-full border-2 border-ink bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_4px_0_0_#E0512C]">
           Explore Vibes
@@ -93,7 +94,7 @@ export default async function MatchPage() {
       <div className="mt-5 flex items-center justify-between rounded-2xl border-2 border-ink bg-cream p-3">
         <div className="min-w-0">
           <p className="flex items-center gap-1.5 truncate font-extrabold">
-            <MapPin size={15} className="text-flockie-orange" /> {trip.destination}
+            <MapPin size={15} className="text-flockie-orange" /> {destLabel}
           </p>
           <p className="flex items-center gap-1.5 text-xs font-medium text-muted">
             <CalendarClock size={13} /> {trip.start_date} → {trip.end_date} · {trip.group_size} people

@@ -12,7 +12,7 @@ export default async function FlocksPage() {
 
   const { data: trips } = await supabase
     .from("trips")
-    .select("id, user_id, destination, start_date, end_date, group_size, trip_type")
+    .select("id, user_id, destination, destinations, start_date, end_date, group_size, trip_type")
     .eq("visibility", "public")
     .eq("status", "active")
     .neq("user_id", user!.id)
@@ -79,7 +79,8 @@ export default async function FlocksPage() {
                 <span className="text-sm font-bold">{host?.display_name || "A flockie"}</span>
               </div>
               <p className="mt-2 flex items-center gap-1.5 font-extrabold">
-                <MapPin size={15} className="text-flockie-orange" /> {t.destination}
+                <MapPin size={15} className="text-flockie-orange" />{" "}
+                {(t.destinations ?? [t.destination]).filter(Boolean).join(" · ")}
               </p>
               <p className="mt-0.5 flex items-center gap-3 text-xs font-medium text-muted">
                 <span className="flex items-center gap-1"><CalendarClock size={13} /> {t.start_date} → {t.end_date}</span>

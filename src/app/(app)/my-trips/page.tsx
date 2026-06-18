@@ -21,7 +21,7 @@ export default async function MyTripsPage() {
 
   const { data: trips } = await supabase
     .from("trips")
-    .select("id, destination, start_date, end_date, group_size, trip_type, status, created_at")
+    .select("id, destination, destinations, start_date, end_date, group_size, trip_type, status, created_at")
     .eq("user_id", user!.id)
     .order("created_at", { ascending: false });
 
@@ -58,7 +58,8 @@ export default async function MyTripsPage() {
             <div className="flex items-start justify-between">
               <div className="min-w-0">
                 <p className="flex items-center gap-1.5 font-extrabold">
-                  <MapPin size={15} className="text-flockie-orange" /> {t.destination}
+                  <MapPin size={15} className="text-flockie-orange" />{" "}
+                  {(t.destinations ?? [t.destination]).filter(Boolean).join(" · ")}
                 </p>
                 <p className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-muted">
                   <CalendarClock size={13} /> {t.start_date} → {t.end_date} · {t.group_size} people

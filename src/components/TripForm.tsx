@@ -12,6 +12,7 @@ const PACE_LABELS = ["Very slow", "Relaxed", "Balanced", "Active", "Non-stop"];
 type Trip = {
   id?: string;
   destination?: string;
+  destinations?: string[];
   start_date?: string;
   end_date?: string;
   group_size?: number;
@@ -30,7 +31,10 @@ export default function TripForm({
 }) {
   const router = useRouter();
   const supabase = createClient();
-  const [destination, setDestination] = useState(initial.destination ?? "");
+  const initialDests = initial.destinations ?? (initial.destination ? [initial.destination] : []);
+  const [dest1, setDest1] = useState(initialDests[0] ?? "");
+  const [dest2, setDest2] = useState(initialDests[1] ?? "");
+  const [dest3, setDest3] = useState(initialDests[2] ?? "");
   const [start, setStart] = useState(initial.start_date ?? "");
   const [end, setEnd] = useState(initial.end_date ?? "");
   const [groupSize, setGroupSize] = useState(initial.group_size ?? 2);
@@ -58,8 +62,9 @@ export default function TripForm({
   async function save(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
-    if (!destination.trim() || !start || !end) {
-      return setErr("Destination and dates are required.");
+    const destinations = [dest1, dest2, dest3].map((d) => d.trim()).filter(Boolean);
+    if (destinations.length === 0 || !start || !end) {
+      return setErr("At least one destination and dates are required.");
     }
     if (new Date(end) < new Date(start)) {
       return setErr("End date must be after the start date.");
@@ -67,7 +72,8 @@ export default function TripForm({
     setSaving(true);
     const payload = {
       user_id: userId,
-      destination: destination.trim(),
+      destination: destinations[0],
+      destinations,
       start_date: start,
       end_date: end,
       group_size: groupSize,
@@ -91,10 +97,17 @@ export default function TripForm({
 
   return (
     <form onSubmit={save} className="space-y-5 pb-8">
-      <label className="block">
-        <span className="mb-1 block text-sm font-bold">Where to?</span>
-        <input className={inputCls} value={destination} onChange={(e) => setDestination(e.target.value)} placeholder="Destination (city / place)" />
-      </label>
+      <div>
+        <span className="mb-1 block text-sm font-bold">Where to? (up to 3)</span>
+        <div className="space-y-2">
+          <input className={inputCls} value={dest1} onChange={(e) => setDest1(e.target.value)} placeholder="Destination 1 (required)" />
+          <input className={inputCls} value={dest2} onChange={(e) => setDest2(e.target.value)} placeholder="Destination 2 (optional)" />
+          <input className={inputCls} value={dest3} onChange={(e) => setDest3(e.target.value)} placeholder="Destination 3 (optional)" />
+        </div>
+        <p className="mt-1 text-xs font-medium text-muted">
+          You&rsquo;ll match with travelers heading to any of these.
+        </p>
+      </div>
 
       <div className="grid grid-cols-2 gap-3">
         <label className="block">

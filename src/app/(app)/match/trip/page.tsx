@@ -21,7 +21,7 @@ export default async function TripPage({
 
   let tripQuery = supabase
     .from("trips")
-    .select("id, destination, start_date, end_date, group_size, trip_type, budget, pace, visibility")
+    .select("id, destination, destinations, start_date, end_date, group_size, trip_type, budget, pace, visibility")
     .eq("user_id", user!.id);
   tripQuery = searchParams.id
     ? tripQuery.eq("id", searchParams.id)
@@ -30,7 +30,7 @@ export default async function TripPage({
 
   // Pre-fill from the existing trip, else from profile defaults
   const initial = trip ?? {
-    destination: profile?.home_city ?? "",
+    destinations: profile?.home_city ? [profile.home_city] : [],
     trip_type: profile?.trip_vibe ?? [],
     budget: profile?.budget ?? 3,
     pace: profile?.pace ?? 3,
