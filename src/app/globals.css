@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --flockie-blue: #4a9fd4;
+  --flockie-orange: #e8704e;
+  --ink: #1a1a1a;
+}
+
+body {
+  color: var(--ink);
+  background: #fbf8f3;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--flockie-blue);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
