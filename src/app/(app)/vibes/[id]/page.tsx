@@ -40,7 +40,7 @@ export default async function VibeDetailPage({
 
   const { data: myInterest } = await supabase
     .from("vibe_interests")
-    .select("status")
+    .select("status, invitation_expires_at")
     .eq("vibe_id", params.id)
     .eq("user_id", user!.id)
     .maybeSingle();
@@ -222,6 +222,7 @@ export default async function VibeDetailPage({
             userId={user!.id}
             profileComplete={!!me?.onboarding_complete}
             initialStatus={(myInterest?.status as InterestStatus) ?? null}
+            invitationExpiresAt={myInterest?.invitation_expires_at ?? null}
           />
         )}
       </div>

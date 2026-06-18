@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -11,6 +11,7 @@ type Props = {
   userId: string;
   profileComplete: boolean;
   initialStatus: InterestStatus | null;
+  invitationExpiresAt?: string | null;
 };
 
 export default function InterestButton({
@@ -18,12 +19,28 @@ export default function InterestButton({
   userId,
   profileComplete,
   initialStatus,
+  invitationExpiresAt,
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
   const [status, setStatus] = useState<InterestStatus | null>(initialStatus);
   const [busy, setBusy] = useState(false);
   const [gate, setGate] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 30000);
+    return () => clearInterval(t);
+  }, []);
+
+  function timeLeft(): string {
+    if (!invitationExpiresAt) return "";
+    const ms = +new Date(invitationExpiresAt) - now;
+    if (ms <= 0) return "expiring…";
+    const h = Math.floor(ms / 3.6e6);
+    const m = Math.floor((ms % 3.6e6) / 6e4);
+    return `${h}h ${m}m left`;
+  }
 
   async function express() {
     if (!profileComplete) {
@@ -61,11 +78,7 @@ export default function InterestButton({
 
   async function decline() {
     setBusy(true);
-    await supabase
-      .from("vibe_interests")
-      .update({ status: "declined" })
-      .eq("vibe_id", vibeId)
-      .eq("user_id", userId);
+    await supabase.rpc("decline_vibe", { p_vibe: vibeId });
     setBusy(false);
     setStatus("declined");
     router.refresh();
@@ -88,12 +101,29 @@ export default function InterestButton({
   } else if (status === "invited") {
     control = (
       <div className="space-y-2">
+        {invitationExpiresAt && (
+          <p className="text-center text-sm font-bold text-flockie-orange">
+            ⏳ {timeLeft()} to confirm
+          </p>
+        )}
         <button onClick={confirm} disabled={busy} className={`${base} bg-flockie-orange text-white shadow-[0_4px_0_0_#E0512C]`}>
           Confirm spot
         </button>
         <button onClick={decline} disabled={busy} className={`${base} bg-white`}>
           Decline
         </button>
+      </div>
+    );
+  } else if (status === "ghosted") {
+    control = (
+      <div className={`${base} bg-cream text-muted`}>
+        This invitation expired.
+      </div>
+    );
+  } else if (status === "declined") {
+    control = (
+      <div className={`${base} bg-cream text-muted`}>
+        You passed on this one.
       </div>
     );
   } else if (status === "standby") {
