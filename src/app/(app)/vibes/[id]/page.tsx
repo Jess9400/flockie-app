@@ -1,0 +1,186 @@
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { ChevronLeft, MapPin, Users, CalendarClock } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import InterestButton from "@/components/InterestButton";
+import { formatVibeWhen, DEALBREAKER_RULES, type InterestStatus } from "@/lib/vibes";
+
+export default async function VibeDetailPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: vibe } = await supabase
+    .from("vibes")
+    .select(
+      "*, host:profiles!vibes_host_id_fkey(id, display_name, photos, one_liner)"
+    )
+    .eq("id", params.id)
+    .single();
+
+  if (!vibe) notFound();
+
+  const { data: me } = await supabase
+    .from("profiles")
+    .select("activities")
+    .eq("id", user!.id)
+    .single();
+
+  const { data: myInterest } = await supabase
+    .from("vibe_interests")
+    .select("status")
+    .eq("vibe_id", params.id)
+    .eq("user_id", user!.id)
+    .maybeSingle();
+
+  const { data: confirmed } = await supabase
+    .from("vibe_interests")
+    .select("user:profiles!vibe_interests_user_id_fkey(display_name, photos)")
+    .eq("vibe_id", params.id)
+    .eq("status", "confirmed")
+    .limit(8);
+
+  const { count: confirmedCount } = await supabase
+    .from("vibe_interests")
+    .select("id", { count: "exact", head: true })
+    .eq("vibe_id", params.id)
+    .eq("status", "confirmed");
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const host = (vibe as any).host;
+  const isHost = host?.id === user!.id;
+  const rules = (vibe.dealbreaker_rules ?? {}) as Record<string, boolean>;
+  const activeRules = DEALBREAKER_RULES.filter((r) => rules[r.key]);
+
+  return (
+    <main className="px-5 pt-6">
+      <Link
+        href="/vibes"
+        className="mb-3 inline-flex items-center gap-1 text-sm font-bold text-muted"
+      >
+        <ChevronLeft size={16} /> Back
+      </Link>
+
+      {vibe.photos?.[0] && (
+        <div className="relative h-56 w-full overflow-hidden rounded-3xl border-2 border-ink">
+          <Image src={vibe.photos[0]} alt="" fill sizes="100vw" className="object-cover" />
+        </div>
+      )}
+
+      <span className="mt-4 inline-block rounded-full border-2 border-ink bg-white px-3 py-0.5 text-xs font-extrabold lowercase">
+        {vibe.category}
+      </span>
+      <h1 className="mt-2 text-2xl font-black leading-tight">{vibe.title}</h1>
+
+      <div className="mt-3 space-y-1.5 text-sm font-medium text-ink">
+        <p className="flex items-center gap-2">
+          <CalendarClock size={16} className="text-flockie-orange" />
+          {formatVibeWhen(vibe.starts_at)}
+        </p>
+        <p className="flex items-center gap-2">
+          <MapPin size={16} className="text-flockie-orange" />
+          {vibe.location_name ? `${vibe.location_name}, ${vibe.city}` : vibe.city}
+        </p>
+        <p className="flex items-center gap-2">
+          <Users size={16} className="text-flockie-orange" />
+          {confirmedCount ?? 0}/{vibe.capacity} going
+        </p>
+      </div>
+
+      <p className="mt-4 whitespace-pre-wrap text-[15px] font-medium text-ink/80">
+        {vibe.description}
+      </p>
+
+      {/* host */}
+      <div className="mt-5 flex items-center gap-3 rounded-2xl border-2 border-ink bg-white p-3">
+        {host?.photos?.[0] ? (
+          <Image
+            src={host.photos[0]}
+            alt=""
+            width={44}
+            height={44}
+            className="h-11 w-11 rounded-full object-cover"
+          />
+        ) : (
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-flockie-blue font-bold text-white">
+            {(host?.display_name || "F")[0]}
+          </span>
+        )}
+        <div>
+          <p className="text-sm font-bold">Hosted by {host?.display_name || "a flockie"}</p>
+          {host?.one_liner && (
+            <p className="text-xs font-medium text-muted">{host.one_liner}</p>
+          )}
+        </div>
+      </div>
+
+      {/* tags + rules */}
+      {(vibe.event_vibe_tags?.length || activeRules.length) > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {vibe.event_vibe_tags?.map((t: string) => (
+            <span
+              key={t}
+              className="rounded-full bg-cream px-3 py-1 text-xs font-bold text-ink"
+            >
+              {t}
+            </span>
+          ))}
+          {activeRules.map((r) => (
+            <span
+              key={r.key}
+              className="rounded-full border-2 border-ink px-3 py-1 text-xs font-bold"
+            >
+              {r.label}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* confirmed attendees */}
+      {(confirmedCount ?? 0) > 0 && (
+        <div className="mt-5">
+          <p className="text-sm font-bold">Going</p>
+          <div className="mt-2 flex -space-x-2">
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {(confirmed ?? []).map((c: any, i: number) =>
+              c.user?.photos?.[0] ? (
+                <Image
+                  key={i}
+                  src={c.user.photos[0]}
+                  alt=""
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 rounded-full border-2 border-white object-cover"
+                />
+              ) : (
+                <span
+                  key={i}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-flockie-blue text-xs font-bold text-white"
+                >
+                  {(c.user?.display_name || "F")[0]}
+                </span>
+              )
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* sticky action */}
+      <div className="sticky bottom-20 mt-6">
+        <InterestButton
+          vibeId={vibe.id}
+          userId={user!.id}
+          isHost={isHost}
+          activityCheckDone={(me?.activities ?? []).length > 0}
+          initialStatus={(myInterest?.status as InterestStatus) ?? null}
+        />
+      </div>
+    </main>
+  );
+}
