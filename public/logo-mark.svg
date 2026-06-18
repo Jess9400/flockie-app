@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 118 104" width="472" height="416" role="img" aria-label="Flockie">
+  <path d="M 48,90 C 34,66 24,56 24,40 A 24 24 0 1 1 72,40 C 72,56 62,66 48,90 Z" fill="#2C7CB2" transform="translate(0,4)"/>
+  <path d="M 48,90 C 34,66 24,56 24,40 A 24 24 0 1 1 72,40 C 72,56 62,66 48,90 Z" fill="#4DA8DA"/>
+  <ellipse cx="0" cy="0" rx="11" ry="6.5" transform="translate(49,42) rotate(-28)" fill="#E0512C"/>
+  <ellipse cx="0" cy="0" rx="11" ry="6.5" transform="translate(49,40) rotate(-28)" fill="#FF6B4A"/>
+  <polygon points="72,35 84,40 72,45" fill="#FF6B4A" stroke="#FF6B4A" stroke-width="3" stroke-linejoin="round"/>
+  <polygon points="24,35 11,31 26,45" fill="#FF6B4A" stroke="#FF6B4A" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="60" cy="33" r="3.4" fill="#0A2545"/>
+  <circle cx="61.2" cy="31.8" r="1.1" fill="#fff"/>
+  <path d="M 62,24 Q 84,5 95,16" fill="none" stroke="#FF6B4A" stroke-width="3.6" stroke-dasharray="0.5 7" stroke-linecap="round"/>
+  <circle cx="101" cy="18" r="10.5" fill="#E0512C"/>
+  <circle cx="101" cy="15" r="10.5" fill="#FF6B4A"/>
+  <polygon points="111,12 117,15 111,18" fill="#FF6B4A" stroke="#FF6B4A" stroke-width="3" stroke-linejoin="round"/>
+  <polygon points="92,13 82,8 93,22" fill="#FF6B4A" stroke="#FF6B4A" stroke-width="2.5" stroke-linejoin="round"/>
+  <circle cx="105" cy="13" r="2.6" fill="#0A2545"/>
+  <circle cx="105.9" cy="12.1" r="0.9" fill="#fff"/>
+</svg>

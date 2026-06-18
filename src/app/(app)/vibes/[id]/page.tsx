@@ -180,7 +180,7 @@ export default async function VibeDetailPage({
         </div>
       )}
 
-      <div className="sticky bottom-20 mt-6">
+      <div className="sticky bottom-4 mt-6">
         <InterestButton
           vibeId={vibe.id}
           userId={user!.id}
