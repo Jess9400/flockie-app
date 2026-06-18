@@ -89,7 +89,7 @@ export default async function VibeDetailPage({
   const activeRules = DEALBREAKER_RULES.filter((r) => rules[r.key]);
 
   return (
-    <main className="px-5 pt-6">
+    <main className="px-5 pb-10 pt-6">
       <Link
         href="/vibes"
         className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted"
@@ -232,7 +232,7 @@ export default async function VibeDetailPage({
         </div>
       )}
 
-      <div className="sticky bottom-4 mt-6">
+      <div className="mt-6">
         {isHost ? (
           <HostVibeControls
             vibeId={vibe.id}
