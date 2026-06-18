@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Compass, Sparkles, MessageCircle, Tag, User, Bell, Menu, X } from "lucide-react";
+import { Home, Compass, Sparkles, CalendarCheck, MessageCircle, Tag, User, Bell, Menu, X } from "lucide-react";
 import SocialIcons from "@/components/SocialIcons";
 import SignOutButton from "@/components/SignOutButton";
 import Footer from "@/components/Footer";
@@ -16,6 +16,7 @@ const NAV = [
   { href: "/profile", label: "Profile", icon: User },
   { href: "/match", label: "Find a match", icon: Compass },
   { href: "/vibes", label: "Vibes", icon: Sparkles },
+  { href: "/my-vibes", label: "My Vibes", icon: CalendarCheck },
   { href: "/chats", label: "Chats", icon: MessageCircle },
   { href: "/inbox", label: "Inbox", icon: Bell },
   { href: "/deals", label: "Deals", icon: Tag },
