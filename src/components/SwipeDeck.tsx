@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { X, Heart, MapPin, CalendarClock } from "lucide-react";
+import { X, Heart, MapPin, CalendarClock, ChevronLeft, ChevronRight, ChevronsUpDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 type Candidate = {
@@ -11,6 +11,7 @@ type Candidate = {
   display_name: string | null;
   age: number | null;
   photos: string[] | null;
+  video_url: string | null;
   one_liner: string | null;
   destinations: string[] | null;
   start_date: string | null;
@@ -22,9 +23,18 @@ export default function SwipeDeck({ candidates }: { candidates: Candidate[] }) {
   const supabase = createClient();
   const [i, setI] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [media, setMedia] = useState(0);
   const [match, setMatch] = useState<{ name: string; chatId: string } | null>(null);
 
   const c = candidates[i];
+
+  // photos + (optional) video
+  const items = c
+    ? [
+        ...(c.photos ?? []).map((url) => ({ type: "img" as const, url })),
+        ...(c.video_url ? [{ type: "video" as const, url: c.video_url }] : []),
+      ]
+    : [];
 
   async function act(liked: boolean) {
     if (!c || busy) return;
@@ -35,6 +45,7 @@ export default function SwipeDeck({ candidates }: { candidates: Candidate[] }) {
     if (liked && res?.matched && res.chat_id) {
       setMatch({ name: c.display_name || "this flockie", chatId: res.chat_id });
     }
+    setMedia(0);
     setI((n) => n + 1);
   }
 
@@ -46,21 +57,59 @@ export default function SwipeDeck({ candidates }: { candidates: Candidate[] }) {
     );
   }
 
-  const cover = c.photos?.[0];
+  const cur = items[media];
 
   return (
     <div className="mt-6">
-      <div className="relative h-[58vh] overflow-hidden rounded-3xl border-2 border-ink bg-cream shadow-[0_6px_0_0_rgba(26,26,26,1)]">
-        {cover ? (
-          <Image src={cover} alt="" fill sizes="500px" className="object-cover" />
+      <div className="relative h-[60vh] overflow-hidden rounded-3xl border-2 border-ink bg-cream shadow-[0_6px_0_0_rgba(26,26,26,1)]">
+        {cur?.type === "video" ? (
+          <video src={cur.url} controls playsInline className="h-full w-full object-cover" />
+        ) : cur?.type === "img" ? (
+          <Image src={cur.url} alt="" fill sizes="500px" className="object-cover" />
         ) : (
           <div className="flex h-full items-center justify-center text-6xl">🕊️</div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/0 to-black/0" />
-        <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-          <p className="text-2xl font-black">
+
+        {/* media dots */}
+        {items.length > 1 && (
+          <div className="absolute inset-x-0 top-2 flex justify-center gap-1.5 px-4">
+            {items.map((_, idx) => (
+              <span
+                key={idx}
+                className={`h-1.5 flex-1 rounded-full ${idx === media ? "bg-white" : "bg-white/40"}`}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* prev / next */}
+        {items.length > 1 && (
+          <>
+            <button
+              onClick={() => setMedia((m) => (m - 1 + items.length) % items.length)}
+              aria-label="Previous"
+              className="absolute left-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-2 border-ink bg-white/85 text-ink"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              onClick={() => setMedia((m) => (m + 1) % items.length)}
+              aria-label="Next"
+              className="absolute right-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-2 border-ink bg-white/85 text-ink"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </>
+        )}
+
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/0 to-black/0" />
+
+        {/* tap info → full profile */}
+        <Link href={`/people/${c.id}`} className="absolute inset-x-0 bottom-0 p-5 text-white">
+          <p className="flex items-center gap-1.5 text-2xl font-black">
             {c.display_name || "Flockie"}
             {c.age ? `, ${c.age}` : ""}
+            <ChevronsUpDown size={18} className="rotate-90 opacity-80" />
           </p>
           {(c.destinations?.length ?? 0) > 0 && (
             <p className="mt-0.5 flex items-center gap-1 text-sm font-semibold">
@@ -73,16 +122,10 @@ export default function SwipeDeck({ candidates }: { candidates: Candidate[] }) {
             </p>
           )}
           {c.one_liner && <p className="mt-1 text-sm font-medium text-white/90">{c.one_liner}</p>}
-          {(c.trip_type?.length ?? 0) > 0 && (
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {c.trip_type!.slice(0, 3).map((t) => (
-                <span key={t} className="rounded-full bg-white/25 px-2 py-0.5 text-[11px] font-bold backdrop-blur-sm">
-                  {t}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
+          <span className="mt-2 inline-block rounded-full bg-white/25 px-3 py-1 text-xs font-bold backdrop-blur-sm">
+            Tap to view full profile
+          </span>
+        </Link>
       </div>
 
       <div className="mt-4 flex items-center justify-center gap-6">

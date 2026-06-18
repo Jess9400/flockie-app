@@ -142,8 +142,9 @@ language sql security definer set search_path = public stable as $$
   cross join me_t cross join me_p
   where ct.user_id <> auth.uid()
     and ct.status='active'
-    and lower(ct.destination) = lower(me_t.destination)
-    and (least(ct.end_date, me_t.end_date) - greatest(ct.start_date, me_t.start_date)) >= 2
+    and exists (select 1 from unnest(coalesce(ct.destinations,'{}')) a
+                join unnest(coalesce(me_t.destinations,'{}')) b on lower(a)=lower(b))
+    and (greatest(ct.start_date, me_t.start_date) - least(ct.end_date, me_t.end_date)) <= 30
     and cp.onboarding_complete
     and not exists (select 1 from public.buddy_swipes s where s.swiper_id=auth.uid() and s.target_id=cp.id)
   order by score desc
