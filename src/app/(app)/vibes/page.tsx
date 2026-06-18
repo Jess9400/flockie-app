@@ -70,7 +70,7 @@ export default async function VibesPage() {
   return (
     <main className="px-5 pt-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-black">Vibes near you</h1>
+        <h1 className="text-2xl font-black">Vibes</h1>
         <Link
           href="/vibes/new"
           className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
@@ -78,6 +78,11 @@ export default async function VibesPage() {
           <Plus size={16} /> Create
         </Link>
       </div>
+      <p className="mt-1 text-sm font-medium text-muted">
+        Activities anyone can host. Tap &ldquo;I&rsquo;m interested&rdquo; and the
+        host&rsquo;s algorithm invites the most compatible people, up to capacity.
+        First-come isn&rsquo;t how it works here.
+      </p>
 
       {!activityCheckDone && (
         <Link

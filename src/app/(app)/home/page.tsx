@@ -1,7 +1,15 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
+
+const HERO_PHOTOS = [
+  { src: "https://images.unsplash.com/photo-1562278996-b055b6a1190f?auto=format&fit=crop&w=600&q=80", label: "Skydive" },
+  { src: "https://images.unsplash.com/photo-1678030523822-cf542960e377?auto=format&fit=crop&w=600&q=80", label: "Camel ride" },
+  { src: "https://images.unsplash.com/photo-1666276845220-7b94f61e3d35?auto=format&fit=crop&w=600&q=80", label: "Surf" },
+  { src: "https://images.unsplash.com/photo-1634294007943-f24d8c9e7d39?auto=format&fit=crop&w=600&q=80", label: "Dinner" },
+];
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -55,8 +63,51 @@ export default async function HomePage() {
         {name ? `Hey ${name} 👋` : "Welcome to Flockie 🕊️"}
       </h1>
       <p className="mt-1 px-1 font-medium text-muted">
-        Find compatible people to do anything with, near you or anywhere.
+        Find compatible, vibe-checked people to do anything with, near you or
+        anywhere.
       </p>
+
+      {/* activity photos */}
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {HERO_PHOTOS.map((p, i) => (
+          <figure
+            key={p.label}
+            className={`relative overflow-hidden rounded-2xl border-2 border-ink ${
+              i % 2 ? "rotate-[1.5deg]" : "rotate-[-1.5deg]"
+            }`}
+          >
+            <span className="absolute left-1.5 top-1.5 z-10 rounded-full border-2 border-ink bg-white px-2 py-0.5 text-[10px] font-extrabold">
+              {p.label}
+            </span>
+            <Image
+              src={p.src}
+              alt={p.label}
+              width={300}
+              height={300}
+              className="h-28 w-full object-cover sm:h-32"
+            />
+          </figure>
+        ))}
+      </div>
+
+      {/* how it works */}
+      <div className="mt-6 rounded-3xl border-2 border-ink bg-white p-5 shadow-[0_5px_0_0_rgba(26,26,26,1)]">
+        <p className="text-lg font-extrabold">How Flockie works</p>
+        <ol className="mt-3 space-y-2 text-sm font-medium text-ink/80">
+          <li>
+            <b className="text-ink">1. Build your vibe check.</b> A few honest
+            questions about how you travel and hang out.
+          </li>
+          <li>
+            <b className="text-ink">2. Match on vibe.</b> The algorithm finds the
+            most compatible people, not random ones.
+          </li>
+          <li>
+            <b className="text-ink">3. Plan &amp; go.</b> A group chat opens, you
+            sort the details, and you&rsquo;re off.
+          </li>
+        </ol>
+      </div>
 
       {/* Join a vibe */}
       <section className="mt-8">

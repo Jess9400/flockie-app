@@ -10,6 +10,11 @@ export default function MatchPage() {
   return (
     <main className="px-5 pt-6">
       <h1 className="text-2xl font-black">Find a match</h1>
+      <p className="mt-1 text-sm font-medium text-muted">
+        Swipe through vibe-matched people for your next trip (Find a Buddy), or
+        browse open group trips you can join (Find a Flock). Matches are scored on
+        your vibe check, never random.
+      </p>
 
       <div className="mt-4 grid grid-cols-2 rounded-full border-2 border-ink bg-white p-1 text-sm font-bold">
         <button

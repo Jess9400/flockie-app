@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ChevronLeft, MapPin, Users, CalendarClock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import InterestButton from "@/components/InterestButton";
-import RunMatching from "@/components/RunMatching";
+import HostVibeControls from "@/components/HostVibeControls";
 import { formatVibeWhen, DEALBREAKER_RULES, type InterestStatus } from "@/lib/vibes";
 
 export default async function VibeDetailPage({
@@ -98,6 +98,12 @@ export default async function VibeDetailPage({
       {vibe.photos?.[0] && (
         <div className="relative h-56 w-full overflow-hidden rounded-3xl border-2 border-ink">
           <Image src={vibe.photos[0]} alt="" fill sizes="100vw" className="object-cover" />
+        </div>
+      )}
+
+      {vibe.status === "cancelled" && (
+        <div className="mt-4 rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-bold text-muted">
+          This Vibe was cancelled by the host. The chat is now inactive.
         </div>
       )}
 
@@ -226,7 +232,13 @@ export default async function VibeDetailPage({
 
       <div className="sticky bottom-4 mt-6">
         {isHost ? (
-          <RunMatching vibeId={vibe.id} status={vibe.status} />
+          <HostVibeControls
+            vibeId={vibe.id}
+            status={vibe.status}
+            startsAt={vibe.starts_at}
+            endsAt={vibe.ends_at}
+            signupDeadline={vibe.signup_deadline}
+          />
         ) : (
           <InterestButton
             vibeId={vibe.id}
@@ -234,6 +246,7 @@ export default async function VibeDetailPage({
             profileComplete={!!me?.onboarding_complete}
             initialStatus={(myInterest?.status as InterestStatus) ?? null}
             invitationExpiresAt={myInterest?.invitation_expires_at ?? null}
+            cancelled={vibe.status === "cancelled"}
           />
         )}
       </div>

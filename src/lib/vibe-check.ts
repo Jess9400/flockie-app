@@ -293,6 +293,7 @@ export type Profile = VibeAnswers &
     tiktok: string | null;
     photos: string[];
     video_url: string | null;
+    notifications_enabled: boolean;
     vouch_token: string | null;
     onboarding_complete: boolean;
   };

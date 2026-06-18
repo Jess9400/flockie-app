@@ -12,6 +12,7 @@ type Props = {
   profileComplete: boolean;
   initialStatus: InterestStatus | null;
   invitationExpiresAt?: string | null;
+  cancelled?: boolean;
 };
 
 export default function InterestButton({
@@ -20,6 +21,7 @@ export default function InterestButton({
   profileComplete,
   initialStatus,
   invitationExpiresAt,
+  cancelled,
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
@@ -84,18 +86,36 @@ export default function InterestButton({
     router.refresh();
   }
 
+  async function leave() {
+    if (!window.confirm("Leave this Vibe? Your spot opens up for someone else.")) return;
+    setBusy(true);
+    await supabase.rpc("decline_vibe", { p_vibe: vibeId });
+    setBusy(false);
+    setStatus("declined");
+    router.refresh();
+  }
+
   const base =
     "w-full rounded-full border-2 border-ink py-3.5 text-center font-bold disabled:opacity-50";
 
   let control: React.ReactNode;
 
-  if (status === "confirmed") {
+  if (cancelled) {
+    control = (
+      <div className={`${base} bg-cream text-muted`}>
+        This Vibe was cancelled by the host.
+      </div>
+    );
+  } else if (status === "confirmed") {
     control = (
       <div className="space-y-2">
         <div className={`${base} bg-[#06D6A0] text-white`}>You&rsquo;re in 🎉</div>
         <Link href={`/vibes/${vibeId}/chat`} className={`${base} block bg-flockie-blue text-white`}>
           Open Vibing Chat
         </Link>
+        <button onClick={leave} disabled={busy} className="w-full py-2 text-center text-sm font-bold text-muted">
+          Leave this Vibe
+        </button>
       </div>
     );
   } else if (status === "invited") {

@@ -34,7 +34,7 @@ export default async function VibeChatPage({
 
   const { data: vibe } = await supabase
     .from("vibes")
-    .select("title, starts_at, location_name, city, host_id, activity_url")
+    .select("title, starts_at, location_name, city, host_id, activity_url, status")
     .eq("id", params.id)
     .maybeSingle();
 
@@ -80,6 +80,12 @@ export default async function VibeChatPage({
       >
         <ChevronLeft size={16} /> Back to Vibe
       </Link>
+
+      {vibe?.status === "cancelled" && (
+        <div className="mb-3 rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-bold text-muted">
+          This Vibe was cancelled — the chat is now inactive.
+        </div>
+      )}
 
       {/* pinned info + map */}
       <div className="overflow-hidden rounded-3xl border-2 border-ink bg-white">

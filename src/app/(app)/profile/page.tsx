@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import SignOutButton from "@/components/SignOutButton";
 import VibeCheckForm from "@/components/VibeCheckForm";
 import ProfileSocials from "@/components/ProfileSocials";
+import NotificationsToggle from "@/components/NotificationsToggle";
 import type { Profile } from "@/lib/vibe-check";
 
 export default async function ProfilePage() {
@@ -13,7 +14,7 @@ export default async function ProfilePage() {
   const { data: profile } = await supabase
     .from("profiles")
     .select(
-      "display_name, age, gender, relationship_status, home_city, instagram, x_handle, tiktok, photos, video_url, planning, pace, social_energy, budget, nightlife, adventurousness, trip_vibe, travel_style, dealbreakers, one_liner, activities, activity_skills, activity_social, activity_intensity, activity_vibe, activity_dealbreakers, activity_one_liner, vouch_token, onboarding_complete"
+      "display_name, age, gender, relationship_status, home_city, instagram, x_handle, tiktok, photos, video_url, planning, pace, social_energy, budget, nightlife, adventurousness, trip_vibe, travel_style, dealbreakers, one_liner, activities, activity_skills, activity_social, activity_intensity, activity_vibe, activity_dealbreakers, activity_one_liner, notifications_enabled, vouch_token, onboarding_complete"
     )
     .eq("id", user!.id)
     .single();
@@ -40,6 +41,13 @@ export default async function ProfilePage() {
           instagram={profile?.instagram}
           x_handle={profile?.x_handle}
           tiktok={profile?.tiktok}
+        />
+      </div>
+
+      <div className="mt-4">
+        <NotificationsToggle
+          userId={user!.id}
+          initial={profile?.notifications_enabled ?? true}
         />
       </div>
 
