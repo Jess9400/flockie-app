@@ -12,7 +12,7 @@ export default async function FlocksPage() {
 
   const { data: trips } = await supabase
     .from("trips")
-    .select("id, user_id, destination, destinations, start_date, end_date, group_size, trip_type")
+    .select("id, user_id, kind, title, destination, destinations, start_date, end_date, group_size, trip_type")
     .eq("visibility", "public")
     .eq("status", "active")
     .neq("user_id", user!.id)
@@ -47,7 +47,7 @@ export default async function FlocksPage() {
     <main className="px-5 pb-10 pt-6">
       <h1 className="text-2xl font-black">Find a Flock</h1>
       <p className="mt-1 text-sm font-medium text-muted">
-        Open group trips you can request to join.
+        Open trips and activities you can request to join.
       </p>
 
       <div className="mt-4 grid grid-cols-2 gap-2 rounded-full border-2 border-ink bg-white p-1 text-sm font-bold">
@@ -77,8 +77,14 @@ export default async function FlocksPage() {
                   </span>
                 )}
                 <span className="text-sm font-bold">{host?.display_name || "A flockie"}</span>
+                <span className="rounded-full border-2 border-ink px-2 py-0.5 text-[10px] font-extrabold uppercase">
+                  {t.kind === "activity" ? "Activity" : "Trip"}
+                </span>
               </div>
-              <p className="mt-2 flex items-center gap-1.5 font-extrabold">
+              {t.kind === "activity" && t.title && (
+                <p className="mt-2 text-base font-extrabold text-flockie-orange">🎯 {t.title}</p>
+              )}
+              <p className="mt-1 flex items-center gap-1.5 font-extrabold">
                 <MapPin size={15} className="text-flockie-orange" />{" "}
                 {(t.destinations ?? [t.destination]).filter(Boolean).join(" · ")}
               </p>

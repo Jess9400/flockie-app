@@ -13,6 +13,7 @@ type Trip = {
   id?: string;
   destination?: string;
   destinations?: string[];
+  title?: string | null;
   start_date?: string;
   end_date?: string;
   group_size?: number;
@@ -25,13 +26,18 @@ type Trip = {
 export default function TripForm({
   userId,
   initial,
+  kind = "trip",
 }: {
   userId: string;
   initial: Trip;
+  kind?: "trip" | "activity";
 }) {
   const router = useRouter();
   const supabase = createClient();
+  const isActivity = kind === "activity";
+
   const initialDests = initial.destinations ?? (initial.destination ? [initial.destination] : []);
+  const [title, setTitle] = useState(initial.title ?? "");
   const [dest1, setDest1] = useState(initialDests[0] ?? "");
   const [dest2, setDest2] = useState(initialDests[1] ?? "");
   const [dest3, setDest3] = useState(initialDests[2] ?? "");
@@ -46,12 +52,7 @@ export default function TripForm({
   const [err, setErr] = useState<string | null>(null);
 
   const days =
-    start && end
-      ? Math.max(
-          0,
-          Math.round((+new Date(end) - +new Date(start)) / 86400000) + 1
-        )
-      : 0;
+    start && end ? Math.max(0, Math.round((+new Date(end) - +new Date(start)) / 86400000) + 1) : 0;
 
   function toggleType(t: string) {
     setTypes((cur) =>
@@ -62,16 +63,20 @@ export default function TripForm({
   async function save(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
-    const destinations = [dest1, dest2, dest3].map((d) => d.trim()).filter(Boolean);
+    const destinations = isActivity
+      ? [dest1].map((d) => d.trim()).filter(Boolean)
+      : [dest1, dest2, dest3].map((d) => d.trim()).filter(Boolean);
+    if (isActivity && !title.trim()) return setErr("Give your activity a name.");
     if (destinations.length === 0 || !start || !end) {
-      return setErr("At least one destination and dates are required.");
+      return setErr(`${isActivity ? "City" : "At least one destination"} and dates are required.`);
     }
-    if (new Date(end) < new Date(start)) {
-      return setErr("End date must be after the start date.");
-    }
+    if (new Date(end) < new Date(start)) return setErr("End date must be after the start date.");
+
     setSaving(true);
     const payload = {
       user_id: userId,
+      kind,
+      title: isActivity ? title.trim() : null,
       destination: destinations[0],
       destinations,
       start_date: start,
@@ -88,26 +93,37 @@ export default function TripForm({
       : await supabase.from("trips").insert(payload);
     setSaving(false);
     if (res.error) return setErr(res.error.message);
-    router.push("/match");
+    router.push(`/match?mode=${kind}`);
     router.refresh();
   }
 
-  const inputCls =
-    "w-full rounded-2xl border-2 border-ink bg-white px-4 py-2.5 font-medium outline-none";
+  const inputCls = "w-full rounded-2xl border-2 border-ink bg-white px-4 py-2.5 font-medium outline-none";
 
   return (
     <form onSubmit={save} className="space-y-5 pb-8">
-      <div>
-        <span className="mb-1 block text-sm font-bold">Where to? (up to 3)</span>
-        <div className="space-y-2">
-          <input className={inputCls} value={dest1} onChange={(e) => setDest1(e.target.value)} placeholder="Destination 1 (required)" />
-          <input className={inputCls} value={dest2} onChange={(e) => setDest2(e.target.value)} placeholder="Destination 2 (optional)" />
-          <input className={inputCls} value={dest3} onChange={(e) => setDest3(e.target.value)} placeholder="Destination 3 (optional)" />
+      {isActivity && (
+        <label className="block">
+          <span className="mb-1 block text-sm font-bold">Activity</span>
+          <input className={inputCls} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Sunrise surf, padel game, gallery hop" />
+        </label>
+      )}
+
+      {isActivity ? (
+        <label className="block">
+          <span className="mb-1 block text-sm font-bold">City</span>
+          <input className={inputCls} value={dest1} onChange={(e) => setDest1(e.target.value)} placeholder="Where you are" />
+        </label>
+      ) : (
+        <div>
+          <span className="mb-1 block text-sm font-bold">Where to? (up to 3)</span>
+          <div className="space-y-2">
+            <input className={inputCls} value={dest1} onChange={(e) => setDest1(e.target.value)} placeholder="Destination 1 (required)" />
+            <input className={inputCls} value={dest2} onChange={(e) => setDest2(e.target.value)} placeholder="Destination 2 (optional)" />
+            <input className={inputCls} value={dest3} onChange={(e) => setDest3(e.target.value)} placeholder="Destination 3 (optional)" />
+          </div>
+          <p className="mt-1 text-xs font-medium text-muted">You&rsquo;ll match with travelers heading to any of these.</p>
         </div>
-        <p className="mt-1 text-xs font-medium text-muted">
-          You&rsquo;ll match with travelers heading to any of these.
-        </p>
-      </div>
+      )}
 
       <div className="grid grid-cols-2 gap-3">
         <label className="block">
@@ -128,7 +144,8 @@ export default function TripForm({
 
       <div>
         <p className="text-sm font-bold">
-          Trip type <span className="font-semibold text-muted">({types.length}/{TYPE_MAX})</span>
+          {isActivity ? "Activity vibe" : "Trip type"}{" "}
+          <span className="font-semibold text-muted">({types.length}/{TYPE_MAX})</span>
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
           {TRIP_VIBES.map((t) => {
@@ -148,7 +165,6 @@ export default function TripForm({
         <span className="mb-1 block text-sm font-bold">Budget: {BUDGET_LABELS[budget - 1]}</span>
         <input type="range" min={1} max={5} value={budget} onChange={(e) => setBudget(Number(e.target.value))} className="w-full accent-flockie-orange" />
       </label>
-
       <label className="block">
         <span className="mb-1 block text-sm font-bold">Pace: {PACE_LABELS[pace - 1]}</span>
         <input type="range" min={1} max={5} value={pace} onChange={(e) => setPace(Number(e.target.value))} className="w-full accent-flockie-orange" />
@@ -158,35 +174,24 @@ export default function TripForm({
         <p className="text-sm font-bold">Visibility</p>
         <div className="mt-2 grid grid-cols-2 gap-2">
           {[
-            { v: "private", l: "Private", d: "Only used for 1:1 buddy matching" },
+            { v: "private", l: "Private", d: "Only used for 1:1 matching" },
             { v: "public", l: "Public", d: "Shown in Find a Flock; others can request to join" },
           ].map((o) => (
-            <button
-              key={o.v}
-              type="button"
-              onClick={() => setVisibility(o.v)}
-              className={`rounded-2xl border-2 border-ink p-3 text-left ${
-                visibility === o.v ? "bg-flockie-blue text-white" : "bg-white"
-              }`}
-            >
+            <button key={o.v} type="button" onClick={() => setVisibility(o.v)}
+              className={`rounded-2xl border-2 border-ink p-3 text-left ${visibility === o.v ? "bg-flockie-blue text-white" : "bg-white"}`}>
               <span className="block text-sm font-extrabold">{o.l}</span>
-              <span className={`block text-xs font-medium ${visibility === o.v ? "text-white/90" : "text-muted"}`}>
-                {o.d}
-              </span>
+              <span className={`block text-xs font-medium ${visibility === o.v ? "text-white/90" : "text-muted"}`}>{o.d}</span>
             </button>
           ))}
         </div>
       </div>
 
-      <p className="text-xs font-medium text-muted">
-        Pre-filled from your profile — tweak anything for this trip.
-      </p>
-
+      <p className="text-xs font-medium text-muted">Pre-filled from your profile — tweak anything.</p>
       {err && <p className="text-center text-sm font-bold text-flockie-orange">{err}</p>}
 
       <button type="submit" disabled={saving}
         className="w-full rounded-full border-2 border-ink bg-flockie-orange py-3.5 font-bold text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50">
-        {saving ? "Saving…" : initial.id ? "Update trip" : "Post trip & find buddies"}
+        {saving ? "Saving…" : initial.id ? "Update" : isActivity ? "Post activity & find buddies" : "Post trip & find buddies"}
       </button>
     </form>
   );

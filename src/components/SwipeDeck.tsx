@@ -13,6 +13,7 @@ type Candidate = {
   photos: string[] | null;
   video_url: string | null;
   one_liner: string | null;
+  title: string | null;
   destinations: string[] | null;
   start_date: string | null;
   end_date: string | null;
@@ -111,6 +112,9 @@ export default function SwipeDeck({ candidates }: { candidates: Candidate[] }) {
             {c.age ? `, ${c.age}` : ""}
             <ChevronsUpDown size={18} className="rotate-90 opacity-80" />
           </p>
+          {c.title && (
+            <p className="mt-0.5 text-sm font-bold text-flockie-orange">🎯 {c.title}</p>
+          )}
           {(c.destinations?.length ?? 0) > 0 && (
             <p className="mt-0.5 flex items-center gap-1 text-sm font-semibold">
               <MapPin size={14} /> {c.destinations!.join(" · ")}

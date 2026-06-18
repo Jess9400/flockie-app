@@ -3,13 +3,20 @@ import { Pencil, MapPin, CalendarClock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import SwipeDeck from "@/components/SwipeDeck";
 
-const MIN_PROFILES = 20; // need at least this many travelers per destination
+const MIN_PROFILES = 10;
 
-export default async function MatchPage() {
+export default async function MatchPage({
+  searchParams,
+}: {
+  searchParams: { mode?: string };
+}) {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  const mode = searchParams.mode === "activity" ? "activity" : "trip";
+  const isActivity = mode === "activity";
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -18,16 +25,28 @@ export default async function MatchPage() {
     .maybeSingle();
   const complete = !!profile?.onboarding_complete && (profile?.activities ?? []).length > 0;
 
+  const subToggle = (
+    <div className="mt-3 grid grid-cols-2 gap-2 rounded-full border-2 border-ink bg-cream p-1 text-sm font-bold">
+      <Link href="/match?mode=trip" className={`rounded-full py-1.5 text-center ${!isActivity ? "bg-ink text-white" : "text-ink"}`}>
+        Trip
+      </Link>
+      <Link href="/match?mode=activity" className={`rounded-full py-1.5 text-center ${isActivity ? "bg-ink text-white" : "text-ink"}`}>
+        Activity
+      </Link>
+    </div>
+  );
+
   const header = (
     <>
       <h1 className="text-2xl font-black">Find a buddy</h1>
       <p className="mt-1 text-sm font-medium text-muted">
-        Post a trip, then swipe vibe-matched travelers heading the same way.
+        Swipe vibe-matched people — for a trip, or to do something in your city.
       </p>
       <div className="mt-4 grid grid-cols-2 gap-2 rounded-full border-2 border-ink bg-white p-1 text-sm font-bold">
         <span className="rounded-full bg-flockie-orange py-2 text-center text-white">Find a Buddy</span>
         <Link href="/flocks" className="rounded-full py-2 text-center text-ink">Find a Flock</Link>
       </div>
+      {subToggle}
     </>
   );
 
@@ -40,41 +59,48 @@ export default async function MatchPage() {
     );
   }
 
-  const { data: trip } = await supabase
+  const { data: post } = await supabase
     .from("trips")
-    .select("id, destination, destinations, start_date, end_date, group_size")
+    .select("id, title, destination, destinations, start_date, end_date, group_size")
     .eq("user_id", user!.id)
     .eq("status", "active")
+    .eq("kind", mode)
     .order("created_at", { ascending: false })
     .maybeSingle();
 
-  if (!trip) {
+  if (!post) {
     return (
       <main className="px-5 pb-10 pt-6">
         {header}
         <Gate
-          text="Post a trip to find buddies heading to the same place at the same time."
-          cta="Post a trip"
-          href="/match/trip"
+          text={isActivity
+            ? "Post an activity to find people to do it with in your city."
+            : "Post a trip to find buddies heading to the same place."}
+          cta={isActivity ? "Post an activity" : "Post a trip"}
+          href={`/match/trip?kind=${mode}`}
         />
       </main>
     );
   }
 
-  const { data: count } = await supabase.rpc("buddy_dest_count");
+  const label = isActivity
+    ? (post.destinations ?? [post.destination]).filter(Boolean).join(" · ")
+    : (post.destinations ?? [post.destination]).filter(Boolean).join(" · ");
+
+  const { data: count } = await supabase.rpc("buddy_dest_count", { p_kind: mode });
   const enough = (count ?? 0) >= MIN_PROFILES;
-  const destLabel = (trip.destinations ?? [trip.destination]).filter(Boolean).join(" · ");
 
   let body: React.ReactNode;
   if (!enough) {
     body = (
       <div className="mt-6 rounded-3xl border-2 border-ink bg-white p-8 text-center shadow-[0_5px_0_0_rgba(26,26,26,1)]">
         <p className="text-3xl">🌍</p>
-        <p className="mt-3 text-lg font-extrabold">Buddy matching isn&rsquo;t live for {destLabel} yet</p>
+        <p className="mt-3 text-lg font-extrabold">
+          {isActivity ? "Activity matching" : "Buddy matching"} isn&rsquo;t live in {label} yet
+        </p>
         <p className="mt-2 font-medium text-ink/70">
-          We&rsquo;re still gathering travelers heading to {destLabel}. We&rsquo;ll
-          notify you the moment matching opens there. Meanwhile, create or join a
-          Vibe.
+          We&rsquo;re still gathering flockies in {label}. We&rsquo;ll notify you the
+          moment matching opens there. Meanwhile, create or join a Vibe.
         </p>
         <Link href="/vibes" className="mt-5 inline-block rounded-full border-2 border-ink bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_4px_0_0_#E0512C]">
           Explore Vibes
@@ -82,7 +108,7 @@ export default async function MatchPage() {
       </div>
     );
   } else {
-    const { data: candidates } = await supabase.rpc("buddy_candidates_trip", { p_limit: 30 });
+    const { data: candidates } = await supabase.rpc("buddy_candidates_trip", { p_limit: 30, p_kind: mode });
     body = <SwipeDeck candidates={candidates ?? []} />;
   }
 
@@ -90,17 +116,17 @@ export default async function MatchPage() {
     <main className="px-5 pb-10 pt-6">
       {header}
 
-      {/* trip summary */}
       <div className="mt-5 flex items-center justify-between rounded-2xl border-2 border-ink bg-cream p-3">
         <div className="min-w-0">
-          <p className="flex items-center gap-1.5 truncate font-extrabold">
-            <MapPin size={15} className="text-flockie-orange" /> {destLabel}
+          <p className="truncate font-extrabold">
+            {isActivity && post.title ? post.title : label}
           </p>
-          <p className="flex items-center gap-1.5 text-xs font-medium text-muted">
-            <CalendarClock size={13} /> {trip.start_date} → {trip.end_date} · {trip.group_size} people
+          <p className="flex items-center gap-2 text-xs font-medium text-muted">
+            <span className="flex items-center gap-1"><MapPin size={13} /> {label}</span>
+            <span className="flex items-center gap-1"><CalendarClock size={13} /> {post.start_date} → {post.end_date}</span>
           </p>
         </div>
-        <Link href="/match/trip" className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-sm font-bold">
+        <Link href={`/match/trip?id=${post.id}`} className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-sm font-bold">
           <Pencil size={14} /> Edit
         </Link>
       </div>
