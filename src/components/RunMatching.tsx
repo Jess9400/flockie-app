@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -39,6 +40,12 @@ export default function RunMatching({
       >
         {busy ? "Running…" : status === "open" ? "Run matching now" : "Re-run matching"}
       </button>
+      <Link
+        href={`/vibes/${vibeId}/chat`}
+        className="block w-full rounded-full border-2 border-ink bg-flockie-blue py-3 text-center font-bold text-white"
+      >
+        Open Vibing Chat
+      </Link>
       {msg && (
         <p className="text-center text-sm font-bold text-flockie-blue">{msg}</p>
       )}
