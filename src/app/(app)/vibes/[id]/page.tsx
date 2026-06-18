@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ChevronLeft, MapPin, Users, CalendarClock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import InterestButton from "@/components/InterestButton";
+import RunMatching from "@/components/RunMatching";
 import { formatVibeWhen, DEALBREAKER_RULES, type InterestStatus } from "@/lib/vibes";
 
 export default async function VibeDetailPage({
@@ -181,13 +182,17 @@ export default async function VibeDetailPage({
       )}
 
       <div className="sticky bottom-4 mt-6">
-        <InterestButton
-          vibeId={vibe.id}
-          userId={user!.id}
-          isHost={isHost}
-          activityCheckDone={(me?.activities ?? []).length > 0}
-          initialStatus={(myInterest?.status as InterestStatus) ?? null}
-        />
+        {isHost ? (
+          <RunMatching vibeId={vibe.id} status={vibe.status} />
+        ) : (
+          <InterestButton
+            vibeId={vibe.id}
+            userId={user!.id}
+            isHost={false}
+            activityCheckDone={(me?.activities ?? []).length > 0}
+            initialStatus={(myInterest?.status as InterestStatus) ?? null}
+          />
+        )}
       </div>
     </main>
   );

@@ -50,14 +50,21 @@ export default function InterestButton({
     router.refresh();
   }
 
+  async function confirm() {
+    setBusy(true);
+    const { error } = await supabase.rpc("confirm_vibe", { p_vibe: vibeId });
+    setBusy(false);
+    if (!error) {
+      setStatus("confirmed");
+      router.refresh();
+    }
+  }
+
   async function setTo(next: InterestStatus) {
     setBusy(true);
     await supabase
       .from("vibe_interests")
-      .update({
-        status: next,
-        confirmed_at: next === "confirmed" ? new Date().toISOString() : null,
-      })
+      .update({ status: next })
       .eq("vibe_id", vibeId)
       .eq("user_id", userId);
     setBusy(false);
@@ -108,7 +115,7 @@ export default function InterestButton({
     return (
       <div className="space-y-2">
         <button
-          onClick={() => setTo("confirmed")}
+          onClick={confirm}
           disabled={busy}
           className={`${base} bg-flockie-orange text-white shadow-[0_4px_0_0_#E0512C]`}
         >

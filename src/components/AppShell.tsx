@@ -1,17 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Compass, Sparkles, Tag, User, Menu, X } from "lucide-react";
+import { Home, Compass, Sparkles, Tag, User, Bell, Menu, X } from "lucide-react";
 import SocialIcons from "@/components/SocialIcons";
 import SignOutButton from "@/components/SignOutButton";
+import { createClient } from "@/lib/supabase/client";
 
 const NAV = [
   { href: "/home", label: "Home", icon: Home },
   { href: "/match", label: "Find a match", icon: Compass },
   { href: "/vibes", label: "Vibes", icon: Sparkles },
+  { href: "/inbox", label: "Inbox", icon: Bell },
   { href: "/deals", label: "Deals", icon: Tag },
   { href: "/profile", label: "Profile", icon: User },
 ];
@@ -19,6 +21,40 @@ const NAV = [
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [unread, setUnread] = useState(0);
+
+  useEffect(() => {
+    const supabase = createClient();
+    let active = true;
+
+    async function load() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+      const { count } = await supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .is("read_at", null);
+      if (active) setUnread(count ?? 0);
+    }
+    load();
+
+    const channel = supabase
+      .channel("notif-badge")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "notifications" },
+        () => load()
+      )
+      .subscribe();
+
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+    };
+  }, [pathname]);
 
   const NavList = (
     <nav className="flex flex-col gap-1">
@@ -35,7 +71,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             }`}
           >
             <Icon size={18} />
-            {item.label}
+            <span className="flex-1">{item.label}</span>
+            {item.href === "/inbox" && unread > 0 && (
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-flockie-orange px-1.5 text-xs font-bold text-white">
+                {unread}
+              </span>
+            )}
           </Link>
         );
       })}
