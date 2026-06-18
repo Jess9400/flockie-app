@@ -26,7 +26,7 @@ export default async function MatchPage() {
       </p>
       <div className="mt-4 grid grid-cols-2 gap-2 rounded-full border-2 border-ink bg-white p-1 text-sm font-bold">
         <span className="rounded-full bg-flockie-orange py-2 text-center text-white">Find a Buddy</span>
-        <Link href="/vibes" className="rounded-full py-2 text-center text-ink">Find a Flock</Link>
+        <Link href="/flocks" className="rounded-full py-2 text-center text-ink">Find a Flock</Link>
       </div>
     </>
   );

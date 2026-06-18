@@ -21,7 +21,7 @@ export default async function TripPage({
 
   let tripQuery = supabase
     .from("trips")
-    .select("id, destination, start_date, end_date, group_size, trip_type, budget, pace")
+    .select("id, destination, start_date, end_date, group_size, trip_type, budget, pace, visibility")
     .eq("user_id", user!.id);
   tripQuery = searchParams.id
     ? tripQuery.eq("id", searchParams.id)

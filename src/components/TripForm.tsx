@@ -18,6 +18,7 @@ type Trip = {
   trip_type?: string[];
   budget?: number | null;
   pace?: number | null;
+  visibility?: string;
 };
 
 export default function TripForm({
@@ -36,6 +37,7 @@ export default function TripForm({
   const [types, setTypes] = useState<string[]>(initial.trip_type ?? []);
   const [budget, setBudget] = useState(initial.budget ?? 3);
   const [pace, setPace] = useState(initial.pace ?? 3);
+  const [visibility, setVisibility] = useState(initial.visibility ?? "private");
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -72,6 +74,7 @@ export default function TripForm({
       trip_type: types,
       budget,
       pace,
+      visibility,
       status: "active",
     };
     const res = initial.id
@@ -137,6 +140,30 @@ export default function TripForm({
         <span className="mb-1 block text-sm font-bold">Pace: {PACE_LABELS[pace - 1]}</span>
         <input type="range" min={1} max={5} value={pace} onChange={(e) => setPace(Number(e.target.value))} className="w-full accent-flockie-orange" />
       </label>
+
+      <div>
+        <p className="text-sm font-bold">Visibility</p>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          {[
+            { v: "private", l: "Private", d: "Only used for 1:1 buddy matching" },
+            { v: "public", l: "Public", d: "Shown in Find a Flock; others can request to join" },
+          ].map((o) => (
+            <button
+              key={o.v}
+              type="button"
+              onClick={() => setVisibility(o.v)}
+              className={`rounded-2xl border-2 border-ink p-3 text-left ${
+                visibility === o.v ? "bg-flockie-blue text-white" : "bg-white"
+              }`}
+            >
+              <span className="block text-sm font-extrabold">{o.l}</span>
+              <span className={`block text-xs font-medium ${visibility === o.v ? "text-white/90" : "text-muted"}`}>
+                {o.d}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
 
       <p className="text-xs font-medium text-muted">
         Pre-filled from your profile — tweak anything for this trip.

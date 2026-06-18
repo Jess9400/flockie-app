@@ -176,7 +176,7 @@ export default async function HomePage() {
               Start a group trip and let compatible travelers join.
             </p>
             <Link
-              href="/match"
+              href="/flocks"
               className="mt-4 inline-flex items-center gap-1 rounded-full border-2 border-ink bg-white px-4 py-2 text-sm font-bold text-ink"
             >
               Find a flock <ArrowRight size={15} />
