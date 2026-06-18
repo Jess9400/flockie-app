@@ -29,7 +29,8 @@ export default async function NewVibePage({
       </Link>
       <h1 className="text-2xl font-black">Create a Vibe</h1>
       <p className="mt-1 text-sm font-medium text-muted">
-        Post an activity. The algorithm picks the most compatible people to join.
+        A curated <span className="font-bold">group</span> room — attendees are
+        matched by vibe, not first-come. No swiping.
       </p>
       <div className="mt-6">
         <CreateVibeForm

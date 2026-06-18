@@ -91,9 +91,10 @@ export default async function VibesPage({
         </Link>
       </div>
       <p className="mt-1 text-sm font-medium text-muted">
-        Activities anyone can host. Tap &ldquo;I&rsquo;m interested&rdquo; and the
-        host&rsquo;s algorithm invites the most compatible people, up to capacity.
-        First-come isn&rsquo;t how it works here.
+        Curated <span className="font-bold">group</span> activities &amp; events —
+        no swiping. Tap &ldquo;I&rsquo;m interested&rdquo; and the host&rsquo;s
+        algorithm builds the room from the most compatible people, up to capacity.
+        (Want 1:1? Find a Buddy.)
       </p>
 
       <VibeSearch q={q} city={city} />

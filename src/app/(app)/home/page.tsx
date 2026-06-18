@@ -115,7 +115,8 @@ export default async function HomePage() {
           <div>
             <h2 className="text-xl font-extrabold">Join a Vibe</h2>
             <p className="text-sm font-medium text-muted">
-              Activities happening near you. Tap one you like.
+              Curated group activities near you — no swiping, the algo builds the
+              room.
             </p>
           </div>
           <Link

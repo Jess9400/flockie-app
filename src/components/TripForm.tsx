@@ -81,7 +81,7 @@ export default function TripForm({
       destinations,
       start_date: start,
       end_date: end,
-      group_size: groupSize,
+      group_size: isActivity ? 2 : groupSize,
       trip_type: types,
       budget,
       pace,
@@ -137,10 +137,17 @@ export default function TripForm({
       </div>
       {days > 0 && <p className="text-sm font-semibold text-flockie-orange">{days} days</p>}
 
-      <label className="block">
-        <span className="mb-1 block text-sm font-bold">Group size: {groupSize}</span>
-        <input type="range" min={1} max={12} value={groupSize} onChange={(e) => setGroupSize(Number(e.target.value))} className="w-full accent-flockie-orange" />
-      </label>
+      {isActivity ? (
+        <p className="rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-medium text-ink/70">
+          Activities are <span className="font-bold text-ink">1:1</span> — you&rsquo;ll
+          match with one person at a time. For bigger groups, create a Vibe.
+        </p>
+      ) : (
+        <label className="block">
+          <span className="mb-1 block text-sm font-bold">Group size: {groupSize}</span>
+          <input type="range" min={1} max={12} value={groupSize} onChange={(e) => setGroupSize(Number(e.target.value))} className="w-full accent-flockie-orange" />
+        </label>
+      )}
 
       <div>
         <p className="text-sm font-bold">
