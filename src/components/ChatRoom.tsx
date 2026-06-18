@@ -27,6 +27,12 @@ export default function ChatRoom({
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Mark this chat as read on open
+  useEffect(() => {
+    supabase.rpc("mark_chat_read", { p_chat: chatId });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatId]);
+
   useEffect(() => {
     const channel = supabase
       .channel(`chat-${chatId}`)

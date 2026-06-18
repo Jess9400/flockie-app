@@ -122,6 +122,10 @@ export default function VibeCheckForm({ userId, initial, onSaved }: Props) {
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
+    if (photos.length === 0) {
+      setMsg("Add at least one profile photo.");
+      return;
+    }
     if ((activity.activities ?? []).length === 0) {
       setMsg("Pick at least one activity in your activity vibe check.");
       return;
@@ -158,7 +162,7 @@ export default function VibeCheckForm({ userId, initial, onSaved }: Props) {
       <section>
         <h2 className="text-lg font-extrabold">Photos &amp; video</h2>
         <p className="text-sm font-medium text-muted">
-          Up to 5 photos and a short intro video.
+          At least one photo required. Up to 5 photos and a short intro video.
         </p>
         <div className="mt-3 grid grid-cols-3 gap-2">
           {photos.map((url, i) => (

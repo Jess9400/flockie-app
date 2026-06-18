@@ -30,6 +30,11 @@ export default function BuddyChatRoom({
   }, [messages]);
 
   useEffect(() => {
+    supabase.rpc("mark_chat_read", { p_chat: chatId });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatId]);
+
+  useEffect(() => {
     const channel = supabase
       .channel(`buddy-${chatId}`)
       .on(
