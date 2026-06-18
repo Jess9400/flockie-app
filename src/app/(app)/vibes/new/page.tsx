@@ -3,7 +3,11 @@ import { ChevronLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import CreateVibeForm from "@/components/CreateVibeForm";
 
-export default async function NewVibePage() {
+export default async function NewVibePage({
+  searchParams,
+}: {
+  searchParams: { activity?: string; city?: string };
+}) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -28,7 +32,11 @@ export default async function NewVibePage() {
         Post an activity. The algorithm picks the most compatible people to join.
       </p>
       <div className="mt-6">
-        <CreateVibeForm userId={user!.id} defaultCity={profile?.home_city ?? ""} />
+        <CreateVibeForm
+          userId={user!.id}
+          defaultCity={searchParams.city ?? profile?.home_city ?? ""}
+          defaultActivityUrl={searchParams.activity ?? ""}
+        />
       </div>
     </main>
   );

@@ -34,7 +34,7 @@ export default async function VibeChatPage({
 
   const { data: vibe } = await supabase
     .from("vibes")
-    .select("title, starts_at, location_name, city, host_id")
+    .select("title, starts_at, location_name, city, host_id, activity_url")
     .eq("id", params.id)
     .maybeSingle();
 
@@ -95,6 +95,16 @@ export default async function VibeChatPage({
             <MapPin size={15} className="text-flockie-orange" />
             {locationQuery || "Location TBD"}
           </p>
+          {vibe?.activity_url && (
+            <a
+              href={vibe.activity_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-flockie-blue px-3 py-1.5 text-xs font-bold text-white"
+            >
+              🎟️ View activity ↗
+            </a>
+          )}
         </div>
         {locationQuery && (
           <iframe

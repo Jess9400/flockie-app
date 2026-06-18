@@ -16,9 +16,11 @@ const MAX_PHOTOS = 5;
 export default function CreateVibeForm({
   userId,
   defaultCity,
+  defaultActivityUrl = "",
 }: {
   userId: string;
   defaultCity: string;
+  defaultActivityUrl?: string;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -26,6 +28,7 @@ export default function CreateVibeForm({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
+  const [activityUrl, setActivityUrl] = useState(defaultActivityUrl);
   const [photos, setPhotos] = useState<string[]>([]);
   const [startsAt, setStartsAt] = useState("");
   const [endsAt, setEndsAt] = useState("");
@@ -109,6 +112,7 @@ export default function CreateVibeForm({
         photos,
         city,
         location_name: locationName || null,
+        activity_url: activityUrl.trim() || null,
         starts_at: new Date(startsAt).toISOString(),
         ends_at: endsAt ? new Date(endsAt).toISOString() : null,
         signup_deadline: new Date(deadline).toISOString(),
@@ -165,6 +169,18 @@ export default function CreateVibeForm({
             ))}
           </select>
         </Field>
+        <Field label="Activity link (optional)">
+          <input
+            className={inputCls}
+            value={activityUrl}
+            onChange={(e) => setActivityUrl(e.target.value)}
+            placeholder="Paste a GetYourGuide (or any) activity link"
+          />
+          <p className="mt-1 text-xs font-medium text-muted">
+            Everyone who gets in receives this link, on the Vibe and in the chat.
+          </p>
+        </Field>
+
         <Field label="Cover photos (up to 5)">
           <div className="grid grid-cols-3 gap-2">
             {photos.map((url, i) => (

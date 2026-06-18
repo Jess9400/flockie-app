@@ -125,6 +125,17 @@ export default async function VibeDetailPage({
         {vibe.description}
       </p>
 
+      {vibe.activity_url && (
+        <a
+          href={vibe.activity_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 flex w-fit items-center gap-2 rounded-full border-2 border-ink bg-flockie-blue px-4 py-2 text-sm font-bold text-white"
+        >
+          🎟️ View activity ↗
+        </a>
+      )}
+
       {/* host */}
       <div className="mt-5 flex items-center gap-3 rounded-2xl border-2 border-ink bg-white p-3">
         {host?.photos?.[0] ? (

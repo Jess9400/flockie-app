@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Hotel, Plane, Search } from "lucide-react";
+import Link from "next/link";
+import { Hotel, Plane, Ticket, Search, Users } from "lucide-react";
 
 // Travelpayouts affiliate marker (tracks commission on Hotellook / Aviasales).
 const MARKER = "540997";
@@ -29,6 +30,15 @@ export default function DealsSearch({ defaultCity }: { defaultCity: string }) {
   function openFlights() {
     const params = new URLSearchParams({ marker: MARKER, locale: "en" });
     window.open(`https://www.aviasales.com/?${params.toString()}`, "_blank", "noopener");
+  }
+
+  function openActivities() {
+    if (!city.trim()) return;
+    window.open(
+      `https://www.getyourguide.com/s/?q=${encodeURIComponent(city.trim())}`,
+      "_blank",
+      "noopener"
+    );
   }
 
   return (
@@ -93,6 +103,34 @@ export default function DealsSearch({ defaultCity }: { defaultCity: string }) {
         >
           <Search size={18} /> Search stays{city.trim() ? ` in ${city.trim()}` : ""}
         </button>
+      </div>
+
+      {/* Activities */}
+      <div className="rounded-3xl border-2 border-ink bg-white p-5 shadow-[0_5px_0_0_rgba(26,26,26,1)]">
+        <div className="flex items-center gap-2">
+          <Ticket size={20} className="text-flockie-orange" />
+          <h2 className="text-lg font-extrabold">Activities</h2>
+        </div>
+        <p className="mt-1 text-sm font-medium text-muted">
+          Tours and experiences via GetYourGuide. Find one, then match with
+          someone to do it together.
+        </p>
+        <button
+          onClick={openActivities}
+          disabled={!city.trim()}
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3 font-bold text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50"
+        >
+          <Search size={18} /> Search activities{city.trim() ? ` in ${city.trim()}` : ""}
+        </button>
+        <Link
+          href={`/vibes/new?city=${encodeURIComponent(city.trim())}`}
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-3 font-bold text-ink"
+        >
+          <Users size={18} /> Find a buddy for an activity
+        </Link>
+        <p className="mt-2 text-center text-xs font-medium text-muted">
+          Paste the activity link when you post — whoever joins gets it.
+        </p>
       </div>
 
       {/* Flights */}
