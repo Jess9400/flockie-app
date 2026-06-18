@@ -20,9 +20,10 @@ const MAX_PHOTOS = 5;
 type Props = {
   userId: string;
   initial: Partial<Profile>;
+  onSaved?: () => void;
 };
 
-export default function VibeCheckForm({ userId, initial }: Props) {
+export default function VibeCheckForm({ userId, initial, onSaved }: Props) {
   const router = useRouter();
   const supabase = createClient();
 
@@ -142,6 +143,7 @@ export default function VibeCheckForm({ userId, initial }: Props) {
     if (error) return setMsg(error.message);
     setMsg("Saved! Your vibe check is live.");
     router.refresh();
+    onSaved?.();
   }
 
   async function copyVouch() {

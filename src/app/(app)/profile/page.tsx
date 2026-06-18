@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import SignOutButton from "@/components/SignOutButton";
-import VibeCheckForm from "@/components/VibeCheckForm";
+import ProfileEditor from "@/components/ProfileEditor";
 import ProfileSocials from "@/components/ProfileSocials";
 import NotificationsToggle from "@/components/NotificationsToggle";
 import type { Profile } from "@/lib/vibe-check";
@@ -65,9 +65,10 @@ export default async function ProfilePage() {
       )}
 
       <div className="mt-6">
-        <VibeCheckForm
+        <ProfileEditor
           userId={user!.id}
-          initial={(profile ?? {}) as Partial<Profile>}
+          profile={(profile ?? {}) as Partial<Profile>}
+          complete={complete}
         />
       </div>
     </main>
