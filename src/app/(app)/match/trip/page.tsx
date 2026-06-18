@@ -3,7 +3,11 @@ import { ChevronLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import TripForm from "@/components/TripForm";
 
-export default async function TripPage() {
+export default async function TripPage({
+  searchParams,
+}: {
+  searchParams: { id?: string };
+}) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -15,13 +19,14 @@ export default async function TripPage() {
     .eq("id", user!.id)
     .maybeSingle();
 
-  const { data: trip } = await supabase
+  let tripQuery = supabase
     .from("trips")
     .select("id, destination, start_date, end_date, group_size, trip_type, budget, pace")
-    .eq("user_id", user!.id)
-    .eq("status", "active")
-    .order("created_at", { ascending: false })
-    .maybeSingle();
+    .eq("user_id", user!.id);
+  tripQuery = searchParams.id
+    ? tripQuery.eq("id", searchParams.id)
+    : tripQuery.eq("status", "active").order("created_at", { ascending: false });
+  const { data: trip } = await tripQuery.maybeSingle();
 
   // Pre-fill from the existing trip, else from profile defaults
   const initial = trip ?? {
