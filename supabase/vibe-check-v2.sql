@@ -26,6 +26,16 @@ alter table public.profiles
   add column if not exists one_liner text,
   add column if not exists vouch_token uuid not null default gen_random_uuid();
 
+-- Activity vibe check (for local activity/event matching)
+alter table public.profiles
+  add column if not exists activities text[] default '{}',
+  add column if not exists activity_skills jsonb default '{}'::jsonb,
+  add column if not exists activity_social int check (activity_social between 1 and 5),
+  add column if not exists activity_intensity int check (activity_intensity between 1 and 5),
+  add column if not exists activity_vibe text[] default '{}',
+  add column if not exists activity_dealbreakers text[] default '{}',
+  add column if not exists activity_one_liner text;
+
 -- Friend vouches (optional social proof). One row per friend submission.
 create table if not exists public.vouches (
   id uuid primary key default gen_random_uuid(),

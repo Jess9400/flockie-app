@@ -166,14 +166,130 @@ export const EMPTY_ANSWERS: VibeAnswers = {
   one_liner: "",
 };
 
-export type Profile = VibeAnswers & {
-  display_name: string;
-  age: number | null;
-  gender: string | null;
-  relationship_status: string | null;
-  home_city: string | null;
-  photos: string[];
-  video_url: string | null;
-  vouch_token: string | null;
-  onboarding_complete: boolean;
+// ─────────────────────────── Activity vibe check ───────────────────────────
+// Parallel questionnaire for local activity/event matching (used later).
+
+export const ACTIVITY_CATEGORIES: { group: string; items: string[] }[] = [
+  {
+    group: "Physical / Outdoor",
+    items: [
+      "Surf", "Yoga", "Hiking / trekking", "Rock climbing", "Running",
+      "Cycling", "Skiing / snowboarding", "Diving / snorkeling",
+      "Tennis / padel", "Pilates / barre", "Martial arts", "Dancing",
+    ],
+  },
+  {
+    group: "Creative / Cultural",
+    items: [
+      "Painting / drawing", "Photography", "Writing / journaling",
+      "Music (playing)", "Film / cinema", "Theater", "Museum visits",
+      "Architecture / design", "Pottery / crafts", "Cooking / food experiences",
+    ],
+  },
+  {
+    group: "Social / Lifestyle",
+    items: [
+      "Bar hopping / nightlife", "Live music / concerts",
+      "Coffee culture / café-hopping", "Wine tasting", "Board games",
+      "Reading / book clubs", "Language exchanges", "Volunteering",
+      "Meditation / mindfulness",
+    ],
+  },
+  {
+    group: "Wellness / Self-improvement",
+    items: [
+      "Breathwork", "Sound baths", "Cold plunges / ice baths", "Saunas",
+      "Sober events", "Plant medicine ceremonies", "Spa days",
+    ],
+  },
+  {
+    group: "Work / Professional",
+    items: [
+      "Coworking", "Networking / business events", "Conferences / meetups",
+      "Skill-share workshops", "Investor / startup events",
+    ],
+  },
+];
+
+export const SKILL_SCALE: [string, string, string, string, string] = [
+  "Curious beginner",
+  "Beginner",
+  "Intermediate",
+  "Advanced",
+  "Expert / pro",
+];
+
+export const ACTIVITY_SOCIAL_SCALE: [string, string, string, string, string] = [
+  "Alone, focused, in flow",
+  "With 1-2 close friends",
+  "Small group (3-5)",
+  "Bigger group (6-10)",
+  "The bigger the better",
+];
+
+export const INTENSITY_SCALE: [string, string, string, string, string] = [
+  "Pure leisure, here to enjoy",
+  "Casual / light effort",
+  "Balanced, work and play",
+  "High effort, challenge me",
+  "All in, hardest version",
+];
+
+export const ACTIVITY_VIBES = [
+  "Quiet, focused, no chitchat",
+  "Social, lots of conversation",
+  "Competitive / goal-oriented",
+  "Creative / open-ended",
+  "Spiritual / contemplative",
+  "Party / energetic / loud",
+  "Educational / structured",
+] as const;
+export const ACTIVITY_VIBE_MAX = 2;
+
+export const ACTIVITY_DEALBREAKERS = [
+  "Sober events only",
+  "Drinking is fine",
+  "Smoke-free",
+  "Vegetarian / vegan",
+  "Same-gender preferred",
+  "Beginner-friendly required",
+  "LGBTQ+ friendly required",
+  "Quiet / no party energy",
+  "Accessibility needs",
+] as const;
+
+export const ACTIVITY_ONE_LINER_PROMPT =
+  "Finish: “At an activity, I'm the kind of person who…”";
+
+export type ActivityAnswers = {
+  activities: string[];
+  activity_skills: Record<string, number>; // activity -> 1..5
+  activity_social: number | null;
+  activity_intensity: number | null;
+  activity_vibe: string[];
+  activity_dealbreakers: string[];
+  activity_one_liner: string;
 };
+
+export const EMPTY_ACTIVITY: ActivityAnswers = {
+  activities: [],
+  activity_skills: {},
+  activity_social: null,
+  activity_intensity: null,
+  activity_vibe: [],
+  activity_dealbreakers: [],
+  activity_one_liner: "",
+};
+
+export type Profile = VibeAnswers &
+  ActivityAnswers & {
+    display_name: string;
+    age: number | null;
+    gender: string | null;
+    relationship_status: string | null;
+    home_city: string | null;
+    photos: string[];
+    video_url: string | null;
+    vouch_token: string | null;
+    onboarding_complete: boolean;
+  };

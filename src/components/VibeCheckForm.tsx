@@ -4,12 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import VibeQuestions from "@/components/VibeQuestions";
+import ActivityQuestions from "@/components/ActivityQuestions";
 import {
   GENDERS,
   RELATIONSHIP_STATUS,
   EMPTY_ANSWERS,
+  EMPTY_ACTIVITY,
   type Profile,
   type VibeAnswers,
+  type ActivityAnswers,
 } from "@/lib/vibe-check";
 
 const MAX_PHOTOS = 5;
@@ -45,6 +48,18 @@ export default function VibeCheckForm({ userId, initial }: Props) {
     dealbreakers: initial.dealbreakers ?? [],
     one_liner: initial.one_liner ?? "",
   });
+
+  const [activity, setActivity] = useState<ActivityAnswers>({
+    ...EMPTY_ACTIVITY,
+    activities: initial.activities ?? [],
+    activity_skills: initial.activity_skills ?? {},
+    activity_social: initial.activity_social ?? null,
+    activity_intensity: initial.activity_intensity ?? null,
+    activity_vibe: initial.activity_vibe ?? [],
+    activity_dealbreakers: initial.activity_dealbreakers ?? [],
+    activity_one_liner: initial.activity_one_liner ?? "",
+  });
+  const [showActivity, setShowActivity] = useState(false);
 
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -114,6 +129,7 @@ export default function VibeCheckForm({ userId, initial }: Props) {
         photos,
         video_url: videoUrl,
         ...answers,
+        ...activity,
         onboarding_complete: true,
       })
       .eq("id", userId);
@@ -246,6 +262,32 @@ export default function VibeCheckForm({ userId, initial }: Props) {
             oneLinerPrompt="Finish: “On a trip, I'm the kind of person who…”"
           />
         </div>
+      </section>
+
+      {/* Activity vibe check (optional, for local events) */}
+      <section className="rounded-3xl border-2 border-ink bg-white p-4">
+        <button
+          type="button"
+          onClick={() => setShowActivity((v) => !v)}
+          className="flex w-full items-center justify-between"
+        >
+          <span className="text-lg font-extrabold">
+            Activity vibe check (optional)
+          </span>
+          <span className="text-2xl leading-none">{showActivity ? "−" : "+"}</span>
+        </button>
+        <p className="mt-1 text-left text-sm font-medium text-muted">
+          For local meetups &amp; events: what you do, your level, and how you
+          like it.
+        </p>
+        {showActivity && (
+          <div className="mt-4">
+            <ActivityQuestions
+              answers={activity}
+              onChange={(patch) => setActivity((a) => ({ ...a, ...patch }))}
+            />
+          </div>
+        )}
       </section>
 
       {msg && (
