@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { Home, Compass, Sparkles, Tag, User, Bell, Menu, X } from "lucide-react";
 import SocialIcons from "@/components/SocialIcons";
 import SignOutButton from "@/components/SignOutButton";
+import Footer from "@/components/Footer";
 import { createClient } from "@/lib/supabase/client";
 
 const NAV = [
@@ -131,7 +132,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* Main */}
       <div className="pt-16 md:pl-60">
-        <div className="mx-auto max-w-3xl pb-16">{children}</div>
+        <div className="mx-auto max-w-3xl">{children}</div>
+        <Footer />
       </div>
     </div>
   );

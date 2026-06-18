@@ -34,7 +34,7 @@ export default async function VibeDetailPage({
 
   const { data: me } = await supabase
     .from("profiles")
-    .select("activities")
+    .select("onboarding_complete")
     .eq("id", user!.id)
     .maybeSingle();
 
@@ -220,8 +220,7 @@ export default async function VibeDetailPage({
           <InterestButton
             vibeId={vibe.id}
             userId={user!.id}
-            isHost={false}
-            activityCheckDone={(me?.activities ?? []).length > 0}
+            profileComplete={!!me?.onboarding_complete}
             initialStatus={(myInterest?.status as InterestStatus) ?? null}
           />
         )}
