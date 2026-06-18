@@ -1,26 +1,39 @@
 import Link from "next/link";
+import Image from "next/image";
 import SocialIcons from "@/components/SocialIcons";
 
 export default function Footer() {
   return (
-    <footer className="mt-12 border-t-2 border-ink bg-white px-5 py-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-bold">
-          <Link href="/privacy" className="hover:text-flockie-orange">
-            Privacy Policy
-          </Link>
-          <Link href="/terms" className="hover:text-flockie-orange">
-            Terms &amp; Conditions
-          </Link>
-          <a href="mailto:hello@findflockie.com" className="hover:text-flockie-orange">
-            hello@findflockie.com
-          </a>
+    <footer className="mt-12 bg-ink text-white">
+      <div className="mx-auto max-w-3xl px-5 py-12">
+        <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <Image src="/logo-mark.svg" alt="Flockie" width={48} height={43} className="h-10 w-auto" />
+            <p className="mt-3 text-2xl font-extrabold">Find your flock.</p>
+          </div>
+          <div className="flex flex-col gap-4 sm:items-end">
+            <SocialIcons dark />
+            <a
+              href="mailto:hello@findflockie.com"
+              className="font-medium text-white/80 hover:text-white"
+            >
+              hello@findflockie.com
+            </a>
+          </div>
         </div>
-        <SocialIcons />
+
+        <div className="mt-8 flex flex-col gap-2 border-t border-white/10 pt-6 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
+          <p>© 2026 Flockie. Made for travelers and doers.</p>
+          <div className="flex gap-4 font-bold">
+            <Link href="/privacy" className="hover:text-white">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="hover:text-white">
+              Terms &amp; Conditions
+            </Link>
+          </div>
+        </div>
       </div>
-      <p className="mt-4 text-xs font-medium text-muted">
-        © 2026 Flockie. Made for travelers and doers.
-      </p>
     </footer>
   );
 }

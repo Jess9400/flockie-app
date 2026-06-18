@@ -39,9 +39,12 @@ function Icon({ name }: { name: string }) {
   }
 }
 
-export default function SocialIcons() {
+export default function SocialIcons({ dark = false }: { dark?: boolean }) {
+  const cls = dark
+    ? "flex h-10 w-10 items-center justify-center rounded-full border-2 border-white/30 text-white hover:bg-white hover:text-ink transition-colors"
+    : "flex h-8 w-8 items-center justify-center rounded-full text-muted hover:bg-cream hover:text-ink";
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-2">
       {SOCIALS.map((s) => (
         <a
           key={s.label}
@@ -49,7 +52,7 @@ export default function SocialIcons() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={s.label}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-muted hover:bg-cream hover:text-ink"
+          className={cls}
         >
           <Icon name={s.icon} />
         </a>

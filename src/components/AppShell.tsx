@@ -131,8 +131,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       )}
 
       {/* Main */}
-      <div className="pt-16 md:pl-60">
-        <div className="mx-auto max-w-3xl">{children}</div>
+      <div className="flex min-h-screen flex-col pt-16 md:pl-60">
+        <div className="mx-auto w-full max-w-3xl flex-1">{children}</div>
         <Footer />
       </div>
     </div>
