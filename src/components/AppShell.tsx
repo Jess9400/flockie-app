@@ -60,6 +60,21 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     };
   }, [pathname]);
 
+  // Record Terms consent for OAuth sign-ups (flagged before the Google redirect)
+  useEffect(() => {
+    let pending: string | null = null;
+    try {
+      pending = localStorage.getItem("flockie-pending-terms");
+    } catch {}
+    if (!pending) return;
+    const supabase = createClient();
+    supabase.rpc("accept_terms").then(() => {
+      try {
+        localStorage.removeItem("flockie-pending-terms");
+      } catch {}
+    });
+  }, []);
+
   const NavList = (
     <nav className="flex flex-col gap-1">
       {NAV.map((item) => {

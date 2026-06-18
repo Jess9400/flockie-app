@@ -30,6 +30,7 @@ export default function LoginPage() {
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: { terms_accepted_at: new Date().toISOString() },
         },
       });
       setLoading(false);
@@ -49,6 +50,11 @@ export default function LoginPage() {
   async function handleGoogle() {
     if (mode === "signup" && !agreed) {
       return setMsg("Please agree to the Terms and Privacy Policy to continue.");
+    }
+    if (mode === "signup") {
+      try {
+        localStorage.setItem("flockie-pending-terms", "1");
+      } catch {}
     }
     setLoading(true);
     await supabase.auth.signInWithOAuth({
