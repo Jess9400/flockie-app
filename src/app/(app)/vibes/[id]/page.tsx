@@ -18,19 +18,24 @@ export default async function VibeDetailPage({
 
   const { data: vibe } = await supabase
     .from("vibes")
-    .select(
-      "*, host:profiles!vibes_host_id_fkey(id, display_name, photos, one_liner)"
-    )
+    .select("*")
     .eq("id", params.id)
-    .single();
+    .maybeSingle();
 
   if (!vibe) notFound();
+
+  // host (plain query, no embed)
+  const { data: host } = await supabase
+    .from("profiles")
+    .select("id, display_name, photos, one_liner")
+    .eq("id", vibe.host_id)
+    .maybeSingle();
 
   const { data: me } = await supabase
     .from("profiles")
     .select("activities")
     .eq("id", user!.id)
-    .single();
+    .maybeSingle();
 
   const { data: myInterest } = await supabase
     .from("vibe_interests")
@@ -39,9 +44,10 @@ export default async function VibeDetailPage({
     .eq("user_id", user!.id)
     .maybeSingle();
 
-  const { data: confirmed } = await supabase
+  // confirmed attendees (avatars) + count
+  const { data: confirmedRows } = await supabase
     .from("vibe_interests")
-    .select("user:profiles!vibe_interests_user_id_fkey(display_name, photos)")
+    .select("user_id")
     .eq("vibe_id", params.id)
     .eq("status", "confirmed")
     .limit(8);
@@ -52,8 +58,16 @@ export default async function VibeDetailPage({
     .eq("vibe_id", params.id)
     .eq("status", "confirmed");
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const host = (vibe as any).host;
+  let attendees: { display_name: string | null; photos: string[] | null }[] = [];
+  const attendeeIds = (confirmedRows ?? []).map((r) => r.user_id);
+  if (attendeeIds.length) {
+    const { data: ap } = await supabase
+      .from("profiles")
+      .select("display_name, photos")
+      .in("id", attendeeIds);
+    attendees = ap ?? [];
+  }
+
   const isHost = host?.id === user!.id;
   const rules = (vibe.dealbreaker_rules ?? {}) as Record<string, boolean>;
   const activeRules = DEALBREAKER_RULES.filter((r) => rules[r.key]);
@@ -113,7 +127,9 @@ export default async function VibeDetailPage({
           </span>
         )}
         <div>
-          <p className="text-sm font-bold">Hosted by {host?.display_name || "a flockie"}</p>
+          <p className="text-sm font-bold">
+            Hosted by {host?.display_name || "a flockie"}
+          </p>
           {host?.one_liner && (
             <p className="text-xs font-medium text-muted">{host.one_liner}</p>
           )}
@@ -121,21 +137,15 @@ export default async function VibeDetailPage({
       </div>
 
       {/* tags + rules */}
-      {(vibe.event_vibe_tags?.length || activeRules.length) > 0 && (
+      {((vibe.event_vibe_tags?.length ?? 0) > 0 || activeRules.length > 0) && (
         <div className="mt-4 flex flex-wrap gap-2">
           {vibe.event_vibe_tags?.map((t: string) => (
-            <span
-              key={t}
-              className="rounded-full bg-cream px-3 py-1 text-xs font-bold text-ink"
-            >
+            <span key={t} className="rounded-full bg-cream px-3 py-1 text-xs font-bold text-ink">
               {t}
             </span>
           ))}
           {activeRules.map((r) => (
-            <span
-              key={r.key}
-              className="rounded-full border-2 border-ink px-3 py-1 text-xs font-bold"
-            >
+            <span key={r.key} className="rounded-full border-2 border-ink px-3 py-1 text-xs font-bold">
               {r.label}
             </span>
           ))}
@@ -147,12 +157,11 @@ export default async function VibeDetailPage({
         <div className="mt-5">
           <p className="text-sm font-bold">Going</p>
           <div className="mt-2 flex -space-x-2">
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {(confirmed ?? []).map((c: any, i: number) =>
-              c.user?.photos?.[0] ? (
+            {attendees.map((a, i) =>
+              a.photos?.[0] ? (
                 <Image
                   key={i}
-                  src={c.user.photos[0]}
+                  src={a.photos[0]}
                   alt=""
                   width={32}
                   height={32}
@@ -163,7 +172,7 @@ export default async function VibeDetailPage({
                   key={i}
                   className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-flockie-blue text-xs font-bold text-white"
                 >
-                  {(c.user?.display_name || "F")[0]}
+                  {(a.display_name || "F")[0]}
                 </span>
               )
             )}
@@ -171,7 +180,6 @@ export default async function VibeDetailPage({
         </div>
       )}
 
-      {/* sticky action */}
       <div className="sticky bottom-20 mt-6">
         <InterestButton
           vibeId={vibe.id}

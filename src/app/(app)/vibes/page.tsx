@@ -21,19 +21,32 @@ export default async function VibesPage() {
   const { data: vibes } = await supabase
     .from("vibes")
     .select(
-      "id, title, category, photos, city, location_name, starts_at, capacity, event_vibe_tags, host:profiles!vibes_host_id_fkey(display_name, photos)"
+      "id, host_id, title, category, photos, city, location_name, starts_at, capacity, event_vibe_tags"
     )
     .gte("starts_at", new Date().toISOString())
     .in("status", ["open", "ranking", "finalized"])
     .order("starts_at", { ascending: true })
     .limit(20);
 
-  const list = (vibes ?? []) as unknown as (VibeCardData & { id: string })[];
+  const list = vibes ?? [];
   const ids = list.map((v) => v.id);
+  const hostIds = Array.from(new Set(list.map((v) => v.host_id)));
 
-  // confirmed counts + my statuses
+  // hosts, confirmed counts, my statuses — separate queries (no fragile embeds)
+  const hosts: Record<string, { display_name: string | null; photos: string[] | null }> = {};
   const counts: Record<string, number> = {};
   const mine: Record<string, InterestStatus> = {};
+
+  if (hostIds.length) {
+    const { data: hp } = await supabase
+      .from("profiles")
+      .select("id, display_name, photos")
+      .in("id", hostIds);
+    hp?.forEach((h) => {
+      hosts[h.id] = { display_name: h.display_name, photos: h.photos };
+    });
+  }
+
   if (ids.length) {
     const { data: confirmed } = await supabase
       .from("vibe_interests")
@@ -84,7 +97,7 @@ export default async function VibesPage() {
         {list.map((v) => (
           <VibeCard
             key={v.id}
-            vibe={v}
+            vibe={{ ...v, host: hosts[v.host_id] ?? null } as VibeCardData}
             confirmedCount={counts[v.id] ?? 0}
             myStatus={mine[v.id] ?? null}
           />
