@@ -47,8 +47,9 @@ begin
       onboarding_complete = true
     where id = uid;
 
+    -- Wide date window so it overlaps most user-chosen trip dates
     insert into public.trips (user_id, destination, start_date, end_date, group_size, trip_type, budget, pace, status)
-    values (uid, 'Lisbon', current_date + 10, current_date + 18, 2 + (i % 4),
+    values (uid, 'Lisbon', current_date + 5, current_date + 60, 2 + (i % 4),
             array['Beach / coast','City exploration'], 1 + ((i+3) % 5), 1 + ((i+1) % 5), 'active');
   end loop;
 end $$;
