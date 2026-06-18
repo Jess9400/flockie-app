@@ -14,9 +14,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
   async function handleEmail(e: React.FormEvent) {
     e.preventDefault();
+    if (mode === "signup" && !agreed) {
+      return setMsg("Please agree to the Terms and Privacy Policy to continue.");
+    }
     setLoading(true);
     setMsg(null);
 
@@ -43,6 +47,9 @@ export default function LoginPage() {
   }
 
   async function handleGoogle() {
+    if (mode === "signup" && !agreed) {
+      return setMsg("Please agree to the Terms and Privacy Policy to continue.");
+    }
     setLoading(true);
     await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -60,10 +67,34 @@ export default function LoginPage() {
           {mode === "signup" ? "Create your account" : "Welcome back"}
         </p>
 
+        {mode === "signup" && (
+          <label className="mt-8 flex items-start gap-2.5 text-sm font-medium text-ink/80">
+            <input
+              type="checkbox"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              className="mt-0.5 h-5 w-5 shrink-0 accent-flockie-orange"
+            />
+            <span>
+              I agree to Flockie&rsquo;s{" "}
+              <a href="/terms" target="_blank" rel="noopener noreferrer" className="font-bold text-flockie-orange underline">
+                Terms
+              </a>{" "}
+              and{" "}
+              <a href="/privacy" target="_blank" rel="noopener noreferrer" className="font-bold text-flockie-orange underline">
+                Privacy Policy
+              </a>
+              , including how my data is stored.
+            </span>
+          </label>
+        )}
+
         <button
           onClick={handleGoogle}
           disabled={loading}
-          className="mt-8 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-3 font-bold disabled:opacity-50"
+          className={`flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-3 font-bold disabled:opacity-50 ${
+            mode === "signup" ? "mt-4" : "mt-8"
+          }`}
         >
           Continue with Google
         </button>
