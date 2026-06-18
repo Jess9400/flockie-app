@@ -36,6 +36,7 @@ export default function CreateVibeForm({
   const [city, setCity] = useState(defaultCity ?? "");
   const [locationName, setLocationName] = useState("");
   const [capacity, setCapacity] = useState(10);
+  const [genderPref, setGenderPref] = useState("any");
   const [skill, setSkill] = useState<number | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [rules, setRules] = useState<Record<string, boolean>>({});
@@ -117,6 +118,7 @@ export default function CreateVibeForm({
         ends_at: endsAt ? new Date(endsAt).toISOString() : null,
         signup_deadline: new Date(deadline).toISOString(),
         capacity,
+        gender_pref: genderPref,
         event_vibe_tags: tags,
         required_skill_level: skill,
         dealbreaker_rules: rules,
@@ -290,6 +292,27 @@ export default function CreateVibeForm({
             className="w-full accent-flockie-orange"
           />
         </Field>
+        <Field label="Open to">
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { v: "any", l: "Everyone" },
+              { v: "women", l: "Women only" },
+              { v: "men", l: "Men only" },
+            ].map((o) => (
+              <button
+                key={o.v}
+                type="button"
+                onClick={() => setGenderPref(o.v)}
+                className={`rounded-full border-2 border-ink py-2 text-sm font-bold ${
+                  genderPref === o.v ? "bg-flockie-blue text-white" : "bg-white"
+                }`}
+              >
+                {o.l}
+              </button>
+            ))}
+          </div>
+        </Field>
+
         <Field label="Required skill level">
           <select
             className={inputCls}

@@ -170,7 +170,9 @@ export default async function VibeDetailPage({
       </div>
 
       {/* tags + rules */}
-      {((vibe.event_vibe_tags?.length ?? 0) > 0 || activeRules.length > 0) && (
+      {((vibe.event_vibe_tags?.length ?? 0) > 0 ||
+        activeRules.length > 0 ||
+        (vibe.gender_pref && vibe.gender_pref !== "any")) && (
         <div className="mt-4 flex flex-wrap gap-2">
           {vibe.event_vibe_tags?.map((t: string) => (
             <span key={t} className="rounded-full bg-cream px-3 py-1 text-xs font-bold text-ink">
@@ -182,6 +184,11 @@ export default async function VibeDetailPage({
               {r.label}
             </span>
           ))}
+          {vibe.gender_pref && vibe.gender_pref !== "any" && (
+            <span className="rounded-full border-2 border-ink bg-ink px-3 py-1 text-xs font-bold text-white">
+              {vibe.gender_pref === "women" ? "Women only" : "Men only"}
+            </span>
+          )}
         </div>
       )}
 
