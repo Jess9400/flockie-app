@@ -100,7 +100,7 @@ export default function ProfileTabs({
         {tab === "profile" && (
           <TabShell title="Profile" onEdit={onEditProfile}>
             {p.photos?.[0] ? (
-              <div className="relative h-[40vh] w-full overflow-hidden rounded-2xl shadow-[0_8px_24px_rgba(10,37,69,0.18)]">
+              <div className="relative aspect-square w-full overflow-hidden rounded-2xl shadow-[0_8px_24px_rgba(10,37,69,0.18)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={p.photos[0]} alt="" className="h-full w-full object-cover" />
                 <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-navy/80 to-transparent" />
@@ -109,7 +109,7 @@ export default function ProfileTabs({
                 </p>
               </div>
             ) : (
-              <div className="flex h-[30vh] w-full items-center justify-center rounded-2xl bg-cream text-5xl">🕊️</div>
+              <div className="flex aspect-square w-full items-center justify-center rounded-2xl bg-cream text-5xl">🕊️</div>
             )}
             {p.home_city && <p className="mt-4 text-base font-semibold text-navy">📍 {p.home_city}</p>}
             {p.bio && (

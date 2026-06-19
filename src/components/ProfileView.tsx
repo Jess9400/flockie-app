@@ -55,7 +55,7 @@ export default function ProfileView({
     <div className="font-nunito">
       {/* Hero */}
       {hero ? (
-        <div className="relative h-[40vh] w-full overflow-hidden rounded-2xl shadow-[0_8px_24px_rgba(10,37,69,0.18)] md:h-[50vh]">
+        <div className="relative aspect-square w-full overflow-hidden rounded-2xl shadow-[0_8px_24px_rgba(10,37,69,0.18)]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={hero} alt="" className="h-full w-full object-cover" />
           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-navy/80 to-transparent" />
@@ -66,7 +66,7 @@ export default function ProfileView({
           )}
         </div>
       ) : (
-        <div className="flex h-[30vh] w-full items-center justify-center rounded-2xl bg-cream text-5xl">
+        <div className="flex aspect-square w-full items-center justify-center rounded-2xl bg-cream text-5xl">
           🕊️
         </div>
       )}
