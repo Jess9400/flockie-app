@@ -28,11 +28,15 @@ export default function VibeCard({
   confirmedCount,
   myStatus,
   matchPct,
+  hostRecommendPct,
+  hostReviewCount,
 }: {
   vibe: VibeCardData;
   confirmedCount: number;
   myStatus?: InterestStatus | null;
   matchPct?: number;
+  hostRecommendPct?: number;
+  hostReviewCount?: number;
 }) {
   const cover = vibe.photos?.[0];
   const hostName = vibe.host?.display_name || "A flockie";
@@ -108,6 +112,11 @@ export default function VibeCard({
               </span>
             )}
             {hostName}
+            {typeof hostRecommendPct === "number" && (hostReviewCount ?? 0) > 0 && (
+              <span className="rounded-full bg-flockie-blue/15 px-1.5 py-0.5 text-[11px] font-bold text-flockie-blue">
+                👍 {hostRecommendPct}%
+              </span>
+            )}
           </span>
           <span className="flex items-center gap-1 text-sm font-bold text-muted">
             <Users size={14} /> {confirmedCount}/{vibe.capacity}

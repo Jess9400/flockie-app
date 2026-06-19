@@ -48,3 +48,18 @@ begin
                 comment = excluded.comment, updated_at = now();
 end $$;
 grant execute on function public.submit_vibe_review(uuid, boolean, text[], text) to authenticated;
+
+-- Host track record: recommend % across all of a host's reviewed vibes.
+-- Used for social proof on Vibe cards while browsing upcoming events.
+create or replace function public.host_recommend_stats(p_hosts uuid[])
+returns table (host_id uuid, review_count int, recommend_pct int)
+language sql security definer set search_path = public stable as $$
+  select v.host_id,
+         count(*)::int as review_count,
+         round(100.0 * count(*) filter (where vr.recommend) / count(*))::int as recommend_pct
+  from public.vibe_reviews vr
+  join public.vibes v on v.id = vr.vibe_id
+  where v.host_id = any(p_hosts)
+  group by v.host_id;
+$$;
+grant execute on function public.host_recommend_stats(uuid[]) to authenticated;

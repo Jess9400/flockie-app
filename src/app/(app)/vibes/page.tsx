@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
 import VibeSearch from "@/components/VibeSearch";
+import { loadHostRecommend } from "@/lib/vibe-stats";
 import type { InterestStatus } from "@/lib/vibes";
 
 export default async function VibesPage({
@@ -58,6 +59,8 @@ export default async function VibesPage({
       hosts[h.id] = { display_name: h.display_name, photos: h.photos };
     });
   }
+
+  const hostRec = await loadHostRecommend(supabase, hostIds);
 
   if (ids.length) {
     const { data: confirmed } = await supabase
@@ -122,6 +125,8 @@ export default async function VibesPage({
             vibe={{ ...v, host: hosts[v.host_id] ?? null } as VibeCardData}
             confirmedCount={counts[v.id] ?? 0}
             myStatus={mine[v.id] ?? null}
+            hostRecommendPct={hostRec[v.host_id]?.pct}
+            hostReviewCount={hostRec[v.host_id]?.count}
           />
         ))}
       </div>

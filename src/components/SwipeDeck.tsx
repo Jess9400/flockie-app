@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { X, Heart, MapPin, CalendarClock, ChevronLeft, ChevronRight, ChevronsUpDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import Stars from "@/components/Stars";
 
 type Candidate = {
   id: string;
@@ -18,6 +19,9 @@ type Candidate = {
   start_date: string | null;
   end_date: string | null;
   trip_type: string[] | null;
+  score?: number | null;
+  rating?: number | null;
+  review_count?: number;
 };
 
 export default function SwipeDeck({ candidates }: { candidates: Candidate[] }) {
@@ -112,6 +116,18 @@ export default function SwipeDeck({ candidates }: { candidates: Candidate[] }) {
             {c.age ? `, ${c.age}` : ""}
             <ChevronsUpDown size={18} className="rotate-90 opacity-80" />
           </p>
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            {typeof c.score === "number" && (
+              <span className="rounded-full bg-flockie-blue px-2.5 py-0.5 text-xs font-bold text-white">
+                ✨ {Math.round(c.score)}% match
+              </span>
+            )}
+            {typeof c.rating === "number" && (c.review_count ?? 0) > 0 && (
+              <span className="flex items-center gap-1 rounded-full bg-white/25 px-2.5 py-0.5 text-xs font-bold backdrop-blur-sm">
+                <Stars value={c.rating} size={12} /> {c.rating.toFixed(1)} ({c.review_count})
+              </span>
+            )}
+          </div>
           {c.title && (
             <p className="mt-0.5 text-sm font-bold text-flockie-orange">🎯 {c.title}</p>
           )}

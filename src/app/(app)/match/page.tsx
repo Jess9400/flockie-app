@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Pencil, MapPin, CalendarClock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import SwipeDeck from "@/components/SwipeDeck";
+import { loadUserRatings } from "@/lib/vibe-stats";
 
 const MIN_PROFILES = 10;
 
@@ -110,7 +111,17 @@ export default async function MatchPage({
     );
   } else {
     const { data: candidates } = await supabase.rpc("buddy_candidates_trip", { p_limit: 30, p_kind: mode });
-    body = <SwipeDeck candidates={candidates ?? []} />;
+    const list = candidates ?? [];
+    const ratings = await loadUserRatings(
+      supabase,
+      list.map((c: { id: string }) => c.id)
+    );
+    const enriched = list.map((c: { id: string }) => ({
+      ...c,
+      rating: ratings[c.id]?.avg ?? null,
+      review_count: ratings[c.id]?.count ?? 0,
+    }));
+    body = <SwipeDeck candidates={enriched} />;
   }
 
   return (
