@@ -27,8 +27,8 @@ export default function DiscoveryToggle({
       <div className="pr-3">
         <p className="text-sm font-extrabold text-navy">Open to discovery</p>
         <p className="text-xs font-medium text-navy/60">
-          Let people in your city find you for an activity — even if you haven&rsquo;t
-          posted one. If someone likes your vibe, you&rsquo;ll get a heads-up to match back.
+          Let people in your city find you for an activity. If someone likes your vibe,
+          you&rsquo;ll get a heads-up to match back.
         </p>
       </div>
       <button
