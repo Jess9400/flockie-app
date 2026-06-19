@@ -6,7 +6,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronDown, MapPin, CalendarClock, Users, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import BrandedMap from "@/components/BrandedMap";
 import { formatVibeWhen } from "@/lib/vibes";
+
+const GMAPS_KEY = process.env.NEXT_PUBLIC_GMAPS_KEY;
 
 export type ChatMember = {
   id: string;
@@ -153,15 +156,18 @@ export default function VibeChatHeader({
           {description && (
             <p className="font-nunito text-sm font-normal text-navy/80">{description}</p>
           )}
-          {mapSrc && (
-            <iframe
-              title="Event location"
-              src={mapSrc}
-              loading="lazy"
-              className="h-[250px] w-full rounded-2xl border-2 border-navy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
-          )}
+          {mapSrc &&
+            (GMAPS_KEY ? (
+              <BrandedMap apiKey={GMAPS_KEY} location={locationLabel} fallbackSrc={mapSrc} />
+            ) : (
+              <iframe
+                title="Event location"
+                src={mapSrc}
+                loading="lazy"
+                className="h-[250px] w-full rounded-2xl border-2 border-navy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            ))}
           {bookingUrl && (
             <a
               href={bookingUrl}
