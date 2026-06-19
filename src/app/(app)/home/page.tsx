@@ -3,7 +3,7 @@ import { ArrowRight, CalendarHeart, Mail, Megaphone, Sparkles } from "lucide-rea
 import { createClient } from "@/lib/supabase/server";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
 import QuickAction from "@/components/QuickAction";
-import { loadHostRecommend } from "@/lib/vibe-stats";
+import { loadVibeMatch } from "@/lib/vibe-stats";
 import { formatVibeWhen } from "@/lib/vibes";
 
 type RecommendedVibe = VibeCardData & { host_id: string; match_score: number };
@@ -148,10 +148,7 @@ export default async function HomePage() {
   }
   const recMeta = await loadHostsAndCounts(supabase, recommended);
 
-  const hostRec = await loadHostRecommend(supabase, [
-    ...near.map((v) => v.host_id),
-    ...recommended.map((v) => v.host_id),
-  ]);
+  const nearMatch = await loadVibeMatch(supabase, near.map((v) => v.id));
 
   return (
     <div className="pb-4">
@@ -195,8 +192,7 @@ export default async function HomePage() {
                 <VibeCard
                   vibe={{ ...v, host: nearMeta.hosts[v.host_id] ?? null } as VibeCardData}
                   confirmedCount={nearMeta.counts[v.id] ?? 0}
-                  hostRecommendPct={hostRec[v.host_id]?.pct}
-                  hostReviewCount={hostRec[v.host_id]?.count}
+                  matchPct={nearMatch[v.id]}
                 />
               </div>
             ))}
@@ -298,8 +294,6 @@ export default async function HomePage() {
                 vibe={{ ...v, host: recMeta.hosts[v.host_id] ?? null } as VibeCardData}
                 confirmedCount={recMeta.counts[v.id] ?? 0}
                 matchPct={v.match_score}
-                hostRecommendPct={hostRec[v.host_id]?.pct}
-                hostReviewCount={hostRec[v.host_id]?.count}
               />
             ))}
           </div>

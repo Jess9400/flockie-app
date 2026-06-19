@@ -1,19 +1,17 @@
 import { createClient } from "@/lib/supabase/server";
 
-type Stat = { pct: number; count: number };
-
-// Host track record (recommend % across their reviewed Vibes), keyed by host id.
-// Returns {} gracefully if the vibe_reviews migration isn't applied yet.
-export async function loadHostRecommend(
+// Match % between the current user's profile and each given Vibe, keyed by vibe
+// id (same formula as recommended_vibes). Returns {} gracefully pre-migration.
+export async function loadVibeMatch(
   supabase: Awaited<ReturnType<typeof createClient>>,
-  hostIds: string[]
-): Promise<Record<string, Stat>> {
-  const out: Record<string, Stat> = {};
-  const ids = Array.from(new Set(hostIds)).filter(Boolean);
+  vibeIds: string[]
+): Promise<Record<string, number>> {
+  const out: Record<string, number> = {};
+  const ids = Array.from(new Set(vibeIds)).filter(Boolean);
   if (ids.length === 0) return out;
-  const { data } = await supabase.rpc("host_recommend_stats", { p_hosts: ids });
-  (data ?? []).forEach((r: { host_id: string; recommend_pct: number; review_count: number }) => {
-    out[r.host_id] = { pct: r.recommend_pct, count: r.review_count };
+  const { data } = await supabase.rpc("vibe_match_scores", { p_ids: ids });
+  (data ?? []).forEach((r: { vibe_id: string; score: number }) => {
+    out[r.vibe_id] = r.score;
   });
   return out;
 }
