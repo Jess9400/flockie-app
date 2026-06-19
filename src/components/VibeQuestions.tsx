@@ -9,6 +9,8 @@ import {
   ONE_LINER_MAX,
   type VibeAnswers,
 } from "@/lib/vibe-check";
+import RangeSlider from "@/components/RangeSlider";
+import { Chip, TogglePill, Counter } from "@/components/profileControls";
 
 type Props = {
   answers: VibeAnswers;
@@ -36,38 +38,22 @@ export default function VibeQuestions({ answers, onChange, oneLinerPrompt }: Pro
   }
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-9">
       {/* 6 sliders */}
-      {SLIDERS.map((s, i) => {
-        const val = answers[s.key];
-        const display = val ?? 3;
-        return (
-          <div key={s.key}>
-            <p className="text-sm font-extrabold">
-              {i + 1}. {s.label}
-            </p>
-            <p className="text-xs font-medium text-muted">{s.prompt}</p>
-            <input
-              type="range"
-              min={1}
-              max={5}
-              step={1}
-              value={display}
-              onChange={(e) =>
-                onChange({ [s.key]: Number(e.target.value) } as Partial<VibeAnswers>)
-              }
-              className="mt-3 w-full accent-flockie-orange"
-            />
-            <p
-              className={`mt-1 text-sm font-bold ${
-                val == null ? "text-muted" : "text-flockie-orange"
-              }`}
-            >
-              {val == null ? "Slide to answer" : s.scale[val - 1]}
-            </p>
-          </div>
-        );
-      })}
+      {SLIDERS.map((s, i) => (
+        <div key={s.key}>
+          <p className="font-nunito text-[15px] font-semibold text-navy">
+            {i + 1}. {s.label}
+          </p>
+          <p className="mb-3 font-nunito text-sm font-normal text-navy/60">{s.prompt}</p>
+          <RangeSlider
+            value={answers[s.key]}
+            onChange={(v) => onChange({ [s.key]: v } as Partial<VibeAnswers>)}
+            scale={s.scale}
+            label={s.label}
+          />
+        </div>
+      ))}
 
       {/* Trip vibe — max 3 */}
       <TagGroup
@@ -89,50 +75,36 @@ export default function VibeQuestions({ answers, onChange, oneLinerPrompt }: Pro
         onToggle={(v) => toggleTag("travel_style", v)}
       />
 
-      {/* Dealbreakers */}
+      {/* Dealbreakers — toggle pills */}
       <div>
-        <p className="text-sm font-extrabold">9. Hard preferences</p>
-        <p className="text-xs font-medium text-muted">
+        <p className="font-nunito text-[15px] font-semibold text-navy">9. Hard preferences</p>
+        <p className="mb-3 font-nunito text-sm font-normal text-navy/60">
           Tick what applies. These are used as hard filters.
         </p>
-        <div className="mt-2 space-y-2">
-          {DEALBREAKERS.map((d) => {
-            const on = answers.dealbreakers.includes(d);
-            return (
-              <button
-                key={d}
-                type="button"
-                onClick={() => toggleDealbreaker(d)}
-                className={`flex w-full items-center gap-3 rounded-2xl border-2 border-ink px-3 py-2.5 text-left text-sm font-bold ${
-                  on ? "bg-ink text-white" : "bg-white"
-                }`}
-              >
-                <span
-                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 border-ink text-xs ${
-                    on ? "bg-white text-ink" : "bg-white text-transparent"
-                  }`}
-                >
-                  ✓
-                </span>
-                {d}
-              </button>
-            );
-          })}
+        <div className="space-y-3">
+          {DEALBREAKERS.map((d) => (
+            <TogglePill
+              key={d}
+              label={d}
+              selected={answers.dealbreakers.includes(d)}
+              onClick={() => toggleDealbreaker(d)}
+            />
+          ))}
         </div>
       </div>
 
       {/* One-liner */}
       <div>
-        <p className="text-sm font-extrabold">10. One-liner</p>
-        <p className="text-xs font-medium text-muted">{oneLinerPrompt}</p>
+        <p className="font-nunito text-[15px] font-semibold text-navy">10. One-liner</p>
+        <p className="mb-3 font-nunito text-sm font-normal text-navy/60">{oneLinerPrompt}</p>
         <input
           maxLength={ONE_LINER_MAX}
           value={answers.one_liner}
           onChange={(e) => onChange({ one_liner: e.target.value })}
-          className="mt-2 w-full rounded-2xl border-2 border-ink bg-white px-4 py-2.5 font-medium outline-none"
+          className={inputCls}
           placeholder="…"
         />
-        <p className="mt-1 text-right text-xs font-semibold text-muted">
+        <p className="mt-1 text-right font-nunito text-xs font-semibold text-navy/50">
           {answers.one_liner.length}/{ONE_LINER_MAX}
         </p>
       </div>
@@ -158,36 +130,24 @@ function TagGroup({
   const full = selected.length >= MAX_TAGS;
   return (
     <div>
-      <p className="text-sm font-extrabold">
-        {n}. {title}{" "}
-        <span className="font-semibold text-muted">
-          ({selected.length}/{MAX_TAGS})
-        </span>
+      <p className="font-nunito text-[15px] font-semibold text-navy">
+        {n}. {title} <Counter n={selected.length} max={MAX_TAGS} />
       </p>
-      <p className="text-xs font-medium text-muted">{hint}</p>
-      <div className="mt-2 flex flex-wrap gap-2">
-        {options.map((o) => {
-          const on = selected.includes(o);
-          const disabled = !on && full;
-          return (
-            <button
-              key={o}
-              type="button"
-              disabled={disabled}
-              onClick={() => onToggle(o)}
-              className={`rounded-full border-2 border-ink px-3 py-1 text-xs font-bold transition-colors ${
-                on
-                  ? "bg-flockie-blue text-white"
-                  : disabled
-                    ? "bg-white text-muted/40 opacity-50"
-                    : "bg-white text-ink"
-              }`}
-            >
-              {o}
-            </button>
-          );
-        })}
+      <p className="mb-3 font-nunito text-sm font-normal text-navy/60">{hint}</p>
+      <div className="flex flex-wrap gap-2">
+        {options.map((o) => (
+          <Chip
+            key={o}
+            label={o}
+            selected={selected.includes(o)}
+            disabled={full}
+            onClick={() => onToggle(o)}
+          />
+        ))}
       </div>
     </div>
   );
 }
+
+const inputCls =
+  "h-14 w-full rounded-2xl border-2 border-navy bg-cream px-4 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue";

@@ -12,6 +12,8 @@ import {
   ONE_LINER_MAX,
   type ActivityAnswers,
 } from "@/lib/vibe-check";
+import RangeSlider from "@/components/RangeSlider";
+import { Chip, TogglePill, Counter } from "@/components/profileControls";
 
 type Props = {
   answers: ActivityAnswers;
@@ -57,209 +59,130 @@ export default function ActivityQuestions({ answers, onChange }: Props) {
   const vibeFull = answers.activity_vibe.length >= ACTIVITY_VIBE_MAX;
 
   return (
-    <div className="space-y-7">
-      {/* Section A: what you do */}
+    <div className="space-y-9">
+      {/* What you do */}
       <div>
-        <p className="text-sm font-extrabold">What you actually do</p>
-        <p className="text-xs font-medium text-muted">
+        <p className="font-nunito text-[15px] font-semibold text-navy">What you actually do</p>
+        <p className="mb-3 font-nunito text-sm font-normal text-navy/60">
           Pick all that apply. No limit.
         </p>
-        <div className="mt-3 space-y-4">
+        <div className="space-y-4">
           {ACTIVITY_CATEGORIES.map((cat) => (
             <div key={cat.group}>
-              <p className="mb-1.5 text-xs font-bold uppercase tracking-wide text-muted">
+              <p className="mb-2 font-nunito text-[11px] font-bold uppercase tracking-wide text-navy/55">
                 {cat.group}
               </p>
               <div className="flex flex-wrap gap-2">
-                {cat.items.map((a) => {
-                  const on = answers.activities.includes(a);
-                  return (
-                    <button
-                      key={a}
-                      type="button"
-                      onClick={() => toggleActivity(a)}
-                      className={`rounded-full border-2 border-ink px-3 py-1 text-xs font-bold ${
-                        on ? "bg-flockie-blue text-white" : "bg-white text-ink"
-                      }`}
-                    >
-                      {a}
-                    </button>
-                  );
-                })}
+                {cat.items.map((a) => (
+                  <Chip
+                    key={a}
+                    label={a}
+                    selected={answers.activities.includes(a)}
+                    onClick={() => toggleActivity(a)}
+                  />
+                ))}
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Section B1: skill level per selected activity */}
+      {/* Skill per activity */}
       {answers.activities.length > 0 && (
         <div>
-          <p className="text-sm font-extrabold">Your skill level</p>
-          <p className="text-xs font-medium text-muted">
+          <p className="font-nunito text-[15px] font-semibold text-navy">Your skill level</p>
+          <p className="mb-3 font-nunito text-sm font-normal text-navy/60">
             For each thing you picked.
           </p>
-          <div className="mt-3 space-y-4">
-            {answers.activities.map((a) => {
-              const val = answers.activity_skills[a] ?? null;
-              return (
-                <div key={a}>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold">{a}</span>
-                    <span
-                      className={`text-xs font-bold ${
-                        val == null ? "text-muted" : "text-flockie-orange"
-                      }`}
-                    >
-                      {val == null ? "set level" : SKILL_SCALE[val - 1]}
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min={1}
-                    max={5}
-                    step={1}
-                    value={val ?? 3}
-                    onChange={(e) => setSkill(a, Number(e.target.value))}
-                    className="mt-1 w-full accent-flockie-orange"
-                  />
-                </div>
-              );
-            })}
+          <div className="space-y-6">
+            {answers.activities.map((a) => (
+              <div key={a}>
+                <p className="mb-2 font-nunito text-sm font-semibold text-navy">{a}</p>
+                <RangeSlider
+                  value={answers.activity_skills[a] ?? null}
+                  onChange={(v) => setSkill(a, v)}
+                  scale={SKILL_SCALE}
+                  label={`${a} skill`}
+                />
+              </div>
+            ))}
           </div>
         </div>
       )}
 
-      {/* Section B2/B3: social style + intensity */}
-      <Slider
-        label="Activity social style"
-        prompt="When you do an activity, do you prefer to…"
-        scale={ACTIVITY_SOCIAL_SCALE}
-        value={answers.activity_social}
-        onChange={(v) => onChange({ activity_social: v })}
-      />
-      <Slider
-        label="Intensity preference"
-        prompt="How hard do you want to push?"
-        scale={INTENSITY_SCALE}
-        value={answers.activity_intensity}
-        onChange={(v) => onChange({ activity_intensity: v })}
-      />
-
-      {/* Section B4: vibe, max 2 */}
+      {/* Social + intensity */}
       <div>
-        <p className="text-sm font-extrabold">
-          Ideal experience vibe{" "}
-          <span className="font-semibold text-muted">
-            ({answers.activity_vibe.length}/{ACTIVITY_VIBE_MAX})
-          </span>
+        <p className="font-nunito text-[15px] font-semibold text-navy">Activity social style</p>
+        <p className="mb-3 font-nunito text-sm font-normal text-navy/60">
+          When you do an activity, do you prefer to…
         </p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {ACTIVITY_VIBES.map((v) => {
-            const on = answers.activity_vibe.includes(v);
-            const disabled = !on && vibeFull;
-            return (
-              <button
-                key={v}
-                type="button"
-                disabled={disabled}
-                onClick={() => toggleVibe(v)}
-                className={`rounded-full border-2 border-ink px-3 py-1 text-xs font-bold ${
-                  on
-                    ? "bg-flockie-blue text-white"
-                    : disabled
-                      ? "bg-white text-muted/40 opacity-50"
-                      : "bg-white text-ink"
-                }`}
-              >
-                {v}
-              </button>
-            );
-          })}
+        <RangeSlider
+          value={answers.activity_social}
+          onChange={(v) => onChange({ activity_social: v })}
+          scale={ACTIVITY_SOCIAL_SCALE}
+          label="Activity social style"
+        />
+      </div>
+      <div>
+        <p className="font-nunito text-[15px] font-semibold text-navy">Intensity preference</p>
+        <p className="mb-3 font-nunito text-sm font-normal text-navy/60">
+          How hard do you want to push?
+        </p>
+        <RangeSlider
+          value={answers.activity_intensity}
+          onChange={(v) => onChange({ activity_intensity: v })}
+          scale={INTENSITY_SCALE}
+          label="Intensity preference"
+        />
+      </div>
+
+      {/* Vibe — max 2 */}
+      <div>
+        <p className="font-nunito text-[15px] font-semibold text-navy">
+          Ideal experience vibe <Counter n={answers.activity_vibe.length} max={ACTIVITY_VIBE_MAX} />
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {ACTIVITY_VIBES.map((v) => (
+            <Chip
+              key={v}
+              label={v}
+              selected={answers.activity_vibe.includes(v)}
+              disabled={vibeFull}
+              onClick={() => toggleVibe(v)}
+            />
+          ))}
         </div>
       </div>
 
-      {/* Section C: dealbreakers */}
+      {/* Dealbreakers — toggle pills */}
       <div>
-        <p className="text-sm font-extrabold">Hard preferences</p>
-        <div className="mt-2 space-y-2">
-          {ACTIVITY_DEALBREAKERS.map((d) => {
-            const on = answers.activity_dealbreakers.includes(d);
-            return (
-              <button
-                key={d}
-                type="button"
-                onClick={() => toggleDealbreaker(d)}
-                className={`flex w-full items-center gap-3 rounded-2xl border-2 border-ink px-3 py-2.5 text-left text-sm font-bold ${
-                  on ? "bg-ink text-white" : "bg-white"
-                }`}
-              >
-                <span
-                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 border-ink text-xs ${
-                    on ? "bg-white text-ink" : "bg-white text-transparent"
-                  }`}
-                >
-                  ✓
-                </span>
-                {d}
-              </button>
-            );
-          })}
+        <p className="mb-3 font-nunito text-[15px] font-semibold text-navy">Hard preferences</p>
+        <div className="space-y-3">
+          {ACTIVITY_DEALBREAKERS.map((d) => (
+            <TogglePill
+              key={d}
+              label={d}
+              selected={answers.activity_dealbreakers.includes(d)}
+              onClick={() => toggleDealbreaker(d)}
+            />
+          ))}
         </div>
       </div>
 
-      {/* Section D: one-liner */}
+      {/* One-liner */}
       <div>
-        <p className="text-sm font-extrabold">One-liner</p>
-        <p className="text-xs font-medium text-muted">{ACTIVITY_ONE_LINER_PROMPT}</p>
+        <p className="mb-3 font-nunito text-[15px] font-semibold text-navy">{ACTIVITY_ONE_LINER_PROMPT}</p>
         <input
           maxLength={ONE_LINER_MAX}
           value={answers.activity_one_liner}
           onChange={(e) => onChange({ activity_one_liner: e.target.value })}
-          className="mt-2 w-full rounded-2xl border-2 border-ink bg-white px-4 py-2.5 font-medium outline-none"
+          className="h-14 w-full rounded-2xl border-2 border-navy bg-cream px-4 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue"
           placeholder="…"
         />
-        <p className="mt-1 text-right text-xs font-semibold text-muted">
+        <p className="mt-1 text-right font-nunito text-xs font-semibold text-navy/50">
           {answers.activity_one_liner.length}/{ONE_LINER_MAX}
         </p>
       </div>
-    </div>
-  );
-}
-
-function Slider({
-  label,
-  prompt,
-  scale,
-  value,
-  onChange,
-}: {
-  label: string;
-  prompt: string;
-  scale: readonly string[];
-  value: number | null;
-  onChange: (v: number) => void;
-}) {
-  return (
-    <div>
-      <p className="text-sm font-extrabold">{label}</p>
-      <p className="text-xs font-medium text-muted">{prompt}</p>
-      <input
-        type="range"
-        min={1}
-        max={5}
-        step={1}
-        value={value ?? 3}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="mt-3 w-full accent-flockie-orange"
-      />
-      <p
-        className={`mt-1 text-sm font-bold ${
-          value == null ? "text-muted" : "text-flockie-orange"
-        }`}
-      >
-        {value == null ? "Slide to answer" : scale[value - 1]}
-      </p>
     </div>
   );
 }

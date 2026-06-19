@@ -11,7 +11,11 @@ const config: Config = {
         muted: "#5b6b7d",
         cream: "#F7F3EE",
       },
-      fontFamily: { dm: ["var(--font-dm-sans)", "system-ui", "sans-serif"] },
+      fontFamily: {
+        dm: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
+        fredoka: ["var(--font-fredoka)", "var(--font-dm-sans)", "system-ui", "sans-serif"],
+        nunito: ["var(--font-nunito)", "var(--font-dm-sans)", "system-ui", "sans-serif"],
+      },
     },
   },
   plugins: [],

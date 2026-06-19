@@ -1,154 +1,120 @@
-import {
-  SLIDERS,
-  ACTIVITY_SOCIAL_SCALE,
-  INTENSITY_SCALE,
-  SKILL_SCALE,
-  type Profile,
-} from "@/lib/vibe-check";
+import { SLIDERS, type Profile } from "@/lib/vibe-check";
+import FingerprintBar from "@/components/FingerprintBar";
+import PhotoStrip from "@/components/PhotoStrip";
 
-function Chips({ items }: { items?: string[] | null }) {
+function ChipGroup({ label, items }: { label: string; items?: string[] | null }) {
   if (!items || items.length === 0) return null;
   return (
-    <div className="mt-1 flex flex-wrap gap-2">
-      {items.map((t) => (
-        <span key={t} className="rounded-full border-2 border-ink bg-white px-3 py-1 text-xs font-bold">
-          {t}
-        </span>
-      ))}
+    <div>
+      <p className="font-nunito text-[11px] font-bold uppercase tracking-wide text-navy/55">
+        {label}
+      </p>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {items.map((t) => (
+          <span
+            key={t}
+            className="rounded-full bg-flockie-coral px-4 py-2 font-nunito text-sm font-semibold text-white"
+          >
+            {t}
+          </span>
+        ))}
+      </div>
     </div>
-  );
-}
-
-function Block({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="rounded-2xl border-2 border-ink bg-white p-4">
-      <p className="text-sm font-extrabold">{title}</p>
-      <div className="mt-2">{children}</div>
-    </section>
   );
 }
 
 export default function ProfileView({ profile }: { profile: Partial<Profile> }) {
   const p = profile;
   const photos = p.photos ?? [];
-  const skills = (p.activity_skills ?? {}) as Record<string, number>;
+  const hero = photos[0];
+  const rest = photos.slice(1);
+  const nameAge = [p.display_name?.trim(), p.age ? String(p.age) : null]
+    .filter(Boolean)
+    .join(", ");
 
-  const basics = [
-    p.age ? `${p.age}` : null,
-    p.gender,
-    p.relationship_status,
-    p.home_city,
-  ].filter(Boolean);
+  const fingerprints = SLIDERS.map((s) => {
+    const val = p[s.key] as number | null | undefined;
+    if (val == null) return null;
+    return { s, val };
+  }).filter(Boolean) as { s: (typeof SLIDERS)[number]; val: number }[];
 
   return (
-    <div className="space-y-4">
-      {photos.length > 0 && (
-        <div className="grid grid-cols-3 gap-2">
-          {photos.map((url) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={url}
-              src={url}
-              alt=""
-              className="aspect-square w-full rounded-2xl border-2 border-ink object-cover"
+    <div className="font-nunito">
+      {/* Hero */}
+      {hero ? (
+        <div className="relative h-[40vh] w-full overflow-hidden rounded-2xl shadow-[0_8px_24px_rgba(10,37,69,0.18)] md:h-[50vh]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={hero} alt="" className="h-full w-full object-cover" />
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-navy/80 to-transparent" />
+          {nameAge && (
+            <p className="absolute bottom-5 left-5 font-fredoka text-4xl font-bold text-white drop-shadow-sm md:text-5xl">
+              {nameAge}
+            </p>
+          )}
+        </div>
+      ) : (
+        <div className="flex h-[30vh] w-full items-center justify-center rounded-2xl bg-cream text-5xl">
+          🕊️
+        </div>
+      )}
+
+      {/* City */}
+      {p.home_city && (
+        <p className="mt-4 font-nunito text-base font-semibold text-navy">
+          📍 {p.home_city}
+        </p>
+      )}
+
+      {/* Photo strip */}
+      {rest.length > 0 && (
+        <div className="mt-5">
+          <PhotoStrip photos={rest} />
+        </div>
+      )}
+
+      {/* Intro video */}
+      {p.video_url && (
+        <video src={p.video_url} controls className="mt-5 w-full rounded-2xl" />
+      )}
+
+      {/* One-liner quote */}
+      {p.one_liner && (
+        <figure className="relative px-6 py-10 text-center md:py-12">
+          <span className="absolute left-0 top-2 font-fredoka text-6xl leading-none text-flockie-coral">
+            &ldquo;
+          </span>
+          <blockquote className="font-fredoka text-[22px] font-medium italic text-navy md:text-[28px]">
+            {p.one_liner}
+          </blockquote>
+          <span className="absolute bottom-0 right-2 font-fredoka text-6xl leading-none text-flockie-coral">
+            &rdquo;
+          </span>
+        </figure>
+      )}
+
+      {/* Vibe fingerprint */}
+      {fingerprints.length > 0 && (
+        <div className="mt-2 space-y-7">
+          {fingerprints.map(({ s, val }) => (
+            <FingerprintBar
+              key={s.key}
+              title={s.label}
+              leftLabel={s.scale[0]}
+              rightLabel={s.scale[4]}
+              value={val}
+              answer={s.scale[val - 1]}
             />
           ))}
         </div>
       )}
 
-      {p.video_url && (
-        <video
-          src={p.video_url}
-          controls
-          className="w-full rounded-2xl border-2 border-ink"
-        />
-      )}
-
-      {(p.display_name || basics.length > 0) && (
-        <Block title="About">
-          {p.display_name && <p className="text-lg font-extrabold">{p.display_name}</p>}
-          {basics.length > 0 && (
-            <p className="text-sm font-medium text-muted">{basics.join(" · ")}</p>
-          )}
-        </Block>
-      )}
-
-      {p.one_liner && (
-        <Block title="On a trip, I'm the kind of person who…">
-          <p className="font-medium text-ink/80">{p.one_liner}</p>
-        </Block>
-      )}
-
-      <Block title="Travel vibe">
-        <ul className="space-y-1.5">
-          {SLIDERS.map((s) => {
-            const val = p[s.key] as number | null | undefined;
-            if (val == null) return null;
-            return (
-              <li key={s.key} className="text-sm">
-                <span className="font-bold">{s.label}: </span>
-                <span className="text-ink/70">{s.scale[val - 1]}</span>
-              </li>
-            );
-          })}
-        </ul>
-        {(p.trip_vibe?.length ?? 0) > 0 && (
-          <>
-            <p className="mt-3 text-xs font-bold uppercase tracking-wide text-muted">Trip vibe</p>
-            <Chips items={p.trip_vibe} />
-          </>
-        )}
-        {(p.travel_style?.length ?? 0) > 0 && (
-          <>
-            <p className="mt-3 text-xs font-bold uppercase tracking-wide text-muted">Travel style</p>
-            <Chips items={p.travel_style} />
-          </>
-        )}
-        {(p.dealbreakers?.length ?? 0) > 0 && (
-          <>
-            <p className="mt-3 text-xs font-bold uppercase tracking-wide text-muted">Hard preferences</p>
-            <Chips items={p.dealbreakers} />
-          </>
-        )}
-      </Block>
-
-      {(p.activities?.length ?? 0) > 0 && (
-        <Block title="Activities">
-          <ul className="space-y-1">
-            {(p.activities ?? []).map((a) => (
-              <li key={a} className="flex items-center justify-between text-sm">
-                <span className="font-bold">{a}</span>
-                {skills[a] && (
-                  <span className="text-xs font-semibold text-flockie-orange">
-                    {SKILL_SCALE[skills[a] - 1]}
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
-          <div className="mt-3 space-y-1 text-sm">
-            {p.activity_social != null && (
-              <p>
-                <span className="font-bold">Social style: </span>
-                <span className="text-ink/70">{ACTIVITY_SOCIAL_SCALE[p.activity_social - 1]}</span>
-              </p>
-            )}
-            {p.activity_intensity != null && (
-              <p>
-                <span className="font-bold">Intensity: </span>
-                <span className="text-ink/70">{INTENSITY_SCALE[p.activity_intensity - 1]}</span>
-              </p>
-            )}
-          </div>
-          {(p.activity_vibe?.length ?? 0) > 0 && <Chips items={p.activity_vibe} />}
-          {p.activity_one_liner && (
-            <p className="mt-3 text-sm">
-              <span className="font-bold">At an activity: </span>
-              <span className="text-ink/70">{p.activity_one_liner}</span>
-            </p>
-          )}
-        </Block>
-      )}
+      {/* Tag chips */}
+      <div className="mt-10 space-y-6">
+        <ChipGroup label="Trip vibe" items={p.trip_vibe} />
+        <ChipGroup label="Travel style" items={p.travel_style} />
+        <ChipGroup label="Activities" items={p.activities} />
+        <ChipGroup label="Activity vibe" items={p.activity_vibe} />
+      </div>
     </div>
   );
 }

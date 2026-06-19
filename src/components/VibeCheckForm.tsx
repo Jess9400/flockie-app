@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import VibeQuestions from "@/components/VibeQuestions";
 import ActivityQuestions from "@/components/ActivityQuestions";
+import PhotoGrid from "@/components/PhotoGrid";
+import ProfileProgress, { type ProgressSegment } from "@/components/ProfileProgress";
+import { SectionHeader } from "@/components/profileControls";
 import {
   GENDERS,
-  RELATIONSHIP_STATUS,
   EMPTY_ANSWERS,
   EMPTY_ACTIVITY,
   type Profile,
@@ -31,7 +33,6 @@ export default function VibeCheckForm({ userId, initial, onSaved }: Props) {
     display_name: initial.display_name ?? "",
     age: initial.age ?? null,
     gender: initial.gender ?? "",
-    relationship_status: initial.relationship_status ?? "",
     home_city: initial.home_city ?? "",
     instagram: initial.instagram ?? "",
     x_handle: initial.x_handle ?? "",
@@ -52,7 +53,6 @@ export default function VibeCheckForm({ userId, initial, onSaved }: Props) {
     dealbreakers: initial.dealbreakers ?? [],
     one_liner: initial.one_liner ?? "",
   });
-
   const [activity, setActivity] = useState<ActivityAnswers>({
     ...EMPTY_ACTIVITY,
     activities: initial.activities ?? [],
@@ -120,16 +120,54 @@ export default function VibeCheckForm({ userId, initial, onSaved }: Props) {
     }
   }
 
+  function reorderPhotos(from: number, to: number) {
+    setPhotos((p) => {
+      const next = [...p];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
+  }
+
+  const segments = useMemo<ProgressSegment[]>(() => {
+    const basicsFilled =
+      [basics.display_name, basics.age, basics.home_city].filter(Boolean).length;
+    const vibeAnswered =
+      [
+        answers.planning,
+        answers.pace,
+        answers.social_energy,
+        answers.budget,
+        answers.nightlife,
+        answers.adventurousness,
+      ].filter((v) => v != null).length +
+      (answers.trip_vibe.length > 0 ? 1 : 0) +
+      (answers.travel_style.length > 0 ? 1 : 0) +
+      (answers.one_liner.trim() ? 1 : 0);
+    const activityAnswered =
+      (activity.activities.length > 0 ? 1 : 0) +
+      (activity.activity_social != null ? 1 : 0) +
+      (activity.activity_intensity != null ? 1 : 0) +
+      (activity.activity_vibe.length > 0 ? 1 : 0) +
+      (activity.activity_one_liner.trim() ? 1 : 0);
+    const verified = basics.instagram || basics.x_handle || basics.tiktok ? 100 : 0;
+
+    return [
+      { label: "Photos", pct: photos.length > 0 ? 100 : 0, anchor: "sec-photos" },
+      { label: "Basics", pct: Math.round((basicsFilled / 3) * 100), anchor: "sec-basics" },
+      { label: "Vibe", pct: Math.round((vibeAnswered / 9) * 100), anchor: "sec-vibe" },
+      { label: "Activity", pct: Math.round((activityAnswered / 5) * 100), anchor: "sec-activity" },
+      { label: "Verify", pct: verified, anchor: "sec-verifications" },
+    ];
+  }, [basics, photos, answers, activity]);
+
+  const overall = Math.round(segments.reduce((s, x) => s + x.pct, 0) / segments.length);
+
   async function save(e: React.FormEvent) {
     e.preventDefault();
-    if (photos.length === 0) {
-      setMsg("Add at least one profile photo.");
-      return;
-    }
-    if ((activity.activities ?? []).length === 0) {
-      setMsg("Pick at least one activity in your activity vibe check.");
-      return;
-    }
+    if (photos.length === 0) return setMsg("Add at least one profile photo.");
+    if ((activity.activities ?? []).length === 0)
+      return setMsg("Pick at least one activity in your activity vibe check.");
     setSaving(true);
     setMsg(null);
     const { error } = await supabase
@@ -157,218 +195,197 @@ export default function VibeCheckForm({ userId, initial, onSaved }: Props) {
   }
 
   return (
-    <form onSubmit={save} className="space-y-8 pb-8">
-      {/* Media */}
-      <section>
-        <h2 className="text-lg font-extrabold">Photos &amp; video</h2>
-        <p className="text-sm font-medium text-muted">
-          At least one photo required. Up to 5 photos and a short intro video.
-        </p>
-        <div className="mt-3 grid grid-cols-3 gap-2">
-          {photos.map((url, i) => (
-            <div
-              key={url}
-              className="relative aspect-square overflow-hidden rounded-2xl border-2 border-ink"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={url} alt="" className="h-full w-full object-cover" />
-              <button
-                type="button"
-                onClick={() => setPhotos(photos.filter((_, idx) => idx !== i))}
-                className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-ink text-xs font-bold text-white"
-                aria-label="Remove photo"
-              >
-                ✕
-              </button>
-            </div>
-          ))}
-          {photos.length < MAX_PHOTOS && (
-            <button
-              type="button"
-              onClick={() => photoInput.current?.click()}
-              className="flex aspect-square items-center justify-center rounded-2xl border-2 border-dashed border-ink/40 text-2xl text-muted"
-            >
-              +
-            </button>
-          )}
-        </div>
-        <input ref={photoInput} type="file" accept="image/*" multiple hidden onChange={onPhotos} />
-        <div className="mt-3">
-          <button
-            type="button"
-            onClick={() => videoInput.current?.click()}
-            className="rounded-full border-2 border-ink bg-white px-4 py-2 text-sm font-bold"
-          >
-            {videoUrl ? "Replace intro video" : "Add intro video"}
-          </button>
-          {videoUrl && (
-            <span className="ml-2 text-sm font-semibold text-flockie-blue">video added ✓</span>
-          )}
+    <form onSubmit={save} className="font-nunito">
+      {/* Progress */}
+      <div className="mb-10">
+        <ProfileProgress segments={segments} overall={overall} />
+      </div>
+
+      <div className="space-y-12">
+        {/* Photos */}
+        <section>
+          <SectionHeader
+            id="sec-photos"
+            title="Photos & video"
+            subtitle="At least one photo. Your first photo is your primary — drag to reorder."
+          />
+          <div className="mt-5">
+            <PhotoGrid
+              photos={photos}
+              onRemovePhoto={(i) => setPhotos(photos.filter((_, idx) => idx !== i))}
+              onReorder={reorderPhotos}
+              onAddPhoto={() => photoInput.current?.click()}
+              canAddPhoto={photos.length < MAX_PHOTOS}
+              videoUrl={videoUrl}
+              onAddVideo={() => videoInput.current?.click()}
+              onRemoveVideo={() => setVideoUrl(null)}
+              uploading={uploading}
+            />
+          </div>
+          <input ref={photoInput} type="file" accept="image/*" multiple hidden onChange={onPhotos} />
           <input ref={videoInput} type="file" accept="video/*" hidden onChange={onVideo} />
-        </div>
-        {uploading && (
-          <p className="mt-2 text-sm font-semibold text-flockie-orange">Uploading…</p>
-        )}
-      </section>
+        </section>
 
-      {/* Basics */}
-      <section className="space-y-3">
-        <h2 className="text-lg font-extrabold">About you</h2>
-        <Field label="Name">
-          <input
-            className={inputCls}
-            value={basics.display_name}
-            onChange={(e) => setBasics({ ...basics, display_name: e.target.value })}
-            placeholder="Your first name"
+        {/* Basics */}
+        <section>
+          <SectionHeader id="sec-basics" title="About you" />
+          <div className="mt-5 space-y-3">
+            <Field label="Name">
+              <input
+                className={inputCls}
+                value={basics.display_name}
+                onChange={(e) => setBasics({ ...basics, display_name: e.target.value })}
+                placeholder="Your first name"
+              />
+            </Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Age">
+                <input
+                  type="number"
+                  min={18}
+                  max={120}
+                  className={inputCls}
+                  value={basics.age ?? ""}
+                  onChange={(e) =>
+                    setBasics({ ...basics, age: e.target.value ? Number(e.target.value) : null })
+                  }
+                />
+              </Field>
+              <Field label="Gender">
+                <Select
+                  value={basics.gender}
+                  onChange={(v) => setBasics({ ...basics, gender: v })}
+                  options={GENDERS}
+                />
+              </Field>
+            </div>
+            <Field label="Home city">
+              <input
+                className={inputCls}
+                value={basics.home_city}
+                onChange={(e) => setBasics({ ...basics, home_city: e.target.value })}
+                placeholder="Where you're based"
+              />
+            </Field>
+          </div>
+        </section>
+
+        {/* Vibe check */}
+        <section>
+          <SectionHeader
+            id="sec-vibe"
+            title="The vibe check"
+            subtitle="Quick and honest. This is what we match on."
           />
-        </Field>
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Age">
-            <input
-              type="number"
-              min={18}
-              max={120}
-              className={inputCls}
-              value={basics.age ?? ""}
-              onChange={(e) =>
-                setBasics({ ...basics, age: e.target.value ? Number(e.target.value) : null })
-              }
+          <p className="mt-4 max-w-[600px] font-nunito text-[15px] font-medium italic text-navy/70">
+            Quick and honest — these answers train the algorithm that finds your people. The gap
+            between how you see yourself and how a friend sees you is what makes matching work.
+          </p>
+          <div className="mt-6">
+            <VibeQuestions
+              answers={answers}
+              onChange={(patch) => setAnswers((a) => ({ ...a, ...patch }))}
+              oneLinerPrompt="Finish: “On a trip, I'm the kind of person who…”"
             />
-          </Field>
-          <Field label="Gender">
-            <Select
-              value={basics.gender}
-              onChange={(v) => setBasics({ ...basics, gender: v })}
-              options={GENDERS}
+          </div>
+
+          {/* Friend-vouch CTA (the one section that keeps a border) */}
+          {vouchUrl && (
+            <div className="mt-8 rounded-3xl border-2 border-flockie-coral p-5">
+              <p className="font-fredoka text-lg font-semibold text-navy">Want sharper matches?</p>
+              <p className="mt-1 font-nunito text-sm font-medium text-navy/70">
+                Ask a friend to fill out their version of this vibe check — about you. Friends are
+                honest about things you&rsquo;re not.
+              </p>
+              <div className="mt-4 flex gap-2">
+                <input
+                  readOnly
+                  value={vouchUrl}
+                  className="w-full truncate rounded-full border-2 border-navy bg-cream px-4 py-2 font-nunito text-sm font-medium text-navy"
+                />
+                <button
+                  type="button"
+                  onClick={copyVouch}
+                  className="shrink-0 rounded-full border-2 border-navy bg-flockie-coral px-5 font-fredoka text-sm font-semibold text-white"
+                >
+                  {copied ? "Copied" : "Copy link"}
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* Activity vibe check */}
+        <section>
+          <SectionHeader
+            id="sec-activity"
+            title="Activity vibe check"
+            subtitle="Required — how we match you for local meetups & events. Pick at least one activity."
+          />
+          <div className="mt-6">
+            <ActivityQuestions
+              answers={activity}
+              onChange={(patch) => setActivity((a) => ({ ...a, ...patch }))}
             />
-          </Field>
-        </div>
-        <Field label="Relationship status">
-          <Select
-            value={basics.relationship_status}
-            onChange={(v) => setBasics({ ...basics, relationship_status: v })}
-            options={RELATIONSHIP_STATUS}
-          />
-        </Field>
-        <Field label="Home city">
-          <input
-            className={inputCls}
-            value={basics.home_city}
-            onChange={(e) => setBasics({ ...basics, home_city: e.target.value })}
-            placeholder="Where you're based"
-          />
-        </Field>
-      </section>
+          </div>
+        </section>
 
-      {/* Socials */}
-      <section className="space-y-3">
-        <h2 className="text-lg font-extrabold">Socials (optional)</h2>
-        <p className="text-sm font-medium text-muted">
-          Link your handles so matches can check you out.
-        </p>
-        <Field label="Instagram">
-          <input
-            className={inputCls}
-            value={basics.instagram}
-            onChange={(e) => setBasics({ ...basics, instagram: e.target.value })}
-            placeholder="@yourhandle"
+        {/* Verifications / socials */}
+        <section>
+          <SectionHeader
+            id="sec-verifications"
+            title="Verifications"
+            subtitle="Link your handles so matches can check you out (optional)."
           />
-        </Field>
-        <Field label="X (Twitter)">
-          <input
-            className={inputCls}
-            value={basics.x_handle}
-            onChange={(e) => setBasics({ ...basics, x_handle: e.target.value })}
-            placeholder="@yourhandle"
-          />
-        </Field>
-        <Field label="TikTok">
-          <input
-            className={inputCls}
-            value={basics.tiktok}
-            onChange={(e) => setBasics({ ...basics, tiktok: e.target.value })}
-            placeholder="@yourhandle"
-          />
-        </Field>
-      </section>
+          <div className="mt-5 space-y-3">
+            <Field label="Instagram">
+              <input
+                className={inputCls}
+                value={basics.instagram}
+                onChange={(e) => setBasics({ ...basics, instagram: e.target.value })}
+                placeholder="@yourhandle"
+              />
+            </Field>
+            <Field label="X (Twitter)">
+              <input
+                className={inputCls}
+                value={basics.x_handle}
+                onChange={(e) => setBasics({ ...basics, x_handle: e.target.value })}
+                placeholder="@yourhandle"
+              />
+            </Field>
+            <Field label="TikTok">
+              <input
+                className={inputCls}
+                value={basics.tiktok}
+                onChange={(e) => setBasics({ ...basics, tiktok: e.target.value })}
+                placeholder="@yourhandle"
+              />
+            </Field>
+          </div>
+        </section>
+      </div>
 
-      {/* The 10 questions */}
-      <section>
-        <h2 className="text-lg font-extrabold">The vibe check</h2>
-        <p className="text-sm font-medium text-muted">
-          Quick and honest. This is what we match on.
-        </p>
-        <div className="mt-4">
-          <VibeQuestions
-            answers={answers}
-            onChange={(patch) => setAnswers((a) => ({ ...a, ...patch }))}
-            oneLinerPrompt="Finish: “On a trip, I'm the kind of person who…”"
-          />
-        </div>
-      </section>
-
-      {/* Activity vibe check (required) */}
-      <section>
-        <h2 className="text-lg font-extrabold">Activity vibe check</h2>
-        <p className="text-sm font-medium text-muted">
-          Required — this is how we match you for local meetups &amp; events.
-          Pick at least one activity.
-        </p>
-        <div className="mt-4">
-          <ActivityQuestions
-            answers={activity}
-            onChange={(patch) => setActivity((a) => ({ ...a, ...patch }))}
-          />
-        </div>
-      </section>
-
-      {msg && (
-        <p className="text-center text-sm font-bold text-flockie-orange">{msg}</p>
-      )}
+      {msg && <p className="mt-8 text-center font-nunito text-sm font-bold text-flockie-coral">{msg}</p>}
 
       <button
         type="submit"
         disabled={saving || uploading}
-        className="w-full rounded-full border-2 border-ink bg-flockie-orange py-3.5 font-bold text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50"
+        className="mt-8 w-full rounded-full border-2 border-navy bg-flockie-coral py-3.5 font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] disabled:opacity-50"
       >
         {saving ? "Saving…" : "Save vibe check"}
       </button>
-
-      {/* Optional friend vouch */}
-      {vouchUrl && (
-        <section className="rounded-3xl border-2 border-ink bg-white p-4">
-          <h2 className="text-lg font-extrabold">Get a friend to vouch (optional)</h2>
-          <p className="mt-1 text-sm font-medium text-muted">
-            Send this link to a friend. They answer the same questions about you.
-            It's the unfakeable social proof that makes your profile stand out.
-          </p>
-          <div className="mt-3 flex gap-2">
-            <input
-              readOnly
-              value={vouchUrl}
-              className="w-full truncate rounded-2xl border-2 border-ink bg-cream px-3 py-2 text-sm font-medium"
-            />
-            <button
-              type="button"
-              onClick={copyVouch}
-              className="shrink-0 rounded-2xl border-2 border-ink bg-flockie-blue px-4 text-sm font-bold text-white"
-            >
-              {copied ? "Copied" : "Copy"}
-            </button>
-          </div>
-        </section>
-      )}
     </form>
   );
 }
 
 const inputCls =
-  "w-full rounded-2xl border-2 border-ink bg-white px-4 py-2.5 font-medium outline-none";
+  "h-14 w-full rounded-2xl border-2 border-navy bg-cream px-4 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-sm font-bold">{label}</span>
+      <span className="mb-1.5 block font-nunito text-sm font-semibold text-navy">{label}</span>
       {children}
     </label>
   );
