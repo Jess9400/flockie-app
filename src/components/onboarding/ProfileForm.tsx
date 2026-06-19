@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import PhotoCropper from "@/components/PhotoCropper";
 import {
   ProfileInput,
   saveOnboardingProfile,
@@ -38,14 +39,19 @@ export function ProfileForm({ defaults }: ProfileFormProps) {
   const [city, setCity] = useState(defaults.city);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
   const photoInput = useRef<HTMLInputElement>(null);
   const canSubmit = Boolean(
     firstName.trim() && photoUrl && birthday && gender && city.trim()
   );
 
-  async function onPhoto(event: React.ChangeEvent<HTMLInputElement>) {
+  function onPhotoSelected(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (file) setPendingFile(file);
+    if (photoInput.current) photoInput.current.value = "";
+  }
+
+  async function uploadCropped(blob: Blob) {
     setUploading(true);
     setError(null);
     try {
@@ -53,18 +59,17 @@ export function ProfileForm({ defaults }: ProfileFormProps) {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Please sign in again");
-      const ext = file.name.split(".").pop() ?? "jpg";
-      const path = `${user.id}/onboarding-${crypto.randomUUID()}.${ext}`;
+      const path = `${user.id}/onboarding-${crypto.randomUUID()}.jpg`;
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(path, file, { upsert: true });
+        .upload(path, blob, { upsert: true, contentType: "image/jpeg" });
       if (uploadError) throw uploadError;
       setPhotoUrl(supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl);
+      setPendingFile(null);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Photo upload failed.");
     } finally {
       setUploading(false);
-      if (photoInput.current) photoInput.current.value = "";
     }
   }
 
@@ -111,7 +116,7 @@ export function ProfileForm({ defaults }: ProfileFormProps) {
               "+"
             )}
           </button>
-          <input ref={photoInput} type="file" accept="image/*" hidden onChange={onPhoto} />
+          <input ref={photoInput} type="file" accept="image/*" hidden onChange={onPhotoSelected} />
           <div className="mt-2 text-[11.5px] font-bold text-navy">
             {uploading ? "Uploading…" : photoUrl ? "Tap to change" : "Add a photo (required)"}
           </div>
@@ -192,6 +197,15 @@ export function ProfileForm({ defaults }: ProfileFormProps) {
           {submitting ? "Saving…" : "Continue to your vibe check →"}
         </button>
       </div>
+
+      {pendingFile && (
+        <PhotoCropper
+          file={pendingFile}
+          busy={uploading}
+          onCancel={() => setPendingFile(null)}
+          onCropped={uploadCropped}
+        />
+      )}
     </div>
   );
 }

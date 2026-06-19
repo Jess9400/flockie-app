@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import PhotoGrid from "@/components/PhotoGrid";
+import PhotoCropper from "@/components/PhotoCropper";
 import VibeShareCard from "@/components/VibeShareCard";
 import { SectionHeader } from "@/components/profileControls";
 import { GENDER_OPTIONS, type Profile } from "@/lib/vibe-check";
@@ -40,6 +41,7 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [showShare, setShowShare] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
   const photoInput = useRef<HTMLInputElement>(null);
   const videoInput = useRef<HTMLInputElement>(null);
 
@@ -53,21 +55,28 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
     return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
   }
 
-  async function onPhotos(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? []);
-    if (!files.length) return;
+  function onPhotoSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file && photos.length < MAX_PHOTOS) setPendingFile(file);
+    if (photoInput.current) photoInput.current.value = "";
+  }
+
+  async function uploadCroppedPhoto(blob: Blob) {
     setUploading(true);
     setMsg(null);
     try {
-      const room = MAX_PHOTOS - photos.length;
-      const urls: string[] = [];
-      for (const file of files.slice(0, room)) urls.push(await uploadFile("avatars", file));
-      setPhotos((p) => [...p, ...urls]);
+      const path = `${userId}/${crypto.randomUUID()}.jpg`;
+      const { error } = await supabase.storage
+        .from("avatars")
+        .upload(path, blob, { upsert: true, cacheControl: "3600", contentType: "image/jpeg" });
+      if (error) throw error;
+      const url = supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl;
+      setPhotos((p) => [...p, url]);
+      setPendingFile(null);
     } catch {
       setMsg("Photo upload failed.");
     } finally {
       setUploading(false);
-      if (photoInput.current) photoInput.current.value = "";
     }
   }
 
@@ -145,7 +154,7 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
               uploading={uploading}
             />
           </div>
-          <input ref={photoInput} type="file" accept="image/*" multiple hidden onChange={onPhotos} />
+          <input ref={photoInput} type="file" accept="image/*" hidden onChange={onPhotoSelected} />
           <input ref={videoInput} type="file" accept="video/*" hidden onChange={onVideo} />
         </section>
 
@@ -258,6 +267,15 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
       >
         {saving ? "Saving…" : "Save profile"}
       </button>
+
+      {pendingFile && (
+        <PhotoCropper
+          file={pendingFile}
+          busy={uploading}
+          onCancel={() => setPendingFile(null)}
+          onCropped={uploadCroppedPhoto}
+        />
+      )}
 
       {showShare && (
         <VibeShareCard
