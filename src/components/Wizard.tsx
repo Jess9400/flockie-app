@@ -23,7 +23,7 @@ export type WizardField =
       hint?: string;
       required?: boolean;
       max?: number;
-      options: { value: string; label: string; emoji?: string }[];
+      options: { value: string; label: string; emoji?: string; group?: string }[];
     }
   | {
       type: "slider";
@@ -257,30 +257,50 @@ function MultiField({
     if (value.includes(v)) onChange(value.filter((x) => x !== v));
     else if (value.length < max) onChange([...value, v]);
   }
+  const grouped = field.options.some((o) => o.group);
+  const groups = grouped
+    ? Array.from(new Set(field.options.map((o) => o.group ?? ""))).map((g) => ({
+        group: g,
+        items: field.options.filter((o) => (o.group ?? "") === g),
+      }))
+    : [{ group: "", items: field.options }];
+
+  function Cell({ o }: { o: { value: string; label: string; emoji?: string } }) {
+    const on = value.includes(o.value);
+    const full = !on && value.length >= max;
+    return (
+      <button
+        type="button"
+        disabled={full}
+        onClick={() => toggle(o.value)}
+        className={`flex items-center gap-2 rounded-2xl border-2 p-3 text-left font-nunito text-[13px] font-semibold transition-colors ${
+          on
+            ? "border-navy bg-flockie-coral text-white"
+            : full
+              ? "border-navy/20 bg-white text-navy/30"
+              : "border-navy bg-white text-navy hover:bg-cream"
+        }`}
+      >
+        {o.emoji && <span className="text-base">{o.emoji}</span>}
+        {o.label}
+      </button>
+    );
+  }
+
   return (
-    <div className="mt-3 grid grid-cols-2 gap-2.5">
-      {field.options.map((o) => {
-        const on = value.includes(o.value);
-        const full = !on && value.length >= max;
-        return (
-          <button
-            key={o.value}
-            type="button"
-            disabled={full}
-            onClick={() => toggle(o.value)}
-            className={`flex items-center gap-2 rounded-2xl border-2 p-3 text-left font-nunito text-[13px] font-semibold transition-colors ${
-              on
-                ? "border-navy bg-flockie-coral text-white"
-                : full
-                  ? "border-navy/20 bg-white text-navy/30"
-                  : "border-navy bg-white text-navy hover:bg-cream"
-            }`}
-          >
-            {o.emoji && <span className="text-base">{o.emoji}</span>}
-            {o.label}
-          </button>
-        );
-      })}
+    <div className="mt-3 space-y-4">
+      {groups.map((g) => (
+        <div key={g.group}>
+          {g.group && (
+            <p className="mb-2 font-nunito text-[11px] font-bold uppercase tracking-wide text-navy/55">{g.group}</p>
+          )}
+          <div className="grid grid-cols-2 gap-2.5">
+            {g.items.map((o) => (
+              <Cell key={o.value} o={o} />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
