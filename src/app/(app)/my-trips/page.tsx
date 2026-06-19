@@ -22,7 +22,7 @@ export default async function MyTripsPage() {
 
   const { data: trips } = await supabase
     .from("trips")
-    .select("id, destination, destinations, start_date, end_date, group_size, trip_type, status, created_at")
+    .select("id, kind, title, destination, destinations, start_date, end_date, group_size, trip_type, status, created_at")
     .eq("user_id", user!.id)
     .order("created_at", { ascending: false });
 
@@ -87,12 +87,27 @@ export default async function MyTripsPage() {
           >
             <div className="flex items-start justify-between">
               <div className="min-w-0">
-                <p className="flex items-center gap-1.5 font-extrabold">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`rounded-full border-2 border-ink px-2 py-0.5 text-[10px] font-extrabold uppercase ${
+                      t.kind === "activity" ? "bg-flockie-blue text-white" : "bg-cream text-ink"
+                    }`}
+                  >
+                    {t.kind === "activity" ? "Activity" : "Trip"}
+                  </span>
+                  {t.status !== "active" && (
+                    <span className="text-[10px] font-bold uppercase text-muted">{t.status}</span>
+                  )}
+                </div>
+                <p className="mt-1 flex items-center gap-1.5 font-extrabold">
                   <MapPin size={15} className="text-flockie-orange" />{" "}
-                  {(t.destinations ?? [t.destination]).filter(Boolean).join(" · ")}
+                  {t.kind === "activity" && t.title
+                    ? t.title
+                    : (t.destinations ?? [t.destination]).filter(Boolean).join(" · ")}
                 </p>
                 <p className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-muted">
-                  <CalendarClock size={13} /> {t.start_date} → {t.end_date} · {t.group_size} people
+                  <CalendarClock size={13} /> {t.start_date} → {t.end_date}
+                  {t.kind !== "activity" && ` · ${t.group_size} people`}
                 </p>
                 {(t.trip_type?.length ?? 0) > 0 && (
                   <div className="mt-2 flex flex-wrap gap-1.5">

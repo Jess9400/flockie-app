@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Pencil, MapPin, CalendarClock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import SwipeDeck from "@/components/SwipeDeck";
+import TripPicker from "@/components/TripPicker";
 import { loadUserRatings } from "@/lib/vibe-stats";
 
 const MIN_PROFILES = 10;
@@ -9,7 +10,7 @@ const MIN_PROFILES = 10;
 export default async function MatchPage({
   searchParams,
 }: {
-  searchParams: { mode?: string };
+  searchParams: { mode?: string; trip?: string };
 }) {
   const supabase = await createClient();
   const {
@@ -61,15 +62,30 @@ export default async function MatchPage({
     );
   }
 
-  const { data: posts } = await supabase
+  const { data: postRows } = await supabase
     .from("trips")
     .select("id, title, destination, destinations, start_date, end_date, group_size")
     .eq("user_id", user!.id)
     .eq("status", "active")
     .eq("kind", mode)
     .order("created_at", { ascending: false })
-    .limit(1);
-  const post = posts?.[0] ?? null;
+    .limit(20);
+  const posts = postRows ?? [];
+
+  // Which post are we matching on? The one from ?trip=, else the most recent.
+  const selectedId =
+    searchParams.trip && posts.some((p) => p.id === searchParams.trip)
+      ? searchParams.trip
+      : posts[0]?.id ?? null;
+  const post = posts.find((p) => p.id === selectedId) ?? null;
+
+  const pickerOptions = posts.map((p) => ({
+    id: p.id,
+    label:
+      (isActivity && p.title ? p.title : null) ||
+      (p.destinations ?? [p.destination]).filter(Boolean).join(" · ") ||
+      "Untitled",
+  }));
 
   if (!post) {
     return (
@@ -90,7 +106,9 @@ export default async function MatchPage({
     ? (post.destinations ?? [post.destination]).filter(Boolean).join(" · ")
     : (post.destinations ?? [post.destination]).filter(Boolean).join(" · ");
 
-  const { data: count } = await supabase.rpc("buddy_dest_count", { p_kind: mode });
+  // p_trip works after buddy-candidates-v2.sql; fall back to the 2-arg version.
+  let { data: count, error: countErr } = await supabase.rpc("buddy_dest_count", { p_kind: mode, p_trip: selectedId });
+  if (countErr) ({ data: count } = await supabase.rpc("buddy_dest_count", { p_kind: mode }));
   const enough = (count ?? 0) >= MIN_PROFILES;
 
   let body: React.ReactNode;
@@ -111,7 +129,8 @@ export default async function MatchPage({
       </div>
     );
   } else {
-    const { data: candidates } = await supabase.rpc("buddy_candidates_trip", { p_limit: 30, p_kind: mode });
+    let { data: candidates, error: candErr } = await supabase.rpc("buddy_candidates_trip", { p_limit: 30, p_kind: mode, p_trip: selectedId });
+    if (candErr) ({ data: candidates } = await supabase.rpc("buddy_candidates_trip", { p_limit: 30, p_kind: mode }));
     const list = candidates ?? [];
     const ratings = await loadUserRatings(
       supabase,
@@ -129,7 +148,9 @@ export default async function MatchPage({
     <main className="px-5 pb-10 pt-6">
       {header}
 
-      <div className="mt-5 flex items-center justify-between rounded-2xl border-2 border-ink bg-cream p-3">
+      {selectedId && <TripPicker options={pickerOptions} value={selectedId} mode={mode} />}
+
+      <div className="mt-3 flex items-center justify-between rounded-2xl border-2 border-ink bg-cream p-3">
         <div className="min-w-0">
           <p className="truncate font-extrabold">
             {isActivity && post.title ? post.title : label}
