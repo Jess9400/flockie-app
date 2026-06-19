@@ -317,7 +317,7 @@ export default function CreateVibeForm({
         <Field label={`Capacity: ${capacity}`}>
           <input
             type="range"
-            min={2}
+            min={3}
             max={100}
             value={capacity}
             onChange={(e) => setCapacity(Number(e.target.value))}

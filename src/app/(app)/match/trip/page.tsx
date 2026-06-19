@@ -22,7 +22,8 @@ export default async function TripPage({
     .eq("id", user!.id)
     .maybeSingle();
 
-  const reqKind = searchParams.kind === "activity" ? "activity" : "trip";
+  const reqKind: "trip" | "activity" | "flock" =
+    searchParams.kind === "activity" ? "activity" : searchParams.kind === "flock" ? "flock" : "trip";
 
   // Only load a trip when explicitly editing (?id=). Otherwise it's a NEW post,
   // so a blank form is shown and a new trip is inserted (existing trips stay).
@@ -35,15 +36,22 @@ export default async function TripPage({
         .maybeSingle()
     : { data: null };
 
-  const kind = (trip?.kind as "trip" | "activity") ?? reqKind;
+  const kind: "trip" | "activity" | "flock" = trip
+    ? trip.kind === "activity"
+      ? "activity"
+      : trip.visibility === "public"
+        ? "flock"
+        : "trip"
+    : reqKind;
   const isActivity = kind === "activity";
+  const isFlock = kind === "flock";
 
   const initial = trip ?? {
     destinations: !isActivity && profile?.home_city ? [profile.home_city] : [],
     trip_type: profile?.trip_vibe ?? [],
     budget: profile?.budget ?? 3,
     pace: profile?.pace ?? 3,
-    group_size: 2,
+    group_size: isFlock ? 4 : 2,
   };
 
   // Creation gates only apply to brand-new posts (editing is always allowed).
@@ -52,7 +60,7 @@ export default async function TripPage({
   const pendingList = (pending ?? []) as Pending[];
 
   let atCap = false;
-  if (isNew && kind === "trip") {
+  if (isNew && kind !== "activity") {
     const { count } = await supabase
       .from("trips")
       .select("id", { count: "exact", head: true })
@@ -67,16 +75,20 @@ export default async function TripPage({
 
   return (
     <main className="px-5 pb-10 pt-6">
-      <Link href={`/match?mode=${kind}`} className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted">
+      <Link href={isFlock ? "/flocks" : `/match?mode=${kind}`} className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted">
         <ChevronLeft size={16} /> Back
       </Link>
       <h1 className="text-2xl font-black">
-        {trip ? (isActivity ? "Edit your activity" : "Edit your trip") : isActivity ? "Post an activity" : "Post a trip"}
+        {trip
+          ? isActivity ? "Edit your activity" : isFlock ? "Edit your Flock" : "Edit your trip"
+          : isActivity ? "Post an activity" : isFlock ? "Create a Flock" : "Post a trip"}
       </h1>
       <p className="mt-1 text-sm font-medium text-muted">
         {isActivity
           ? "Find people to do something with in your city."
-          : "Find vibe-matched buddies heading the same way."}
+          : isFlock
+            ? "A group trip others can request to join."
+            : "Find one travel buddy heading the same way."}
       </p>
       {showReviewGate ? (
         <div className="mt-6 rounded-3xl border-2 border-ink bg-white p-5 shadow-[0_5px_0_0_rgba(26,26,26,1)]">

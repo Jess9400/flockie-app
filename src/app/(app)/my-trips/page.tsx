@@ -22,7 +22,7 @@ export default async function MyTripsPage() {
 
   const { data: trips } = await supabase
     .from("trips")
-    .select("id, kind, title, destination, destinations, start_date, end_date, group_size, trip_type, status, created_at")
+    .select("id, kind, title, destination, destinations, start_date, end_date, group_size, trip_type, visibility, status, created_at")
     .eq("user_id", user!.id)
     .order("created_at", { ascending: false });
 
@@ -90,10 +90,14 @@ export default async function MyTripsPage() {
                 <div className="flex items-center gap-2">
                   <span
                     className={`rounded-full border-2 border-ink px-2 py-0.5 text-[10px] font-extrabold uppercase ${
-                      t.kind === "activity" ? "bg-flockie-blue text-white" : "bg-cream text-ink"
+                      t.kind === "activity"
+                        ? "bg-flockie-blue text-white"
+                        : t.visibility === "public"
+                          ? "bg-flockie-orange text-white"
+                          : "bg-cream text-ink"
                     }`}
                   >
-                    {t.kind === "activity" ? "Activity" : "Trip"}
+                    {t.kind === "activity" ? "Activity" : t.visibility === "public" ? "Flock" : "Trip"}
                   </span>
                   {t.status !== "active" && (
                     <span className="text-[10px] font-bold uppercase text-muted">{t.status}</span>

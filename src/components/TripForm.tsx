@@ -23,6 +23,7 @@ type Trip = {
   visibility?: string;
 };
 
+// kind: "trip" = 1:1 buddy trip · "activity" = 1:1 activity · "flock" = group trip
 export default function TripForm({
   userId,
   initial,
@@ -30,11 +31,12 @@ export default function TripForm({
 }: {
   userId: string;
   initial: Trip;
-  kind?: "trip" | "activity";
+  kind?: "trip" | "activity" | "flock";
 }) {
   const router = useRouter();
   const supabase = createClient();
   const isActivity = kind === "activity";
+  const isFlock = kind === "flock";
 
   const initialDests = initial.destinations ?? (initial.destination ? [initial.destination] : []);
   const [title, setTitle] = useState(initial.title ?? "");
@@ -43,11 +45,10 @@ export default function TripForm({
   const [dest3, setDest3] = useState(initialDests[2] ?? "");
   const [start, setStart] = useState(initial.start_date ?? "");
   const [end, setEnd] = useState(initial.end_date ?? "");
-  const [groupSize, setGroupSize] = useState(initial.group_size ?? 2);
+  const [groupSize, setGroupSize] = useState(initial.group_size ?? 4);
   const [types, setTypes] = useState<string[]>(initial.trip_type ?? []);
   const [budget, setBudget] = useState(initial.budget ?? 3);
   const [pace, setPace] = useState(initial.pace ?? 3);
-  const [visibility, setVisibility] = useState(initial.visibility ?? "private");
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -75,17 +76,17 @@ export default function TripForm({
     setSaving(true);
     const payload = {
       user_id: userId,
-      kind,
+      kind: isFlock ? "trip" : kind, // a Flock is a public group trip
       title: isActivity ? title.trim() : null,
       destination: destinations[0],
       destinations,
       start_date: start,
       end_date: end,
-      group_size: isActivity ? 2 : groupSize,
+      group_size: isFlock ? groupSize : 2, // buddy/activity = 1:1
       trip_type: types,
       budget,
       pace,
-      visibility,
+      visibility: isFlock ? "public" : "private",
       status: "active",
     };
     const res = initial.id
@@ -93,7 +94,7 @@ export default function TripForm({
       : await supabase.from("trips").insert(payload);
     setSaving(false);
     if (res.error) return setErr(res.error.message);
-    router.push(`/match?mode=${kind}`);
+    router.push(isFlock ? "/flocks" : `/match?mode=${kind}`);
     router.refresh();
   }
 
@@ -121,7 +122,11 @@ export default function TripForm({
             <input className={inputCls} value={dest2} onChange={(e) => setDest2(e.target.value)} placeholder="Destination 2 (optional)" />
             <input className={inputCls} value={dest3} onChange={(e) => setDest3(e.target.value)} placeholder="Destination 3 (optional)" />
           </div>
-          <p className="mt-1 text-xs font-medium text-muted">You&rsquo;ll match with travelers heading to any of these.</p>
+          <p className="mt-1 text-xs font-medium text-muted">
+            {isFlock
+              ? "Travelers who match any of these can request to join."
+              : "You’ll match with travelers heading to any of these."}
+          </p>
         </div>
       )}
 
@@ -142,11 +147,19 @@ export default function TripForm({
           Activities are <span className="font-bold text-ink">1:1</span> — you&rsquo;ll
           match with one person at a time. For bigger groups, create a Vibe.
         </p>
-      ) : (
+      ) : isFlock ? (
         <label className="block">
           <span className="mb-1 block text-sm font-bold">Group size: {groupSize}</span>
-          <input type="range" min={1} max={12} value={groupSize} onChange={(e) => setGroupSize(Number(e.target.value))} className="w-full accent-flockie-orange" />
+          <input type="range" min={3} max={12} value={groupSize} onChange={(e) => setGroupSize(Number(e.target.value))} className="w-full accent-flockie-orange" />
+          <p className="mt-1 text-xs font-medium text-muted">
+            Anyone can request to join your Flock — you approve who&rsquo;s in.
+          </p>
         </label>
+      ) : (
+        <p className="rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-medium text-ink/70">
+          You&rsquo;re looking for <span className="font-bold text-ink">1 travel buddy</span> —
+          you both swipe, mutual likes connect. Want a group? Create a Flock.
+        </p>
       )}
 
       <div>
@@ -177,30 +190,20 @@ export default function TripForm({
         <input type="range" min={1} max={5} value={pace} onChange={(e) => setPace(Number(e.target.value))} className="w-full accent-flockie-orange" />
       </label>
 
-      {!isActivity && (
-        <div>
-          <p className="text-sm font-bold">Visibility</p>
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            {[
-              { v: "private", l: "Private", d: "Only used for 1:1 matching" },
-              { v: "public", l: "Public", d: "Shown in Find a Flock; others can request to join" },
-            ].map((o) => (
-              <button key={o.v} type="button" onClick={() => setVisibility(o.v)}
-                className={`rounded-2xl border-2 border-ink p-3 text-left ${visibility === o.v ? "bg-flockie-blue text-white" : "bg-white"}`}>
-                <span className="block text-sm font-extrabold">{o.l}</span>
-                <span className={`block text-xs font-medium ${visibility === o.v ? "text-white/90" : "text-muted"}`}>{o.d}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       <p className="text-xs font-medium text-muted">Pre-filled from your profile — tweak anything.</p>
       {err && <p className="text-center text-sm font-bold text-flockie-orange">{err}</p>}
 
       <button type="submit" disabled={saving}
         className="w-full rounded-full border-2 border-ink bg-flockie-orange py-3.5 font-bold text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50">
-        {saving ? "Saving…" : initial.id ? "Update" : isActivity ? "Post activity & find buddies" : "Post trip & find buddies"}
+        {saving
+          ? "Saving…"
+          : initial.id
+            ? "Update"
+            : isActivity
+              ? "Post activity & find buddies"
+              : isFlock
+                ? "Create Flock"
+                : "Post trip & find a buddy"}
       </button>
     </form>
   );

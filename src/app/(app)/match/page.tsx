@@ -68,6 +68,7 @@ export default async function MatchPage({
     .eq("user_id", user!.id)
     .eq("status", "active")
     .eq("kind", mode)
+    .neq("visibility", "public") // public group trips are Flocks, not 1:1 buddy posts
     .order("created_at", { ascending: false })
     .limit(20);
   const posts = postRows ?? [];

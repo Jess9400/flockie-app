@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, CalendarClock, Users, Wallet, Gauge } from "lucide-react";
+import { MapPin, CalendarClock, Users, Wallet, Gauge, Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import FlockRequestButton from "@/components/FlockRequestButton";
 import { loadFlockMatch } from "@/lib/vibe-stats";
@@ -59,7 +59,15 @@ export default async function FlocksPage() {
 
   return (
     <main className="px-5 pb-10 pt-6">
-      <h1 className="text-2xl font-black">Find a Flock</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-black">Find a Flock</h1>
+        <Link
+          href="/match/trip?kind=flock"
+          className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
+        >
+          <Plus size={16} /> Create
+        </Link>
+      </div>
       <p className="mt-1 text-sm font-medium text-muted">
         Open <span className="font-bold">group trips</span> you can request to
         join. (Group activities live in Vibes.)

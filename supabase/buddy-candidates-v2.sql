@@ -18,6 +18,7 @@ returns int language sql security definer set search_path = public stable as $$
   select count(distinct t.user_id)::int
   from public.trips t cross join me_t
   where t.user_id <> auth.uid() and t.status = 'active' and t.kind = me_t.kind
+    and coalesce(t.visibility, 'private') <> 'public'  -- exclude Flocks from 1:1
     and exists (
       select 1 from unnest(coalesce(t.destinations, '{}')) a
       join unnest(coalesce(me_t.destinations, '{}')) b on lower(a) = lower(b)
@@ -73,6 +74,7 @@ language sql security definer set search_path = public stable as $$
   where ct.user_id <> auth.uid()
     and ct.status = 'active'
     and ct.kind = me_t.kind
+    and coalesce(ct.visibility, 'private') <> 'public'  -- exclude Flocks from 1:1
     and exists (select 1 from unnest(coalesce(ct.destinations,'{}')) a
                 join unnest(coalesce(me_t.destinations,'{}')) b on lower(a)=lower(b))
     and (greatest(ct.start_date, me_t.start_date) - least(ct.end_date, me_t.end_date)) <= 30
