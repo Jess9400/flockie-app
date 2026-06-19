@@ -6,20 +6,39 @@ import { createClient } from "@/lib/supabase/client";
 
 const KEY = "flockie-location-asked";
 
-export default function LocationPrompt() {
+export default function LocationPrompt({ trackingEnabled }: { trackingEnabled?: boolean }) {
   const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    if (typeof navigator === "undefined" || !("geolocation" in navigator)) return;
+
+    // Tracking on → user already consented: capture location silently, no card.
+    if (trackingEnabled) {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const supabase = createClient();
+          await supabase.rpc("set_my_location", {
+            p_lng: pos.coords.longitude,
+            p_lat: pos.coords.latitude,
+          });
+        },
+        () => {},
+        { enableHighAccuracy: false, timeout: 10000 }
+      );
+      return;
+    }
+
+    // Tracking off → ask contextually (once) where location is actually needed.
     let asked: string | null = null;
     try {
       asked = localStorage.getItem(KEY);
     } catch {}
-    if (!asked && typeof navigator !== "undefined" && "geolocation" in navigator) {
+    if (!asked) {
       const t = setTimeout(() => setShow(true), 1200);
       return () => clearTimeout(t);
     }
-  }, []);
+  }, [trackingEnabled]);
 
   function dismiss(value: string) {
     try {
@@ -37,6 +56,11 @@ export default function LocationPrompt() {
           p_lng: pos.coords.longitude,
           p_lat: pos.coords.latitude,
         });
+        // Remember consent so it stays silent next time.
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from("profiles").update({ location_tracking_enabled: true }).eq("id", user.id);
+        }
         setBusy(false);
         dismiss("granted");
       },

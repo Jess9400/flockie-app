@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import NotificationsToggle from "@/components/NotificationsToggle";
+import LocationToggle from "@/components/LocationToggle";
 import SignOutButton from "@/components/SignOutButton";
 import DeleteAccountButton from "@/components/DeleteAccountButton";
 
@@ -17,6 +18,13 @@ export default async function SettingsPage() {
     .eq("id", user!.id)
     .maybeSingle();
 
+  // Separate (migration-safe) query — column added by location-tracking.sql.
+  const { data: loc } = await supabase
+    .from("profiles")
+    .select("location_tracking_enabled")
+    .eq("id", user!.id)
+    .maybeSingle();
+
   return (
     <main className="mx-auto w-full max-w-[720px] px-6 pb-24 pt-6 font-nunito">
       <Link
@@ -28,10 +36,14 @@ export default async function SettingsPage() {
 
       <h1 className="font-fredoka text-3xl font-bold text-navy">Settings</h1>
 
-      <section className="mt-8">
+      <section className="mt-8 space-y-3">
         <NotificationsToggle
           userId={user!.id}
           initial={profile?.notifications_enabled ?? true}
+        />
+        <LocationToggle
+          userId={user!.id}
+          initial={loc?.location_tracking_enabled ?? false}
         />
       </section>
 

@@ -27,6 +27,14 @@ export default async function VibesPage({
 
   const activityCheckDone = (profile?.activities ?? []).length > 0;
 
+  // Location tracking preference (separate, migration-safe query).
+  const { data: loc } = await supabase
+    .from("profiles")
+    .select("location_tracking_enabled")
+    .eq("id", user!.id)
+    .maybeSingle();
+  const trackingEnabled = !!loc?.location_tracking_enabled;
+
   let query = supabase
     .from("vibes")
     .select(
@@ -131,7 +139,7 @@ export default async function VibesPage({
         ))}
       </div>
 
-      <LocationPrompt />
+      <LocationPrompt trackingEnabled={trackingEnabled} />
     </main>
   );
 }
