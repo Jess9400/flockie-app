@@ -1,9 +1,9 @@
 -- 3-form weighted compatibility: personality vibe quiz + trip vibe + activity
 -- vibe. Replaces the trip-only buddy_pair_score. Only the forms BOTH people
--- have filled count, then weights are renormalized — so a missing form doesn't
+-- have filled count, then weights are renormalized --- so a missing form doesn't
 -- unfairly tank the score. Run in the Supabase SQL editor. Safe to re-run.
 --
--- Weights (of the components present): Personality 0.40 · Trip 0.35 · Activity 0.25.
+-- Weights (of the components present): Personality 0.40 -- Trip 0.35 -- Activity 0.25.
 
 create or replace function public.buddy_pair_score(p_a uuid, p_b uuid)
 returns numeric language plpgsql security definer set search_path = public stable as $$
@@ -26,7 +26,7 @@ begin
   select * into ra from public.profiles where id = p_a;
   select * into rb from public.profiles where id = p_b;
 
-  -- ── Trip vibe: 6 sliders (60%) + trip_vibe tag Jaccard (40%) ──
+  -- ------ Trip vibe: 6 sliders (60%) + trip_vibe tag Jaccard (40%) ------
   if ra.planning is not null and rb.planning is not null then s := s + (1 - abs(ra.planning - rb.planning)/4.0); n := n+1; end if;
   if ra.pace is not null and rb.pace is not null then s := s + (1 - abs(ra.pace - rb.pace)/4.0); n := n+1; end if;
   if ra.social_energy is not null and rb.social_energy is not null then s := s + (1 - abs(ra.social_energy - rb.social_energy)/4.0); n := n+1; end if;
@@ -47,7 +47,7 @@ begin
     trip_w := 0.35;
   end if;
 
-  -- ── Personality: cosine similarity of the 6-dim vibe_scores ──
+  -- ------ Personality: cosine similarity of the 6-dim vibe_scores ------
   if ra.vibe_scores is not null and rb.vibe_scores is not null then
     foreach d in array dims loop
       av := coalesce((ra.vibe_scores ->> d)::float, 0);
@@ -60,7 +60,7 @@ begin
     end if;
   end if;
 
-  -- ── Activity: activities Jaccard + activity_vibe Jaccard + social/intensity ──
+  -- ------ Activity: activities Jaccard + activity_vibe Jaccard + social/intensity ------
   if coalesce(array_length(ra.activities,1),0) > 0 and coalesce(array_length(rb.activities,1),0) > 0 then
     select count(*) into a_inter from unnest(ra.activities) t where t = any(rb.activities);
     select cardinality(array(select distinct unnest(ra.activities || rb.activities))) into a_uni;
@@ -79,9 +79,9 @@ begin
     act_w := 0.25;
   end if;
 
-  -- ── Weighted blend over the components both people have ──
+  -- ------ Weighted blend over the components both people have ------
   wsum := pers_w + trip_w + act_w;
-  if wsum = 0 then return 50; end if; -- no shared data → neutral
+  if wsum = 0 then return 50; end if; -- no shared data --- neutral
   total := coalesce(pers_sim * pers_w, 0) + coalesce(trip_sim * trip_w, 0) + coalesce(act_sim * act_w, 0);
   return round(100 * (total / wsum));
 end $$;
@@ -92,7 +92,7 @@ grant execute on function public.buddy_pair_score(uuid, uuid) to authenticated;
 update public.buddy_matches m
 set score = public.buddy_pair_score(m.user_a, m.user_b);
 
--- ── Personality cosine helper (reused by the vibe-room ranking) ──
+-- ------ Personality cosine helper (reused by the vibe-room ranking) ------
 -- 6-dim cosine similarity of two vibe_scores blobs (0..1), or null if missing.
 create or replace function public.vibe_cosine(a jsonb, b jsonb)
 returns numeric language plpgsql immutable set search_path = public as $$
@@ -111,9 +111,9 @@ begin
 end $$;
 grant execute on function public.vibe_cosine(jsonb, jsonb) to authenticated;
 
--- ── rank_vibe: now also weights the personality vibe (candidate ↔ host) ──
--- Weights: skill 0.30 · event-vibe tags 0.25 · personality 0.20 · trip sliders
--- 0.15 · base 0.05 · diversity 0.05.
+-- ------ rank_vibe: now also weights the personality vibe (candidate --- host) ------
+-- Weights: skill 0.30 -- event-vibe tags 0.25 -- personality 0.20 -- trip sliders
+-- 0.15 -- base 0.05 -- diversity 0.05.
 create or replace function public.rank_vibe(p_vibe uuid)
 returns jsonb
 language plpgsql security definer set search_path = public as $$
@@ -140,10 +140,9 @@ begin
         0.30 * (
           case when v.required_skill_level is null then 0.7
           else coalesce((
-            select 1 - abs(((p.activity_skills ->> k)::int) - v.required_skill_level)::float / 4
-            from jsonb_object_keys(coalesce(p.activity_skills, '{}'::jsonb)) k
+            select max(1 - abs(((p.activity_skills ->> k)::int) - v.required_skill_level)::float / 4)
+            from jsonb_object_keys(coalesce(p.activity_skills, '{}'::jsonb)) as k
             where lower(k) like '%' || lower(v.category) || '%'
-            limit 1
           ), 0.3) end
         )
         + 0.25 * (
