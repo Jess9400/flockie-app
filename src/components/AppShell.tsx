@@ -105,14 +105,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <Link href="/inbox" aria-label="Inbox" className="relative flex h-10 w-10 items-center justify-center rounded-full hover:bg-navy/5">
-            <Bell size={20} />
-            {unread > 0 && (
-              <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-flockie-coral px-1 text-[10px] font-bold text-white">
-                {unread}
-              </span>
-            )}
-          </Link>
           <div className="relative">
             <button onClick={() => setMenu((v) => !v)} className="flex items-center gap-2 rounded-full border-2 border-ink bg-white py-1 pl-1 pr-3">
               {photo ? (
