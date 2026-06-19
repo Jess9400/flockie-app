@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import TripVibeForm from "@/components/TripVibeForm";
 import ActivityVibeForm from "@/components/ActivityVibeForm";
+import { restartVibeCheck } from "@/lib/onboarding/vibe-actions";
 import { profileCompletion, type CompletionInput } from "@/lib/profile-completion";
 
 // Top of the public profile (own view). All 3 forms feed back here: it shows
@@ -21,17 +22,29 @@ export default function ProfileCompletion({
 }) {
   const router = useRouter();
   const [open, setOpen] = useState<"trip" | "activity" | null>(null);
+  const [profileMenu, setProfileMenu] = useState(false);
+  const [redoing, setRedoing] = useState(false);
   const { segments, overall } = profileCompletion(profile);
   const allDone = overall >= 100;
 
   function act(key: "profile" | "trip" | "activity") {
-    if (key === "profile") onEditProfile();
+    if (key === "profile") setProfileMenu(true);
     else setOpen(key);
   }
 
   function done() {
     setOpen(null);
     router.refresh();
+  }
+
+  async function redoQuiz() {
+    setRedoing(true);
+    try {
+      await restartVibeCheck();
+      router.push("/onboarding/vibe-check");
+    } catch {
+      setRedoing(false);
+    }
   }
 
   return (
@@ -76,6 +89,46 @@ export default function ProfileCompletion({
 
       {open === "trip" && <TripVibeForm userId={userId} onDone={done} onClose={() => setOpen(null)} />}
       {open === "activity" && <ActivityVibeForm userId={userId} onDone={done} onClose={() => setOpen(null)} />}
+
+      {profileMenu && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-navy/40 p-4 sm:items-center"
+          onClick={() => !redoing && setProfileMenu(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-3xl border-2 border-navy bg-white p-5 font-nunito shadow-[0_6px_0_0_rgba(10,37,69,1)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="font-fredoka text-lg font-bold text-navy">Edit your profile</p>
+            <button
+              type="button"
+              onClick={() => {
+                setProfileMenu(false);
+                onEditProfile();
+              }}
+              className="mt-4 w-full rounded-2xl border-2 border-navy bg-white py-3 font-fredoka text-sm font-semibold text-navy hover:bg-cream"
+            >
+              Edit basics &amp; photos
+            </button>
+            <button
+              type="button"
+              onClick={redoQuiz}
+              disabled={redoing}
+              className="mt-2.5 w-full rounded-2xl border-2 border-navy bg-flockie-coral py-3 font-fredoka text-sm font-semibold text-white disabled:opacity-50"
+            >
+              {redoing ? "Resetting…" : "Redo vibe quiz"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setProfileMenu(false)}
+              disabled={redoing}
+              className="mt-2 w-full py-2 text-center text-sm font-bold text-navy/50"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

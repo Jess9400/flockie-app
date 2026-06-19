@@ -106,6 +106,17 @@ export async function completeVibeCheck() {
   return { scores, archetype };
 }
 
+// Clears the saved quiz so the user can retake it from scratch.
+export async function restartVibeCheck() {
+  const { supabase, user } = await authenticatedClient();
+  await supabase.from("vibe_responses").delete().eq("profile_id", user.id);
+  const { error } = await supabase
+    .from("profiles")
+    .update({ vibe_completed_at: null, archetype: null, vibe_scores: null })
+    .eq("id", user.id);
+  if (error) throw error;
+}
+
 export async function getNearbyVibes(city: string, limit = 3) {
   const { supabase, user } = await authenticatedClient();
   const { data, error } = await supabase
