@@ -16,6 +16,21 @@ export async function loadVibeMatch(
   return out;
 }
 
+// Flock (group-trip) match % between the current user and each trip, by trip id.
+export async function loadFlockMatch(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  tripIds: string[]
+): Promise<Record<string, number>> {
+  const out: Record<string, number> = {};
+  const ids = Array.from(new Set(tripIds)).filter(Boolean);
+  if (ids.length === 0) return out;
+  const { data } = await supabase.rpc("flock_match_scores", { p_ids: ids });
+  (data ?? []).forEach((r: { trip_id: string; score: number }) => {
+    out[r.trip_id] = r.score;
+  });
+  return out;
+}
+
 // Buddy review stats (avg rating + count) for a set of users, keyed by user id.
 export async function loadUserRatings(
   supabase: Awaited<ReturnType<typeof createClient>>,
