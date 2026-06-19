@@ -1,8 +1,9 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import ShareVibeButton from "@/components/ShareVibeButton";
 import {
   VIBE_CATEGORIES,
   EVENT_VIBE_TAGS,
@@ -24,9 +25,9 @@ export default function CreateVibeForm({
   defaultActivityUrl?: string;
   defaultTitle?: string;
 }) {
-  const router = useRouter();
   const supabase = createClient();
 
+  const [createdId, setCreatedId] = useState<string | null>(null);
   const [title, setTitle] = useState(defaultTitle);
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
@@ -132,8 +133,37 @@ export default function CreateVibeForm({
     setSaving(false);
 
     if (error) return setErr(error.message);
-    router.push(`/vibes/${data.id}`);
-    router.refresh();
+    setCreatedId(data.id);
+  }
+
+  if (createdId) {
+    return (
+      <div className="rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_6px_0_0_rgba(10,37,69,1)]">
+        <p className="text-4xl">🎉</p>
+        <h2 className="mt-2 font-fredoka text-2xl font-bold text-ink">Your Vibe is live!</h2>
+        <p className="mt-1 font-nunito text-sm font-medium text-muted">
+          Share it to invite people. They tap &ldquo;I&rsquo;m interested&rdquo; and the
+          algorithm builds the room from the most compatible.
+        </p>
+        <div className="mt-5 flex justify-center">
+          <ShareVibeButton vibeId={createdId} />
+        </div>
+        <div className="mt-4 flex flex-col gap-2">
+          <Link
+            href={`/vibes/${createdId}`}
+            className="rounded-full border-2 border-ink bg-flockie-blue py-2.5 font-fredoka text-sm font-semibold text-white"
+          >
+            View your Vibe
+          </Link>
+          <Link
+            href="/vibes"
+            className="rounded-full border-2 border-ink bg-white py-2.5 font-fredoka text-sm font-semibold text-ink"
+          >
+            Back to Vibes
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
