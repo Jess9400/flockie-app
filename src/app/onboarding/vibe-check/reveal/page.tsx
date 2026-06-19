@@ -17,7 +17,7 @@ export default async function VibeRevealPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("vibe_scores, archetype, home_city, display_name")
+    .select("vibe_scores, archetype, home_city, display_name, trip_prefs_complete, activity_prefs_complete")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -28,6 +28,15 @@ export default async function VibeRevealPage() {
   const scores = profile.vibe_scores as VibeScores;
   const archetype = ARCHETYPES[profile.archetype as VibeDimension];
   if (!archetype) redirect("/onboarding/vibe-check");
+
+  // "Confirm my vibe" jumps to the first form that's still empty; if both the
+  // trip and activity forms are already done, go straight to the profile (and
+  // trigger the completion popup).
+  const confirmHref = !profile.trip_prefs_complete
+    ? "/onboarding/trip-vibe"
+    : !profile.activity_prefs_complete
+      ? "/onboarding/activity-vibe"
+      : "/profile?vibe_done=1";
 
   const nearby = profile.home_city
     ? await getNearbyVibes(profile.home_city)
@@ -52,7 +61,7 @@ export default async function VibeRevealPage() {
             <p className="text-[12px] font-semibold leading-relaxed text-[#8A6A1E]"><b className="text-ink">This is your early read</b> — based on 5 quick answers. Confirm it with a few more questions to unlock your real match %.</p>
           </div>
           <Link
-            href="/onboarding/trip-vibe"
+            href={confirmHref}
             className="mt-3 block w-full rounded-2xl border-2 border-ink border-b-[5px] bg-navy py-3.5 text-center text-[15px] font-extrabold text-white"
           >
             Confirm my vibe →

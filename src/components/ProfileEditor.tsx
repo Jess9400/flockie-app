@@ -18,6 +18,7 @@ export default function ProfileEditor({
   reviewCount = 0,
   reviewItems = [],
   redirectAfter,
+  celebrate,
 }: {
   userId: string;
   profile: Partial<Profile>;
@@ -26,6 +27,7 @@ export default function ProfileEditor({
   reviewCount?: number;
   reviewItems?: ReviewItem[];
   redirectAfter?: string;
+  celebrate?: boolean;
 }) {
   // Start in edit mode if the profile isn't complete yet (first-time onboarding).
   const [editing, setEditing] = useState(!complete);
@@ -113,6 +115,7 @@ export default function ProfileEditor({
         tags={shareTags}
         archetypeKey={ext.archetype}
         allComplete={allComplete}
+        force={celebrate}
       />
     </div>
   );

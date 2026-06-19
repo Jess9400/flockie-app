@@ -11,21 +11,23 @@ export default function VibeCompletePopup({
   tags,
   archetypeKey,
   allComplete,
+  force,
 }: {
   userId: string;
   name: string;
   tags: string[];
   archetypeKey?: string | null;
   allComplete: boolean;
+  force?: boolean; // ?vibe_done=1 — show right after finishing the last form
 }) {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
     if (!allComplete || typeof window === "undefined") return;
-    if (localStorage.getItem("flockie_vibe_celebrated")) return;
+    if (!force && localStorage.getItem("flockie_vibe_celebrated")) return;
     localStorage.setItem("flockie_vibe_celebrated", "1");
     setShow(true);
-  }, [allComplete]);
+  }, [allComplete, force]);
 
   if (!show) return null;
 

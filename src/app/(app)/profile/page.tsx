@@ -6,7 +6,7 @@ import type { Profile } from "@/lib/vibe-check";
 export default async function ProfilePage({
   searchParams,
 }: {
-  searchParams: { compat?: string };
+  searchParams: { compat?: string; vibe_done?: string };
 }) {
   const supabase = await createClient();
   const {
@@ -67,6 +67,7 @@ export default async function ProfilePage({
         reviewCount={reviewCount}
         reviewItems={reviewItems}
         redirectAfter={searchParams.compat ? `/compat/${searchParams.compat}` : undefined}
+        celebrate={searchParams.vibe_done === "1"}
       />
     </main>
   );
