@@ -13,9 +13,11 @@ const config: Config = {
         "onboarding-green": "#1A8C6A",
       },
       fontFamily: {
-        dm: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
-        fredoka: ["var(--font-fredoka)", "var(--font-dm-sans)", "system-ui", "sans-serif"],
-        nunito: ["var(--font-nunito)", "var(--font-dm-sans)", "system-ui", "sans-serif"],
+        // One font across the whole site (Nunito). `fredoka` and `dm` are kept
+        // as aliases pointing at Nunito so existing classes don't need rewriting.
+        dm: ["var(--font-nunito)", "system-ui", "sans-serif"],
+        fredoka: ["var(--font-nunito)", "system-ui", "sans-serif"],
+        nunito: ["var(--font-nunito)", "system-ui", "sans-serif"],
       },
     },
   },

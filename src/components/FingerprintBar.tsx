@@ -18,25 +18,25 @@ export default function FingerprintBar({
 
   return (
     <div className="font-nunito">
-      <p className="font-nunito text-[15px] font-semibold text-navy">{title}</p>
+      <p className="text-[13px] font-bold text-navy">{title}</p>
 
-      <div className="mt-2 flex items-center justify-between gap-3 text-[11px] font-medium uppercase tracking-wide text-navy/55">
+      <div className="mt-1.5 flex items-center justify-between gap-3 text-[11px] font-medium uppercase tracking-wide text-navy/55">
         <span className="max-w-[40%] leading-tight">{leftLabel}</span>
         <span className="max-w-[40%] text-right leading-tight">{rightLabel}</span>
       </div>
 
-      <div className="relative mt-1.5 h-3 w-full rounded-full bg-[#E5E0D8]">
+      <div className="relative mt-1.5 h-2.5 w-full rounded-full bg-[#E5E0D8]">
         <div
           className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-flockie-blue to-flockie-coral"
           style={{ width: `${pct}%` }}
         />
         <span
-          className="absolute top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-flockie-coral shadow-[0_2px_6px_rgba(10,37,69,0.3)]"
+          className="absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-flockie-coral shadow-[0_2px_6px_rgba(10,37,69,0.3)]"
           style={{ left: `${pct}%` }}
         />
       </div>
 
-      <p className="mt-2.5 font-fredoka text-[17px] font-semibold text-navy">{answer}</p>
+      <p className="mt-2 text-[12.5px] font-semibold text-navy/80">{answer}</p>
     </div>
   );
 }
