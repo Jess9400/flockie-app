@@ -62,77 +62,71 @@ export default function VibeShareCard({
       ctx.fillRect(0, 0, W, H);
       ctx.textAlign = "center";
 
-      // Flockie logo mark (white)
+      // Flockie logo mark + wordmark — top-left
       if (logo) {
-        const lw = 130;
-        const lh = lw * (104 / 118);
-        ctx.drawImage(logo, (W - lw) / 2, 64, lw, lh);
+        const lw = 78;
+        ctx.drawImage(logo, 64, 60, lw, lw * (104 / 118));
       }
-
-      // wordmark
+      ctx.textAlign = "left";
       ctx.fillStyle = "#ffffff";
       ctx.font = "700 46px system-ui, sans-serif";
-      ctx.fillText("flockie", W / 2, 250);
+      ctx.fillText("flockie", logo ? 156 : 64, 118);
+      ctx.textAlign = "center";
 
       // kicker
       ctx.fillStyle = "#FF6B4A";
-      ctx.font = "700 36px system-ui, sans-serif";
-      ctx.fillText("MY VIBE", W / 2, 318);
+      ctx.font = "700 34px system-ui, sans-serif";
+      ctx.fillText("MY VIBE", W / 2, 236);
 
-      let y = 430;
+      let y;
 
       if (archetypeName) {
-        // emoji
-        ctx.font = "110px system-ui, sans-serif";
-        ctx.fillText(archetypeEmoji || "🪶", W / 2, 420);
-        // archetype name
+        ctx.font = "104px system-ui, sans-serif";
+        ctx.fillText(archetypeEmoji || "🪶", W / 2, 366);
         ctx.fillStyle = "#ffffff";
-        ctx.font = "800 76px system-ui, sans-serif";
-        ctx.fillText(archetypeName, W / 2, 530);
-        // person name
+        ctx.font = "800 72px system-ui, sans-serif";
+        ctx.fillText(archetypeName, W / 2, 456);
         ctx.fillStyle = "rgba(255,255,255,0.7)";
-        ctx.font = "600 40px system-ui, sans-serif";
-        ctx.fillText(name || "A flockie", W / 2, 590);
-        y = 660;
-        // description (wrapped, up to 3 lines)
+        ctx.font = "600 38px system-ui, sans-serif";
+        ctx.fillText(name || "A flockie", W / 2, 510);
+        y = 572;
         if (archetypeDescription) {
-          const font = "500 38px system-ui, sans-serif";
-          const lines = wrap(archetypeDescription, font, W - 180, 3);
+          const font = "500 36px system-ui, sans-serif";
+          const lines = wrap(archetypeDescription, font, W - 180, 2);
           ctx.fillStyle = "rgba(255,255,255,0.85)";
           ctx.font = font;
           for (const ln of lines) {
             ctx.fillText(ln, W / 2, y);
-            y += 50;
+            y += 48;
           }
-          y += 24;
+          y += 22;
         }
       } else {
-        // Fallback: name as the headline.
         ctx.fillStyle = "#ffffff";
-        ctx.font = "800 88px system-ui, sans-serif";
-        ctx.fillText(name || "A flockie", W / 2, 470);
-        y = 580;
+        ctx.font = "800 84px system-ui, sans-serif";
+        ctx.fillText(name || "A flockie", W / 2, 430);
+        y = 520;
       }
 
-      // tag pills (up to 3, short, stacked) — keep clear of the footer
+      // tag pills (up to 3, stacked) — keep clear of the footer
       const shown = tags
         .filter(Boolean)
-        .map((t) => (t.length > 24 ? t.slice(0, 23).trim() + "…" : t))
+        .map((t) => (t.length > 22 ? t.slice(0, 21).trim() + "…" : t))
         .slice(0, 3);
-      ctx.font = "700 38px system-ui, sans-serif";
+      ctx.font = "700 36px system-ui, sans-serif";
       for (const t of shown) {
-        if (y > H - 200) break;
+        if (y > H - 150) break;
         const tw = ctx.measureText(t).width;
-        const padX = 40;
-        const pw = Math.min(tw + padX * 2, W - 140);
-        const ph = 78;
+        const padX = 38;
+        const pw = Math.min(tw + padX * 2, W - 160);
+        const ph = 70;
         const x = (W - pw) / 2;
         ctx.fillStyle = "#FF6B4A";
-        roundRect(ctx, x, y, pw, ph, 39);
+        roundRect(ctx, x, y, pw, ph, 35);
         ctx.fill();
         ctx.fillStyle = "#ffffff";
-        ctx.fillText(t, W / 2, y + 52);
-        y += ph + 24;
+        ctx.fillText(t, W / 2, y + 47);
+        y += ph + 18;
       }
 
       // footer — sign-up CTA so anyone who sees the card can join

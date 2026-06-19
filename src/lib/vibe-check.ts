@@ -303,28 +303,29 @@ export const EMPTY_ACTIVITY: ActivityAnswers = {
   activity_one_liner: "",
 };
 
-// Three short, balanced "headline" tags for the share card — one each from
-// trip vibe / activity vibe / interests, shortened to a keyword (the full
-// travel-style sentences read as gibberish when truncated on the card).
+// Three punchy keyword tags for the share card. Phrases are split into
+// individual words ("Party / energetic / loud" -> Party, Energetic, Loud) so
+// even one filled form yields 3 short, distinct tags (full travel-style
+// sentences truncate to gibberish, so they're kept as a last resort).
 export function topVibeTags(p: Partial<Profile>): string[] {
-  const clean = (t: string) => t.split(/[\/,]/)[0].trim();
   const out: string[] = [];
-  const add = (t?: string | null) => {
-    if (!t) return;
-    const c = clean(t);
-    if (c && c.length <= 22 && !out.includes(c)) out.push(c);
+  const push = (raw: string) => {
+    const seg = raw.trim();
+    if (!seg || seg.length > 16) return;
+    const tag = seg.charAt(0).toUpperCase() + seg.slice(1);
+    if (!out.some((o) => o.toLowerCase() === tag.toLowerCase())) out.push(tag);
   };
-  add(p.trip_vibe?.[0]);
-  add(p.activity_vibe?.[0]);
-  add(p.activities?.[0]);
-  if (out.length < 3) {
-    [
-      ...(p.trip_vibe ?? []),
-      ...(p.activity_vibe ?? []),
-      ...(p.activities ?? []),
-    ].forEach((t) => {
-      if (out.length < 3) add(t);
-    });
+  const phrases = [
+    ...(p.activity_vibe ?? []),
+    ...(p.trip_vibe ?? []),
+    ...(p.activities ?? []),
+    ...(p.travel_style ?? []),
+  ];
+  for (const phrase of phrases) {
+    for (const seg of phrase.split(/[/,]/)) {
+      push(seg);
+      if (out.length >= 3) return out;
+    }
   }
   return out.slice(0, 3);
 }
