@@ -24,9 +24,10 @@ type Props = {
   userId: string;
   initial: Partial<Profile>;
   onSaved?: () => void;
+  redirectAfter?: string;
 };
 
-export default function VibeCheckForm({ userId, initial, onSaved }: Props) {
+export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter }: Props) {
   const router = useRouter();
   const supabase = createClient();
 
@@ -379,12 +380,17 @@ export default function VibeCheckForm({ userId, initial, onSaved }: Props) {
 
       {showShare && (
         <VibeShareCard
+          userId={userId}
           name={basics.display_name}
           tags={[...answers.trip_vibe, ...answers.travel_style, ...activity.activity_vibe]}
           onClose={() => {
             setShowShare(false);
-            router.refresh();
-            onSaved?.();
+            if (redirectAfter) {
+              router.push(redirectAfter);
+            } else {
+              router.refresh();
+              onSaved?.();
+            }
           }}
         />
       )}

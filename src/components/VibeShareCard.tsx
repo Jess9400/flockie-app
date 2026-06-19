@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import CompatShareButton from "@/components/CompatShareButton";
 
 // Generates a branded "my travel vibe" image on a canvas the user can share.
 export default function VibeShareCard({
+  userId,
   name,
   tags,
   onClose,
 }: {
+  userId?: string;
   name: string;
   tags: string[];
   onClose: () => void;
@@ -115,6 +118,11 @@ export default function VibeShareCard({
         >
           Share my vibe
         </button>
+        {userId && (
+          <div className="mt-2 flex justify-center">
+            <CompatShareButton userId={userId} variant="ghost" />
+          </div>
+        )}
         <button
           type="button"
           onClick={onClose}

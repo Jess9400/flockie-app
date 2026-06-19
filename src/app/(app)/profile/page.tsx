@@ -2,7 +2,11 @@ import { createClient } from "@/lib/supabase/server";
 import ProfileEditor from "@/components/ProfileEditor";
 import type { Profile } from "@/lib/vibe-check";
 
-export default async function ProfilePage() {
+export default async function ProfilePage({
+  searchParams,
+}: {
+  searchParams: { compat?: string };
+}) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -24,6 +28,7 @@ export default async function ProfilePage() {
         userId={user!.id}
         profile={(profile ?? {}) as Partial<Profile>}
         complete={complete}
+        redirectAfter={searchParams.compat ? `/compat/${searchParams.compat}` : undefined}
       />
     </main>
   );

@@ -6,16 +6,19 @@ import { Pencil, Settings, Share2 } from "lucide-react";
 import ProfileView from "@/components/ProfileView";
 import VibeCheckForm from "@/components/VibeCheckForm";
 import VibeShareCard from "@/components/VibeShareCard";
+import CompatShareButton from "@/components/CompatShareButton";
 import type { Profile } from "@/lib/vibe-check";
 
 export default function ProfileEditor({
   userId,
   profile,
   complete,
+  redirectAfter,
 }: {
   userId: string;
   profile: Partial<Profile>;
   complete: boolean;
+  redirectAfter?: string;
 }) {
   // Start in edit mode if the profile isn't complete yet (first-time onboarding).
   const [editing, setEditing] = useState(!complete);
@@ -41,6 +44,7 @@ export default function ProfileEditor({
           userId={userId}
           initial={profile}
           onSaved={() => setEditing(false)}
+          redirectAfter={redirectAfter}
         />
       </div>
     );
@@ -69,6 +73,11 @@ export default function ProfileEditor({
 
       <ProfileView profile={profile} />
 
+      {/* Invite a friend to see their match % with you */}
+      <div className="mt-8 flex justify-center">
+        <CompatShareButton userId={userId} />
+      </div>
+
       {/* Edit CTA — fixed bottom-right desktop, sticky bottom-center mobile */}
       <button
         onClick={() => setEditing(true)}
@@ -79,6 +88,7 @@ export default function ProfileEditor({
 
       {showShare && (
         <VibeShareCard
+          userId={userId}
           name={profile.display_name ?? ""}
           tags={shareTags}
           onClose={() => setShowShare(false)}
