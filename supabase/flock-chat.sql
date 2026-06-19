@@ -67,8 +67,8 @@ declare v_host uuid; v_cohost uuid;
 begin
   select user_id, co_host_id into v_host, v_cohost from public.trips where id = p_trip;
   if v_host is null then raise exception 'trip not found'; end if;
-  if auth.uid() <> v_host and auth.uid() is distinct from v_cohost then
-    raise exception 'only the flock hosts can remove members';
+  if auth.uid() <> v_host then
+    raise exception 'only the host can remove members';
   end if;
   if p_user = v_host or p_user is not distinct from v_cohost then
     raise exception 'cannot remove a host';

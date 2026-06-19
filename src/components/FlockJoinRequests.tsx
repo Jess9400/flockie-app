@@ -19,10 +19,12 @@ export default function FlockJoinRequests({
   tripId,
   requests,
   dualApproval,
+  canRemove,
 }: {
   tripId: string;
   requests: JoinReq[];
   dualApproval?: boolean;
+  canRemove?: boolean;
 }) {
   const supabase = createClient();
   const [items, setItems] = useState(requests);
@@ -127,15 +129,17 @@ export default function FlockJoinRequests({
                   )}
                   {r.name}
                 </Link>
-                <button
-                  type="button"
-                  onClick={() => remove(r.userId)}
-                  disabled={busy === r.userId}
-                  aria-label={`Remove ${r.name}`}
-                  className="flex h-5 w-5 items-center justify-center rounded-full text-muted hover:bg-ink/5 hover:text-ink"
-                >
-                  <X size={13} />
-                </button>
+                {canRemove && (
+                  <button
+                    type="button"
+                    onClick={() => remove(r.userId)}
+                    disabled={busy === r.userId}
+                    aria-label={`Remove ${r.name}`}
+                    className="flex h-5 w-5 items-center justify-center rounded-full text-muted hover:bg-ink/5 hover:text-ink"
+                  >
+                    <X size={13} />
+                  </button>
+                )}
               </span>
             ))}
           </div>

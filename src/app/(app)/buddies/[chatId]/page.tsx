@@ -47,18 +47,22 @@ export default async function BuddyChatPage({
   // so both buddies can approve together.
   const flockTripIds = [matchExt?.trip_a, matchExt?.trip_b].filter(Boolean) as string[];
   let flockTripId: string | null = null;
+  let flockHostId: string | null = null;
+  let flockTitle = "";
   let flockReqs: JoinReq[] = [];
   const chatMembers: Record<string, { name: string; photo: string | null }> = {};
   if (flockTripIds.length) {
     const { data: fl } = await supabase
       .from("trips")
-      .select("id")
+      .select("id, user_id, destination")
       .in("id", flockTripIds)
       .eq("visibility", "public")
       .not("co_host_id", "is", null)
       .maybeSingle();
     if (fl) {
       flockTripId = fl.id;
+      flockHostId = fl.user_id;
+      flockTitle = fl.destination ?? "Flock";
       const { data: jr } = await supabase
         .from("trip_join_requests")
         .select("user_id, status")
@@ -223,6 +227,14 @@ export default async function BuddyChatPage({
     travelStyle: arr(other?.travel_style),
   };
 
+  const groupMembers = Object.entries(chatMembers).map(([id, mem]) => ({
+    id,
+    name: mem.name,
+    photo: mem.photo,
+    isHost: id === flockHostId,
+  }));
+  const isHostOfFlock = !!flockHostId && user!.id === flockHostId;
+
   return (
     <main className="mx-auto w-full max-w-2xl px-5 pt-2 font-nunito">
       <BuddyChatHeader
@@ -240,10 +252,13 @@ export default async function BuddyChatPage({
         sharedTravelStyle={sharedTravelStyle}
         compatLine={compatLine}
         peek={peek}
+        isGroup={!!flockTripId}
+        groupTitle={flockTitle}
+        groupMembers={groupMembers}
       />
 
       {flockTripId && flockReqs.length > 0 && (
-        <FlockJoinRequests tripId={flockTripId} requests={flockReqs} dualApproval />
+        <FlockJoinRequests tripId={flockTripId} requests={flockReqs} dualApproval canRemove={isHostOfFlock} />
       )}
 
       <BuddyChatRoom

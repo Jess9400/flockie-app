@@ -143,7 +143,7 @@ export default async function MyTripsPage() {
               </Link>
             </div>
             {reqByTrip[t.id]?.length ? (
-              <FlockJoinRequests tripId={t.id} requests={reqByTrip[t.id]} dualApproval={coHostTrips.has(t.id)} />
+              <FlockJoinRequests tripId={t.id} requests={reqByTrip[t.id]} dualApproval={coHostTrips.has(t.id)} canRemove />
             ) : null}
           </div>
         ))}

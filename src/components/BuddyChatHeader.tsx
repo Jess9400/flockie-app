@@ -23,6 +23,9 @@ export default function BuddyChatHeader({
   compatLine,
   peek,
   initialMuted,
+  isGroup,
+  groupTitle,
+  groupMembers = [],
 }: {
   matchId: string;
   chatId: string;
@@ -38,6 +41,9 @@ export default function BuddyChatHeader({
   compatLine: string | null;
   peek: PeekData;
   initialMuted: boolean;
+  isGroup?: boolean;
+  groupTitle?: string;
+  groupMembers?: { id: string; name: string; photo: string | null; isHost: boolean }[];
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -82,6 +88,82 @@ export default function BuddyChatHeader({
     if (error) return window.alert(error.message);
     window.alert("Done! Your trip is now a Flock. Approve join requests from this chat or My Trips.");
     router.refresh();
+  }
+
+  if (isGroup) {
+    const shown = groupMembers.slice(0, 6);
+    return (
+      <div className="sticky top-16 z-20 -mx-5 border-b-2 border-navy bg-white px-5">
+        <div className="flex items-center justify-between pt-3">
+          <Link href="/chats" className="flex items-center gap-1 font-nunito text-sm font-bold text-navy/60">
+            <ChevronLeft size={16} /> Chats
+          </Link>
+          <span className="rounded-full bg-flockie-orange px-2.5 py-0.5 font-nunito text-[11px] font-extrabold uppercase text-white">
+            Flock
+          </span>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="flex w-full items-center gap-3 py-3 text-left"
+        >
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cream text-2xl">🧳</span>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate font-fredoka text-lg font-semibold text-navy">{groupTitle || "Group trip"}</span>
+            <span className="block truncate font-nunito text-sm font-medium text-navy/70">
+              {groupMembers.length} going{dateRange ? ` · ${dateRange}` : ""}
+            </span>
+          </span>
+          <ChevronDown size={18} className={`shrink-0 text-navy transition-transform ${expanded ? "rotate-180" : ""}`} />
+        </button>
+
+        <div className="-mt-1 flex items-center gap-1 pb-3">
+          <div className="flex -space-x-2">
+            {shown.map((m) => (
+              <Link key={m.id} href={`/people/${m.id}`} aria-label={m.name}>
+                {m.photo ? (
+                  <Image src={m.photo} alt="" width={28} height={28} className="h-7 w-7 rounded-full border-2 border-white object-cover" />
+                ) : (
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-flockie-blue text-[10px] font-bold text-white">
+                    {m.name[0]}
+                  </span>
+                )}
+              </Link>
+            ))}
+          </div>
+          {groupMembers.length > shown.length && (
+            <span className="ml-1 font-nunito text-xs font-medium text-navy/60">+{groupMembers.length - shown.length}</span>
+          )}
+        </div>
+
+        {expanded && (
+          <div className="space-y-2 pb-4">
+            {dateRange && <p className="font-nunito text-sm font-medium text-navy">📅 {dateRange}</p>}
+            <p className="font-nunito text-xs font-bold uppercase tracking-wide text-navy/55">Members</p>
+            <div className="flex flex-wrap gap-2">
+              {groupMembers.map((m) => (
+                <Link
+                  key={m.id}
+                  href={`/people/${m.id}`}
+                  className="flex items-center gap-1.5 rounded-full border-2 border-navy bg-white px-2 py-1 font-nunito text-xs font-bold text-navy"
+                >
+                  {m.photo ? (
+                    <Image src={m.photo} alt="" width={20} height={20} className="h-5 w-5 rounded-full object-cover" />
+                  ) : (
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-flockie-blue text-[10px] font-bold text-white">
+                      {m.name[0]}
+                    </span>
+                  )}
+                  {m.name}
+                  {m.isHost && <span className="text-flockie-coral">★</span>}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
   }
 
   return (
