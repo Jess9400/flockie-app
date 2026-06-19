@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { X, Heart, MapPin, CalendarClock, ChevronLeft, ChevronRight, ChevronsUpDown } from "lucide-react";
@@ -30,8 +30,43 @@ export default function SwipeDeck({ candidates }: { candidates: Candidate[] }) {
   const [busy, setBusy] = useState(false);
   const [media, setMedia] = useState(0);
   const [match, setMatch] = useState<{ name: string; chatId: string } | null>(null);
+  const [drag, setDrag] = useState(0);
+  const draggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const movedRef = useRef(false);
+  const [animating, setAnimating] = useState(false);
+  const SWIPE_THRESHOLD = 110;
 
   const c = candidates[i];
+
+  function onPointerDown(e: React.PointerEvent) {
+    if (busy || animating) return;
+    draggingRef.current = true;
+    startXRef.current = e.clientX;
+    movedRef.current = false;
+  }
+  function onPointerMove(e: React.PointerEvent) {
+    if (!draggingRef.current) return;
+    const dx = e.clientX - startXRef.current;
+    if (Math.abs(dx) > 8) movedRef.current = true;
+    setDrag(dx);
+  }
+  function endDrag() {
+    if (!draggingRef.current) return;
+    draggingRef.current = false;
+    if (Math.abs(drag) > SWIPE_THRESHOLD) {
+      const liked = drag > 0;
+      setAnimating(true);
+      setDrag(liked ? 700 : -700);
+      setTimeout(() => {
+        act(liked);
+        setDrag(0);
+        setAnimating(false);
+      }, 180);
+    } else {
+      setDrag(0);
+    }
+  }
 
   // photos + (optional) video
   const items = c
@@ -66,7 +101,36 @@ export default function SwipeDeck({ candidates }: { candidates: Candidate[] }) {
 
   return (
     <div className="mt-6">
-      <div className="relative h-[60vh] overflow-hidden rounded-3xl border-2 border-ink bg-cream shadow-[0_6px_0_0_rgba(26,26,26,1)]">
+      <div
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onPointerLeave={endDrag}
+        style={{
+          transform: `translateX(${drag}px) rotate(${drag / 18}deg)`,
+          transition: draggingRef.current ? "none" : "transform 0.18s ease-out",
+          touchAction: "pan-y",
+        }}
+        className="relative h-[60vh] select-none overflow-hidden rounded-3xl border-2 border-ink bg-cream shadow-[0_6px_0_0_rgba(26,26,26,1)]"
+      >
+        {/* swipe overlays */}
+        {drag > 0 && (
+          <span
+            style={{ opacity: Math.min(drag / SWIPE_THRESHOLD, 1) }}
+            className="absolute left-4 top-4 z-20 -rotate-12 rounded-xl border-4 border-[#06D6A0] px-3 py-1 text-2xl font-black text-[#06D6A0]"
+          >
+            LIKE
+          </span>
+        )}
+        {drag < 0 && (
+          <span
+            style={{ opacity: Math.min(-drag / SWIPE_THRESHOLD, 1) }}
+            className="absolute right-4 top-4 z-20 rotate-12 rounded-xl border-4 border-flockie-orange px-3 py-1 text-2xl font-black text-flockie-orange"
+          >
+            NOPE
+          </span>
+        )}
         {cur?.type === "video" ? (
           <video src={cur.url} controls playsInline className="h-full w-full object-cover" />
         ) : cur?.type === "img" ? (
@@ -109,8 +173,14 @@ export default function SwipeDeck({ candidates }: { candidates: Candidate[] }) {
 
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/0 to-black/0" />
 
-        {/* tap info → full profile */}
-        <Link href={`/people/${c.id}`} className="absolute inset-x-0 bottom-0 p-5 text-white">
+        {/* tap info → full profile (suppressed after a drag) */}
+        <Link
+          href={`/people/${c.id}`}
+          onClick={(e) => {
+            if (movedRef.current) e.preventDefault();
+          }}
+          className="absolute inset-x-0 bottom-0 p-5 text-white"
+        >
           <p className="flex items-center gap-1.5 text-2xl font-black">
             {c.display_name || "Flockie"}
             {c.age ? `, ${c.age}` : ""}

@@ -13,6 +13,7 @@ grant execute on function public.compat_target(uuid) to anon, authenticated;
 
 -- Travel-vibe compatibility between the caller and another user, with the tags
 -- they share (for a "you both love…" breakdown).
+drop function if exists public.compat_score(uuid);
 create or replace function public.compat_score(p_other uuid)
 returns table (score int, my_name text, other_name text, highlights text[])
 language sql security definer set search_path = public stable as $$
