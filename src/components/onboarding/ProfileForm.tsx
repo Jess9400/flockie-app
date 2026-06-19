@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import {
   ProfileInput,
   saveOnboardingProfile,
@@ -26,7 +27,10 @@ interface ProfileFormProps {
 
 export function ProfileForm({ defaults }: ProfileFormProps) {
   const router = useRouter();
+  const supabase = createClient();
   const [firstName, setFirstName] = useState(defaults.firstName);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(defaults.photoUrl);
+  const [uploading, setUploading] = useState(false);
   const [birthday, setBirthday] = useState(defaults.birthday);
   const [gender, setGender] = useState<ProfileInput["gender"] | null>(
     defaults.gender
@@ -34,7 +38,35 @@ export function ProfileForm({ defaults }: ProfileFormProps) {
   const [city, setCity] = useState(defaults.city);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const canSubmit = Boolean(firstName.trim() && birthday && gender && city.trim());
+  const photoInput = useRef<HTMLInputElement>(null);
+  const canSubmit = Boolean(
+    firstName.trim() && photoUrl && birthday && gender && city.trim()
+  );
+
+  async function onPhoto(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setError(null);
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Please sign in again");
+      const ext = file.name.split(".").pop() ?? "jpg";
+      const path = `${user.id}/onboarding-${crypto.randomUUID()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(path, file, { upsert: true });
+      if (uploadError) throw uploadError;
+      setPhotoUrl(supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Photo upload failed.");
+    } finally {
+      setUploading(false);
+      if (photoInput.current) photoInput.current.value = "";
+    }
+  }
 
   async function handleSubmit() {
     if (!canSubmit || submitting || !gender) return;
@@ -44,7 +76,7 @@ export function ProfileForm({ defaults }: ProfileFormProps) {
     try {
       await saveOnboardingProfile({
         firstName: firstName.trim(),
-        photoUrl: defaults.photoUrl,
+        photoUrl,
         birthday,
         gender,
         city: city.trim(),
@@ -66,19 +98,23 @@ export function ProfileForm({ defaults }: ProfileFormProps) {
         <p className="mb-5 text-[13px] font-semibold text-muted">Pre-filled where we could.</p>
 
         <div className="mb-5 flex flex-col items-center">
-          <div className="flex h-[78px] w-[78px] items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#5DBDA0] to-flockie-blue text-[28px] font-extrabold text-white">
-            {defaults.photoUrl ? (
+          <button
+            type="button"
+            onClick={() => photoInput.current?.click()}
+            className="flex h-[78px] w-[78px] items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-flockie-blue bg-white text-[24px] font-extrabold text-flockie-blue"
+            aria-label="Add a photo"
+          >
+            {photoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={defaults.photoUrl} alt="" className="h-full w-full object-cover" />
+              <img src={photoUrl} alt="" className="h-full w-full object-cover" />
             ) : (
-              firstName.charAt(0).toUpperCase() || "?"
+              "+"
             )}
+          </button>
+          <input ref={photoInput} type="file" accept="image/*" hidden onChange={onPhoto} />
+          <div className="mt-2 text-[11.5px] font-bold text-navy">
+            {uploading ? "Uploading…" : photoUrl ? "Tap to change" : "Add a photo (required)"}
           </div>
-          {defaults.photoUrl && (
-            <div className="mt-2 text-[11.5px] font-bold text-onboarding-green">
-              ✓ Synced from Google
-            </div>
-          )}
           <div className="mt-1 text-[11px] font-semibold text-muted">
             You can add more photos later
           </div>
@@ -150,7 +186,7 @@ export function ProfileForm({ defaults }: ProfileFormProps) {
         <button
           type="button"
           onClick={handleSubmit}
-          disabled={!canSubmit || submitting}
+          disabled={!canSubmit || submitting || uploading}
           className="w-full rounded-2xl border-2 border-ink border-b-[5px] bg-flockie-coral py-3.5 text-[15.5px] font-extrabold text-white disabled:opacity-40"
         >
           {submitting ? "Saving…" : "Continue to your vibe check →"}

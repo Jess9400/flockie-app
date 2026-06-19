@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ShareVibeButton } from "@/components/onboarding/ShareVibeButton";
+import RevealActions from "@/components/onboarding/RevealActions";
 import { ARCHETYPES } from "@/lib/onboarding/archetypes";
 import { pct } from "@/lib/onboarding/scoring";
 import { VibeDimension, VibeScores } from "@/lib/onboarding/types";
@@ -70,7 +70,11 @@ export default async function VibeRevealPage() {
           </div>
         </Section>
 
-        <ShareVibeButton archetypeName={archetype.name} />
+        <RevealActions
+          userId={user.id}
+          name={profile.display_name || "Flockie"}
+          tags={[archetype.name, ...archetype.compatibleWith.map((d) => ARCHETYPES[d].name)]}
+        />
 
         <Section title="People near you with this vibe">
           {nearby.length === 0 ? (

@@ -131,7 +131,19 @@ export const DEALBREAKERS = [
 export const ONE_LINER_MAX = 100;
 
 // Profile basics (separate from the vibe check questions)
-export const GENDERS = ["Woman", "Man", "Non-binary", "Prefer not to say"] as const;
+// Gender is stored as a lowercase enum app-wide. "Prefer not to say" is stored
+// as null and never displayed as a tag.
+export const GENDER_OPTIONS = [
+  { value: "woman", label: "Woman" },
+  { value: "man", label: "Man" },
+  { value: "non_binary", label: "Non-binary" },
+  { value: "prefer_not_to_say", label: "Prefer not to say" },
+] as const;
+
+export function genderLabel(g: string | null | undefined): string | null {
+  if (!g || g === "prefer_not_to_say") return null;
+  return GENDER_OPTIONS.find((o) => o.value === g)?.label ?? null;
+}
 export const RELATIONSHIP_STATUS = [
   "Single",
   "In a relationship",

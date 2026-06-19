@@ -39,14 +39,15 @@ export async function saveOnboardingProfile(input: ProfileInput) {
   }
 
   const photos = input.photoUrl ? [input.photoUrl] : [];
+  if (!photos.length) throw new Error("Add a profile photo to continue");
   const { error } = await supabase.from("profiles").upsert({
     id: user.id,
     display_name: input.firstName,
     birthday: input.birthday,
     age,
-    gender: input.gender,
+    gender: input.gender === "prefer_not_to_say" ? null : input.gender,
     home_city: input.city,
-    ...(photos.length ? { photos } : {}),
+    photos,
   });
 
   if (error) throw error;
@@ -69,11 +70,12 @@ export async function getOnboardingProfileDefaults() {
   const metadataName = (user.user_metadata?.full_name as string | undefined)
     ?.trim()
     .split(/\s+/)[0];
-  const metadataPhoto = user.user_metadata?.avatar_url as string | undefined;
 
   return {
     firstName: profile?.display_name?.trim().split(/\s+/)[0] || metadataName || "",
-    photoUrl: profile?.photos?.[0] || metadataPhoto || null,
+    // Photo is uploaded manually (most people have no Google avatar) — only
+    // reuse one already saved on the profile, never the Google avatar.
+    photoUrl: profile?.photos?.[0] || null,
     birthday: profile?.birthday || "",
     gender: (profile?.gender || null) as ProfileInput["gender"] | null,
     city: profile?.home_city || "",

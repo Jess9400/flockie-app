@@ -1,22 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import VibeQuestions from "@/components/VibeQuestions";
-import ActivityQuestions from "@/components/ActivityQuestions";
 import PhotoGrid from "@/components/PhotoGrid";
 import VibeShareCard from "@/components/VibeShareCard";
-import ProfileProgress, { type ProgressSegment } from "@/components/ProfileProgress";
 import { SectionHeader } from "@/components/profileControls";
-import {
-  GENDERS,
-  EMPTY_ANSWERS,
-  EMPTY_ACTIVITY,
-  type Profile,
-  type VibeAnswers,
-  type ActivityAnswers,
-} from "@/lib/vibe-check";
+import { GENDER_OPTIONS, type Profile } from "@/lib/vibe-check";
 
 const MAX_PHOTOS = 5;
 
@@ -27,6 +17,9 @@ type Props = {
   redirectAfter?: string;
 };
 
+// Profile basics editor. Travel preferences and the activity vibe live in their
+// own wizard forms (TripVibeForm / ActivityVibeForm); the personality vibe is
+// the signup onboarding quiz. This stays focused on who you are + your photos.
 export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter }: Props) {
   const router = useRouter();
   const supabase = createClient();
@@ -42,43 +35,12 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
   });
   const [photos, setPhotos] = useState<string[]>(initial.photos ?? []);
   const [videoUrl, setVideoUrl] = useState<string | null>(initial.video_url ?? null);
-  const [answers, setAnswers] = useState<VibeAnswers>({
-    ...EMPTY_ANSWERS,
-    planning: initial.planning ?? null,
-    pace: initial.pace ?? null,
-    social_energy: initial.social_energy ?? null,
-    budget: initial.budget ?? null,
-    nightlife: initial.nightlife ?? null,
-    adventurousness: initial.adventurousness ?? null,
-    trip_vibe: initial.trip_vibe ?? [],
-    travel_style: initial.travel_style ?? [],
-    dealbreakers: initial.dealbreakers ?? [],
-    one_liner: initial.one_liner ?? "",
-  });
-  const [activity, setActivity] = useState<ActivityAnswers>({
-    ...EMPTY_ACTIVITY,
-    activities: initial.activities ?? [],
-    activity_skills: initial.activity_skills ?? {},
-    activity_social: initial.activity_social ?? null,
-    activity_intensity: initial.activity_intensity ?? null,
-    activity_vibe: initial.activity_vibe ?? [],
-    activity_dealbreakers: initial.activity_dealbreakers ?? [],
-    activity_one_liner: initial.activity_one_liner ?? "",
-  });
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [vouchUrl, setVouchUrl] = useState("");
   const [showShare, setShowShare] = useState(false);
   const photoInput = useRef<HTMLInputElement>(null);
   const videoInput = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (initial.vouch_token) {
-      setVouchUrl(`${window.location.origin}/vouch/${initial.vouch_token}`);
-    }
-  }, [initial.vouch_token]);
 
   async function uploadFile(bucket: "avatars" | "videos", file: File) {
     const ext = file.name.split(".").pop() ?? "bin";
@@ -132,77 +94,29 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
     });
   }
 
-  const segments = useMemo<ProgressSegment[]>(() => {
-    const basicsFilled =
-      [basics.display_name, basics.age, basics.home_city].filter(Boolean).length;
-    const vibeAnswered =
-      [
-        answers.planning,
-        answers.pace,
-        answers.social_energy,
-        answers.budget,
-        answers.nightlife,
-        answers.adventurousness,
-      ].filter((v) => v != null).length +
-      (answers.trip_vibe.length > 0 ? 1 : 0) +
-      (answers.travel_style.length > 0 ? 1 : 0) +
-      (answers.one_liner.trim() ? 1 : 0);
-    const activityAnswered =
-      (activity.activities.length > 0 ? 1 : 0) +
-      (activity.activity_social != null ? 1 : 0) +
-      (activity.activity_intensity != null ? 1 : 0) +
-      (activity.activity_vibe.length > 0 ? 1 : 0) +
-      (activity.activity_one_liner.trim() ? 1 : 0);
-    const verified = basics.instagram || basics.x_handle || basics.tiktok ? 100 : 0;
-
-    return [
-      { label: "Photos", pct: photos.length > 0 ? 100 : 0, anchor: "sec-photos" },
-      { label: "Basics", pct: Math.round((basicsFilled / 3) * 100), anchor: "sec-basics" },
-      { label: "Vibe", pct: Math.round((vibeAnswered / 9) * 100), anchor: "sec-vibe" },
-      { label: "Activity", pct: Math.round((activityAnswered / 5) * 100), anchor: "sec-activity" },
-      { label: "Verify", pct: verified, anchor: "sec-verifications" },
-    ];
-  }, [basics, photos, answers, activity]);
-
-  const overall = Math.round(segments.reduce((s, x) => s + x.pct, 0) / segments.length);
-
   async function save(e: React.FormEvent) {
     e.preventDefault();
     if (photos.length === 0) return setMsg("Add at least one profile photo.");
-    if ((activity.activities ?? []).length === 0)
-      return setMsg("Pick at least one activity in your activity vibe check.");
     setSaving(true);
     setMsg(null);
     const { error } = await supabase
       .from("profiles")
       .update({
         ...basics,
+        gender: basics.gender || null,
         photos,
         video_url: videoUrl,
-        ...answers,
-        ...activity,
         onboarding_complete: true,
       })
       .eq("id", userId);
     setSaving(false);
     if (error) return setMsg(error.message);
-    setMsg("Saved! Your vibe check is live.");
-    setShowShare(true); // celebrate + share card before returning to the profile
-  }
-
-  async function copyVouch() {
-    await navigator.clipboard.writeText(vouchUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    setMsg("Saved!");
+    setShowShare(true);
   }
 
   return (
     <form onSubmit={save} className="font-nunito">
-      {/* Progress */}
-      <div className="mb-10">
-        <ProfileProgress segments={segments} overall={overall} />
-      </div>
-
       <div className="space-y-12">
         {/* Photos */}
         <section>
@@ -254,11 +168,18 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
                 />
               </Field>
               <Field label="Gender">
-                <Select
+                <select
+                  className={inputCls}
                   value={basics.gender}
-                  onChange={(v) => setBasics({ ...basics, gender: v })}
-                  options={GENDERS}
-                />
+                  onChange={(e) => setBasics({ ...basics, gender: e.target.value })}
+                >
+                  <option value="">Select…</option>
+                  {GENDER_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
               </Field>
             </div>
             <Field label="Home city">
@@ -269,66 +190,6 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
                 placeholder="Where you're based"
               />
             </Field>
-          </div>
-        </section>
-
-        {/* Vibe check */}
-        <section>
-          <SectionHeader
-            id="sec-vibe"
-            title="The vibe check"
-            subtitle="Quick and honest. This is what we match on."
-          />
-          <p className="mt-4 max-w-[600px] font-nunito text-[15px] font-medium italic text-navy/70">
-            Quick and honest — these answers train the algorithm that finds your people. The gap
-            between how you see yourself and how a friend sees you is what makes matching work.
-          </p>
-          <div className="mt-6">
-            <VibeQuestions
-              answers={answers}
-              onChange={(patch) => setAnswers((a) => ({ ...a, ...patch }))}
-              oneLinerPrompt="Finish: “On a trip, I'm the kind of person who…”"
-            />
-          </div>
-
-          {/* Friend-vouch CTA (the one section that keeps a border) */}
-          {vouchUrl && (
-            <div className="mt-8 rounded-3xl border-2 border-flockie-coral p-5">
-              <p className="font-fredoka text-lg font-semibold text-navy">Want sharper matches?</p>
-              <p className="mt-1 font-nunito text-sm font-medium text-navy/70">
-                Ask a friend to fill out their version of this vibe check — about you. Friends are
-                honest about things you&rsquo;re not.
-              </p>
-              <div className="mt-4 flex gap-2">
-                <input
-                  readOnly
-                  value={vouchUrl}
-                  className="w-full truncate rounded-full border-2 border-navy bg-cream px-4 py-2 font-nunito text-sm font-medium text-navy"
-                />
-                <button
-                  type="button"
-                  onClick={copyVouch}
-                  className="shrink-0 rounded-full border-2 border-navy bg-flockie-coral px-5 font-fredoka text-sm font-semibold text-white"
-                >
-                  {copied ? "Copied" : "Copy link"}
-                </button>
-              </div>
-            </div>
-          )}
-        </section>
-
-        {/* Activity vibe check */}
-        <section>
-          <SectionHeader
-            id="sec-activity"
-            title="Activity vibe check"
-            subtitle="Required — how we match you for local meetups & events. Pick at least one activity."
-          />
-          <div className="mt-6">
-            <ActivityQuestions
-              answers={activity}
-              onChange={(patch) => setActivity((a) => ({ ...a, ...patch }))}
-            />
           </div>
         </section>
 
@@ -375,14 +236,18 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
         disabled={saving || uploading}
         className="mt-8 w-full rounded-full border-2 border-navy bg-flockie-coral py-3.5 font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] disabled:opacity-50"
       >
-        {saving ? "Saving…" : "Save vibe check"}
+        {saving ? "Saving…" : "Save profile"}
       </button>
 
       {showShare && (
         <VibeShareCard
           userId={userId}
           name={basics.display_name}
-          tags={[...answers.trip_vibe, ...answers.travel_style, ...activity.activity_vibe]}
+          tags={[
+            ...(initial.trip_vibe ?? []),
+            ...(initial.travel_style ?? []),
+            ...(initial.activity_vibe ?? []),
+          ]}
           onClose={() => {
             setShowShare(false);
             if (redirectAfter) {
@@ -407,26 +272,5 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <span className="mb-1.5 block font-nunito text-sm font-semibold text-navy">{label}</span>
       {children}
     </label>
-  );
-}
-
-function Select({
-  value,
-  onChange,
-  options,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  options: readonly string[];
-}) {
-  return (
-    <select className={inputCls} value={value} onChange={(e) => onChange(e.target.value)}>
-      <option value="">Select…</option>
-      {options.map((o) => (
-        <option key={o} value={o}>
-          {o}
-        </option>
-      ))}
-    </select>
   );
 }
