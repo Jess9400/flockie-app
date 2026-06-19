@@ -5,7 +5,8 @@ import { ChevronLeft, MapPin, Users, CalendarClock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import InterestButton from "@/components/InterestButton";
 import HostVibeControls from "@/components/HostVibeControls";
-import { formatVibeWhen, DEALBREAKER_RULES, type InterestStatus } from "@/lib/vibes";
+import VibeReviewSummary from "@/components/VibeReviewSummary";
+import { formatVibeWhen, DEALBREAKER_RULES, VIBE_REVIEW_TAGS, type InterestStatus } from "@/lib/vibes";
 
 export default async function VibeDetailPage({
   params,
@@ -87,6 +88,30 @@ export default async function VibeDetailPage({
 
   const rules = (vibe.dealbreaker_rules ?? {}) as Record<string, boolean>;
   const activeRules = DEALBREAKER_RULES.filter((r) => rules[r.key]);
+
+  // Vibe reviews (the event) — aggregate into weighted %.
+  const { data: reviewRows } = await supabase
+    .from("vibe_reviews")
+    .select("recommend, tags")
+    .eq("vibe_id", params.id);
+  const reviews = reviewRows ?? [];
+  const reviewCount = reviews.length;
+  const recommendPct = reviewCount
+    ? Math.round((reviews.filter((r) => r.recommend).length / reviewCount) * 100)
+    : 0;
+  const tagPcts = reviewCount
+    ? VIBE_REVIEW_TAGS.map((tag) => ({
+        tag,
+        pct: Math.round(
+          (reviews.filter((r) => (r.tags ?? []).includes(tag)).length / reviewCount) * 100
+        ),
+      }))
+        .filter((t) => t.pct > 0)
+        .sort((a, b) => b.pct - a.pct)
+    : [];
+
+  const ended = new Date(vibe.ends_at ?? vibe.starts_at) <= new Date();
+  const canReview = ended && myInterest?.status === "confirmed";
 
   return (
     <main className="px-5 pb-10 pt-6">
@@ -218,6 +243,17 @@ export default async function VibeDetailPage({
             )}
           </div>
         </div>
+      )}
+
+      {/* Vibe reviews */}
+      <VibeReviewSummary recommendPct={recommendPct} count={reviewCount} tagPcts={tagPcts} />
+      {canReview && (
+        <Link
+          href={`/vibes/${vibe.id}/review`}
+          className="mt-4 flex w-fit items-center gap-2 rounded-full border-2 border-ink bg-flockie-orange px-5 py-2.5 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
+        >
+          ⭐ How was it? Review this Vibe
+        </Link>
       )}
 
       {isHost && (

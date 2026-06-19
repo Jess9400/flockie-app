@@ -62,6 +62,18 @@ export const SKILL_REQUIREMENTS: { value: number | null; label: string }[] = [
   { value: 4, label: "Advanced (4-5)" },
 ];
 
+// Attendee review tags for a Vibe (the event). Aggregated into weighted %.
+export const VIBE_REVIEW_TAGS = [
+  "Fun",
+  "Good vibes",
+  "Well organized",
+  "Met great people",
+  "Welcoming",
+  "As described",
+  "On time",
+  "Would do again",
+] as const;
+
 export type VibeStatus =
   | "open"
   | "ranking"

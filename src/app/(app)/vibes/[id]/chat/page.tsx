@@ -34,9 +34,11 @@ export default async function VibeChatPage({
 
   const { data: vibe } = await supabase
     .from("vibes")
-    .select("title, description, photos, starts_at, location_name, city, host_id, activity_url, status")
+    .select("title, description, photos, starts_at, ends_at, location_name, city, host_id, activity_url, status")
     .eq("id", params.id)
     .maybeSingle();
+
+  const vibeEnded = vibe ? new Date(vibe.ends_at ?? vibe.starts_at) <= new Date() : false;
 
   const { data: messages } = await supabase
     .from("vibing_messages")
@@ -117,6 +119,7 @@ export default async function VibeChatPage({
         initialMessages={messages ?? []}
         startsAt={vibe?.starts_at ?? null}
         bookingUrl={vibe?.activity_url ?? null}
+        reviewHref={vibeEnded ? `/vibes/${params.id}/review` : null}
       />
     </main>
   );

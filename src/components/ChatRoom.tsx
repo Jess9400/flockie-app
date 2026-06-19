@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Send } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatMessageDivider, needsDivider } from "@/lib/chat";
@@ -20,6 +21,7 @@ export default function ChatRoom({
   initialMessages,
   startsAt,
   bookingUrl,
+  reviewHref,
 }: {
   chatId: string;
   currentUserId: string;
@@ -27,6 +29,7 @@ export default function ChatRoom({
   initialMessages: Msg[];
   startsAt?: string | null;
   bookingUrl?: string | null;
+  reviewHref?: string | null;
 }) {
   const supabase = createClient();
   const [messages, setMessages] = useState<Msg[]>(initialMessages);
@@ -160,8 +163,16 @@ export default function ChatRoom({
       </div>
 
       {/* Smart prompts above input */}
-      {(bookingUrl || startsSoon) && (
+      {(bookingUrl || startsSoon || reviewHref) && (
         <div className="flex flex-wrap gap-2 pb-2">
+          {reviewHref && (
+            <Link
+              href={reviewHref}
+              className="rounded-full border-2 border-navy bg-flockie-coral px-3 py-1 font-nunito text-xs font-bold text-white"
+            >
+              ⭐ How was it? Review this Vibe →
+            </Link>
+          )}
           {bookingUrl && (
             <a
               href={bookingUrl}
