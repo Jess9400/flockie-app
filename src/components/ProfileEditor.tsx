@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Pencil, Settings } from "lucide-react";
+import { Pencil, Settings, Share2 } from "lucide-react";
 import ProfileView from "@/components/ProfileView";
 import VibeCheckForm from "@/components/VibeCheckForm";
+import VibeShareCard from "@/components/VibeShareCard";
 import type { Profile } from "@/lib/vibe-check";
 
 export default function ProfileEditor({
@@ -18,6 +19,12 @@ export default function ProfileEditor({
 }) {
   // Start in edit mode if the profile isn't complete yet (first-time onboarding).
   const [editing, setEditing] = useState(!complete);
+  const [showShare, setShowShare] = useState(false);
+  const shareTags = [
+    ...(profile.trip_vibe ?? []),
+    ...(profile.travel_style ?? []),
+    ...(profile.activity_vibe ?? []),
+  ];
 
   if (editing) {
     return (
@@ -41,14 +48,24 @@ export default function ProfileEditor({
 
   return (
     <div className="relative">
-      {/* Settings gear — top-right overlay */}
-      <Link
-        href="/settings"
-        aria-label="Settings"
-        className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-navy bg-white/90 text-navy backdrop-blur hover:bg-white"
-      >
-        <Settings size={18} />
-      </Link>
+      {/* Top-right overlay controls */}
+      <div className="absolute right-3 top-3 z-10 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setShowShare(true)}
+          aria-label="Share my vibe"
+          className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-navy bg-white/90 text-navy backdrop-blur hover:bg-white"
+        >
+          <Share2 size={18} />
+        </button>
+        <Link
+          href="/settings"
+          aria-label="Settings"
+          className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-navy bg-white/90 text-navy backdrop-blur hover:bg-white"
+        >
+          <Settings size={18} />
+        </Link>
+      </div>
 
       <ProfileView profile={profile} />
 
@@ -59,6 +76,14 @@ export default function ProfileEditor({
       >
         <Pencil size={16} /> Edit profile
       </button>
+
+      {showShare && (
+        <VibeShareCard
+          name={profile.display_name ?? ""}
+          tags={shareTags}
+          onClose={() => setShowShare(false)}
+        />
+      )}
     </div>
   );
 }

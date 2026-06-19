@@ -132,26 +132,14 @@ export default async function MatchPage({
 
   let body: React.ReactNode;
   if (!enough) {
-    const have = Math.min(count ?? 0, MIN_PROFILES);
-    const pct = Math.round((have / MIN_PROFILES) * 100);
     body = (
       <div className="mt-6 rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_5px_0_0_rgba(26,26,26,1)]">
         <p className="text-3xl">🚀</p>
-        <p className="mt-3 text-lg font-extrabold">You&rsquo;re early in {label} 🎉</p>
+        <p className="mt-3 text-lg font-extrabold">You&rsquo;re on the list for {label}</p>
         <p className="mt-1 text-sm font-medium text-ink/70">
-          You&rsquo;re on the list! {isActivity ? "Activity" : "Buddy"} matching opens here once{" "}
-          {MIN_PROFILES} travelers join — invite friends to unlock it faster.
+          {isActivity ? "Activity" : "Buddy"} matching unlocks as more travelers join {label} —
+          invite friends to make it happen faster.
         </p>
-
-        <div className="mt-5">
-          <div className="flex items-center justify-between text-xs font-bold text-muted">
-            <span>{have} of {MIN_PROFILES} travelers in {label}</span>
-            <span>{pct}%</span>
-          </div>
-          <div className="mt-1.5 h-3 w-full overflow-hidden rounded-full border-2 border-ink bg-cream">
-            <div className="h-full rounded-full bg-flockie-blue transition-all" style={{ width: `${pct}%` }} />
-          </div>
-        </div>
 
         <div className="mt-5 flex flex-col gap-2">
           <InviteFriendsButton city={label} />
