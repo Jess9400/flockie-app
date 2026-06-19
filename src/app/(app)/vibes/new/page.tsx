@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import CreateVibeForm from "@/components/CreateVibeForm";
+import ActivityVibeForm from "@/components/ActivityVibeForm";
 
 export default async function NewVibePage({
   searchParams,
@@ -18,6 +19,17 @@ export default async function NewVibePage({
     .select("home_city")
     .eq("id", user!.id)
     .single();
+
+  // Activity vibe gate (migration-safe: degrade open if column missing).
+  const { data: prefs, error: prefsErr } = await supabase
+    .from("profiles")
+    .select("activity_prefs_complete")
+    .eq("id", user!.id)
+    .maybeSingle();
+  const activityPrefsDone = prefsErr ? true : !!prefs?.activity_prefs_complete;
+  if (!activityPrefsDone) {
+    return <ActivityVibeForm userId={user!.id} redirectAfter="/vibes/new" />;
+  }
 
   return (
     <main className="px-5 pt-6">

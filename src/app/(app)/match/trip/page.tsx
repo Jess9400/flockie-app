@@ -3,6 +3,8 @@ import Image from "next/image";
 import { ChevronLeft, Star, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import TripForm from "@/components/TripForm";
+import TripVibeForm from "@/components/TripVibeForm";
+import ActivityVibeForm from "@/components/ActivityVibeForm";
 
 type Pending = { buddy_id: string; display_name: string | null; photo: string | null; destination: string | null };
 
@@ -72,6 +74,22 @@ export default async function TripPage({
 
   const showReviewGate = isNew && pendingList.length > 0;
   const showCapGate = isNew && !showReviewGate && atCap;
+
+  // Vibe-form gate: a trip/flock needs the Trip vibe; an activity needs the
+  // Activity vibe. Migration-safe — if the flag columns don't exist yet, the
+  // query errors and we degrade open (no gate), so nothing breaks pre-migration.
+  const { data: prefs, error: prefsErr } = await supabase
+    .from("profiles")
+    .select("trip_prefs_complete, activity_prefs_complete")
+    .eq("id", user!.id)
+    .maybeSingle();
+  const tripPrefsDone = prefsErr ? true : !!prefs?.trip_prefs_complete;
+  const activityPrefsDone = prefsErr ? true : !!prefs?.activity_prefs_complete;
+  const needsTripVibe = isNew && !showReviewGate && !showCapGate && !isActivity && !tripPrefsDone;
+  const needsActivityVibe = isNew && !showReviewGate && !showCapGate && isActivity && !activityPrefsDone;
+
+  if (needsTripVibe) return <TripVibeForm userId={user!.id} />;
+  if (needsActivityVibe) return <ActivityVibeForm userId={user!.id} />;
 
   return (
     <main className="px-5 pb-10 pt-6">
