@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { MapPin } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { captureAndStoreLocation } from "@/lib/location";
 
 const KEY = "flockie-location-asked";
 
@@ -15,17 +16,7 @@ export default function LocationPrompt({ trackingEnabled }: { trackingEnabled?: 
 
     // Tracking on → user already consented: capture location silently, no card.
     if (trackingEnabled) {
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          const supabase = createClient();
-          await supabase.rpc("set_my_location", {
-            p_lng: pos.coords.longitude,
-            p_lat: pos.coords.latitude,
-          });
-        },
-        () => {},
-        { enableHighAccuracy: false, timeout: 10000 }
-      );
+      captureAndStoreLocation();
       return;
     }
 
@@ -47,29 +38,21 @@ export default function LocationPrompt({ trackingEnabled }: { trackingEnabled?: 
     setShow(false);
   }
 
-  function enable() {
+  async function enable() {
     setBusy(true);
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const supabase = createClient();
-        await supabase.rpc("set_my_location", {
-          p_lng: pos.coords.longitude,
-          p_lat: pos.coords.latitude,
-        });
-        // Remember consent so it stays silent next time.
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          await supabase.from("profiles").update({ location_tracking_enabled: true }).eq("id", user.id);
-        }
-        setBusy(false);
-        dismiss("granted");
-      },
-      () => {
-        setBusy(false);
-        dismiss("denied");
-      },
-      { enableHighAccuracy: false, timeout: 10000 }
-    );
+    const ok = await captureAndStoreLocation();
+    if (ok) {
+      // Remember consent so it stays silent next time.
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from("profiles").update({ location_tracking_enabled: true }).eq("id", user.id);
+      }
+    }
+    setBusy(false);
+    dismiss(ok ? "granted" : "denied");
   }
 
   if (!show) return null;

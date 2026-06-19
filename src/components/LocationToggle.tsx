@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { captureAndStoreLocation } from "@/lib/location";
 
 export default function LocationToggle({
   userId,
@@ -20,19 +21,9 @@ export default function LocationToggle({
     setBusy(true);
     await supabase.from("profiles").update({ location_tracking_enabled: next }).eq("id", userId);
 
-    // Turning on → grab location now (one native permission ask) and store it.
-    if (next && typeof navigator !== "undefined" && "geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          await supabase.rpc("set_my_location", {
-            p_lng: pos.coords.longitude,
-            p_lat: pos.coords.latitude,
-          });
-        },
-        () => {},
-        { enableHighAccuracy: false, timeout: 10000 }
-      );
-    }
+    // Turning on → grab location now (one native permission ask), store it, and
+    // update the city.
+    if (next) await captureAndStoreLocation();
     setBusy(false);
   }
 
