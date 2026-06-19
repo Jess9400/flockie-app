@@ -102,7 +102,9 @@ export default function SwipeDeck({
   if (!c) {
     return (
       <div className="mt-6 flex h-[55vh] items-center justify-center rounded-3xl border-2 border-dashed border-ink/30 px-8 text-center font-medium text-muted">
-        You&rsquo;re all caught up. Check back as more travelers post this trip.
+        {activityTitle
+          ? "You've seen everyone in your city for now. As soon as someone else here is open to matching, they'll show up — you can match or invite them to do something."
+          : "You're all caught up. Check back as more travelers post this trip."}
       </div>
     );
   }
