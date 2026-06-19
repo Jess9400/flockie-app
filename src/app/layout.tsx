@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Fredoka, Nunito } from "next/font/google";
 import "./globals.css";
+import CookieConsent from "@/components/CookieConsent";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -57,7 +58,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${dmSans.variable} ${fredoka.variable} ${nunito.variable}`}>
-      <body className="font-dm">{children}</body>
+      <body className="font-dm">
+        {children}
+        <CookieConsent />
+      </body>
     </html>
   );
 }
