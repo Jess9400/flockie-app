@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useState } from "react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -76,17 +77,29 @@ function LoginForm() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center px-6">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-[#0F2A4C] px-6 py-10">
       <div className="w-full max-w-sm">
-        <h1 className="text-center text-4xl font-black tracking-tight">
-          Find your <span className="text-flockie-blue">flock.</span>
+        <Image
+          src="/logo-mark-white.svg"
+          alt="Flockie"
+          width={64}
+          height={56}
+          priority
+          className="mx-auto h-14 w-auto"
+        />
+        <h1 className="mt-5 text-center text-4xl font-black tracking-tight text-white">
+          Find your <span className="text-flockie-coral">flock.</span>
         </h1>
-        <p className="mt-2 text-center font-medium text-muted">
+        <p className="mx-auto mt-3 max-w-xs text-center text-sm font-medium leading-relaxed text-white/70">
+          Dinner tonight, a weekend trip, or just someone to hit the museum with.
+          5 quick questions and we&rsquo;ll find your people.
+        </p>
+        <p className="mt-5 text-center font-bold text-white/90">
           {mode === "signup" ? "Create your account" : "Welcome back"}
         </p>
 
         {mode === "signup" && (
-          <label className="mt-8 flex items-start gap-2.5 text-sm font-medium text-ink/80">
+          <label className="mt-8 flex items-start gap-2.5 text-sm font-medium text-white/80">
             <input
               type="checkbox"
               checked={agreed}
@@ -117,9 +130,9 @@ function LoginForm() {
           Continue with Google
         </button>
 
-        <div className="my-5 flex items-center gap-3 text-xs font-semibold text-muted">
-          <span className="h-px flex-1 bg-gray-200" /> or{" "}
-          <span className="h-px flex-1 bg-gray-200" />
+        <div className="my-5 flex items-center gap-3 text-xs font-semibold text-white/50">
+          <span className="h-px flex-1 bg-white/20" /> or{" "}
+          <span className="h-px flex-1 bg-white/20" />
         </div>
 
         <form onSubmit={handleEmail} className="flex flex-col gap-3">
@@ -160,7 +173,7 @@ function LoginForm() {
             setMode(mode === "signup" ? "signin" : "signup");
             setMsg(null);
           }}
-          className="mt-6 w-full text-center text-sm font-semibold text-muted underline"
+          className="mt-6 w-full text-center text-sm font-semibold text-white/70 underline"
         >
           {mode === "signup"
             ? "Already have an account? Sign in"
