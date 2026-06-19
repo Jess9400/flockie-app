@@ -1,11 +1,12 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
+import { format } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
 import BuddyChatRoom from "@/components/BuddyChatRoom";
+import BuddyChatHeader from "@/components/BuddyChatHeader";
+import { type PeekData } from "@/components/ProfilePeek";
+import { SLIDERS } from "@/lib/vibe-check";
 
-const OPENER =
-  "I was thinking of going on this trip — you look just like the travel buddy I'm looking for. Let's go?";
+const SLIDER_KEYS = ["planning", "pace", "social_energy", "budget", "nightlife", "adventurousness"] as const;
 
 export default async function BuddyChatPage({
   params,
@@ -17,7 +18,6 @@ export default async function BuddyChatPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // RLS ensures only members can read this chat
   const { data: chat } = await supabase
     .from("buddy_chats")
     .select("id, match_id")
@@ -31,34 +31,126 @@ export default async function BuddyChatPage({
     .eq("id", chat.match_id)
     .maybeSingle();
 
-  const otherId = match?.user_a === user!.id ? match?.user_b : match?.user_a;
-  const { data: other } = await supabase
-    .from("profiles")
-    .select("display_name")
-    .eq("id", otherId!)
-    .maybeSingle();
+  const otherId = (match?.user_a === user!.id ? match?.user_b : match?.user_a) as string;
 
-  const { data: messages } = await supabase
-    .from("buddy_messages")
-    .select("id, sender_id, content, created_at")
-    .eq("chat_id", params.chatId)
-    .order("created_at", { ascending: true })
-    .limit(200);
+  const fields =
+    "id, display_name, age, photos, home_city, one_liner, trip_vibe, travel_style, planning, pace, social_energy, budget, nightlife, adventurousness";
+  const [{ data: other }, { data: me }, { data: trips }, { data: messages }] = await Promise.all([
+    supabase.from("profiles").select(fields).eq("id", otherId).maybeSingle(),
+    supabase.from("profiles").select(fields).eq("id", user!.id).maybeSingle(),
+    supabase
+      .from("trips")
+      .select("destination, destinations, start_date, end_date")
+      .eq("user_id", otherId)
+      .eq("status", "active")
+      .order("start_date", { ascending: true }),
+    supabase
+      .from("buddy_messages")
+      .select("id, sender_id, content, created_at")
+      .eq("chat_id", params.chatId)
+      .order("created_at", { ascending: true })
+      .limit(200),
+  ]);
 
-  const otherName = other?.display_name || "your match";
+  const otherName = (other?.display_name || "your match").split(" ")[0];
+
+  // Pick the soonest upcoming (or soonest) active trip of the other user.
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const tripList = trips ?? [];
+  const trip = tripList.find((t) => (t.end_date ?? "") >= todayIso) ?? tripList[0] ?? null;
+  const destination = trip?.destination ?? trip?.destinations?.[0] ?? null;
+
+  let dateRange: string | null = null;
+  if (trip?.start_date && trip?.end_date) {
+    const s = new Date(trip.start_date);
+    const e = new Date(trip.end_date);
+    const days = Math.max(1, Math.round((+e - +s) / 86400000) + 1);
+    dateRange = `${format(s, "MMM d")} → ${format(e, "MMM d")} · ${days} days`;
+  }
+
+  // Shared tags + compatibility score.
+  const arr = (v: unknown) => (Array.isArray(v) ? (v as string[]) : []);
+  const sharedVibe = arr(other?.trip_vibe).filter((t) => arr(me?.trip_vibe).includes(t));
+  const sharedTravelStyle = arr(other?.travel_style).filter((t) => arr(me?.travel_style).includes(t));
+  const common = [...sharedVibe, ...sharedTravelStyle];
+
+  const diffs: number[] = [];
+  for (const k of SLIDER_KEYS) {
+    const a = other?.[k] as number | null | undefined;
+    const b = me?.[k] as number | null | undefined;
+    if (a != null && b != null) diffs.push(1 - Math.abs(a - b) / 4);
+  }
+  const sliderScore = diffs.length ? diffs.reduce((s, x) => s + x, 0) / diffs.length : null;
+  const union = new Set([...arr(other?.trip_vibe), ...arr(me?.trip_vibe)]);
+  const inter = arr(other?.trip_vibe).filter((t) => arr(me?.trip_vibe).includes(t));
+  const tagScore = union.size ? inter.length / union.size : null;
+  let score: number | null = null;
+  if (sliderScore != null || tagScore != null) {
+    const parts: [number, number][] = [];
+    if (sliderScore != null) parts.push([0.6, sliderScore]);
+    if (tagScore != null) parts.push([0.4, tagScore]);
+    const wsum = parts.reduce((s, [w]) => s + w, 0);
+    score = Math.round((parts.reduce((s, [w, v]) => s + w * v, 0) / wsum) * 100);
+  }
+
+  const compatLine = common.length
+    ? `You both align on ${common.slice(0, 3).join(", ").toLowerCase()}.`
+    : "You've got a similar overall travel vibe.";
+
+  const icebreaker =
+    destination && dateRange
+      ? `You both matched on ${destination}, ${dateRange}.\n${
+          common.length ? `Compatible vibes: ${common.slice(0, 4).join(", ").toLowerCase()}.\n\n` : "\n"
+        }Start planning together — exchange dates, share must-dos, and talk about what you're both hoping to get from this trip.`
+      : `You both have a similar travel vibe${
+          common.length ? ` — ${common.slice(0, 3).join(", ").toLowerCase()}` : ""
+        }. Pick a destination together and start planning. No pressure.`;
+
+  const peekAnswers = SLIDERS.map((s) => {
+    const v = other?.[s.key] as number | null | undefined;
+    return v != null ? { label: s.label, answer: s.scale[v - 1] } : null;
+  })
+    .filter(Boolean)
+    .slice(0, 3) as { label: string; answer: string }[];
+
+  const peek: PeekData = {
+    id: otherId,
+    name: otherName,
+    age: other?.age ?? null,
+    city: other?.home_city ?? null,
+    photos: arr(other?.photos),
+    oneLiner: other?.one_liner ?? null,
+    answers: peekAnswers,
+    tripVibe: arr(other?.trip_vibe),
+    travelStyle: arr(other?.travel_style),
+  };
 
   return (
-    <main className="px-5 pt-6">
-      <Link href="/chats" className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted">
-        <ChevronLeft size={16} /> Chats
-      </Link>
-      <h1 className="text-xl font-black">{otherName}</h1>
+    <main className="mx-auto w-full max-w-2xl px-5 pt-2 font-nunito">
+      <BuddyChatHeader
+        matchId={chat.match_id}
+        name={otherName}
+        age={other?.age ?? null}
+        photo={arr(other?.photos)[0] ?? null}
+        otherCity={other?.home_city ?? null}
+        destination={destination}
+        dateRange={dateRange}
+        score={score}
+        sharedVibe={sharedVibe}
+        sharedTravelStyle={sharedTravelStyle}
+        compatLine={compatLine}
+        peek={peek}
+      />
+
       <BuddyChatRoom
         chatId={params.chatId}
         currentUserId={user!.id}
+        otherId={otherId}
         otherName={otherName}
         initialMessages={messages ?? []}
-        opener={OPENER}
+        icebreaker={icebreaker}
+        tripStartIso={trip?.start_date ?? null}
+        tripEndIso={trip?.end_date ?? null}
       />
     </main>
   );
