@@ -104,7 +104,7 @@ begin
   v_other := case when m.user_a = auth.uid() then m.user_b else m.user_a end;
   perform public.notify(v_other, 'buddy_left', 'A travel match ended',
           'One of your travel matches left the chat.', '{}'::jsonb);
-  delete from public.buddy_matches where id = p_match; -- cascades chat + messages
+  delete from public.buddy_matches where id = p_match;
 end $$;
 grant execute on function public.leave_buddy_match(uuid) to authenticated;
 
@@ -125,10 +125,10 @@ returns boolean language plpgsql security definer set search_path = public as $$
 begin
   if exists (select 1 from public.chat_mutes where user_id = auth.uid() and chat_id = p_chat) then
     delete from public.chat_mutes where user_id = auth.uid() and chat_id = p_chat;
-    return false; -- now unmuted
+    return false;
   else
     insert into public.chat_mutes (user_id, chat_id) values (auth.uid(), p_chat);
-    return true; -- now muted
+    return true;
   end if;
 end $$;
 grant execute on function public.toggle_chat_mute(uuid) to authenticated;

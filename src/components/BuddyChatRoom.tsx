@@ -118,7 +118,7 @@ export default function BuddyChatRoom({
       prompts.push({
         key: "review",
         text: `How was the trip with ${otherName}?`,
-        cta: { label: "Leave a review →", href: `/people/${otherId}` },
+        cta: { label: "Leave a review →", href: `/review/${otherId}` },
       });
     }
   }

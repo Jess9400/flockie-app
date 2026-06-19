@@ -4,6 +4,8 @@ import { ChevronLeft, MapPin } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import ProfileView from "@/components/ProfileView";
 import ProfileSocials from "@/components/ProfileSocials";
+import ProfileReviews, { type ReviewItem } from "@/components/ProfileReviews";
+import Stars from "@/components/Stars";
 import type { Profile } from "@/lib/vibe-check";
 
 export default async function PersonPage({
@@ -23,6 +25,33 @@ export default async function PersonPage({
 
   if (!profile) notFound();
 
+  // Reviews
+  const { data: reviewRows } = await supabase
+    .from("reviews")
+    .select("id, rating, comment, created_at, reviewer_id")
+    .eq("subject_id", params.id)
+    .order("created_at", { ascending: false });
+  const reviews = reviewRows ?? [];
+  const reviewerIds = Array.from(new Set(reviews.map((r) => r.reviewer_id)));
+  const reviewers: Record<string, { display_name: string | null; photos: string[] | null }> = {};
+  if (reviewerIds.length) {
+    const { data: rp } = await supabase
+      .from("profiles")
+      .select("id, display_name, photos")
+      .in("id", reviewerIds);
+    rp?.forEach((p) => (reviewers[p.id] = { display_name: p.display_name, photos: p.photos }));
+  }
+  const reviewCount = reviews.length;
+  const reviewAvg = reviewCount ? reviews.reduce((s, r) => s + r.rating, 0) / reviewCount : 0;
+  const reviewItems: ReviewItem[] = reviews.map((r) => ({
+    id: r.id,
+    rating: r.rating,
+    comment: r.comment,
+    created_at: r.created_at,
+    reviewerName: (reviewers[r.reviewer_id]?.display_name || "A flockie").split(" ")[0],
+    reviewerPhoto: reviewers[r.reviewer_id]?.photos?.[0] ?? null,
+  }));
+
   return (
     <main className="px-5 pb-10 pt-6">
       <Link href="/match" className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted">
@@ -40,6 +69,12 @@ export default async function PersonPage({
               <MapPin size={14} /> {profile.home_city}
             </p>
           )}
+          {reviewCount > 0 && (
+            <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-navy">
+              <Stars value={reviewAvg} size={14} /> {reviewAvg.toFixed(1)} · {reviewCount} review
+              {reviewCount > 1 ? "s" : ""}
+            </p>
+          )}
         </div>
         <ProfileSocials
           instagram={profile.instagram}
@@ -51,6 +86,8 @@ export default async function PersonPage({
       <div className="mt-5">
         <ProfileView profile={profile as Partial<Profile>} />
       </div>
+
+      <ProfileReviews avg={reviewAvg} count={reviewCount} items={reviewItems} />
     </main>
   );
 }
