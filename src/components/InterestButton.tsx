@@ -4,28 +4,32 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import ActivityVibePopup from "@/components/ActivityVibePopup";
 import type { InterestStatus } from "@/lib/vibes";
 
 type Props = {
   vibeId: string;
   userId: string;
-  profileComplete: boolean;
+  activitiesDone: boolean;
   initialStatus: InterestStatus | null;
   invitationExpiresAt?: string | null;
   cancelled?: boolean;
+  autoInterest?: boolean;
 };
 
 export default function InterestButton({
   vibeId,
   userId,
-  profileComplete,
+  activitiesDone,
   initialStatus,
   invitationExpiresAt,
   cancelled,
+  autoInterest,
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
   const [status, setStatus] = useState<InterestStatus | null>(initialStatus);
+  const [hasActivities, setHasActivities] = useState(activitiesDone);
   const [busy, setBusy] = useState(false);
   const [gate, setGate] = useState(false);
   const [now, setNow] = useState(() => Date.now());
@@ -44,11 +48,7 @@ export default function InterestButton({
     return `${h}h ${m}m left`;
   }
 
-  async function express() {
-    if (!profileComplete) {
-      setGate(true);
-      return;
-    }
+  async function doInsert() {
     setBusy(true);
     const { error } = await supabase
       .from("vibe_interests")
@@ -59,6 +59,22 @@ export default function InterestButton({
       router.refresh();
     }
   }
+
+  async function express() {
+    if (!hasActivities) {
+      setGate(true);
+      return;
+    }
+    await doInsert();
+  }
+
+  // Invite deep-link: auto-open the interest flow once on arrival.
+  useEffect(() => {
+    if (autoInterest && status === null && !cancelled) {
+      express();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function untap() {
     setBusy(true);
@@ -171,27 +187,15 @@ export default function InterestButton({
       {control}
 
       {gate && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-4 sm:items-center">
-          <div className="w-full max-w-sm rounded-3xl border-2 border-ink bg-white p-6 shadow-[0_8px_0_0_rgba(26,26,26,1)]">
-            <p className="text-xl font-black">Finish your vibe check first 🪶</p>
-            <p className="mt-2 text-sm font-medium text-ink/70">
-              We match you on your vibe-check answers. Complete it so the host
-              gets the most compatible people — including you.
-            </p>
-            <Link
-              href="/profile"
-              className="mt-5 block rounded-full border-2 border-ink bg-flockie-orange py-3 text-center font-bold text-white shadow-[0_4px_0_0_#E0512C]"
-            >
-              Complete my vibe check
-            </Link>
-            <button
-              onClick={() => setGate(false)}
-              className="mt-2 w-full rounded-full py-2 text-center text-sm font-bold text-muted"
-            >
-              Maybe later
-            </button>
-          </div>
-        </div>
+        <ActivityVibePopup
+          userId={userId}
+          onClose={() => setGate(false)}
+          onDone={() => {
+            setGate(false);
+            setHasActivities(true);
+            doInsert();
+          }}
+        />
       )}
     </>
   );

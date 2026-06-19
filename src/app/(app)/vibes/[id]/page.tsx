@@ -5,13 +5,16 @@ import { ChevronLeft, MapPin, Users, CalendarClock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import InterestButton from "@/components/InterestButton";
 import HostVibeControls from "@/components/HostVibeControls";
+import ShareVibeButton from "@/components/ShareVibeButton";
 import VibeReviewSummary from "@/components/VibeReviewSummary";
 import { formatVibeWhen, DEALBREAKER_RULES, VIBE_REVIEW_TAGS, type InterestStatus } from "@/lib/vibes";
 
 export default async function VibeDetailPage({
   params,
+  searchParams,
 }: {
   params: { id: string };
+  searchParams: { interested?: string };
 }) {
   const supabase = await createClient();
   const {
@@ -38,8 +41,8 @@ export default async function VibeDetailPage({
     .select("onboarding_complete, activities")
     .eq("id", user!.id)
     .maybeSingle();
-  const profileComplete =
-    !!me?.onboarding_complete && (me?.activities ?? []).length > 0;
+  // For Vibe interest we only need the activity vibe check (not full onboarding).
+  const activitiesDone = (me?.activities ?? []).length > 0;
 
   const { data: myInterest } = await supabase
     .from("vibe_interests")
@@ -275,7 +278,11 @@ export default async function VibeDetailPage({
         </div>
       )}
 
-      <div className="mt-6">
+      <div className="mt-6 flex justify-center">
+        <ShareVibeButton vibeId={vibe.id} />
+      </div>
+
+      <div className="mt-4">
         {isHost ? (
           <HostVibeControls
             vibeId={vibe.id}
@@ -288,10 +295,11 @@ export default async function VibeDetailPage({
           <InterestButton
             vibeId={vibe.id}
             userId={user!.id}
-            profileComplete={profileComplete}
+            activitiesDone={activitiesDone}
             initialStatus={(myInterest?.status as InterestStatus) ?? null}
             invitationExpiresAt={myInterest?.invitation_expires_at ?? null}
             cancelled={vibe.status === "cancelled"}
+            autoInterest={searchParams.interested === "1"}
           />
         )}
       </div>
