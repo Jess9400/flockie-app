@@ -10,6 +10,7 @@ const config: Config = {
         ink: "#0A2545",
         muted: "#5b6b7d",
         cream: "#F7F3EE",
+        "onboarding-green": "#1A8C6A",
       },
       fontFamily: {
         dm: ["var(--font-dm-sans)", "system-ui", "sans-serif"],

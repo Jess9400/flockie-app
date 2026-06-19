@@ -16,7 +16,7 @@ export default function LoginPage() {
 function LoginForm() {
   const searchParams = useSearchParams();
   const supabase = createClient();
-  const redirect = searchParams.get("redirect") || "/match";
+  const redirect = searchParams.get("redirect") || "/home";
   const [loading, setLoading] = useState(false);
 
   async function handleGoogle() {
