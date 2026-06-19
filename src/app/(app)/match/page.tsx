@@ -43,7 +43,14 @@ export default async function MatchPage({
       <h1 className="text-2xl font-black">Find a buddy</h1>
       <p className="mt-1 text-sm font-medium text-muted">
         1:1 matching — you both swipe, mutual likes connect. For a trip, or to do
-        an activity in your city. (Want a group? Create a Vibe.)
+        an activity in your city. Want a group?{" "}
+        <Link
+          href={isActivity ? "/vibes/new" : "/match/trip?kind=flock"}
+          className="font-bold text-flockie-orange underline"
+        >
+          {isActivity ? "Create a Vibe" : "Create a Flock"}
+        </Link>
+        .
       </p>
       <div className="mt-4 grid grid-cols-2 gap-2 rounded-full border-2 border-ink bg-white p-1 text-sm font-bold">
         <span className="rounded-full bg-flockie-orange py-2 text-center text-white">Find a Buddy</span>

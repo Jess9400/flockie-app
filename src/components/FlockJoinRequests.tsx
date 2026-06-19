@@ -18,9 +18,11 @@ export type JoinReq = {
 export default function FlockJoinRequests({
   tripId,
   requests,
+  dualApproval,
 }: {
   tripId: string;
   requests: JoinReq[];
+  dualApproval?: boolean;
 }) {
   const supabase = createClient();
   const [items, setItems] = useState(requests);
@@ -28,19 +30,20 @@ export default function FlockJoinRequests({
 
   async function act(userId: string, approve: boolean) {
     setBusy(userId);
-    const { error } = await supabase.rpc(
-      approve ? "approve_join_request" : "decline_join_request",
-      { p_trip: tripId, p_user: userId }
-    );
+    const { error } = await supabase.rpc("respond_join_request", {
+      p_trip: tripId,
+      p_user: userId,
+      p_approve: approve,
+    });
     setBusy(null);
     if (!error) {
-      setItems((cur) =>
-        cur.map((r) => (r.userId === userId ? { ...r, status: approve ? "accepted" : "declined" } : r))
-      );
+      const next = approve ? (dualApproval ? "waiting" : "accepted") : "declined";
+      setItems((cur) => cur.map((r) => (r.userId === userId ? { ...r, status: next } : r)));
     }
   }
 
   const pending = items.filter((r) => r.status === "pending");
+  const waiting = items.filter((r) => r.status === "waiting");
   const accepted = items.filter((r) => r.status === "accepted");
 
   if (items.length === 0) return null;
@@ -89,6 +92,12 @@ export default function FlockJoinRequests({
             </li>
           ))}
         </ul>
+      )}
+
+      {waiting.length > 0 && (
+        <p className="mt-2 text-[11px] font-medium text-muted">
+          ✓ You approved {waiting.map((w) => w.name).join(", ")} — waiting for your co-host.
+        </p>
       )}
 
       {accepted.length > 0 && (

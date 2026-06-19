@@ -70,6 +70,20 @@ export default function BuddyChatHeader({
     window.alert("Thanks — our team will review this report.");
   }
 
+  async function makeFlock() {
+    setMenu(false);
+    if (
+      !window.confirm(
+        "Turn this trip into a Flock? It becomes a public group trip others can request to join — you and your buddy approve new members together."
+      )
+    )
+      return;
+    const { error } = await supabase.rpc("convert_match_to_flock", { p_match: matchId });
+    if (error) return window.alert(error.message);
+    window.alert("Done! Your trip is now a Flock. Approve join requests from this chat or My Trips.");
+    router.refresh();
+  }
+
   return (
     <div className="sticky top-16 z-20 -mx-5 border-b-2 border-navy bg-white px-5">
       {/* top row */}
@@ -95,6 +109,9 @@ export default function BuddyChatHeader({
                 </Link>
                 <button type="button" onClick={() => { setMenu(false); setExpanded(true); }} className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5">
                   View trip details
+                </button>
+                <button type="button" onClick={makeFlock} className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5">
+                  Turn this into a Flock
                 </button>
                 <button type="button" onClick={toggleMute} className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5">
                   {muted ? "Unmute notifications" : "Mute notifications"}

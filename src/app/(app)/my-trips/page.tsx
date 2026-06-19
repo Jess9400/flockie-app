@@ -31,6 +31,18 @@ export default async function MyTripsPage() {
 
   // Join requests to my trips (host approval)
   const myTripIds = (trips ?? []).map((t) => t.id);
+
+  // Which of my trips are converted Flocks (have a co-host → dual approval)?
+  // Separate query so the page still works before flock-from-buddy.sql is applied.
+  const coHostTrips = new Set<string>();
+  if (myTripIds.length) {
+    const { data: ch } = await supabase
+      .from("trips")
+      .select("id")
+      .in("id", myTripIds)
+      .not("co_host_id", "is", null);
+    ch?.forEach((r) => coHostTrips.add(r.id));
+  }
   const reqByTrip: Record<string, JoinReq[]> = {};
   if (myTripIds.length) {
     const { data: jr } = await supabase
@@ -131,7 +143,7 @@ export default async function MyTripsPage() {
               </Link>
             </div>
             {reqByTrip[t.id]?.length ? (
-              <FlockJoinRequests tripId={t.id} requests={reqByTrip[t.id]} />
+              <FlockJoinRequests tripId={t.id} requests={reqByTrip[t.id]} dualApproval={coHostTrips.has(t.id)} />
             ) : null}
           </div>
         ))}

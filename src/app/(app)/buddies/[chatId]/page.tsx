@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
 import BuddyChatRoom from "@/components/BuddyChatRoom";
 import BuddyChatHeader from "@/components/BuddyChatHeader";
+import FlockJoinRequests, { type JoinReq } from "@/components/FlockJoinRequests";
 import { type PeekData } from "@/components/ProfilePeek";
 import { SLIDERS } from "@/lib/vibe-check";
 
@@ -41,6 +42,46 @@ export default async function BuddyChatPage({
     .eq("id", chat.match_id)
     .maybeSingle();
   const otherTripId = (otherId === match?.user_a ? matchExt?.trip_a : matchExt?.trip_b) as string | null;
+
+  // If this match was converted into a Flock, surface its pending join requests
+  // so both buddies can approve together.
+  const flockTripIds = [matchExt?.trip_a, matchExt?.trip_b].filter(Boolean) as string[];
+  let flockTripId: string | null = null;
+  let flockReqs: JoinReq[] = [];
+  if (flockTripIds.length) {
+    const { data: fl } = await supabase
+      .from("trips")
+      .select("id")
+      .in("id", flockTripIds)
+      .eq("visibility", "public")
+      .not("co_host_id", "is", null)
+      .maybeSingle();
+    if (fl) {
+      flockTripId = fl.id;
+      const { data: jr } = await supabase
+        .from("trip_join_requests")
+        .select("user_id, status")
+        .eq("trip_id", fl.id)
+        .eq("status", "pending");
+      const ids = (jr ?? []).map((r) => r.user_id);
+      if (ids.length) {
+        const { data: rp } = await supabase
+          .from("profiles")
+          .select("id, display_name, age, photos, one_liner")
+          .in("id", ids);
+        const map: Record<string, { display_name: string | null; age: number | null; photos: string[] | null; one_liner: string | null }> = {};
+        rp?.forEach((p) => (map[p.id] = p));
+        flockReqs = (jr ?? []).map((r) => ({
+          userId: r.user_id,
+          status: r.status,
+          name: map[r.user_id]?.display_name || "Flockie",
+          age: map[r.user_id]?.age ?? null,
+          photo: map[r.user_id]?.photos?.[0] ?? null,
+          oneLiner: map[r.user_id]?.one_liner ?? null,
+        }));
+      }
+    }
+  }
 
   const fields =
     "id, display_name, age, photos, home_city, one_liner, trip_vibe, travel_style, planning, pace, social_energy, budget, nightlife, adventurousness";
@@ -182,6 +223,10 @@ export default async function BuddyChatPage({
         compatLine={compatLine}
         peek={peek}
       />
+
+      {flockTripId && flockReqs.length > 0 && (
+        <FlockJoinRequests tripId={flockTripId} requests={flockReqs} dualApproval />
+      )}
 
       <BuddyChatRoom
         chatId={params.chatId}
