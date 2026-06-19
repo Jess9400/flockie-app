@@ -10,6 +10,7 @@ import ProfilePeek, { type PeekData } from "@/components/ProfilePeek";
 
 export default function BuddyChatHeader({
   matchId,
+  chatId,
   name,
   age,
   photo,
@@ -21,8 +22,10 @@ export default function BuddyChatHeader({
   sharedTravelStyle,
   compatLine,
   peek,
+  initialMuted,
 }: {
   matchId: string;
+  chatId: string;
   name: string;
   age: number | null;
   photo: string | null;
@@ -34,6 +37,7 @@ export default function BuddyChatHeader({
   sharedTravelStyle: string[];
   compatLine: string | null;
   peek: PeekData;
+  initialMuted: boolean;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -41,14 +45,29 @@ export default function BuddyChatHeader({
   const [menu, setMenu] = useState(false);
   const [showPeek, setShowPeek] = useState(false);
   const [leaving, setLeaving] = useState(false);
+  const [muted, setMuted] = useState(initialMuted);
 
   async function leave() {
     if (!window.confirm(`Leave this match? You'll lose access to this chat and ${name} will be notified.`))
       return;
     setLeaving(true);
-    await supabase.from("buddy_matches").delete().eq("id", matchId);
+    await supabase.rpc("leave_buddy_match", { p_match: matchId });
     router.push("/chats");
     router.refresh();
+  }
+
+  async function toggleMute() {
+    setMenu(false);
+    const { data } = await supabase.rpc("toggle_chat_mute", { p_chat: chatId });
+    setMuted(!!data);
+  }
+
+  async function report() {
+    setMenu(false);
+    const reason = window.prompt(`Report ${name}? Tell us what's wrong (optional):`);
+    if (reason === null) return;
+    await supabase.rpc("report_user", { p_target: peek.id, p_reason: reason });
+    window.alert("Thanks — our team will review this report.");
   }
 
   return (
@@ -77,12 +96,12 @@ export default function BuddyChatHeader({
                 <button type="button" onClick={() => { setMenu(false); setExpanded(true); }} className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5">
                   View trip details
                 </button>
-                <a
-                  href={`mailto:hello@findflockie.com?subject=Report%20user%20${encodeURIComponent(name)}`}
-                  className="block rounded-xl px-3 py-2 hover:bg-navy/5"
-                >
+                <button type="button" onClick={toggleMute} className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5">
+                  {muted ? "Unmute notifications" : "Mute notifications"}
+                </button>
+                <button type="button" onClick={report} className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5">
                   Report this user
-                </a>
+                </button>
                 <button type="button" onClick={leave} disabled={leaving} className="block w-full rounded-xl px-3 py-2 text-left text-flockie-coral hover:bg-navy/5">
                   Leave this match
                 </button>

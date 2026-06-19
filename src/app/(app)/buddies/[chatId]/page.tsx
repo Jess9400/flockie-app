@@ -33,31 +33,68 @@ export default async function BuddyChatPage({
 
   const otherId = (match?.user_a === user!.id ? match?.user_b : match?.user_a) as string;
 
+  // Extended match context — columns added by buddy-match-context.sql. Queried
+  // separately so the page still works before that migration is applied.
+  const { data: matchExt } = await supabase
+    .from("buddy_matches")
+    .select("trip_a, trip_b, score")
+    .eq("id", chat.match_id)
+    .maybeSingle();
+  const otherTripId = (otherId === match?.user_a ? matchExt?.trip_a : matchExt?.trip_b) as string | null;
+
   const fields =
     "id, display_name, age, photos, home_city, one_liner, trip_vibe, travel_style, planning, pace, social_energy, budget, nightlife, adventurousness";
-  const [{ data: other }, { data: me }, { data: trips }, { data: messages }] = await Promise.all([
-    supabase.from("profiles").select(fields).eq("id", otherId).maybeSingle(),
-    supabase.from("profiles").select(fields).eq("id", user!.id).maybeSingle(),
-    supabase
-      .from("trips")
-      .select("destination, destinations, start_date, end_date")
-      .eq("user_id", otherId)
-      .eq("status", "active")
-      .order("start_date", { ascending: true }),
-    supabase
-      .from("buddy_messages")
-      .select("id, sender_id, content, created_at")
-      .eq("chat_id", params.chatId)
-      .order("created_at", { ascending: true })
-      .limit(200),
-  ]);
+  const [{ data: other }, { data: me }, { data: trips }, { data: messages }, { data: muteRow }] =
+    await Promise.all([
+      supabase.from("profiles").select(fields).eq("id", otherId).maybeSingle(),
+      supabase.from("profiles").select(fields).eq("id", user!.id).maybeSingle(),
+      supabase
+        .from("trips")
+        .select("id, destination, destinations, start_date, end_date")
+        .eq("user_id", otherId)
+        .eq("status", "active")
+        .order("start_date", { ascending: true }),
+      supabase
+        .from("buddy_messages")
+        .select("id, sender_id, content, created_at")
+        .eq("chat_id", params.chatId)
+        .order("created_at", { ascending: true })
+        .limit(200),
+      supabase
+        .from("chat_mutes")
+        .select("chat_id")
+        .eq("user_id", user!.id)
+        .eq("chat_id", params.chatId)
+        .maybeSingle(),
+    ]);
 
   const otherName = (other?.display_name || "your match").split(" ")[0];
 
-  // Pick the soonest upcoming (or soonest) active trip of the other user.
+  // Prefer the trip persisted on the match; fall back to soonest active trip.
   const todayIso = new Date().toISOString().slice(0, 10);
   const tripList = trips ?? [];
-  const trip = tripList.find((t) => (t.end_date ?? "") >= todayIso) ?? tripList[0] ?? null;
+  type TripRow = {
+    id?: string;
+    destination?: string | null;
+    destinations?: string[] | null;
+    start_date?: string | null;
+    end_date?: string | null;
+  };
+  let trip: TripRow | null = null;
+  if (otherTripId) {
+    trip = tripList.find((t) => t.id === otherTripId) ?? null;
+    if (!trip) {
+      const { data } = await supabase
+        .from("trips")
+        .select("id, destination, destinations, start_date, end_date")
+        .eq("id", otherTripId)
+        .maybeSingle();
+      trip = data;
+    }
+  }
+  if (!trip) {
+    trip = tripList.find((t) => (t.end_date ?? "") >= todayIso) ?? tripList[0] ?? null;
+  }
   const destination = trip?.destination ?? trip?.destinations?.[0] ?? null;
 
   let dateRange: string | null = null;
@@ -92,6 +129,8 @@ export default async function BuddyChatPage({
     const wsum = parts.reduce((s, [w]) => s + w, 0);
     score = Math.round((parts.reduce((s, [w, v]) => s + w * v, 0) / wsum) * 100);
   }
+  // Persisted score (from match time) wins when available.
+  if (matchExt?.score != null) score = Math.round(Number(matchExt.score));
 
   const compatLine = common.length
     ? `You both align on ${common.slice(0, 3).join(", ").toLowerCase()}.`
@@ -129,6 +168,8 @@ export default async function BuddyChatPage({
     <main className="mx-auto w-full max-w-2xl px-5 pt-2 font-nunito">
       <BuddyChatHeader
         matchId={chat.match_id}
+        chatId={params.chatId}
+        initialMuted={!!muteRow}
         name={otherName}
         age={other?.age ?? null}
         photo={arr(other?.photos)[0] ?? null}
