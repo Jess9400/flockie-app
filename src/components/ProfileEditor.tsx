@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { Pencil, Settings, Share2 } from "lucide-react";
 import ProfileView from "@/components/ProfileView";
+import ProfileCompletion from "@/components/ProfileCompletion";
+import ProfileReviews, { type ReviewItem } from "@/components/ProfileReviews";
 import VibeCheckForm from "@/components/VibeCheckForm";
 import VibeShareCard from "@/components/VibeShareCard";
 import CompatShareButton from "@/components/CompatShareButton";
@@ -13,11 +15,17 @@ export default function ProfileEditor({
   userId,
   profile,
   complete,
+  reviewAvg = 0,
+  reviewCount = 0,
+  reviewItems = [],
   redirectAfter,
 }: {
   userId: string;
   profile: Partial<Profile>;
   complete: boolean;
+  reviewAvg?: number;
+  reviewCount?: number;
+  reviewItems?: ReviewItem[];
   redirectAfter?: string;
 }) {
   // Start in edit mode if the profile isn't complete yet (first-time onboarding).
@@ -71,7 +79,11 @@ export default function ProfileEditor({
         </Link>
       </div>
 
+      <ProfileCompletion userId={userId} profile={profile} onEditProfile={() => setEditing(true)} />
+
       <ProfileView profile={profile} />
+
+      <ProfileReviews avg={reviewAvg} count={reviewCount} items={reviewItems} />
 
       {/* Invite a friend to see their match % with you */}
       <div className="mt-8 flex justify-center">
