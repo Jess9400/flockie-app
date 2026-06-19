@@ -108,25 +108,29 @@ export default function VibeShareCard({
         y = 520;
       }
 
-      // tag pills (up to 3, stacked) — keep clear of the footer
+      // tag pills (up to 3) — single centered horizontal row
       const shown = tags
         .filter(Boolean)
-        .map((t) => (t.length > 22 ? t.slice(0, 21).trim() + "…" : t))
+        .map((t) => (t.length > 18 ? t.slice(0, 17).trim() + "…" : t))
         .slice(0, 3);
-      ctx.font = "700 36px system-ui, sans-serif";
-      for (const t of shown) {
-        if (y > H - 150) break;
-        const tw = ctx.measureText(t).width;
-        const padX = 38;
-        const pw = Math.min(tw + padX * 2, W - 160);
-        const ph = 70;
-        const x = (W - pw) / 2;
-        ctx.fillStyle = "#FF6B4A";
-        roundRect(ctx, x, y, pw, ph, 35);
-        ctx.fill();
-        ctx.fillStyle = "#ffffff";
-        ctx.fillText(t, W / 2, y + 47);
-        y += ph + 18;
+      if (shown.length) {
+        const padX = 32;
+        const gap = 18;
+        const ph = 66;
+        ctx.font = "700 34px system-ui, sans-serif";
+        const pills = shown.map((t) => ({ t, pw: ctx.measureText(t).width + padX * 2 }));
+        const rowW = pills.reduce((sum, p) => sum + p.pw, 0) + gap * (pills.length - 1);
+        let x = (W - rowW) / 2;
+        ctx.textBaseline = "middle";
+        for (const p of pills) {
+          ctx.fillStyle = "#FF6B4A";
+          roundRect(ctx, x, y, p.pw, ph, 33);
+          ctx.fill();
+          ctx.fillStyle = "#ffffff";
+          ctx.fillText(p.t, x + p.pw / 2, y + ph / 2 + 2);
+          x += p.pw + gap;
+        }
+        ctx.textBaseline = "alphabetic";
       }
 
       // footer — sign-up CTA so anyone who sees the card can join
