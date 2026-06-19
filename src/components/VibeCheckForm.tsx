@@ -29,6 +29,7 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
     age: initial.age ?? null,
     gender: initial.gender ?? "",
     home_city: initial.home_city ?? "",
+    bio: initial.bio ?? "",
     instagram: initial.instagram ?? "",
     x_handle: initial.x_handle ?? "",
     tiktok: initial.tiktok ?? "",
@@ -99,18 +100,24 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
     if (photos.length === 0) return setMsg("Add at least one profile photo.");
     setSaving(true);
     setMsg(null);
+    const { bio, ...rest } = basics;
     const { error } = await supabase
       .from("profiles")
       .update({
-        ...basics,
+        ...rest,
         gender: basics.gender || null,
         photos,
         video_url: videoUrl,
         onboarding_complete: true,
       })
       .eq("id", userId);
+    if (error) {
+      setSaving(false);
+      return setMsg(error.message);
+    }
+    // Separate, migration-safe write (bio column may not exist yet).
+    await supabase.from("profiles").update({ bio: bio || null }).eq("id", userId);
     setSaving(false);
-    if (error) return setMsg(error.message);
     setMsg("Saved!");
     setShowShare(true);
   }
@@ -189,6 +196,19 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
                 onChange={(e) => setBasics({ ...basics, home_city: e.target.value })}
                 placeholder="Where you're based"
               />
+            </Field>
+            <Field label="A little about you (optional)">
+              <textarea
+                rows={4}
+                maxLength={300}
+                className="w-full rounded-2xl border-2 border-navy bg-cream px-4 py-3 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue"
+                value={basics.bio}
+                onChange={(e) => setBasics({ ...basics, bio: e.target.value })}
+                placeholder="What should people know about you?"
+              />
+              <p className="mt-1 text-right font-nunito text-xs font-semibold text-navy/50">
+                {basics.bio.length}/300
+              </p>
             </Field>
           </div>
         </section>

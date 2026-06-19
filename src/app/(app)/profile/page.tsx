@@ -23,6 +23,13 @@ export default async function ProfilePage({
 
   const complete = profile?.onboarding_complete ?? false;
 
+  // Bio — separate, migration-safe (column may not exist yet).
+  const { data: bioRow } = await supabase
+    .from("profiles")
+    .select("bio")
+    .eq("id", user!.id)
+    .maybeSingle();
+
   // Reviews about me — shown on my own profile too.
   const { data: reviewRows } = await supabase
     .from("reviews")
@@ -54,7 +61,7 @@ export default async function ProfilePage({
     <main className="mx-auto w-full max-w-[720px] px-6 pb-28 pt-6 font-nunito sm:pb-12">
       <ProfileEditor
         userId={user!.id}
-        profile={(profile ?? {}) as Partial<Profile>}
+        profile={{ ...(profile ?? {}), bio: bioRow?.bio ?? null } as Partial<Profile>}
         complete={complete}
         reviewAvg={reviewAvg}
         reviewCount={reviewCount}

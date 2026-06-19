@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import CompatShareButton from "@/components/CompatShareButton";
 import { ARCHETYPES } from "@/lib/onboarding/archetypes";
 import type { VibeDimension } from "@/lib/onboarding/types";
@@ -21,6 +21,7 @@ export default function VibeShareCard({
   onClose: () => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [invited, setInvited] = useState(false);
   const W = 1080;
   const H = 1080;
   const a = archetypeKey ? ARCHETYPES[archetypeKey as VibeDimension] ?? null : null;
@@ -177,6 +178,17 @@ export default function VibeShareCard({
     }, "image/png");
   }
 
+  async function inviteFriend() {
+    const link = userId
+      ? `https://findflockie.com/?ref=${userId}`
+      : "https://findflockie.com";
+    try {
+      await navigator.clipboard.writeText(link);
+      setInvited(true);
+      setTimeout(() => setInvited(false), 1600);
+    } catch {}
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy/60 p-5 font-nunito">
       <div className="w-full max-w-sm rounded-3xl border-2 border-navy bg-cream p-5 text-center">
@@ -197,9 +209,20 @@ export default function VibeShareCard({
         >
           Share my vibe
         </button>
+        <button
+          type="button"
+          onClick={inviteFriend}
+          className="mt-2 w-full rounded-full border-2 border-navy bg-navy py-3 font-fredoka text-base font-semibold text-white"
+        >
+          {invited ? "Referral link copied!" : "Invite a friend"}
+        </button>
         {userId && (
           <div className="mt-2 flex justify-center">
-            <CompatShareButton userId={userId} variant="ghost" />
+            <CompatShareButton
+              userId={userId}
+              variant="ghost"
+              label="Check if your friend would match your vibe"
+            />
           </div>
         )}
         <button

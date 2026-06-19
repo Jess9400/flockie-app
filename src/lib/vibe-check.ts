@@ -310,6 +310,7 @@ export type Profile = VibeAnswers &
     gender: string | null;
     relationship_status: string | null;
     home_city: string | null;
+    bio: string | null;
     instagram: string | null;
     x_handle: string | null;
     tiktok: string | null;

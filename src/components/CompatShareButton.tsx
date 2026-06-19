@@ -7,9 +7,11 @@ import { Sparkles } from "lucide-react";
 export default function CompatShareButton({
   userId,
   variant = "primary",
+  label,
 }: {
   userId: string;
   variant?: "primary" | "ghost";
+  label?: string;
 }) {
   const [copied, setCopied] = useState(false);
   const url = `https://app.findflockie.com/compat/${userId}`;
@@ -42,7 +44,7 @@ export default function CompatShareButton({
       onClick={share}
       className={`inline-flex items-center justify-center gap-2 rounded-full border-2 border-navy px-5 py-2.5 font-fredoka text-sm font-semibold ${cls}`}
     >
-      <Sparkles size={16} /> {copied ? "Link copied!" : "See your match % with a friend"}
+      <Sparkles size={16} /> {copied ? "Link copied!" : label ?? "See your match % with a friend"}
     </button>
   );
 }

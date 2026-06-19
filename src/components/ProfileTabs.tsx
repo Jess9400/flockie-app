@@ -112,6 +112,9 @@ export default function ProfileTabs({
               <div className="flex h-[30vh] w-full items-center justify-center rounded-2xl bg-cream text-5xl">🕊️</div>
             )}
             {p.home_city && <p className="mt-4 text-base font-semibold text-navy">📍 {p.home_city}</p>}
+            {p.bio && (
+              <p className="mt-3 whitespace-pre-line text-[15px] font-medium leading-relaxed text-navy/80">{p.bio}</p>
+            )}
             {(p.photos?.length ?? 0) > 1 && (
               <div className="mt-5">
                 <PhotoStrip photos={p.photos!.slice(1)} />
