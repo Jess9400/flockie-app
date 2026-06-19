@@ -141,28 +141,32 @@ export default function ProfileTabs({
         {tab === "trip" &&
           (tripFilled ? (
             <TabShell title="Trip vibe" onEdit={() => setOpenWizard("trip")}>
-              <div className="space-y-7">
-                {SLIDERS.map((s) => {
-                  const val = p[s.key] as number | null | undefined;
-                  if (val == null) return null;
-                  return (
-                    <FingerprintBar
-                      key={s.key}
-                      title={s.label}
-                      leftLabel={s.scale[0]}
-                      rightLabel={s.scale[4]}
-                      value={val}
-                      answer={s.scale[val - 1]}
-                    />
-                  );
-                })}
-              </div>
-              <div className="mt-8 space-y-6">
-                <ChipGroup label="Trip vibe" items={p.trip_vibe} />
-                <ChipGroup label="Travel style" items={p.travel_style} />
-                <ChipGroup label="Hard preferences" items={p.dealbreakers} />
-              </div>
-              {p.one_liner && <Quote text={p.one_liner} />}
+              <Section title="How you travel">
+                <div className="space-y-6 rounded-2xl border-2 border-ink/10 bg-white p-4">
+                  {SLIDERS.map((s) => {
+                    const val = p[s.key] as number | null | undefined;
+                    if (val == null) return null;
+                    return (
+                      <FingerprintBar
+                        key={s.key}
+                        title={s.label}
+                        leftLabel={s.scale[0]}
+                        rightLabel={s.scale[4]}
+                        value={val}
+                        answer={s.scale[val - 1]}
+                      />
+                    );
+                  })}
+                </div>
+              </Section>
+              <ChipGroup label="Trip vibe" items={p.trip_vibe} />
+              <ChipGroup label="Travel style" items={p.travel_style} />
+              <ChipGroup label="Hard preferences" items={p.dealbreakers} />
+              {p.one_liner && (
+                <Section title="In their words">
+                  <Quote text={p.one_liner} />
+                </Section>
+              )}
             </TabShell>
           ) : (
             <EmptyCTA
@@ -177,36 +181,43 @@ export default function ProfileTabs({
         {tab === "activity" &&
           (activityFilled ? (
             <TabShell title="Activity vibe" onEdit={() => setOpenWizard("activity")}>
-              <div className="space-y-6">
-                <ChipGroup label="Activities" items={p.activities} />
-                <ChipGroup label="Activity vibe" items={p.activity_vibe} />
-                {skills.length > 0 && (
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-wide text-navy/55">Skill levels</p>
-                    <div className="mt-2 space-y-2">
-                      {skills.map((c) => (
-                        <div
-                          key={c.value}
-                          className="flex items-center justify-between rounded-2xl border-2 border-navy/10 bg-cream px-4 py-2.5"
-                        >
-                          <span className="text-sm font-semibold text-navy">{c.emoji} {c.label}</span>
-                          <span className="text-sm font-bold text-flockie-coral">
-                            {SKILL_SCALE[(p.activity_skills![c.value] ?? 1) - 1]}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
+              <ChipGroup label="Activities" items={p.activities} />
+              <ChipGroup label="Activity vibe" items={p.activity_vibe} />
+              {skills.length > 0 && (
+                <Section title="Skill levels">
+                  <div className="space-y-2">
+                    {skills.map((c) => (
+                      <div
+                        key={c.value}
+                        className="flex items-center justify-between rounded-2xl border-2 border-ink/10 bg-white px-4 py-2.5"
+                      >
+                        <span className="text-sm font-semibold text-navy">{c.emoji} {c.label}</span>
+                        <span className="text-sm font-bold text-flockie-coral">
+                          {SKILL_SCALE[(p.activity_skills![c.value] ?? 1) - 1]}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                )}
-                {p.activity_social != null && (
-                  <Line label="Group size" value={ACTIVITY_SOCIAL_SCALE[p.activity_social - 1]} />
-                )}
-                {p.activity_intensity != null && (
-                  <Line label="Intensity" value={INTENSITY_SCALE[p.activity_intensity - 1]} />
-                )}
-                <ChipGroup label="Hard preferences" items={p.activity_dealbreakers} />
-              </div>
-              {p.activity_one_liner && <Quote text={p.activity_one_liner} />}
+                </Section>
+              )}
+              {(p.activity_social != null || p.activity_intensity != null) && (
+                <Section title="How they like it">
+                  <div className="space-y-2">
+                    {p.activity_social != null && (
+                      <Line label="Group size" value={ACTIVITY_SOCIAL_SCALE[p.activity_social - 1]} />
+                    )}
+                    {p.activity_intensity != null && (
+                      <Line label="Intensity" value={INTENSITY_SCALE[p.activity_intensity - 1]} />
+                    )}
+                  </div>
+                </Section>
+              )}
+              <ChipGroup label="Hard preferences" items={p.activity_dealbreakers} />
+              {p.activity_one_liner && (
+                <Section title="In their words">
+                  <Quote text={p.activity_one_liner} />
+                </Section>
+              )}
             </TabShell>
           ) : (
             <EmptyCTA
@@ -283,26 +294,39 @@ function EmptyCTA({
   );
 }
 
+// Shared styling with the Vibe quiz tab (VibeQuizResult): uppercase muted
+// section headers, white bordered cards and chips.
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="mt-5">
+      <h3 className="mb-2 text-[12px] font-extrabold uppercase tracking-wide text-muted">{title}</h3>
+      {children}
+    </section>
+  );
+}
+
 function ChipGroup({ label, items }: { label: string; items?: string[] | null }) {
   if (!items || items.length === 0) return null;
   return (
-    <div>
-      <p className="text-[11px] font-bold uppercase tracking-wide text-navy/55">{label}</p>
-      <div className="mt-2 flex flex-wrap gap-2">
+    <Section title={label}>
+      <div className="flex flex-wrap gap-1.5">
         {items.map((t) => (
-          <span key={t} className="rounded-full bg-flockie-coral px-4 py-2 text-sm font-semibold text-white">
+          <span
+            key={t}
+            className="rounded-full border-2 border-ink/10 bg-white px-3.5 py-2 text-[12.5px] font-bold text-navy"
+          >
             {t}
           </span>
         ))}
       </div>
-    </div>
+    </Section>
   );
 }
 
 function Line({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between rounded-2xl border-2 border-navy/10 bg-cream px-4 py-2.5">
-      <span className="text-[11px] font-bold uppercase tracking-wide text-navy/55">{label}</span>
+    <div className="flex items-center justify-between rounded-2xl border-2 border-ink/10 bg-white px-4 py-2.5">
+      <span className="text-[11px] font-bold uppercase tracking-wide text-muted">{label}</span>
       <span className="text-sm font-bold text-navy">{value}</span>
     </div>
   );

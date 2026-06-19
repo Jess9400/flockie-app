@@ -7,6 +7,7 @@ import ProfileTabs from "@/components/ProfileTabs";
 import { type ReviewItem } from "@/components/ProfileReviews";
 import VibeCheckForm from "@/components/VibeCheckForm";
 import VibeShareCard from "@/components/VibeShareCard";
+import VibeCompletePopup from "@/components/VibeCompletePopup";
 import type { Profile } from "@/lib/vibe-check";
 
 export default function ProfileEditor({
@@ -34,6 +35,18 @@ export default function ProfileEditor({
     ...(profile.travel_style ?? []),
     ...(profile.activity_vibe ?? []),
   ];
+  const ext = profile as {
+    archetype?: string | null;
+    trip_prefs_complete?: boolean | null;
+    activity_prefs_complete?: boolean | null;
+  };
+  const allComplete = !!(
+    profile.display_name &&
+    (profile.photos?.length ?? 0) > 0 &&
+    ext.archetype &&
+    ext.trip_prefs_complete &&
+    ext.activity_prefs_complete
+  );
 
   if (editing) {
     return (
@@ -93,10 +106,18 @@ export default function ProfileEditor({
           userId={userId}
           name={profile.display_name ?? ""}
           tags={shareTags}
-          archetypeKey={(profile as { archetype?: string | null }).archetype}
+          archetypeKey={ext.archetype}
           onClose={() => setShowShare(false)}
         />
       )}
+
+      <VibeCompletePopup
+        userId={userId}
+        name={profile.display_name ?? ""}
+        tags={shareTags}
+        archetypeKey={ext.archetype}
+        allComplete={allComplete}
+      />
     </div>
   );
 }

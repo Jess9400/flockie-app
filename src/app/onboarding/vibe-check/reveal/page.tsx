@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import RevealActions from "@/components/onboarding/RevealActions";
-import InviteFriendsButton from "@/components/InviteFriendsButton";
 import { ARCHETYPES } from "@/lib/onboarding/archetypes";
 import { pct } from "@/lib/onboarding/scoring";
 import { VibeDimension, VibeScores } from "@/lib/onboarding/types";
@@ -77,28 +75,18 @@ export default async function VibeRevealPage() {
           </div>
         </Section>
 
-        <RevealActions
-          userId={user.id}
-          name={profile.display_name || "Flockie"}
-          tags={[]}
-          archetypeKey={profile.archetype}
-        />
-
         <Section title="People near you with this vibe">
           {nearby.length === 0 ? (
             <div className="rounded-2xl border-2 border-dashed border-ink/15 bg-white p-5 text-center">
               <div className="mb-2 text-[30px]">🌱</div>
               <p className="mb-1 text-[13.5px] font-extrabold">Nobody&apos;s matched this vibe here yet</p>
-              <p className="text-[12px] font-semibold leading-relaxed text-muted">{profile.home_city ?? "Your city"}&apos;s just getting started on Flockie. Be the spark — invite a friend and your flock grows fast.</p>
-              <div className="mt-3 flex flex-col items-stretch gap-2">
-                <InviteFriendsButton city={profile.home_city ?? undefined} label="Invite a friend" />
-                <Link
-                  href="/vibes"
-                  className="rounded-full border-2 border-ink bg-white py-2.5 text-center text-[13px] font-bold text-ink"
-                >
-                  See what&apos;s happening nearby →
-                </Link>
-              </div>
+              <p className="text-[12px] font-semibold leading-relaxed text-muted">{profile.home_city ?? "Your city"}&apos;s just getting started on Flockie. Be the spark.</p>
+              <Link
+                href="/vibes"
+                className="mt-3 block rounded-full border-2 border-ink bg-white py-2.5 text-center text-[13px] font-bold text-ink"
+              >
+                See what&apos;s happening nearby →
+              </Link>
             </div>
           ) : (
             <div className="flex flex-col gap-2">

@@ -134,10 +134,13 @@ export default function VibeShareCard({
         y += ph + 24;
       }
 
-      // footer
-      ctx.fillStyle = "rgba(255,255,255,0.6)";
-      ctx.font = "600 36px system-ui, sans-serif";
-      ctx.fillText("find your flock · findflockie.com", W / 2, H - 70);
+      // footer — sign-up CTA so anyone who sees the card can join
+      ctx.fillStyle = "#FF6B4A";
+      ctx.font = "700 40px system-ui, sans-serif";
+      ctx.fillText("Find your vibe → findflockie.com", W / 2, H - 78);
+      ctx.fillStyle = "rgba(255,255,255,0.55)";
+      ctx.font = "600 30px system-ui, sans-serif";
+      ctx.fillText("free · 60-second vibe check", W / 2, H - 36);
     }
 
     const img = new window.Image();
