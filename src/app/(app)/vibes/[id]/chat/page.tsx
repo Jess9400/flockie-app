@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { ChevronLeft, MapPin, CalendarClock } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import ChatRoom from "@/components/ChatRoom";
-import { formatVibeWhen } from "@/lib/vibes";
+import VibeChatHeader, { type ChatMember } from "@/components/VibeChatHeader";
 
 export default async function VibeChatPage({
   params,
@@ -21,11 +21,11 @@ export default async function VibeChatPage({
 
   if (error || !chatId) {
     return (
-      <main className="px-5 pt-6">
-        <Link href={`/vibes/${params.id}`} className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted">
+      <main className="mx-auto w-full max-w-2xl px-5 pt-6">
+        <Link href={`/vibes/${params.id}`} className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-navy/60">
           <ChevronLeft size={16} /> Back
         </Link>
-        <div className="rounded-3xl border-2 border-dashed border-ink/30 py-16 text-center font-medium text-muted">
+        <div className="rounded-3xl border-2 border-dashed border-navy/30 py-16 text-center font-nunito font-medium text-navy/60">
           The Vibing Chat opens once you&rsquo;re confirmed for this Vibe.
         </div>
       </main>
@@ -34,7 +34,7 @@ export default async function VibeChatPage({
 
   const { data: vibe } = await supabase
     .from("vibes")
-    .select("title, starts_at, location_name, city, host_id, activity_url, status")
+    .select("title, description, photos, starts_at, location_name, city, host_id, activity_url, status")
     .eq("id", params.id)
     .maybeSingle();
 
@@ -45,7 +45,6 @@ export default async function VibeChatPage({
     .order("created_at", { ascending: true })
     .limit(200);
 
-  // members = host + confirmed attendees
   const { data: confirmedRows } = await supabase
     .from("vibe_interests")
     .select("user_id")
@@ -56,78 +55,68 @@ export default async function VibeChatPage({
     new Set([vibe?.host_id, ...(confirmedRows ?? []).map((r) => r.user_id)].filter(Boolean))
   ) as string[];
 
-  const members: Record<string, { display_name: string | null; photos: string[] | null }> = {};
+  const profiles: Record<string, { display_name: string | null; photos: string[] | null; age: number | null; home_city: string | null }> = {};
   if (memberIds.length) {
     const { data: mp } = await supabase
       .from("profiles")
-      .select("id, display_name, photos")
+      .select("id, display_name, photos, age, home_city")
       .in("id", memberIds);
-    mp?.forEach((m) => (members[m.id] = { display_name: m.display_name, photos: m.photos }));
+    mp?.forEach((m) => (profiles[m.id] = m));
   }
 
-  const locationQuery = vibe?.location_name
+  // ChatRoom member map (name + photo)
+  const members: Record<string, { display_name: string | null; photos: string[] | null }> = {};
+  memberIds.forEach((id) => {
+    members[id] = { display_name: profiles[id]?.display_name ?? null, photos: profiles[id]?.photos ?? null };
+  });
+
+  // Header member list (host first)
+  const headerMembers: ChatMember[] = memberIds
+    .map((id) => ({
+      id,
+      name: profiles[id]?.display_name || "Flockie",
+      photo: profiles[id]?.photos?.[0] ?? null,
+      age: profiles[id]?.age ?? null,
+      city: profiles[id]?.home_city ?? null,
+      isHost: id === vibe?.host_id,
+    }))
+    .sort((a, b) => (a.isHost === b.isHost ? 0 : a.isHost ? -1 : 1));
+
+  const locationLabel = vibe?.location_name
     ? `${vibe.location_name}, ${vibe.city}`
     : vibe?.city ?? "";
-  const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(
-    locationQuery
-  )}&z=14&output=embed`;
+  const mapSrc = locationLabel
+    ? `https://maps.google.com/maps?q=${encodeURIComponent(locationLabel)}&z=14&output=embed`
+    : null;
 
   return (
-    <main className="px-5 pt-6">
-      <Link
-        href={`/vibes/${params.id}`}
-        className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted"
-      >
-        <ChevronLeft size={16} /> Back to Vibe
-      </Link>
+    <main className="mx-auto w-full max-w-2xl px-5 pt-2 font-nunito">
+      <VibeChatHeader
+        vibeId={params.id}
+        title={vibe?.title ?? "Vibe"}
+        cover={vibe?.photos?.[0] ?? null}
+        startsAt={vibe?.starts_at ?? null}
+        locationLabel={locationLabel}
+        mapSrc={mapSrc}
+        description={vibe?.description ?? null}
+        bookingUrl={vibe?.activity_url ?? null}
+        members={headerMembers}
+        currentUserId={user!.id}
+      />
 
       {vibe?.status === "cancelled" && (
-        <div className="mb-3 rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-bold text-muted">
+        <div className="mt-3 rounded-2xl border-2 border-navy bg-cream p-3 text-sm font-bold text-navy/70">
           This Vibe was cancelled — the chat is now inactive.
         </div>
       )}
-
-      {/* pinned info + map */}
-      <div className="overflow-hidden rounded-3xl border-2 border-ink bg-white">
-        <div className="p-4">
-          <p className="text-lg font-extrabold">{vibe?.title}</p>
-          {vibe?.starts_at && (
-            <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-ink">
-              <CalendarClock size={15} className="text-flockie-orange" />
-              {formatVibeWhen(vibe.starts_at)}
-            </p>
-          )}
-          <p className="mt-0.5 flex items-center gap-1.5 text-sm font-medium text-ink">
-            <MapPin size={15} className="text-flockie-orange" />
-            {locationQuery || "Location TBD"}
-          </p>
-          {vibe?.activity_url && (
-            <a
-              href={vibe.activity_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-flockie-blue px-3 py-1.5 text-xs font-bold text-white"
-            >
-              🎟️ View activity ↗
-            </a>
-          )}
-        </div>
-        {locationQuery && (
-          <iframe
-            title="Event location"
-            src={mapSrc}
-            loading="lazy"
-            className="h-44 w-full border-t-2 border-ink"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-        )}
-      </div>
 
       <ChatRoom
         chatId={chatId as string}
         currentUserId={user!.id}
         members={members}
         initialMessages={messages ?? []}
+        startsAt={vibe?.starts_at ?? null}
+        bookingUrl={vibe?.activity_url ?? null}
       />
     </main>
   );
