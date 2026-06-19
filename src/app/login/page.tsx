@@ -87,8 +87,9 @@ function LoginForm() {
           priority
           className="mx-auto h-14 w-auto"
         />
-        <h1 className="mt-5 text-center text-4xl font-black tracking-tight text-white">
-          Find your <span className="text-flockie-coral">flock.</span>
+        <h1 className="mt-5 text-center text-4xl font-black leading-tight tracking-tight text-white">
+          Find someone to go with.{" "}
+          <span className="text-flockie-coral">Anywhere.</span>
         </h1>
         <p className="mx-auto mt-3 max-w-xs text-center text-sm font-medium leading-relaxed text-white/70">
           Dinner tonight, a weekend trip, or just someone to hit the museum with.
