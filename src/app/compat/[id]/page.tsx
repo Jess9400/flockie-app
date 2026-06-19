@@ -63,12 +63,27 @@ export default async function CompatPage({ params }: { params: { id: string } })
     } else {
       const { data: s } = await supabase.rpc("compat_score", { p_other: params.id });
       const score = (s?.[0]?.score as number | undefined) ?? null;
+      const highlights = (s?.[0]?.highlights as string[] | undefined) ?? [];
       inner = (
         <div className="mt-6 text-center">
           <p className="font-fredoka text-6xl font-bold text-flockie-coral">{score ?? "—"}%</p>
           <p className="mt-1 font-nunito text-base font-semibold text-white">
             You and {name} are {score != null && score >= 70 ? "a great match" : "compatible"} 🎉
           </p>
+          {highlights.length > 0 && (
+            <div className="mt-4">
+              <p className="font-nunito text-xs font-bold uppercase tracking-wide text-white/55">
+                You both love
+              </p>
+              <div className="mt-2 flex flex-wrap justify-center gap-2">
+                {highlights.map((h) => (
+                  <span key={h} className="rounded-full bg-white/15 px-3 py-1 font-nunito text-xs font-semibold text-white">
+                    {h}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="mt-6 flex flex-col gap-2">
             <Link
               href="/vibes"

@@ -130,14 +130,14 @@ export default function TripForm({
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="block">
           <span className="mb-1 block text-sm font-bold">Start</span>
-          <input type="date" className={inputCls} value={start} onChange={(e) => setStart(e.target.value)} />
+          <input type="date" className={`${inputCls} block min-w-0 appearance-none`} value={start} onChange={(e) => setStart(e.target.value)} />
         </label>
         <label className="block">
           <span className="mb-1 block text-sm font-bold">End</span>
-          <input type="date" className={inputCls} value={end} onChange={(e) => setEnd(e.target.value)} />
+          <input type="date" className={`${inputCls} block min-w-0 appearance-none`} value={end} onChange={(e) => setEnd(e.target.value)} />
         </label>
       </div>
       {days > 0 && <p className="text-sm font-semibold text-flockie-orange">{days} days</p>}

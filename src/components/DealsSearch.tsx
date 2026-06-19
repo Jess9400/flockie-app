@@ -60,14 +60,14 @@ export default function DealsSearch({ defaultCity }: { defaultCity: string }) {
           />
         </label>
 
-        <div className="mt-3 grid grid-cols-2 gap-3">
+        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <label className="block">
             <span className="mb-1 block text-sm font-bold">Check-in</span>
             <input
               type="date"
               value={checkIn}
               onChange={(e) => setCheckIn(e.target.value)}
-              className="w-full rounded-2xl border-2 border-ink bg-white px-3 py-2.5 font-medium outline-none"
+              className="block w-full min-w-0 appearance-none rounded-2xl border-2 border-ink bg-white px-3 py-2.5 font-medium outline-none"
             />
           </label>
           <label className="block">
@@ -76,7 +76,7 @@ export default function DealsSearch({ defaultCity }: { defaultCity: string }) {
               type="date"
               value={checkOut}
               onChange={(e) => setCheckOut(e.target.value)}
-              className="w-full rounded-2xl border-2 border-ink bg-white px-3 py-2.5 font-medium outline-none"
+              className="block w-full min-w-0 appearance-none rounded-2xl border-2 border-ink bg-white px-3 py-2.5 font-medium outline-none"
             />
           </label>
         </div>
