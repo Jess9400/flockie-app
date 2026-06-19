@@ -2,13 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Pencil, Settings, Share2 } from "lucide-react";
-import ProfileView from "@/components/ProfileView";
-import ProfileCompletion from "@/components/ProfileCompletion";
-import ProfileReviews, { type ReviewItem } from "@/components/ProfileReviews";
+import { Settings, Share2 } from "lucide-react";
+import ProfileTabs from "@/components/ProfileTabs";
+import { type ReviewItem } from "@/components/ProfileReviews";
 import VibeCheckForm from "@/components/VibeCheckForm";
 import VibeShareCard from "@/components/VibeShareCard";
-import CompatShareButton from "@/components/CompatShareButton";
 import type { Profile } from "@/lib/vibe-check";
 
 export default function ProfileEditor({
@@ -79,24 +77,16 @@ export default function ProfileEditor({
         </Link>
       </div>
 
-      <ProfileCompletion userId={userId} profile={profile} onEditProfile={() => setEditing(true)} />
-
-      <ProfileView profile={profile} />
-
-      <ProfileReviews avg={reviewAvg} count={reviewCount} items={reviewItems} />
-
-      {/* Invite a friend to see their match % with you */}
-      <div className="mt-8 flex justify-center">
-        <CompatShareButton userId={userId} />
+      <div className="pt-14">
+        <ProfileTabs
+          userId={userId}
+          profile={profile}
+          reviewAvg={reviewAvg}
+          reviewCount={reviewCount}
+          reviewItems={reviewItems}
+          onEditProfile={() => setEditing(true)}
+        />
       </div>
-
-      {/* Edit CTA — fixed bottom-right desktop, sticky bottom-center mobile */}
-      <button
-        onClick={() => setEditing(true)}
-        className="fixed bottom-4 left-1/2 z-30 inline-flex -translate-x-1/2 items-center gap-2 rounded-full border-2 border-navy bg-flockie-coral px-6 py-3 font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] sm:bottom-6 sm:right-6 sm:left-auto sm:translate-x-0"
-      >
-        <Pencil size={16} /> Edit profile
-      </button>
 
       {showShare && (
         <VibeShareCard

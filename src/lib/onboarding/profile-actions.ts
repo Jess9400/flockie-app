@@ -48,6 +48,7 @@ export async function saveOnboardingProfile(input: ProfileInput) {
     gender: input.gender === "prefer_not_to_say" ? null : input.gender,
     home_city: input.city,
     photos,
+    onboarding_complete: true,
   });
 
   if (error) throw error;
