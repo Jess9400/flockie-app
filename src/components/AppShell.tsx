@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home, Compass, Map, Sparkles, CalendarCheck, MessageCircle, Tag, User, Bell, Plus, Menu, X,
+  Home, Compass, Map, Sparkles, CalendarCheck, MessageCircle, Tag, User, Bell, Menu, X,
 } from "lucide-react";
 import Footer from "@/components/Footer";
 import LocationPrompt from "@/components/LocationPrompt";
@@ -68,14 +68,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </Link>
       <Link href="/vibes" onClick={() => setOpen(false)} className={navItemCls("/vibes")}>
         <Sparkles size={18} /> <span className="flex-1">Vibes</span>
-      </Link>
-      {/* Create a Vibe — primary coral */}
-      <Link
-        href="/vibes/new"
-        onClick={() => setOpen(false)}
-        className="my-1 flex items-center gap-2 rounded-full border-2 border-ink bg-flockie-coral px-3 py-2.5 text-sm font-bold text-white shadow-[0_3px_0_0_rgba(10,37,69,1)]"
-      >
-        <Plus size={18} /> Create a Vibe
       </Link>
       {NAV.filter((n) => !["/home", "/vibes"].includes(n.href)).map((item) => {
         const Icon = item.icon;
