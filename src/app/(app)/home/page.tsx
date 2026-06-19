@@ -299,6 +299,43 @@ export default async function HomePage() {
           </div>
         )}
       </section>
+
+      {/* Section 6 — Find your people (drives profile/trip signups) */}
+      <section className="mx-4 mt-6">
+        <h2 className="px-1 text-[22px] font-extrabold text-navy sm:text-[28px]">Find your people</h2>
+        <p className="px-1 font-bold text-navy/60">
+          A 1:1 travel buddy, or a whole group to go with.
+        </p>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <Link
+            href="/match"
+            className="rounded-3xl border-[3px] border-ink bg-flockie-blue p-5 text-white shadow-[0_5px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-1"
+          >
+            <p className="text-3xl">🧳</p>
+            <h3 className="mt-2 text-lg font-extrabold">Find a buddy</h3>
+            <p className="mt-1 text-sm font-medium text-white/90">
+              Swipe vibe-matched people for a trip or an activity in your city.
+            </p>
+            <span className="mt-4 inline-flex items-center gap-1 rounded-full border-2 border-ink bg-white px-4 py-2 text-sm font-bold text-ink">
+              Start matching <ArrowRight size={15} />
+            </span>
+          </Link>
+
+          <Link
+            href="/flocks"
+            className="rounded-3xl border-[3px] border-ink bg-flockie-coral p-5 text-white shadow-[0_5px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-1"
+          >
+            <p className="text-3xl">🪺</p>
+            <h3 className="mt-2 text-lg font-extrabold">Find a flock</h3>
+            <p className="mt-1 text-sm font-medium text-white/90">
+              Join an open group trip, or start one and let travelers request in.
+            </p>
+            <span className="mt-4 inline-flex items-center gap-1 rounded-full border-2 border-ink bg-white px-4 py-2 text-sm font-bold text-ink">
+              Browse flocks <ArrowRight size={15} />
+            </span>
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }
