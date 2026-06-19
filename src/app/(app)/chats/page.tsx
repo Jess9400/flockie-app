@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import ChatRow from "@/components/ChatRow";
+import ChatEmptyArt from "@/components/ChatEmptyArt";
 import { formatChatTime, formatVibeShort } from "@/lib/chat";
 
 type BuddySummary = { chat_id: string; name: string | null; photo: string | null; unread: number };
@@ -70,13 +71,13 @@ function renderRow(r: Row) {
 }
 
 function EmptyState({
-  emoji,
+  variant,
   title,
   body,
   cta,
   href,
 }: {
-  emoji: string;
+  variant: "buddy" | "vibe";
   title: string;
   body: string;
   cta: string;
@@ -84,8 +85,8 @@ function EmptyState({
 }) {
   return (
     <div className="rounded-2xl border-2 border-navy bg-[#FCF9F4] p-6 text-center">
-      <p className="text-3xl">{emoji}</p>
-      <p className="mt-2 font-fredoka text-base font-semibold text-navy">{title}</p>
+      <ChatEmptyArt variant={variant} />
+      <p className="mt-3 font-fredoka text-base font-semibold text-navy">{title}</p>
       <p className="mt-1 font-nunito text-sm font-normal text-navy/60">{body}</p>
       <Link
         href={href}
@@ -192,7 +193,7 @@ export default async function ChatsPage() {
         <div className="mt-3 space-y-3">
           {buddyRows.length === 0 ? (
             <EmptyState
-              emoji="✈️"
+              variant="buddy"
               title="No travel buddies yet"
               body="When you match with someone for a trip, your chat will appear here."
               cta="Find a match"
@@ -213,7 +214,7 @@ export default async function ChatsPage() {
         <div className="mt-3 space-y-3">
           {vibeRows.length === 0 ? (
             <EmptyState
-              emoji="🎉"
+              variant="vibe"
               title="No Vibe chats yet"
               body="Join a Vibe to start chatting with vibe-matched people."
               cta="Browse Vibes"

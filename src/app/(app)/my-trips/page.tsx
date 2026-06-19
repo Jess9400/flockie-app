@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Plus, Pencil, MapPin, CalendarClock, MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import FlockJoinRequests, { type JoinReq } from "@/components/FlockJoinRequests";
 
 type Match = {
   chat_id: string;
@@ -27,6 +28,35 @@ export default async function MyTripsPage() {
 
   const { data: matches } = await supabase.rpc("my_matches");
   const list = (matches ?? []) as Match[];
+
+  // Join requests to my trips (host approval)
+  const myTripIds = (trips ?? []).map((t) => t.id);
+  const reqByTrip: Record<string, JoinReq[]> = {};
+  if (myTripIds.length) {
+    const { data: jr } = await supabase
+      .from("trip_join_requests")
+      .select("trip_id, user_id, status")
+      .in("trip_id", myTripIds);
+    const reqUserIds = Array.from(new Set((jr ?? []).map((r) => r.user_id)));
+    const rp: Record<string, { display_name: string | null; age: number | null; photos: string[] | null; one_liner: string | null }> = {};
+    if (reqUserIds.length) {
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, display_name, age, photos, one_liner")
+        .in("id", reqUserIds);
+      data?.forEach((p) => (rp[p.id] = p));
+    }
+    (jr ?? []).forEach((r) => {
+      (reqByTrip[r.trip_id] ??= []).push({
+        userId: r.user_id,
+        status: r.status,
+        name: rp[r.user_id]?.display_name || "Flockie",
+        age: rp[r.user_id]?.age ?? null,
+        photo: rp[r.user_id]?.photos?.[0] ?? null,
+        oneLiner: rp[r.user_id]?.one_liner ?? null,
+      });
+    });
+  }
 
   return (
     <main className="px-5 pb-10 pt-6">
@@ -81,6 +111,9 @@ export default async function MyTripsPage() {
                 <Pencil size={14} /> Edit
               </Link>
             </div>
+            {reqByTrip[t.id]?.length ? (
+              <FlockJoinRequests tripId={t.id} requests={reqByTrip[t.id]} />
+            ) : null}
           </div>
         ))}
       </div>
