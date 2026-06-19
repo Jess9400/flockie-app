@@ -303,6 +303,32 @@ export const EMPTY_ACTIVITY: ActivityAnswers = {
   activity_one_liner: "",
 };
 
+// Three short, balanced "headline" tags for the share card — one each from
+// trip vibe / activity vibe / interests, shortened to a keyword (the full
+// travel-style sentences read as gibberish when truncated on the card).
+export function topVibeTags(p: Partial<Profile>): string[] {
+  const clean = (t: string) => t.split(/[\/,]/)[0].trim();
+  const out: string[] = [];
+  const add = (t?: string | null) => {
+    if (!t) return;
+    const c = clean(t);
+    if (c && c.length <= 22 && !out.includes(c)) out.push(c);
+  };
+  add(p.trip_vibe?.[0]);
+  add(p.activity_vibe?.[0]);
+  add(p.activities?.[0]);
+  if (out.length < 3) {
+    [
+      ...(p.trip_vibe ?? []),
+      ...(p.activity_vibe ?? []),
+      ...(p.activities ?? []),
+    ].forEach((t) => {
+      if (out.length < 3) add(t);
+    });
+  }
+  return out.slice(0, 3);
+}
+
 export type Profile = VibeAnswers &
   ActivityAnswers & {
     display_name: string;

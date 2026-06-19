@@ -8,7 +8,7 @@ import { type ReviewItem } from "@/components/ProfileReviews";
 import VibeCheckForm from "@/components/VibeCheckForm";
 import VibeShareCard from "@/components/VibeShareCard";
 import VibeCompletePopup from "@/components/VibeCompletePopup";
-import type { Profile } from "@/lib/vibe-check";
+import { topVibeTags, type Profile } from "@/lib/vibe-check";
 
 export default function ProfileEditor({
   userId,
@@ -30,11 +30,7 @@ export default function ProfileEditor({
   // Start in edit mode if the profile isn't complete yet (first-time onboarding).
   const [editing, setEditing] = useState(!complete);
   const [showShare, setShowShare] = useState(false);
-  const shareTags = [
-    ...(profile.trip_vibe ?? []),
-    ...(profile.travel_style ?? []),
-    ...(profile.activity_vibe ?? []),
-  ];
+  const shareTags = topVibeTags(profile);
   const ext = profile as {
     archetype?: string | null;
     trip_prefs_complete?: boolean | null;

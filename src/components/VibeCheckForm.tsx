@@ -7,7 +7,7 @@ import PhotoGrid from "@/components/PhotoGrid";
 import PhotoCropper from "@/components/PhotoCropper";
 import VibeShareCard from "@/components/VibeShareCard";
 import { SectionHeader } from "@/components/profileControls";
-import { GENDER_OPTIONS, type Profile } from "@/lib/vibe-check";
+import { GENDER_OPTIONS, topVibeTags, type Profile } from "@/lib/vibe-check";
 
 const MAX_PHOTOS = 5;
 
@@ -281,11 +281,7 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
         <VibeShareCard
           userId={userId}
           name={basics.display_name}
-          tags={[
-            ...(initial.trip_vibe ?? []),
-            ...(initial.travel_style ?? []),
-            ...(initial.activity_vibe ?? []),
-          ]}
+          tags={topVibeTags(initial)}
           archetypeKey={(initial as { archetype?: string | null }).archetype}
           onClose={() => {
             setShowShare(false);
