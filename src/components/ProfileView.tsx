@@ -1,4 +1,6 @@
-import { SLIDERS, type Profile } from "@/lib/vibe-check";
+import { SLIDERS, SKILL_CATEGORIES, SKILL_SCALE, type Profile } from "@/lib/vibe-check";
+import { ARCHETYPES } from "@/lib/onboarding/archetypes";
+import type { VibeDimension } from "@/lib/onboarding/types";
 import FingerprintBar from "@/components/FingerprintBar";
 import PhotoStrip from "@/components/PhotoStrip";
 
@@ -23,7 +25,11 @@ function ChipGroup({ label, items }: { label: string; items?: string[] | null })
   );
 }
 
-export default function ProfileView({ profile }: { profile: Partial<Profile> }) {
+export default function ProfileView({
+  profile,
+}: {
+  profile: Partial<Profile> & { archetype?: string | null };
+}) {
   const p = profile;
   const photos = p.photos ?? [];
   const hero = photos[0];
@@ -32,11 +38,17 @@ export default function ProfileView({ profile }: { profile: Partial<Profile> }) 
     .filter(Boolean)
     .join(", ");
 
+  const archetype = p.archetype ? ARCHETYPES[p.archetype as VibeDimension] : null;
+
   const fingerprints = SLIDERS.map((s) => {
     const val = p[s.key] as number | null | undefined;
     if (val == null) return null;
     return { s, val };
   }).filter(Boolean) as { s: (typeof SLIDERS)[number]; val: number }[];
+
+  const skills = (SKILL_CATEGORIES ?? []).filter(
+    (c) => (p.activity_skills?.[c.value] ?? 0) > 0,
+  );
 
   return (
     <div className="font-nunito">
@@ -63,6 +75,25 @@ export default function ProfileView({ profile }: { profile: Partial<Profile> }) 
         <p className="mt-4 font-nunito text-base font-semibold text-navy">
           📍 {p.home_city}
         </p>
+      )}
+
+      {/* Archetype / persona */}
+      {archetype && (
+        <div
+          className="mt-4 flex items-start gap-3 rounded-2xl border-2 border-navy p-4"
+          style={{ background: `linear-gradient(135deg, ${archetype.gradientFrom}1a, ${archetype.gradientTo}1a)` }}
+        >
+          <span className="text-3xl leading-none">{archetype.emoji}</span>
+          <div>
+            <p className="font-nunito text-[11px] font-bold uppercase tracking-wide text-navy/55">
+              Their vibe
+            </p>
+            <p className="font-fredoka text-xl font-bold text-navy">{archetype.name}</p>
+            <p className="mt-0.5 font-nunito text-sm font-medium text-navy/70">
+              {archetype.description}
+            </p>
+          </div>
+        </div>
       )}
 
       {/* Photo strip */}
@@ -114,6 +145,30 @@ export default function ProfileView({ profile }: { profile: Partial<Profile> }) 
         <ChipGroup label="Travel style" items={p.travel_style} />
         <ChipGroup label="Activities" items={p.activities} />
         <ChipGroup label="Activity vibe" items={p.activity_vibe} />
+
+        {/* Skill levels (per category) */}
+        {skills.length > 0 && (
+          <div>
+            <p className="font-nunito text-[11px] font-bold uppercase tracking-wide text-navy/55">
+              Skill levels
+            </p>
+            <div className="mt-2 space-y-2">
+              {skills.map((c) => (
+                <div
+                  key={c.value}
+                  className="flex items-center justify-between rounded-2xl border-2 border-navy/10 bg-cream px-4 py-2.5"
+                >
+                  <span className="font-nunito text-sm font-semibold text-navy">
+                    {c.emoji} {c.label}
+                  </span>
+                  <span className="font-nunito text-sm font-bold text-flockie-coral">
+                    {SKILL_SCALE[(p.activity_skills![c.value] ?? 1) - 1]}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Share2 } from "lucide-react";
 
-export default function InviteFriendsButton({ city }: { city?: string }) {
+export default function InviteFriendsButton({ city, label }: { city?: string; label?: string }) {
   const [copied, setCopied] = useState(false);
   const url = "https://findflockie.com";
   const text = city
@@ -32,7 +32,7 @@ export default function InviteFriendsButton({ city }: { city?: string }) {
       onClick={invite}
       className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
     >
-      <Share2 size={16} /> {copied ? "Copied!" : "Invite friends to unlock"}
+      <Share2 size={16} /> {copied ? "Copied!" : label ?? "Invite friends to unlock"}
     </button>
   );
 }

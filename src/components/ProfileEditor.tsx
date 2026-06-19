@@ -103,6 +103,7 @@ export default function ProfileEditor({
           userId={userId}
           name={profile.display_name ?? ""}
           tags={shareTags}
+          archetypeKey={(profile as { archetype?: string | null }).archetype}
           onClose={() => setShowShare(false)}
         />
       )}

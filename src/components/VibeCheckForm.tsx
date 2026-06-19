@@ -248,6 +248,7 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
             ...(initial.travel_style ?? []),
             ...(initial.activity_vibe ?? []),
           ]}
+          archetypeKey={(initial as { archetype?: string | null }).archetype}
           onClose={() => {
             setShowShare(false);
             if (redirectAfter) {

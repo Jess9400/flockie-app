@@ -19,7 +19,7 @@ export default async function PersonPage({
   const { data: profile } = await supabase
     .from("profiles")
     .select(
-      "display_name, age, gender, relationship_status, home_city, instagram, x_handle, tiktok, photos, video_url, planning, pace, social_energy, budget, nightlife, adventurousness, trip_vibe, travel_style, dealbreakers, one_liner, activities, activity_skills, activity_social, activity_intensity, activity_vibe, activity_one_liner, onboarding_complete"
+      "display_name, age, gender, relationship_status, home_city, instagram, x_handle, tiktok, photos, video_url, planning, pace, social_energy, budget, nightlife, adventurousness, trip_vibe, travel_style, dealbreakers, one_liner, activities, activity_skills, activity_social, activity_intensity, activity_vibe, activity_one_liner, onboarding_complete, archetype"
     )
     .eq("id", params.id)
     .maybeSingle();
@@ -115,7 +115,7 @@ export default async function PersonPage({
       )}
 
       <div className="mt-5">
-        <ProfileView profile={profile as Partial<Profile>} />
+        <ProfileView profile={profile as Partial<Profile> & { archetype?: string | null }} />
       </div>
 
       <ProfileReviews avg={reviewAvg} count={reviewCount} items={reviewItems} />

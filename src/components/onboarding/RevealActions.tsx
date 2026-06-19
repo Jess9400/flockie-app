@@ -11,10 +11,12 @@ export default function RevealActions({
   userId,
   name,
   tags,
+  archetypeKey,
 }: {
   userId: string;
   name: string;
   tags: string[];
+  archetypeKey?: string | null;
 }) {
   const [showCard, setShowCard] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -55,7 +57,13 @@ export default function RevealActions({
       </button>
 
       {showCard && (
-        <VibeShareCard userId={userId} name={name} tags={tags} onClose={() => setShowCard(false)} />
+        <VibeShareCard
+          userId={userId}
+          name={name}
+          tags={tags}
+          archetypeKey={archetypeKey}
+          onClose={() => setShowCard(false)}
+        />
       )}
     </div>
   );

@@ -2,28 +2,57 @@
 
 import { useEffect, useRef } from "react";
 import CompatShareButton from "@/components/CompatShareButton";
+import { ARCHETYPES } from "@/lib/onboarding/archetypes";
+import type { VibeDimension } from "@/lib/onboarding/types";
 
-// Generates a branded "my travel vibe" image on a canvas the user can share.
+// Generates a branded vibe card on a canvas the user can share. Includes the
+// personality archetype (name + description) plus travel/activity tags.
 export default function VibeShareCard({
   userId,
   name,
   tags,
+  archetypeKey,
   onClose,
 }: {
   userId?: string;
   name: string;
   tags: string[];
+  archetypeKey?: string | null;
   onClose: () => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const W = 1080;
   const H = 1080;
+  const a = archetypeKey ? ARCHETYPES[archetypeKey as VibeDimension] ?? null : null;
+  const archetypeName = a?.name ?? null;
+  const archetypeEmoji = a?.emoji ?? null;
+  const archetypeDescription = a?.description ?? null;
 
   useEffect(() => {
     const c = canvasRef.current;
     if (!c) return;
     const ctx = c.getContext("2d");
     if (!ctx) return;
+
+    function wrap(text: string, font: string, maxWidth: number, max: number): string[] {
+      if (!ctx) return [];
+      ctx.font = font;
+      const words = text.split(/\s+/);
+      const lines: string[] = [];
+      let line = "";
+      for (const w of words) {
+        const test = line ? `${line} ${w}` : w;
+        if (ctx.measureText(test).width > maxWidth && line) {
+          lines.push(line);
+          line = w;
+          if (lines.length === max - 1) break;
+        } else {
+          line = test;
+        }
+      }
+      if (line && lines.length < max) lines.push(line);
+      return lines;
+    }
 
     function draw(logo: HTMLImageElement | null) {
       if (!ctx) return;
@@ -34,45 +63,75 @@ export default function VibeShareCard({
 
       // Flockie logo mark (white)
       if (logo) {
-        const lw = 150;
+        const lw = 130;
         const lh = lw * (104 / 118);
-        ctx.drawImage(logo, (W - lw) / 2, 70, lw, lh);
+        ctx.drawImage(logo, (W - lw) / 2, 64, lw, lh);
       }
 
       // wordmark
       ctx.fillStyle = "#ffffff";
-      ctx.font = "700 52px system-ui, sans-serif";
-      ctx.fillText("flockie", W / 2, 290);
+      ctx.font = "700 46px system-ui, sans-serif";
+      ctx.fillText("flockie", W / 2, 250);
 
       // kicker
       ctx.fillStyle = "#FF6B4A";
-      ctx.font = "700 40px system-ui, sans-serif";
-      ctx.fillText("MY TRAVEL VIBE", W / 2, 400);
+      ctx.font = "700 36px system-ui, sans-serif";
+      ctx.fillText("MY VIBE", W / 2, 318);
 
-      // name
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "800 88px system-ui, sans-serif";
-      ctx.fillText(name || "A flockie", W / 2, 500);
+      let y = 430;
+
+      if (archetypeName) {
+        // emoji
+        ctx.font = "110px system-ui, sans-serif";
+        ctx.fillText(archetypeEmoji || "🪶", W / 2, 420);
+        // archetype name
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "800 76px system-ui, sans-serif";
+        ctx.fillText(archetypeName, W / 2, 530);
+        // person name
+        ctx.fillStyle = "rgba(255,255,255,0.7)";
+        ctx.font = "600 40px system-ui, sans-serif";
+        ctx.fillText(name || "A flockie", W / 2, 590);
+        y = 660;
+        // description (wrapped, up to 3 lines)
+        if (archetypeDescription) {
+          const font = "500 38px system-ui, sans-serif";
+          const lines = wrap(archetypeDescription, font, W - 180, 3);
+          ctx.fillStyle = "rgba(255,255,255,0.85)";
+          ctx.font = font;
+          for (const ln of lines) {
+            ctx.fillText(ln, W / 2, y);
+            y += 50;
+          }
+          y += 24;
+        }
+      } else {
+        // Fallback: name as the headline.
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "800 88px system-ui, sans-serif";
+        ctx.fillText(name || "A flockie", W / 2, 470);
+        y = 580;
+      }
 
       // tag pills (up to 3, short, stacked) — keep clear of the footer
       const shown = tags
         .filter(Boolean)
-        .map((t) => (t.length > 22 ? t.slice(0, 21).trim() + "…" : t))
+        .map((t) => (t.length > 24 ? t.slice(0, 23).trim() + "…" : t))
         .slice(0, 3);
-      ctx.font = "700 40px system-ui, sans-serif";
-      let y = 610;
+      ctx.font = "700 38px system-ui, sans-serif";
       for (const t of shown) {
+        if (y > H - 200) break;
         const tw = ctx.measureText(t).width;
-        const padX = 44;
-        const pw = Math.min(tw + padX * 2, W - 120);
-        const ph = 84;
+        const padX = 40;
+        const pw = Math.min(tw + padX * 2, W - 140);
+        const ph = 78;
         const x = (W - pw) / 2;
         ctx.fillStyle = "#FF6B4A";
-        roundRect(ctx, x, y, pw, ph, 42);
+        roundRect(ctx, x, y, pw, ph, 39);
         ctx.fill();
         ctx.fillStyle = "#ffffff";
-        ctx.fillText(t, W / 2, y + 56);
-        y += ph + 28;
+        ctx.fillText(t, W / 2, y + 52);
+        y += ph + 24;
       }
 
       // footer
@@ -85,7 +144,7 @@ export default function VibeShareCard({
     img.onload = () => draw(img);
     img.onerror = () => draw(null);
     img.src = "/logo-mark-white.svg";
-  }, [name, tags]);
+  }, [name, tags, archetypeName, archetypeEmoji, archetypeDescription]);
 
   async function share() {
     const c = canvasRef.current;
