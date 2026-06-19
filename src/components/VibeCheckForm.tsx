@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import VibeQuestions from "@/components/VibeQuestions";
 import ActivityQuestions from "@/components/ActivityQuestions";
 import PhotoGrid from "@/components/PhotoGrid";
+import VibeShareCard from "@/components/VibeShareCard";
 import ProfileProgress, { type ProgressSegment } from "@/components/ProfileProgress";
 import { SectionHeader } from "@/components/profileControls";
 import {
@@ -68,6 +69,7 @@ export default function VibeCheckForm({ userId, initial, onSaved }: Props) {
   const [msg, setMsg] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [vouchUrl, setVouchUrl] = useState("");
+  const [showShare, setShowShare] = useState(false);
   const photoInput = useRef<HTMLInputElement>(null);
   const videoInput = useRef<HTMLInputElement>(null);
 
@@ -184,8 +186,7 @@ export default function VibeCheckForm({ userId, initial, onSaved }: Props) {
     setSaving(false);
     if (error) return setMsg(error.message);
     setMsg("Saved! Your vibe check is live.");
-    router.refresh();
-    onSaved?.();
+    setShowShare(true); // celebrate + share card before returning to the profile
   }
 
   async function copyVouch() {
@@ -375,6 +376,18 @@ export default function VibeCheckForm({ userId, initial, onSaved }: Props) {
       >
         {saving ? "Saving…" : "Save vibe check"}
       </button>
+
+      {showShare && (
+        <VibeShareCard
+          name={basics.display_name}
+          tags={[...answers.trip_vibe, ...answers.travel_style, ...activity.activity_vibe]}
+          onClose={() => {
+            setShowShare(false);
+            router.refresh();
+            onSaved?.();
+          }}
+        />
+      )}
     </form>
   );
 }

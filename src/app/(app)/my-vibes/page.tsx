@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Plus, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import ShareVibeButton from "@/components/ShareVibeButton";
 import { formatVibeWhen } from "@/lib/vibes";
 
 const STATUS_STYLE: Record<string, string> = {
@@ -58,37 +59,44 @@ export default async function MyVibesPage() {
           </div>
         )}
         {list.map((v) => (
-          <Link
+          <div
             key={v.id}
-            href={`/vibes/${v.id}`}
-            className="flex items-center gap-3 rounded-2xl border-2 border-ink bg-white p-3 shadow-[0_3px_0_0_rgba(26,26,26,1)] transition-transform hover:-translate-y-0.5"
+            className="rounded-2xl border-2 border-ink bg-white p-3 shadow-[0_3px_0_0_rgba(26,26,26,1)]"
           >
-            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-cream">
-              {v.photos?.[0] ? (
-                <Image src={v.photos[0]} alt="" fill sizes="48px" className="object-cover" />
-              ) : (
-                <span className="flex h-full items-center justify-center text-lg">🎟️</span>
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-extrabold">{v.title}</p>
-              <p className="truncate text-xs font-medium text-muted">
-                {formatVibeWhen(v.starts_at)} · {v.location_name || v.city}
-              </p>
-            </div>
-            <div className="flex shrink-0 flex-col items-end gap-1">
-              <span
-                className={`rounded-full px-2.5 py-0.5 text-[11px] font-extrabold ${
-                  STATUS_STYLE[v.status] ?? "bg-cream text-ink"
-                }`}
-              >
-                {v.status}
-              </span>
-              <span className="flex items-center gap-1 text-xs font-bold text-muted">
-                <Users size={13} /> {counts[v.id] ?? 0}/{v.capacity}
-              </span>
-            </div>
-          </Link>
+            <Link href={`/vibes/${v.id}`} className="flex items-center gap-3">
+              <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-cream">
+                {v.photos?.[0] ? (
+                  <Image src={v.photos[0]} alt="" fill sizes="48px" className="object-cover" />
+                ) : (
+                  <span className="flex h-full items-center justify-center text-lg">🎟️</span>
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-extrabold">{v.title}</p>
+                <p className="truncate text-xs font-medium text-muted">
+                  {formatVibeWhen(v.starts_at)} · {v.location_name || v.city}
+                </p>
+              </div>
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-[11px] font-extrabold ${
+                    STATUS_STYLE[v.status] ?? "bg-cream text-ink"
+                  }`}
+                >
+                  {v.status}
+                </span>
+                <span className="flex items-center gap-1 text-xs font-bold text-muted">
+                  <Users size={13} /> {counts[v.id] ?? 0}/{v.capacity}
+                </span>
+              </div>
+            </Link>
+            {v.status === "open" && (
+              <div className="mt-3 flex items-center justify-between gap-2 border-t-2 border-ink/10 pt-3">
+                <p className="text-xs font-medium text-muted">Share to fill your room faster 🚀</p>
+                <ShareVibeButton vibeId={v.id} />
+              </div>
+            )}
+          </div>
         ))}
       </div>
     </main>
