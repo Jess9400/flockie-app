@@ -116,8 +116,6 @@ export default async function VibeRevealPage() {
             </div>
           )}
         </Section>
-
-        <Link href="/profile" className="block w-full rounded-2xl border-2 border-ink border-b-[5px] bg-flockie-coral py-3.5 text-center text-[15px] font-extrabold text-white">Finish your profile →</Link>
       </div>
     </main>
   );
