@@ -3,6 +3,7 @@
 import {
   ACTIVITY_CATEGORIES,
   SKILL_SCALE,
+  SKILL_CATEGORIES,
   ACTIVITY_SOCIAL_SCALE,
   INTENSITY_SCALE,
   ACTIVITY_VIBES,
@@ -23,19 +24,14 @@ type Props = {
 export default function ActivityQuestions({ answers, onChange }: Props) {
   function toggleActivity(value: string) {
     if (answers.activities.includes(value)) {
-      const skills = { ...answers.activity_skills };
-      delete skills[value];
-      onChange({
-        activities: answers.activities.filter((a) => a !== value),
-        activity_skills: skills,
-      });
+      onChange({ activities: answers.activities.filter((a) => a !== value) });
     } else {
       onChange({ activities: [...answers.activities, value] });
     }
   }
 
-  function setSkill(activity: string, val: number) {
-    onChange({ activity_skills: { ...answers.activity_skills, [activity]: val } });
+  function setSkill(category: string, val: number) {
+    onChange({ activity_skills: { ...answers.activity_skills, [category]: val } });
   }
 
   function toggleVibe(value: string) {
@@ -87,28 +83,28 @@ export default function ActivityQuestions({ answers, onChange }: Props) {
         </div>
       </div>
 
-      {/* Skill per activity */}
-      {answers.activities.length > 0 && (
-        <div>
-          <p className="font-nunito text-[15px] font-semibold text-navy">Your skill level</p>
-          <p className="mb-3 font-nunito text-sm font-normal text-navy/60">
-            For each thing you picked.
-          </p>
-          <div className="space-y-6">
-            {answers.activities.map((a) => (
-              <div key={a}>
-                <p className="mb-2 font-nunito text-sm font-semibold text-navy">{a}</p>
-                <RangeSlider
-                  value={answers.activity_skills[a] ?? null}
-                  onChange={(v) => setSkill(a, v)}
-                  scale={SKILL_SCALE}
-                  label={`${a} skill`}
-                />
-              </div>
-            ))}
-          </div>
+      {/* Skill per category (compact) */}
+      <div>
+        <p className="font-nunito text-[15px] font-semibold text-navy">Your skill level</p>
+        <p className="mb-3 font-nunito text-sm font-normal text-navy/60">
+          Roughly, by category. Skip the slider for anything that isn&rsquo;t you.
+        </p>
+        <div className="space-y-6">
+          {SKILL_CATEGORIES.map((cat) => (
+            <div key={cat.value}>
+              <p className="mb-2 flex items-center gap-2 font-nunito text-sm font-semibold text-navy">
+                <span>{cat.emoji}</span> {cat.label}
+              </p>
+              <RangeSlider
+                value={answers.activity_skills[cat.value] ?? null}
+                onChange={(v) => setSkill(cat.value, v)}
+                scale={SKILL_SCALE}
+                label={`${cat.label} skill`}
+              />
+            </div>
+          ))}
         </div>
-      )}
+      </div>
 
       {/* Social + intensity */}
       <div>

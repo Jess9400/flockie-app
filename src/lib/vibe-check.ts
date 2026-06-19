@@ -219,6 +219,16 @@ export const SKILL_SCALE: [string, string, string, string, string] = [
   "Expert / pro",
 ];
 
+// Skills are rated per broad category (compact) rather than per individual
+// activity. Stored in activity_skills keyed by these labels → 1..5.
+export const SKILL_CATEGORIES: { value: string; label: string; emoji: string }[] = [
+  { value: "Sports & outdoors", label: "Sports & outdoors", emoji: "🏃" },
+  { value: "Arts & creative", label: "Arts & creative", emoji: "🎨" },
+  { value: "Social & nightlife", label: "Social & nightlife", emoji: "🍸" },
+  { value: "Wellness", label: "Wellness", emoji: "🧘" },
+  { value: "Work", label: "Work", emoji: "💼" },
+];
+
 export const ACTIVITY_SOCIAL_SCALE: [string, string, string, string, string] = [
   "Alone, focused, in flow",
   "With 1-2 close friends",
@@ -263,7 +273,7 @@ export const ACTIVITY_ONE_LINER_PROMPT =
 
 export type ActivityAnswers = {
   activities: string[];
-  activity_skills: Record<string, number>; // activity -> 1..5
+  activity_skills: Record<string, number>; // category (SKILL_CATEGORIES) -> 1..5
   activity_social: number | null;
   activity_intensity: number | null;
   activity_vibe: string[];
