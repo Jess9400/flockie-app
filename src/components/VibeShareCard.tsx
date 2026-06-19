@@ -25,49 +25,63 @@ export default function VibeShareCard({
     const ctx = c.getContext("2d");
     if (!ctx) return;
 
-    // background
-    ctx.fillStyle = "#0F2A4C";
-    ctx.fillRect(0, 0, W, H);
+    function draw(logo: HTMLImageElement | null) {
+      if (!ctx) return;
+      // background
+      ctx.fillStyle = "#0F2A4C";
+      ctx.fillRect(0, 0, W, H);
+      ctx.textAlign = "center";
 
-    ctx.textAlign = "center";
+      // Flockie logo mark (white)
+      if (logo) {
+        const lw = 150;
+        const lh = lw * (104 / 118);
+        ctx.drawImage(logo, (W - lw) / 2, 70, lw, lh);
+      }
 
-    // wordmark
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "700 56px system-ui, sans-serif";
-    ctx.fillText("flockie 🕊️", W / 2, 140);
-
-    // kicker
-    ctx.fillStyle = "#FF6B4A";
-    ctx.font = "700 40px system-ui, sans-serif";
-    ctx.fillText("MY TRAVEL VIBE", W / 2, 300);
-
-    // name
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "800 90px system-ui, sans-serif";
-    ctx.fillText(name || "A flockie", W / 2, 410);
-
-    // tag pills (up to 4, stacked)
-    const shown = tags.filter(Boolean).slice(0, 4);
-    ctx.font = "700 40px system-ui, sans-serif";
-    let y = 540;
-    for (const t of shown) {
-      const tw = ctx.measureText(t).width;
-      const padX = 44;
-      const pw = tw + padX * 2;
-      const ph = 84;
-      const x = (W - pw) / 2;
-      ctx.fillStyle = "#FF6B4A";
-      roundRect(ctx, x, y, pw, ph, 42);
-      ctx.fill();
+      // wordmark
       ctx.fillStyle = "#ffffff";
-      ctx.fillText(t, W / 2, y + 56);
-      y += ph + 28;
+      ctx.font = "700 52px system-ui, sans-serif";
+      ctx.fillText("flockie", W / 2, 290);
+
+      // kicker
+      ctx.fillStyle = "#FF6B4A";
+      ctx.font = "700 40px system-ui, sans-serif";
+      ctx.fillText("MY TRAVEL VIBE", W / 2, 400);
+
+      // name
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "800 88px system-ui, sans-serif";
+      ctx.fillText(name || "A flockie", W / 2, 500);
+
+      // tag pills (up to 4, stacked)
+      const shown = tags.filter(Boolean).slice(0, 4);
+      ctx.font = "700 40px system-ui, sans-serif";
+      let y = 600;
+      for (const t of shown) {
+        const tw = ctx.measureText(t).width;
+        const padX = 44;
+        const pw = tw + padX * 2;
+        const ph = 84;
+        const x = (W - pw) / 2;
+        ctx.fillStyle = "#FF6B4A";
+        roundRect(ctx, x, y, pw, ph, 42);
+        ctx.fill();
+        ctx.fillStyle = "#ffffff";
+        ctx.fillText(t, W / 2, y + 56);
+        y += ph + 28;
+      }
+
+      // footer
+      ctx.fillStyle = "rgba(255,255,255,0.6)";
+      ctx.font = "600 36px system-ui, sans-serif";
+      ctx.fillText("find your flock · findflockie.com", W / 2, H - 80);
     }
 
-    // footer
-    ctx.fillStyle = "rgba(255,255,255,0.6)";
-    ctx.font = "600 36px system-ui, sans-serif";
-    ctx.fillText("find your flock · findflockie.com", W / 2, H - 80);
+    const img = new window.Image();
+    img.onload = () => draw(img);
+    img.onerror = () => draw(null);
+    img.src = "/logo-mark-white.svg";
   }, [name, tags]);
 
   async function share() {
