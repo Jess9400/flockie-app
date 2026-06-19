@@ -54,14 +54,17 @@ export default function VibeShareCard({
       ctx.font = "800 88px system-ui, sans-serif";
       ctx.fillText(name || "A flockie", W / 2, 500);
 
-      // tag pills (up to 4, stacked)
-      const shown = tags.filter(Boolean).slice(0, 4);
+      // tag pills (up to 3, short, stacked) — keep clear of the footer
+      const shown = tags
+        .filter(Boolean)
+        .map((t) => (t.length > 22 ? t.slice(0, 21).trim() + "…" : t))
+        .slice(0, 3);
       ctx.font = "700 40px system-ui, sans-serif";
-      let y = 600;
+      let y = 610;
       for (const t of shown) {
         const tw = ctx.measureText(t).width;
         const padX = 44;
-        const pw = tw + padX * 2;
+        const pw = Math.min(tw + padX * 2, W - 120);
         const ph = 84;
         const x = (W - pw) / 2;
         ctx.fillStyle = "#FF6B4A";
@@ -75,7 +78,7 @@ export default function VibeShareCard({
       // footer
       ctx.fillStyle = "rgba(255,255,255,0.6)";
       ctx.font = "600 36px system-ui, sans-serif";
-      ctx.fillText("find your flock · findflockie.com", W / 2, H - 80);
+      ctx.fillText("find your flock · findflockie.com", W / 2, H - 70);
     }
 
     const img = new window.Image();
