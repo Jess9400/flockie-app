@@ -1,6 +1,7 @@
 import { ARCHETYPES } from "@/lib/onboarding/archetypes";
 import { pct } from "@/lib/onboarding/scoring";
 import type { VibeDimension, VibeScores } from "@/lib/onboarding/types";
+import ArchetypeBadge from "@/components/ArchetypeBadge";
 
 // The personality vibe result, styled like the reveal screens. Reused on the
 // profile "Vibe quiz" tab.
@@ -21,7 +22,9 @@ export default function VibeQuizResult({
         style={{ background: `linear-gradient(160deg, ${archetype.gradientFrom}, ${archetype.gradientTo})` }}
         className="flex flex-col items-center rounded-2xl px-6 py-7 text-center"
       >
-        <div className="mb-2 text-[44px]">{archetype.emoji}</div>
+        <div className="mb-2.5">
+          <ArchetypeBadge archetypeKey={archetypeKey} size={68} variant="ring" />
+        </div>
         <p className="mb-1.5 text-[10.5px] font-extrabold uppercase tracking-widest text-white/70">
           Your vibe — early read
         </p>
@@ -52,9 +55,9 @@ export default function VibeQuizResult({
           {archetype.compatibleWith.map((dimension) => (
             <span
               key={dimension}
-              className="rounded-full border-2 border-ink/10 bg-white px-3.5 py-2 text-[12.5px] font-bold"
+              className="inline-flex items-center gap-2 rounded-full border-2 border-ink/10 bg-white py-1.5 pl-1.5 pr-3.5 text-[12.5px] font-bold"
             >
-              {ARCHETYPES[dimension].emoji} {ARCHETYPES[dimension].name}
+              <ArchetypeBadge archetypeKey={dimension} size={26} /> {ARCHETYPES[dimension].name}
             </span>
           ))}
         </div>

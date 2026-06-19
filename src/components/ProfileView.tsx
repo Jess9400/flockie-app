@@ -1,6 +1,7 @@
 import { SLIDERS, SKILL_CATEGORIES, SKILL_SCALE, type Profile } from "@/lib/vibe-check";
 import { ARCHETYPES } from "@/lib/onboarding/archetypes";
 import type { VibeDimension } from "@/lib/onboarding/types";
+import ArchetypeBadge from "@/components/ArchetypeBadge";
 import FingerprintBar from "@/components/FingerprintBar";
 import PhotoStrip from "@/components/PhotoStrip";
 
@@ -83,7 +84,7 @@ export default function ProfileView({
           className="mt-4 flex items-start gap-3 rounded-2xl border-2 border-navy p-4"
           style={{ background: `linear-gradient(135deg, ${archetype.gradientFrom}1a, ${archetype.gradientTo}1a)` }}
         >
-          <span className="text-3xl leading-none">{archetype.emoji}</span>
+          <ArchetypeBadge archetypeKey={p.archetype!} size={44} />
           <div>
             <p className="font-nunito text-[11px] font-bold uppercase tracking-wide text-navy/55">
               Their vibe

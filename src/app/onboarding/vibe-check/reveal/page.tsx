@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import InviteFriendsButton from "@/components/InviteFriendsButton";
+import ArchetypeBadge from "@/components/ArchetypeBadge";
 import { ARCHETYPES } from "@/lib/onboarding/archetypes";
 import { pct } from "@/lib/onboarding/scoring";
 import { VibeDimension, VibeScores } from "@/lib/onboarding/types";
@@ -38,7 +39,7 @@ export default async function VibeRevealPage() {
         style={{ background: `linear-gradient(160deg, ${archetype.gradientFrom}, ${archetype.gradientTo})` }}
         className="flex flex-col items-center px-6 pb-6 pt-8 text-center"
       >
-        <div className="mb-2.5 text-[46px]">{archetype.emoji}</div>
+        <div className="mb-2.5"><ArchetypeBadge archetypeKey={profile.archetype} size={72} variant="ring" /></div>
         <p className="mb-1.5 text-[10.5px] font-extrabold uppercase tracking-widest text-white/70">Your vibe — early read</p>
         <h1 className="mb-3 text-[25px] font-black leading-tight text-white">{archetype.name}</h1>
         <p className="max-w-[280px] text-[12.5px] font-medium leading-relaxed text-white/90">{archetype.description}</p>
@@ -72,7 +73,7 @@ export default async function VibeRevealPage() {
 
         <Section title="You'd click with">
           <div className="flex flex-wrap gap-1.5">
-            {archetype.compatibleWith.map((dimension) => <span key={dimension} className="rounded-full border-2 border-ink/10 bg-white px-3.5 py-2 text-[12.5px] font-bold">{ARCHETYPES[dimension].emoji} {ARCHETYPES[dimension].name}</span>)}
+            {archetype.compatibleWith.map((dimension) => <span key={dimension} className="inline-flex items-center gap-2 rounded-full border-2 border-ink/10 bg-white py-1.5 pl-1.5 pr-3.5 text-[12.5px] font-bold"><ArchetypeBadge archetypeKey={dimension} size={26} /> {ARCHETYPES[dimension].name}</span>)}
           </div>
         </Section>
 
