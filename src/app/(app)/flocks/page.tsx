@@ -69,8 +69,7 @@ export default async function FlocksPage() {
         </Link>
       </div>
       <p className="mt-1 text-sm font-medium text-muted">
-        Open <span className="font-bold">group trips</span> you can request to
-        join. (Group activities live in Vibes.)
+        Open <span className="font-bold">group trips</span> you can request to join.
       </p>
 
       <div className="mt-4 grid grid-cols-2 gap-2 rounded-full border-2 border-ink bg-white p-1 text-sm font-bold">
