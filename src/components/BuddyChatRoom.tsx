@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Send, Sparkles, X } from "lucide-react";
+import { Send, Sparkles, X, ImagePlus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatMessageDivider, needsDivider } from "@/lib/chat";
+import { isImageUrl, firstUrl } from "@/lib/chat-content";
+import LinkPreview from "@/components/LinkPreview";
 
 type Msg = { id: string; sender_id: string; content: string; created_at: string };
 
@@ -37,7 +39,27 @@ export default function BuddyChatRoom({
   const [sending, setSending] = useState(false);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const imgInput = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
+
+  async function onImage(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() ?? "jpg";
+      const path = `${currentUserId}/chat-${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+      if (!error) {
+        const url = supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl;
+        await supabase.from("buddy_messages").insert({ chat_id: chatId, sender_id: currentUserId, content: url });
+      }
+    } finally {
+      setUploading(false);
+      if (imgInput.current) imgInput.current.value = "";
+    }
+  }
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -164,14 +186,26 @@ export default function BuddyChatRoom({
                 </div>
               )}
               <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
-                <div
-                  className={`max-w-[70%] px-3.5 py-2 font-nunito text-[15px] shadow-[0_1px_2px_rgba(10,37,69,0.05)] ${
-                    mine
-                      ? "rounded-[18px] rounded-br-[4px] bg-flockie-blue text-white"
-                      : "rounded-[18px] rounded-bl-[4px] bg-white text-navy"
-                  }`}
-                >
-                  {m.content}
+                <div className={`flex max-w-[70%] flex-col ${mine ? "items-end" : "items-start"}`}>
+                  {isImageUrl(m.content) ? (
+                    <a href={m.content} target="_blank" rel="noopener noreferrer">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={m.content} alt="" className="max-w-[260px] rounded-[18px] border border-navy/10" />
+                    </a>
+                  ) : (
+                    <>
+                      <div
+                        className={`px-3.5 py-2 font-nunito text-[15px] shadow-[0_1px_2px_rgba(10,37,69,0.05)] ${
+                          mine
+                            ? "rounded-[18px] rounded-br-[4px] bg-flockie-blue text-white"
+                            : "rounded-[18px] rounded-bl-[4px] bg-white text-navy"
+                        }`}
+                      >
+                        {m.content}
+                      </div>
+                      {firstUrl(m.content) && <LinkPreview url={firstUrl(m.content)!} />}
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -206,10 +240,20 @@ export default function BuddyChatRoom({
       </div>
 
       <form onSubmit={send} className="flex items-center gap-2 pt-1">
+        <input ref={imgInput} type="file" accept="image/*" hidden onChange={onImage} />
+        <button
+          type="button"
+          onClick={() => imgInput.current?.click()}
+          disabled={uploading}
+          aria-label="Send photo"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-navy text-navy disabled:opacity-50"
+        >
+          <ImagePlus size={18} />
+        </button>
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder={`Message ${otherName}…`}
+          placeholder={uploading ? "Sending photo…" : `Message ${otherName}…`}
           className="h-12 w-full rounded-full border-2 border-navy bg-cream px-5 font-nunito text-[15px] font-medium text-navy outline-none focus:border-flockie-blue"
         />
         <button

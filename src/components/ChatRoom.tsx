@@ -3,9 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Send } from "lucide-react";
+import { Send, ImagePlus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatMessageDivider, needsDivider } from "@/lib/chat";
+import { isImageUrl, firstUrl } from "@/lib/chat-content";
+import LinkPreview from "@/components/LinkPreview";
 
 type Msg = { id: string; sender_id: string | null; content: string; created_at: string };
 type Member = { display_name: string | null; photos: string[] | null };
@@ -35,7 +37,27 @@ export default function ChatRoom({
   const [messages, setMessages] = useState<Msg[]>(initialMessages);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const imgInput = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
+
+  async function onImage(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() ?? "jpg";
+      const path = `${currentUserId}/chat-${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+      if (!error) {
+        const url = supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl;
+        await supabase.from("vibing_messages").insert({ chat_id: chatId, sender_id: currentUserId, content: url });
+      }
+    } finally {
+      setUploading(false);
+      if (imgInput.current) imgInput.current.value = "";
+    }
+  }
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -141,19 +163,29 @@ export default function ChatRoom({
                   ) : (
                     <span className="h-8 w-8 shrink-0" />
                   ))}
-                <div className={`max-w-[70%] ${mine ? "items-end" : ""}`}>
+                <div className={`flex max-w-[70%] flex-col ${mine ? "items-end" : "items-start"}`}>
                   {!mine && firstInSeq && (
                     <p className="mb-0.5 ml-1 font-nunito text-xs font-medium text-navy/60">{name}</p>
                   )}
-                  <div
-                    className={`px-3.5 py-2 font-nunito text-[15px] shadow-[0_1px_2px_rgba(10,37,69,0.05)] ${
-                      mine
-                        ? "rounded-[18px] rounded-br-[4px] bg-flockie-blue text-white"
-                        : "rounded-[18px] rounded-bl-[4px] bg-white text-navy"
-                    }`}
-                  >
-                    {m.content}
-                  </div>
+                  {isImageUrl(m.content) ? (
+                    <a href={m.content} target="_blank" rel="noopener noreferrer">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={m.content} alt="" className="max-w-[260px] rounded-[18px] border border-navy/10" />
+                    </a>
+                  ) : (
+                    <>
+                      <div
+                        className={`px-3.5 py-2 font-nunito text-[15px] shadow-[0_1px_2px_rgba(10,37,69,0.05)] ${
+                          mine
+                            ? "rounded-[18px] rounded-br-[4px] bg-flockie-blue text-white"
+                            : "rounded-[18px] rounded-bl-[4px] bg-white text-navy"
+                        }`}
+                      >
+                        {m.content}
+                      </div>
+                      {firstUrl(m.content) && <LinkPreview url={firstUrl(m.content)!} />}
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -192,10 +224,20 @@ export default function ChatRoom({
       )}
 
       <form onSubmit={send} className="flex items-center gap-2 pt-1">
+        <input ref={imgInput} type="file" accept="image/*" hidden onChange={onImage} />
+        <button
+          type="button"
+          onClick={() => imgInput.current?.click()}
+          disabled={uploading}
+          aria-label="Send photo"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-navy text-navy disabled:opacity-50"
+        >
+          <ImagePlus size={18} />
+        </button>
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Message the group…"
+          placeholder={uploading ? "Sending photo…" : "Message the group…"}
           className="h-12 w-full rounded-full border-2 border-navy bg-cream px-5 font-nunito text-[15px] font-medium text-navy outline-none focus:border-flockie-blue"
         />
         <button

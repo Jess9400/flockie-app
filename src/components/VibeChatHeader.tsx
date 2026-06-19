@@ -27,7 +27,6 @@ export default function VibeChatHeader({
   description,
   bookingUrl,
   members,
-  currentUserId,
 }: {
   vibeId: string;
   title: string;
@@ -38,7 +37,6 @@ export default function VibeChatHeader({
   description: string | null;
   bookingUrl: string | null;
   members: ChatMember[];
-  currentUserId: string;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -52,11 +50,7 @@ export default function VibeChatHeader({
   async function leave() {
     if (!window.confirm("Leave this Vibe? You'll lose your spot and the chat.")) return;
     setLeaving(true);
-    await supabase
-      .from("vibe_interests")
-      .update({ status: "declined" })
-      .eq("vibe_id", vibeId)
-      .eq("user_id", currentUserId);
+    await supabase.rpc("leave_vibe", { p_vibe: vibeId });
     router.push("/chats");
     router.refresh();
   }

@@ -103,7 +103,6 @@ export default async function VibeChatPage({
         description={vibe?.description ?? null}
         bookingUrl={vibe?.activity_url ?? null}
         members={headerMembers}
-        currentUserId={user!.id}
       />
 
       {vibe?.status === "cancelled" && (
