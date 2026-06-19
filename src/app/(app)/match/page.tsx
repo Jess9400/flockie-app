@@ -61,14 +61,15 @@ export default async function MatchPage({
     );
   }
 
-  const { data: post } = await supabase
+  const { data: posts } = await supabase
     .from("trips")
     .select("id, title, destination, destinations, start_date, end_date, group_size")
     .eq("user_id", user!.id)
     .eq("status", "active")
     .eq("kind", mode)
     .order("created_at", { ascending: false })
-    .maybeSingle();
+    .limit(1);
+  const post = posts?.[0] ?? null;
 
   if (!post) {
     return (

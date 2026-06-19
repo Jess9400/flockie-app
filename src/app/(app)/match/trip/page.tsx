@@ -22,16 +22,18 @@ export default async function TripPage({
     .eq("id", user!.id)
     .maybeSingle();
 
-  let q = supabase
-    .from("trips")
-    .select("id, destination, destinations, title, kind, start_date, end_date, group_size, trip_type, budget, pace, visibility")
-    .eq("user_id", user!.id);
-
   const reqKind = searchParams.kind === "activity" ? "activity" : "trip";
-  q = searchParams.id
-    ? q.eq("id", searchParams.id)
-    : q.eq("status", "active").eq("kind", reqKind).order("created_at", { ascending: false });
-  const { data: trip } = await q.maybeSingle();
+
+  // Only load a trip when explicitly editing (?id=). Otherwise it's a NEW post,
+  // so a blank form is shown and a new trip is inserted (existing trips stay).
+  const { data: trip } = searchParams.id
+    ? await supabase
+        .from("trips")
+        .select("id, destination, destinations, title, kind, start_date, end_date, group_size, trip_type, budget, pace, visibility")
+        .eq("user_id", user!.id)
+        .eq("id", searchParams.id)
+        .maybeSingle()
+    : { data: null };
 
   const kind = (trip?.kind as "trip" | "activity") ?? reqKind;
   const isActivity = kind === "activity";
