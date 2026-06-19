@@ -42,6 +42,14 @@ export default function FlockJoinRequests({
     }
   }
 
+  async function remove(userId: string) {
+    if (!window.confirm("Remove this member? Their spot opens up for someone else.")) return;
+    setBusy(userId);
+    const { error } = await supabase.rpc("remove_flock_member", { p_trip: tripId, p_user: userId });
+    setBusy(null);
+    if (!error) setItems((cur) => cur.filter((r) => r.userId !== userId));
+  }
+
   const pending = items.filter((r) => r.status === "pending");
   const waiting = items.filter((r) => r.status === "waiting");
   const accepted = items.filter((r) => r.status === "accepted");
@@ -105,20 +113,30 @@ export default function FlockJoinRequests({
           <p className="text-[11px] font-bold text-muted">Going ({accepted.length})</p>
           <div className="mt-1 flex flex-wrap gap-1.5">
             {accepted.map((r) => (
-              <Link
+              <span
                 key={r.userId}
-                href={`/people/${r.userId}`}
-                className="flex items-center gap-1.5 rounded-full border-2 border-ink bg-white px-2 py-1 text-xs font-bold"
+                className="flex items-center gap-1.5 rounded-full border-2 border-ink bg-white py-1 pl-2 pr-1 text-xs font-bold"
               >
-                {r.photo ? (
-                  <Image src={r.photo} alt="" width={20} height={20} className="h-5 w-5 rounded-full object-cover" />
-                ) : (
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-flockie-blue text-[10px] font-bold text-white">
-                    {r.name[0]}
-                  </span>
-                )}
-                {r.name}
-              </Link>
+                <Link href={`/people/${r.userId}`} className="flex items-center gap-1.5">
+                  {r.photo ? (
+                    <Image src={r.photo} alt="" width={20} height={20} className="h-5 w-5 rounded-full object-cover" />
+                  ) : (
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-flockie-blue text-[10px] font-bold text-white">
+                      {r.name[0]}
+                    </span>
+                  )}
+                  {r.name}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => remove(r.userId)}
+                  disabled={busy === r.userId}
+                  aria-label={`Remove ${r.name}`}
+                  className="flex h-5 w-5 items-center justify-center rounded-full text-muted hover:bg-ink/5 hover:text-ink"
+                >
+                  <X size={13} />
+                </button>
+              </span>
             ))}
           </div>
         </div>

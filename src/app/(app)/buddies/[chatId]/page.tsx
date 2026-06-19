@@ -48,6 +48,7 @@ export default async function BuddyChatPage({
   const flockTripIds = [matchExt?.trip_a, matchExt?.trip_b].filter(Boolean) as string[];
   let flockTripId: string | null = null;
   let flockReqs: JoinReq[] = [];
+  const chatMembers: Record<string, { name: string; photo: string | null }> = {};
   if (flockTripIds.length) {
     const { data: fl } = await supabase
       .from("trips")
@@ -79,6 +80,23 @@ export default async function BuddyChatPage({
           photo: map[r.user_id]?.photos?.[0] ?? null,
           oneLiner: map[r.user_id]?.one_liner ?? null,
         }));
+      }
+
+      // All chat participants (the two buddies + accepted members) for names.
+      const { data: accp } = await supabase
+        .from("trip_join_requests")
+        .select("user_id")
+        .eq("trip_id", fl.id)
+        .eq("status", "accepted");
+      const memberIds = Array.from(
+        new Set([match?.user_a, match?.user_b, ...(accp ?? []).map((r) => r.user_id)].filter(Boolean))
+      ) as string[];
+      if (memberIds.length) {
+        const { data: mp } = await supabase
+          .from("profiles")
+          .select("id, display_name, photos")
+          .in("id", memberIds);
+        mp?.forEach((p) => (chatMembers[p.id] = { name: p.display_name || "Flockie", photo: p.photos?.[0] ?? null }));
       }
     }
   }
@@ -237,6 +255,8 @@ export default async function BuddyChatPage({
         icebreaker={icebreaker}
         tripStartIso={trip?.start_date ?? null}
         tripEndIso={trip?.end_date ?? null}
+        members={chatMembers}
+        isGroup={!!flockTripId}
       />
     </main>
   );

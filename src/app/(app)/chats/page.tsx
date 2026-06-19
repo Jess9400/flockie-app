@@ -110,6 +110,14 @@ export default async function ChatsPage() {
   const buddyList = (buddies ?? []) as BuddySummary[];
   const vibeList = (vibes ?? []) as VibeSummary[];
 
+  // Flock group chats I've joined (as an approved member) — append if not present.
+  const { data: flockChats } = await supabase.rpc("my_flock_chats");
+  (flockChats ?? []).forEach((fc: { chat_id: string; name: string | null; photo: string | null }) => {
+    if (!buddyList.some((b) => b.chat_id === fc.chat_id)) {
+      buddyList.push({ chat_id: fc.chat_id, name: fc.name, photo: fc.photo, unread: 0 });
+    }
+  });
+
   const buddyLast = await latestPerChat(
     supabase,
     "buddy_messages",

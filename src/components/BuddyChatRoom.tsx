@@ -23,6 +23,8 @@ export default function BuddyChatRoom({
   icebreaker,
   tripStartIso,
   tripEndIso,
+  members,
+  isGroup,
 }: {
   chatId: string;
   currentUserId: string;
@@ -32,6 +34,8 @@ export default function BuddyChatRoom({
   icebreaker: string;
   tripStartIso: string | null;
   tripEndIso: string | null;
+  members?: Record<string, { name: string; photo: string | null }>;
+  isGroup?: boolean;
 }) {
   const supabase = createClient();
   const [messages, setMessages] = useState<Msg[]>(initialMessages);
@@ -147,10 +151,13 @@ export default function BuddyChatRoom({
 
   // sequence/divider flags
   let prevTime: string | null = null;
+  let prevSender: string | null = null;
   const rows = messages.map((m) => {
     const divider = needsDivider(prevTime, m.created_at);
+    const firstInSeq = divider || prevSender !== m.sender_id;
     prevTime = m.created_at;
-    return { m, divider };
+    prevSender = m.sender_id;
+    return { m, divider, firstInSeq };
   });
 
   return (
@@ -172,7 +179,7 @@ export default function BuddyChatRoom({
           </p>
         </div>
 
-        {rows.map(({ m, divider }) => {
+        {rows.map(({ m, divider, firstInSeq }) => {
           const mine = m.sender_id === currentUserId;
           return (
             <div key={m.id}>
@@ -187,6 +194,11 @@ export default function BuddyChatRoom({
               )}
               <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
                 <div className={`flex max-w-[70%] flex-col ${mine ? "items-end" : "items-start"}`}>
+                  {!mine && isGroup && firstInSeq && (
+                    <p className="mb-0.5 ml-1 font-nunito text-xs font-medium text-navy/60">
+                      {members?.[m.sender_id]?.name ?? "Flockie"}
+                    </p>
+                  )}
                   {isImageUrl(m.content) ? (
                     <a href={m.content} target="_blank" rel="noopener noreferrer">
                       {/* eslint-disable-next-line @next/next/no-img-element */}

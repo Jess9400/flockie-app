@@ -97,6 +97,7 @@ export default async function FlocksPage() {
             })),
           ];
           const going = members.length;
+          if (going >= t.group_size) return null; // full Flocks drop off the list
           return (
             <div
               key={t.id}
