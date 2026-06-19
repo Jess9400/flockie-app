@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
 import VibeSearch from "@/components/VibeSearch";
+import LocationPrompt from "@/components/LocationPrompt";
 import { loadVibeMatch } from "@/lib/vibe-stats";
 import type { InterestStatus } from "@/lib/vibes";
 
@@ -129,6 +130,8 @@ export default async function VibesPage({
           />
         ))}
       </div>
+
+      <LocationPrompt />
     </main>
   );
 }

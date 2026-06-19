@@ -8,7 +8,6 @@ import {
   Home, Compass, Map, Sparkles, CalendarCheck, MessageCircle, Tag, User, Bell, Menu, X,
 } from "lucide-react";
 import Footer from "@/components/Footer";
-import LocationPrompt from "@/components/LocationPrompt";
 import SignOutButton from "@/components/SignOutButton";
 import { createClient } from "@/lib/supabase/client";
 
@@ -153,8 +152,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <div className="mx-auto w-full max-w-4xl flex-1">{children}</div>
         <Footer />
       </div>
-
-      <LocationPrompt />
     </div>
   );
 }
