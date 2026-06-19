@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import ProfileView from "@/components/ProfileView";
 import ProfileSocials from "@/components/ProfileSocials";
 import ProfileReviews, { type ReviewItem } from "@/components/ProfileReviews";
+import MatchBackButton from "@/components/MatchBackButton";
 import Stars from "@/components/Stars";
 import type { Profile } from "@/lib/vibe-check";
 
@@ -24,6 +25,32 @@ export default async function PersonPage({
     .maybeSingle();
 
   if (!profile) notFound();
+
+  // Incoming like? (this person liked me and we're not matched yet → match back)
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  let incomingLike = false;
+  if (user && user.id !== params.id) {
+    const { data: liked } = await supabase
+      .from("buddy_swipes")
+      .select("liked")
+      .eq("swiper_id", params.id)
+      .eq("target_id", user.id)
+      .eq("liked", true)
+      .maybeSingle();
+    if (liked) {
+      const a = user.id < params.id ? user.id : params.id;
+      const b = user.id < params.id ? params.id : user.id;
+      const { data: m } = await supabase
+        .from("buddy_matches")
+        .select("id")
+        .eq("user_a", a)
+        .eq("user_b", b)
+        .maybeSingle();
+      incomingLike = !m;
+    }
+  }
 
   // Reviews
   const { data: reviewRows } = await supabase
@@ -82,6 +109,10 @@ export default async function PersonPage({
           tiktok={profile.tiktok}
         />
       </div>
+
+      {incomingLike && (
+        <MatchBackButton personId={params.id} name={(profile.display_name || "They").split(" ")[0]} />
+      )}
 
       <div className="mt-5">
         <ProfileView profile={profile as Partial<Profile>} />

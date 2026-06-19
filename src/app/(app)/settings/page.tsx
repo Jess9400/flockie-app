@@ -3,6 +3,7 @@ import { ChevronLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import NotificationsToggle from "@/components/NotificationsToggle";
 import LocationToggle from "@/components/LocationToggle";
+import DiscoveryToggle from "@/components/DiscoveryToggle";
 import SignOutButton from "@/components/SignOutButton";
 import DeleteAccountButton from "@/components/DeleteAccountButton";
 
@@ -18,10 +19,15 @@ export default async function SettingsPage() {
     .eq("id", user!.id)
     .maybeSingle();
 
-  // Separate (migration-safe) query — column added by location-tracking.sql.
+  // Separate (migration-safe) queries — columns added by later migrations.
   const { data: loc } = await supabase
     .from("profiles")
     .select("location_tracking_enabled")
+    .eq("id", user!.id)
+    .maybeSingle();
+  const { data: disc } = await supabase
+    .from("profiles")
+    .select("open_to_discovery")
     .eq("id", user!.id)
     .maybeSingle();
 
@@ -44,6 +50,10 @@ export default async function SettingsPage() {
         <LocationToggle
           userId={user!.id}
           initial={loc?.location_tracking_enabled ?? false}
+        />
+        <DiscoveryToggle
+          userId={user!.id}
+          initial={disc?.open_to_discovery ?? true}
         />
       </section>
 

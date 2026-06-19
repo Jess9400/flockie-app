@@ -125,44 +125,50 @@ export default async function MatchPage({
     ? (post.destinations ?? [post.destination]).filter(Boolean).join(" · ")
     : (post.destinations ?? [post.destination]).filter(Boolean).join(" · ");
 
-  // p_trip works after buddy-candidates-v2.sql; fall back to the 2-arg version.
-  let { data: count, error: countErr } = await supabase.rpc("buddy_dest_count", { p_kind: mode, p_trip: selectedId });
-  if (countErr) ({ data: count } = await supabase.rpc("buddy_dest_count", { p_kind: mode }));
-  const enough = (count ?? 0) >= MIN_PROFILES;
-
-  let body: React.ReactNode;
-  if (!enough) {
-    body = (
-      <div className="mt-6 rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_5px_0_0_rgba(26,26,26,1)]">
-        <p className="text-3xl">🚀</p>
-        <p className="mt-3 text-lg font-extrabold">You&rsquo;re on the list for {label}</p>
-        <p className="mt-1 text-sm font-medium text-ink/70">
-          {isActivity ? "Activity" : "Buddy"} matching unlocks as more travelers join {label} —
-          invite friends to make it happen faster.
-        </p>
-
-        <div className="mt-5 flex flex-col gap-2">
-          <InviteFriendsButton city={label} />
-          <Link href="/vibes" className="rounded-full border-2 border-ink bg-white px-5 py-2.5 font-bold text-ink">
-            Meanwhile, explore Vibes
-          </Link>
-        </div>
-      </div>
-    );
-  } else {
-    let { data: candidates, error: candErr } = await supabase.rpc("buddy_candidates_trip", { p_limit: 30, p_kind: mode, p_trip: selectedId });
-    if (candErr) ({ data: candidates } = await supabase.rpc("buddy_candidates_trip", { p_limit: 30, p_kind: mode }));
-    const list = candidates ?? [];
-    const ratings = await loadUserRatings(
-      supabase,
-      list.map((c: { id: string }) => c.id)
-    );
-    const enriched = list.map((c: { id: string }) => ({
+  async function enrich<T extends { id: string }>(list: T[]) {
+    const ratings = await loadUserRatings(supabase, list.map((c) => c.id));
+    return list.map((c) => ({
       ...c,
       rating: ratings[c.id]?.avg ?? null,
       review_count: ratings[c.id]?.count ?? 0,
     }));
-    body = <SwipeDeck candidates={enriched} />;
+  }
+
+  let body: React.ReactNode;
+
+  if (isActivity) {
+    // Discovery pool: anyone in the activity's city who is open to discovery —
+    // no posted activity or city-count gate required.
+    const { data: cands } = await supabase.rpc("activity_candidates", { p_trip: selectedId, p_limit: 30 });
+    body = <SwipeDeck candidates={await enrich(cands ?? [])} activityTitle={post.title || label} />;
+  } else {
+    // Trips still use the destination/date-overlap pool + the city gate.
+    let { data: count, error: countErr } = await supabase.rpc("buddy_dest_count", { p_kind: mode, p_trip: selectedId });
+    if (countErr) ({ data: count } = await supabase.rpc("buddy_dest_count", { p_kind: mode }));
+    const enough = (count ?? 0) >= MIN_PROFILES;
+
+    if (!enough) {
+      body = (
+        <div className="mt-6 rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_5px_0_0_rgba(26,26,26,1)]">
+          <p className="text-3xl">🚀</p>
+          <p className="mt-3 text-lg font-extrabold">You&rsquo;re on the list for {label}</p>
+          <p className="mt-1 text-sm font-medium text-ink/70">
+            Buddy matching unlocks as more travelers join {label} — invite friends to make it
+            happen faster.
+          </p>
+          <div className="mt-5 flex flex-col gap-2">
+            <InviteFriendsButton city={label} />
+            <Link href="/vibes" className="rounded-full border-2 border-ink bg-white px-5 py-2.5 font-bold text-ink">
+              Meanwhile, explore Vibes
+            </Link>
+          </div>
+        </div>
+      );
+    } else {
+      let { data: candidates, error: candErr } = await supabase.rpc("buddy_candidates_trip", { p_limit: 30, p_kind: mode, p_trip: selectedId });
+      if (candErr) ({ data: candidates } = await supabase.rpc("buddy_candidates_trip", { p_limit: 30, p_kind: mode }));
+      body = <SwipeDeck candidates={await enrich(candidates ?? [])} />;
+    }
   }
 
   return (

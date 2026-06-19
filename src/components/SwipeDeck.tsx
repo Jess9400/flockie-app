@@ -24,7 +24,13 @@ type Candidate = {
   review_count?: number;
 };
 
-export default function SwipeDeck({ candidates }: { candidates: Candidate[] }) {
+export default function SwipeDeck({
+  candidates,
+  activityTitle,
+}: {
+  candidates: Candidate[];
+  activityTitle?: string | null;
+}) {
   const supabase = createClient();
   const [i, setI] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -79,7 +85,11 @@ export default function SwipeDeck({ candidates }: { candidates: Candidate[] }) {
   async function act(liked: boolean) {
     if (!c || busy) return;
     setBusy(true);
-    const { data } = await supabase.rpc("buddy_swipe", { p_target: c.id, p_liked: liked });
+    const { data } = await supabase.rpc("buddy_swipe", {
+      p_target: c.id,
+      p_liked: liked,
+      p_activity_title: activityTitle ?? null,
+    });
     setBusy(false);
     const res = data as { matched: boolean; chat_id?: string } | null;
     if (liked && res?.matched && res.chat_id) {

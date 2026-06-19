@@ -9,7 +9,7 @@ export type Notif = {
   type: string;
   title: string;
   body: string | null;
-  data: { vibe_id?: string } | null;
+  data: { vibe_id?: string; like_from?: string; chat_id?: string } | null;
   read_at: string | null;
   created_at: string;
 };
@@ -20,6 +20,8 @@ const STYLE: Record<string, string> = {
   vibe_standby: "border-ink/15 bg-cream",
   vibing_message: "border-flockie-blue bg-flockie-blue/10",
   vibe_recommendation: "border-flockie-blue bg-flockie-blue/10",
+  activity_like: "border-flockie-orange bg-flockie-orange/10",
+  buddy_match: "border-[#06D6A0] bg-[#06D6A0]/10",
 };
 
 export default function InboxList({ notifications }: { notifications: Notif[] }) {
@@ -49,6 +51,13 @@ export default function InboxList({ notifications }: { notifications: Notif[] })
     <div className="space-y-3">
       {notifications.map((n) => {
         const vibeId = n.data?.vibe_id;
+        const href = vibeId
+          ? `/vibes/${vibeId}`
+          : n.data?.chat_id
+            ? `/buddies/${n.data.chat_id}`
+            : n.data?.like_from
+              ? `/people/${n.data.like_from}`
+              : null;
         const card = (
           <div
             className={`rounded-2xl border-2 p-4 ${STYLE[n.type] ?? "border-ink/15 bg-white"} ${
@@ -64,8 +73,8 @@ export default function InboxList({ notifications }: { notifications: Notif[] })
             )}
           </div>
         );
-        return vibeId ? (
-          <Link key={n.id} href={`/vibes/${vibeId}`} className="block">
+        return href ? (
+          <Link key={n.id} href={href} className="block">
             {card}
           </Link>
         ) : (
