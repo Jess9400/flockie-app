@@ -13,9 +13,9 @@ export default function TripPicker({
   mode: string;
 }) {
   const router = useRouter();
-  if (options.length <= 1) return null;
+  if (options.length === 0) return null;
   return (
-    <label className="mt-4 block">
+    <label className="block">
       <span className="mb-1 block text-xs font-bold uppercase tracking-wide text-muted">
         Finding matches for
       </span>

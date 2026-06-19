@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Pencil, MapPin, CalendarClock } from "lucide-react";
+import { Pencil, MapPin, CalendarClock, Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import SwipeDeck from "@/components/SwipeDeck";
 import TripPicker from "@/components/TripPicker";
@@ -148,7 +148,19 @@ export default async function MatchPage({
     <main className="px-5 pb-10 pt-6">
       {header}
 
-      {selectedId && <TripPicker options={pickerOptions} value={selectedId} mode={mode} />}
+      <div className="mt-4 flex items-end gap-2">
+        {selectedId && (
+          <div className="flex-1">
+            <TripPicker options={pickerOptions} value={selectedId} mode={mode} />
+          </div>
+        )}
+        <Link
+          href={`/match/trip?kind=${mode}`}
+          className="flex shrink-0 items-center gap-1 rounded-2xl border-2 border-ink bg-flockie-orange px-4 py-2.5 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
+        >
+          <Plus size={16} /> New {isActivity ? "activity" : "trip"}
+        </Link>
+      </div>
 
       <div className="mt-3 flex items-center justify-between rounded-2xl border-2 border-ink bg-cream p-3">
         <div className="min-w-0">
