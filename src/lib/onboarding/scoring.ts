@@ -127,3 +127,26 @@ export function pct(left: number, right: number): number {
   if (total === 0) return 50;
   return Math.max(12, Math.min(88, Math.round((left / total) * 100)));
 }
+
+export function confidence(scores: VibeScores): number {
+  const values = Object.values(scores);
+  const total = values.reduce((sum, value) => sum + value, 0);
+  if (total <= 0) return 50;
+
+  const topScore = Math.max(...values);
+  return Math.max(35, Math.min(95, Math.round((topScore / total) * 100)));
+}
+
+export function closeSecondArchetype(
+  scores: VibeScores,
+  top: VibeDimension
+): VibeDimension | null {
+  const entries = (Object.entries(scores) as [VibeDimension, number][]).sort(
+    ([, left], [, right]) => right - left
+  );
+  const topScore = scores[top];
+  const second = entries.find(([dimension]) => dimension !== top);
+
+  if (!second || topScore === 0 || second[1] === 0) return null;
+  return second[1] / topScore >= 0.7 ? second[0] : null;
+}
