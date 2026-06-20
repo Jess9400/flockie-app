@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles } from "lucide-react";
 
 // Shares a "how compatible are we?" link → friend takes the vibe check to find out.
 export default function CompatShareButton({
@@ -44,7 +43,7 @@ export default function CompatShareButton({
       onClick={share}
       className={`inline-flex items-center justify-center gap-2 rounded-full border-2 border-navy px-5 py-2.5 font-fredoka text-sm font-semibold ${cls}`}
     >
-      <Sparkles size={16} /> {copied ? "Link copied!" : label ?? "See your match % with a friend"}
+      {copied ? "Link copied!" : label ?? "See your match % with a friend"}
     </button>
   );
 }

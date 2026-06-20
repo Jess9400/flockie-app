@@ -219,7 +219,7 @@ export default function VibeShareCard({
             <CompatShareButton
               userId={userId}
               variant="ghost"
-              label="Check if your friend would match your vibe"
+              label="Will your BFF match your vibe? Invite them and find out!"
             />
           </div>
         )}
