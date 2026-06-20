@@ -116,9 +116,9 @@ export default async function VibeRevealPage() {
             <div className="rounded-2xl border-2 border-dashed border-ink/15 bg-white p-5 text-center">
               <div className="mb-2 text-[30px]">🌱</div>
               <p className="mb-1 text-[13.5px] font-extrabold">Nobody&apos;s matched this vibe here yet</p>
-              <p className="mb-3 text-[12px] font-semibold leading-relaxed text-muted">{profile.home_city ?? "Your city"}&apos;s just getting started on Flockie. Be the spark — invite a friend and your flock grows fast.</p>
+              <p className="mb-3 text-[12px] font-semibold leading-relaxed text-muted">Will your BFF match your vibe? Invite them and find out!</p>
               <div className="flex justify-center">
-                <InviteFriendsButton city={profile.home_city ?? undefined} label="Invite a friend" />
+                <InviteFriendsButton city={profile.home_city ?? undefined} label="Invite your BFF" />
               </div>
             </div>
           ) : (
