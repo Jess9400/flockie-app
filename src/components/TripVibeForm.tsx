@@ -9,6 +9,8 @@ import {
   TRIP_VIBES,
   TRAVEL_STYLES,
   DEALBREAKERS,
+  TRIP_PRIORITIES,
+  PRIORITY_MAX,
   MAX_TAGS,
   ONE_LINER_MAX,
   type SliderKey,
@@ -93,6 +95,21 @@ const PAGES: WizardPage[] = [
       },
     ],
   },
+  {
+    title: "What matters most",
+    subtitle: "We'll weight your matches toward these. Pick the things you can't compromise on.",
+    fields: [
+      {
+        type: "multi",
+        key: "match_priorities",
+        label: "When we match you, what matters most?",
+        hint: `Pick up to ${PRIORITY_MAX}.`,
+        max: PRIORITY_MAX,
+        required: true,
+        options: TRIP_PRIORITIES,
+      },
+    ],
+  },
 ];
 
 export default function TripVibeForm({
@@ -115,7 +132,7 @@ export default function TripVibeForm({
   useEffect(() => {
     supabase
       .from("profiles")
-      .select("planning, pace, social_energy, budget, nightlife, adventurousness, trip_vibe, travel_style, dealbreakers, one_liner")
+      .select("planning, pace, social_energy, budget, nightlife, adventurousness, trip_vibe, travel_style, dealbreakers, one_liner, match_priorities")
       .eq("id", userId)
       .maybeSingle()
       .then(({ data }) => {
@@ -130,6 +147,7 @@ export default function TripVibeForm({
           travel_style: data?.travel_style ?? [],
           dealbreakers: data?.dealbreakers ?? [],
           one_liner: data?.one_liner ?? "",
+          match_priorities: data?.match_priorities ?? [],
         });
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -151,6 +169,7 @@ export default function TripVibeForm({
         travel_style: a.travel_style ?? [],
         dealbreakers: a.dealbreakers ?? [],
         one_liner: a.one_liner ?? "",
+        match_priorities: a.match_priorities ?? [],
       })
       .eq("id", userId);
     if (error) {
@@ -175,6 +194,7 @@ export default function TripVibeForm({
         initial={initial}
         submitting={saving}
         finishLabel="Save trip vibe"
+        flat
         onComplete={complete}
         onClose={onClose}
       />

@@ -128,6 +128,19 @@ export const DEALBREAKERS = [
   "I need quiet sleeping conditions",
 ] as const;
 
+// The "weight question": which 2-3 trip dimensions matter MOST to this user.
+// `value` must match the keys the matching algo weights (match-priorities.sql).
+export const TRIP_PRIORITIES: { value: string; label: string; emoji: string }[] = [
+  { value: "pace", label: "Same daily pace", emoji: "🕒" },
+  { value: "budget", label: "Similar budget", emoji: "💸" },
+  { value: "planning", label: "Plan vs. spontaneous", emoji: "🗺️" },
+  { value: "social_energy", label: "Social energy", emoji: "🔋" },
+  { value: "nightlife", label: "Night owl / early bird", emoji: "🌙" },
+  { value: "adventurousness", label: "Adventurousness", emoji: "🧭" },
+  { value: "interests", label: "Shared interests", emoji: "✨" },
+];
+export const PRIORITY_MAX = 3;
+
 export const ONE_LINER_MAX = 100;
 
 // Profile basics (separate from the vibe check questions)
@@ -279,6 +292,16 @@ export const ACTIVITY_DEALBREAKERS = [
   "Quiet / no party energy",
   "Accessibility needs",
 ] as const;
+
+// The activity "weight question": which 2 dimensions matter MOST for meetups.
+// `value` must match the keys weighted in match-priorities.sql.
+export const ACTIVITY_PRIORITIES: { value: string; label: string; emoji: string }[] = [
+  { value: "interests", label: "Shared activities", emoji: "🤝" },
+  { value: "vibe", label: "Experience vibe", emoji: "🎭" },
+  { value: "social", label: "Group size", emoji: "👥" },
+  { value: "intensity", label: "Effort level", emoji: "🔥" },
+];
+export const ACTIVITY_PRIORITY_MAX = 2;
 
 export const ACTIVITY_ONE_LINER_PROMPT =
   "Finish: “At an activity, I'm the kind of person who…”";

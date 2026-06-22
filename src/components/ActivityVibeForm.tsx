@@ -13,6 +13,8 @@ import {
   ACTIVITY_VIBES,
   ACTIVITY_VIBE_MAX,
   ACTIVITY_DEALBREAKERS,
+  ACTIVITY_PRIORITIES,
+  ACTIVITY_PRIORITY_MAX,
   ONE_LINER_MAX,
 } from "@/lib/vibe-check";
 
@@ -79,6 +81,21 @@ const PAGES: WizardPage[] = [
       },
     ],
   },
+  {
+    title: "What matters most",
+    subtitle: "We'll weight your meetup matches toward these.",
+    fields: [
+      {
+        type: "multi",
+        key: "activity_priorities",
+        label: "For a meetup, what matters most?",
+        hint: `Pick up to ${ACTIVITY_PRIORITY_MAX}.`,
+        max: ACTIVITY_PRIORITY_MAX,
+        required: true,
+        options: ACTIVITY_PRIORITIES,
+      },
+    ],
+  },
 ];
 
 export default function ActivityVibeForm({
@@ -101,7 +118,7 @@ export default function ActivityVibeForm({
   useEffect(() => {
     supabase
       .from("profiles")
-      .select("activities, activity_skills, activity_social, activity_intensity, activity_vibe, activity_dealbreakers, activity_one_liner")
+      .select("activities, activity_skills, activity_social, activity_intensity, activity_vibe, activity_dealbreakers, activity_one_liner, activity_priorities")
       .eq("id", userId)
       .maybeSingle()
       .then(({ data }) => {
@@ -113,6 +130,7 @@ export default function ActivityVibeForm({
           activity_vibe: data?.activity_vibe ?? [],
           activity_dealbreakers: data?.activity_dealbreakers ?? [],
           activity_one_liner: data?.activity_one_liner ?? "",
+          activity_priorities: data?.activity_priorities ?? [],
         });
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -131,6 +149,7 @@ export default function ActivityVibeForm({
         activity_vibe: a.activity_vibe ?? [],
         activity_dealbreakers: a.activity_dealbreakers ?? [],
         activity_one_liner: a.activity_one_liner ?? "",
+        activity_priorities: a.activity_priorities ?? [],
       })
       .eq("id", userId);
     if (error) {
@@ -154,6 +173,7 @@ export default function ActivityVibeForm({
         initial={initial}
         submitting={saving}
         finishLabel="Save activity vibe"
+        flat
         onComplete={complete}
         onClose={onClose}
       />

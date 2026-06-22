@@ -72,12 +72,30 @@ function fieldComplete(f: WizardField, ans: WizardAnswers): boolean {
   return true; // sliders / skills always have a value
 }
 
+// Small "how to answer" line shown under the kicker in one-question-per-screen
+// mode (e.g. "Tap one", "Pick up to 3", "Drag the slider").
+function mechanicLabel(f: WizardField): string {
+  switch (f.type) {
+    case "select":
+      return "Tap one";
+    case "multi":
+      return f.max ? `Pick up to ${f.max}` : "Pick all that apply";
+    case "slider":
+      return "Drag the slider";
+    case "skills":
+      return "Rate yourself by category";
+    case "text":
+      return "One line";
+  }
+}
+
 export default function Wizard({
   title,
   pages,
   initial,
   submitting,
   finishLabel = "Finish",
+  flat = false,
   onComplete,
   onClose,
 }: {
@@ -86,13 +104,18 @@ export default function Wizard({
   initial?: WizardAnswers;
   submitting?: boolean;
   finishLabel?: string;
+  // One field per screen (matches the onboarding screenshots). When false, the
+  // original grouped layout (several fields per page) is used.
+  flat?: boolean;
   onComplete: (answers: WizardAnswers) => void;
   onClose?: () => void;
 }) {
   const [p, setP] = useState(0);
   const [ans, setAns] = useState<WizardAnswers>(initial ?? {});
-  const page = pages[p];
-  const n = pages.length;
+
+  // In flat mode every field is its own step; otherwise we step page by page.
+  const steps: WizardField[] | null = flat ? pages.flatMap((pg) => pg.fields) : null;
+  const n = steps ? steps.length : pages.length;
   const pct = Math.round(((p + 1) / n) * 100);
   const last = p === n - 1;
 
@@ -107,29 +130,78 @@ export default function Wizard({
     if (p > 0) setP(p - 1);
   }
 
+  const headerBar = (
+    <div className="flex items-center gap-3 px-5 pb-2 pt-5">
+      {p > 0 ? (
+        <button onClick={back} aria-label="Back" className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-navy bg-white text-navy">
+          <ChevronLeft size={18} />
+        </button>
+      ) : (
+        <span className="h-9 w-9" />
+      )}
+      <div className="h-3 flex-1 overflow-hidden rounded-full border-2 border-navy bg-white">
+        <div className="h-full rounded-full bg-flockie-coral transition-all" style={{ width: `${pct}%` }} />
+      </div>
+      {onClose ? (
+        <button onClick={onClose} aria-label="Close" className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-navy bg-white text-navy">
+          <X size={18} />
+        </button>
+      ) : (
+        <span className="h-9 w-9" />
+      )}
+    </div>
+  );
+
+  // ── One question per screen ────────────────────────────────────────────────
+  if (steps) {
+    const field = steps[p];
+    const canContinue = fieldComplete(field, ans);
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col bg-cream font-nunito">
+        {headerBar}
+        <div className="flex-1 overflow-y-auto px-5 pb-6 pt-6">
+          <div className="mx-auto max-w-md">
+            <p className="font-nunito text-xs font-extrabold uppercase tracking-wide text-flockie-coral">
+              {title ? `${title} · ` : ""}{p + 1} of {n}
+            </p>
+            <p className="mt-1 font-nunito text-sm font-semibold text-navy/45">{mechanicLabel(field)}</p>
+            <h2 className="mt-1.5 font-fredoka text-2xl font-bold leading-tight text-navy">{field.label}</h2>
+            {field.hint && <p className="mt-1.5 font-nunito text-sm font-medium text-navy/55">{field.hint}</p>}
+
+            <div className="mt-6">
+              <Field
+                field={field}
+                value={ans[field.key]}
+                hideLabel
+                onChange={(v) => {
+                  set(field.key, v);
+                  // Single-select advances on tap, like the mockup.
+                  if (field.type === "select" && !last) window.setTimeout(() => setP((cur) => cur + 1), 160);
+                }}
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={next}
+              disabled={!canContinue || submitting}
+              className="mt-9 w-full rounded-full border-2 border-navy bg-navy py-3.5 font-fredoka text-base font-semibold text-white disabled:opacity-40"
+            >
+              {submitting && last ? "Saving…" : last ? finishLabel : "Continue →"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Grouped pages (original layout) ─────────────────────────────────────────
+  const page = pages[p];
   const canContinue = page.fields.every((f) => fieldComplete(f, ans));
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-cream font-nunito">
-      <div className="flex items-center gap-3 px-5 pb-2 pt-5">
-        {p > 0 ? (
-          <button onClick={back} aria-label="Back" className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-navy bg-white text-navy">
-            <ChevronLeft size={18} />
-          </button>
-        ) : (
-          <span className="h-9 w-9" />
-        )}
-        <div className="h-3 flex-1 overflow-hidden rounded-full border-2 border-navy bg-white">
-          <div className="h-full rounded-full bg-flockie-coral transition-all" style={{ width: `${pct}%` }} />
-        </div>
-        {onClose ? (
-          <button onClick={onClose} aria-label="Close" className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-navy bg-white text-navy">
-            <X size={18} />
-          </button>
-        ) : (
-          <span className="h-9 w-9" />
-        )}
-      </div>
+      {headerBar}
 
       <div className="flex-1 overflow-y-auto px-5 pb-6 pt-4">
         <div className="mx-auto max-w-md">
@@ -163,15 +235,23 @@ function Field({
   field,
   value,
   onChange,
+  hideLabel = false,
 }: {
   field: WizardField;
   value: WizardValue | undefined;
   onChange: (v: WizardValue) => void;
+  // In one-question-per-screen mode the label/hint are rendered as the screen
+  // heading by the parent, so the field shouldn't repeat them.
+  hideLabel?: boolean;
 }) {
   return (
     <div>
-      <p className="font-fredoka text-lg font-semibold leading-snug text-navy">{field.label}</p>
-      {field.hint && <p className="mt-0.5 font-nunito text-sm font-medium text-navy/55">{field.hint}</p>}
+      {!hideLabel && (
+        <>
+          <p className="font-fredoka text-lg font-semibold leading-snug text-navy">{field.label}</p>
+          {field.hint && <p className="mt-0.5 font-nunito text-sm font-medium text-navy/55">{field.hint}</p>}
+        </>
+      )}
 
       {field.type === "select" && (
         <div className={`mt-3 ${field.options.length === 2 ? "grid grid-cols-2 gap-3" : "space-y-2.5"}`}>
