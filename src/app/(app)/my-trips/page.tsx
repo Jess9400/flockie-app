@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Plus, Pencil, MapPin, CalendarClock, MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import FlockJoinRequests, { type JoinReq } from "@/components/FlockJoinRequests";
+import DeleteTripButton from "@/components/DeleteTripButton";
 import PageTabs from "@/components/PageTabs";
 
 const TRIP_TABS = [
@@ -147,12 +148,24 @@ export default async function MyTripsPage() {
                   </div>
                 )}
               </div>
-              <Link
-                href={`/match/trip?id=${t.id}`}
-                className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-sm font-bold"
-              >
-                <Pencil size={14} /> Edit
-              </Link>
+              <div className="flex shrink-0 items-center gap-2">
+                <Link
+                  href={`/match/trip?id=${t.id}`}
+                  className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-sm font-bold"
+                >
+                  <Pencil size={14} /> Edit
+                </Link>
+                <DeleteTripButton
+                  tripId={t.id}
+                  label={
+                    t.kind === "activity"
+                      ? (t.title ? `"${t.title}"` : "this activity")
+                      : t.visibility === "public"
+                        ? "this Flock"
+                        : "this trip"
+                  }
+                />
+              </div>
             </div>
             {reqByTrip[t.id]?.length ? (
               <FlockJoinRequests tripId={t.id} requests={reqByTrip[t.id]} dualApproval={coHostTrips.has(t.id)} canRemove />
