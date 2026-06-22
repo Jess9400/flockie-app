@@ -98,7 +98,11 @@ function EmptyState({
   );
 }
 
-export default async function ChatsPage() {
+export default async function ChatsPage({
+  searchParams,
+}: {
+  searchParams: { tab?: string };
+}) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -185,54 +189,90 @@ export default async function ChatsPage() {
   sortRows(buddyRows);
   sortRows(vibeRows);
 
+  // One inbox, two tabs: Travel (1:1 buddy chats) and Events (group Vibe chats).
+  const tab = searchParams.tab === "events" ? "events" : "travel";
+  const travelUnread = buddyRows.filter((r) => r.unread > 0).length;
+  const eventsUnread = vibeRows.filter((r) => r.unread > 0).length;
+
   return (
     <main className="mx-auto w-full max-w-2xl px-5 pb-12 pt-6 font-nunito">
       <h1 className="font-fredoka text-3xl font-bold text-navy">Chats</h1>
       <p className="mt-1 font-nunito text-base font-normal text-navy/70">
-        Your conversations, by type.
+        Your conversations, all in one place.
       </p>
 
-      {/* Travel Buddies */}
-      <section className="mt-8">
-        <h2 className="font-fredoka text-[22px] font-semibold text-navy">Travel Buddies</h2>
-        <p className="font-nunito text-sm font-normal text-navy/60">
-          1:1 chats with your trip matches
-        </p>
-        <div className="mt-3 space-y-3">
-          {buddyRows.length === 0 ? (
-            <EmptyState
-              variant="buddy"
-              title="No travel buddies yet"
-              body="When you match with someone for a trip, your chat will appear here."
-              cta="Find a match"
-              href="/match"
-            />
-          ) : (
-            buddyRows.map(renderRow)
-          )}
-        </div>
-      </section>
+      <div className="mt-5 inline-flex gap-1 rounded-full border-2 border-ink bg-white p-1 text-sm font-bold">
+        <TabLink href="/chats?tab=travel" active={tab === "travel"} label="Travel" count={travelUnread} />
+        <TabLink href="/chats?tab=events" active={tab === "events"} label="Events" count={eventsUnread} />
+      </div>
 
-      {/* Vibe Buddies */}
-      <section className="mt-8">
-        <h2 className="font-fredoka text-[22px] font-semibold text-navy">Vibe Buddies</h2>
-        <p className="font-nunito text-sm font-normal text-navy/60">
-          Group chats from Vibes you joined
-        </p>
-        <div className="mt-3 space-y-3">
-          {vibeRows.length === 0 ? (
-            <EmptyState
-              variant="vibe"
-              title="No Vibe chats yet"
-              body="Join a Vibe to start chatting with vibe-matched people."
-              cta="Browse Vibes"
-              href="/vibes"
-            />
-          ) : (
-            vibeRows.map(renderRow)
-          )}
-        </div>
-      </section>
+      {tab === "travel" ? (
+        <section className="mt-6">
+          <p className="font-nunito text-sm font-normal text-navy/60">
+            1:1 chats with your trip &amp; activity buddies
+          </p>
+          <div className="mt-3 space-y-3">
+            {buddyRows.length === 0 ? (
+              <EmptyState
+                variant="buddy"
+                title="No buddy chats yet"
+                body="When you match 1:1 for a trip or activity, your chat will appear here."
+                cta="Find a Buddy"
+                href="/match"
+              />
+            ) : (
+              buddyRows.map(renderRow)
+            )}
+          </div>
+        </section>
+      ) : (
+        <section className="mt-6">
+          <p className="font-nunito text-sm font-normal text-navy/60">
+            Group chats from Vibes you joined
+          </p>
+          <div className="mt-3 space-y-3">
+            {vibeRows.length === 0 ? (
+              <EmptyState
+                variant="vibe"
+                title="No Vibe chats yet"
+                body="Join a Vibe to start chatting with vibe-matched people."
+                cta="Browse Vibes"
+                href="/vibes"
+              />
+            ) : (
+              vibeRows.map(renderRow)
+            )}
+          </div>
+        </section>
+      )}
     </main>
+  );
+}
+
+function TabLink({
+  href,
+  active,
+  label,
+  count,
+}: {
+  href: string;
+  active: boolean;
+  label: string;
+  count: number;
+}) {
+  return (
+    <Link
+      href={href}
+      className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 transition-colors ${active ? "bg-ink text-white" : "text-ink hover:bg-navy/5"}`}
+    >
+      {label}
+      {count > 0 && (
+        <span
+          className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-extrabold ${active ? "bg-white text-ink" : "bg-flockie-coral text-white"}`}
+        >
+          {count}
+        </span>
+      )}
+    </Link>
   );
 }
