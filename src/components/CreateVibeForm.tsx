@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import ShareVibeButton from "@/components/ShareVibeButton";
+import GenerateCoverButton from "@/components/GenerateCoverButton";
 import {
   VIBE_CATEGORIES,
   EVENT_VIBE_TAGS,
@@ -247,6 +248,14 @@ export default function CreateVibeForm({
           <input ref={photoInput} type="file" accept="image/*" multiple hidden onChange={onPhotos} />
           {uploading && (
             <p className="mt-1 text-sm font-semibold text-flockie-orange">Uploading…</p>
+          )}
+          {photos.length < MAX_PHOTOS && (
+            <GenerateCoverButton
+              userId={userId}
+              prompt={[title, category, city ? `in ${city}` : ""].filter(Boolean).join(", ")}
+              disabled={uploading}
+              onUploaded={(url) => setPhotos((p) => [...p, url].slice(0, MAX_PHOTOS))}
+            />
           )}
         </Field>
       </section>
