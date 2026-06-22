@@ -41,7 +41,7 @@ export default async function MatchPage({
 
   const header = (
     <>
-      <h1 className="text-2xl font-black">Find a buddy</h1>
+      <h1 className="text-2xl font-black">Find a Buddy</h1>
       <p className="mt-1 text-sm font-medium text-muted">
         {isActivity ? (
           <>

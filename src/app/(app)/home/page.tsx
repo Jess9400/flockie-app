@@ -341,7 +341,7 @@ export default async function HomePage({
             className="rounded-3xl border-[3px] border-ink bg-flockie-blue p-5 text-white shadow-[0_5px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-1"
           >
             <p className="text-3xl">🧳</p>
-            <h3 className="mt-2 text-lg font-extrabold">Find a buddy</h3>
+            <h3 className="mt-2 text-lg font-extrabold">Find a Buddy</h3>
             <p className="mt-1 text-sm font-medium text-white/90">
               Swipe vibe-matched people for a trip or an activity in your city.
             </p>
