@@ -131,7 +131,7 @@ export default function Wizard({
   }
 
   const headerBar = (
-    <div className="flex items-center gap-3 px-5 pb-2 pt-5">
+    <div className="mx-auto flex w-full max-w-md items-center gap-3 px-5 pb-2 pt-5 md:max-w-2xl">
       {p > 0 ? (
         <button onClick={back} aria-label="Back" className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-navy bg-white text-navy">
           <ChevronLeft size={18} />
@@ -159,8 +159,8 @@ export default function Wizard({
     return (
       <div className="fixed inset-0 z-50 flex flex-col bg-cream font-nunito">
         {headerBar}
-        <div className="flex-1 overflow-y-auto px-5 pb-6 pt-6">
-          <div className="mx-auto max-w-md">
+        <div className="flex-1 overflow-y-auto px-5 pb-6 pt-6 md:pt-12">
+          <div className="mx-auto max-w-md md:max-w-2xl">
             <p className="font-nunito text-xs font-extrabold uppercase tracking-wide text-flockie-coral">
               {title ? `${title} · ` : ""}{p + 1} of {n}
             </p>
@@ -204,7 +204,7 @@ export default function Wizard({
       {headerBar}
 
       <div className="flex-1 overflow-y-auto px-5 pb-6 pt-4">
-        <div className="mx-auto max-w-md">
+        <div className="mx-auto max-w-md md:max-w-2xl">
           <p className="font-nunito text-xs font-extrabold uppercase tracking-wide text-flockie-coral">
             {title ? `${title} · ` : ""}Step {p + 1} of {n}
           </p>
@@ -374,7 +374,7 @@ function MultiField({
           {g.group && (
             <p className="mb-2 font-nunito text-[11px] font-bold uppercase tracking-wide text-navy/55">{g.group}</p>
           )}
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 gap-2.5 md:grid-cols-3">
             {g.items.map((o) => (
               <Cell key={o.value} o={o} />
             ))}
