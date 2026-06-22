@@ -5,7 +5,7 @@ import ChatRow from "@/components/ChatRow";
 import ChatEmptyArt from "@/components/ChatEmptyArt";
 import { formatChatTime, formatVibeShort } from "@/lib/chat";
 
-type BuddySummary = { chat_id: string; name: string | null; photo: string | null; unread: number };
+type BuddySummary = { chat_id: string; name: string | null; photo: string | null; unread: number; kind?: string };
 type VibeSummary = {
   vibe_id: string;
   chat_id: string;
@@ -27,6 +27,7 @@ type Row = {
   fallback: string;
   fallbackTone: "blue" | "cream";
   sortKey: number;
+  kind: string;
 };
 
 async function latestPerChat(
@@ -66,6 +67,7 @@ function renderRow(r: Row) {
       unread={r.unread}
       fallback={r.fallback}
       fallbackTone={r.fallbackTone}
+      kind={r.kind}
     />
   );
 }
@@ -118,7 +120,7 @@ export default async function ChatsPage({
   const { data: flockChats } = await supabase.rpc("my_flock_chats");
   (flockChats ?? []).forEach((fc: { chat_id: string; name: string | null; photo: string | null }) => {
     if (!buddyList.some((b) => b.chat_id === fc.chat_id)) {
-      buddyList.push({ chat_id: fc.chat_id, name: fc.name, photo: fc.photo, unread: 0 });
+      buddyList.push({ chat_id: fc.chat_id, name: fc.name, photo: fc.photo, unread: 0, kind: "flock" });
     }
   });
 
@@ -157,6 +159,7 @@ export default async function ChatsPage({
       fallback: name[0]?.toUpperCase() ?? "F",
       fallbackTone: "blue",
       sortKey: last ? new Date(last.created_at).getTime() : 0,
+      kind: b.kind ?? "travel_buddy",
     };
   });
 
@@ -174,6 +177,7 @@ export default async function ChatsPage({
       fallback: v.title[0]?.toUpperCase() ?? "🎟️",
       fallbackTone: "cream",
       sortKey: last ? new Date(last.created_at).getTime() : new Date(v.starts_at).getTime(),
+      kind: "vibe",
     };
   });
 
