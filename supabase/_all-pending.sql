@@ -1140,3 +1140,12 @@ grant execute on function public.buddy_pair_score(uuid, uuid) to authenticated;
 
 update public.buddy_matches m
 set score = public.buddy_pair_score(m.user_a, m.user_b);
+
+
+-- ============================================================
+-- trip-cover.sql
+-- ============================================================
+-- Cover image for trips / flocks / activities (uploaded or AI-generated). Run in
+-- the Supabase SQL editor. Safe to re-run.
+alter table public.trips
+  add column if not exists cover_photo text;

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import GenerateCoverButton from "@/components/GenerateCoverButton";
 import { TRIP_VIBES } from "@/lib/vibe-check";
 
 const TYPE_MAX = 3;
@@ -21,6 +22,7 @@ type Trip = {
   budget?: number | null;
   pace?: number | null;
   visibility?: string;
+  cover_photo?: string | null;
 };
 
 // kind: "trip" = 1:1 buddy trip · "activity" = 1:1 activity · "flock" = group trip
@@ -49,8 +51,29 @@ export default function TripForm({
   const [types, setTypes] = useState<string[]>(initial.trip_type ?? []);
   const [budget, setBudget] = useState(initial.budget ?? 3);
   const [pace, setPace] = useState(initial.pace ?? 3);
+  const [cover, setCover] = useState<string | null>(initial.cover_photo ?? null);
+  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const coverInput = useRef<HTMLInputElement>(null);
+
+  async function onCover(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() ?? "jpg";
+      const path = `${userId}/trip-${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+      if (error) throw error;
+      setCover(supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl);
+    } catch {
+      setErr("Photo upload failed.");
+    } finally {
+      setUploading(false);
+      if (coverInput.current) coverInput.current.value = "";
+    }
+  }
 
   const days =
     start && end ? Math.max(0, Math.round((+new Date(end) - +new Date(start)) / 86400000) + 1) : 0;
@@ -86,6 +109,7 @@ export default function TripForm({
       trip_type: types,
       budget,
       pace,
+      cover_photo: cover,
       visibility: isFlock ? "public" : "private",
       status: "active",
     };
@@ -181,6 +205,42 @@ export default function TripForm({
         </div>
       </div>
 
+      <div>
+        <span className="mb-1 block text-sm font-bold">Cover photo (optional)</span>
+        {cover ? (
+          <div className="relative aspect-[16/9] overflow-hidden rounded-2xl border-2 border-ink">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={cover} alt="" className="h-full w-full object-cover" />
+            <button
+              type="button"
+              onClick={() => setCover(null)}
+              className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-ink text-xs font-bold text-white"
+              aria-label="Remove cover"
+            >
+              ✕
+            </button>
+          </div>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={() => coverInput.current?.click()}
+              disabled={uploading}
+              className="flex aspect-[16/9] w-full items-center justify-center rounded-2xl border-2 border-dashed border-ink/40 text-sm font-bold text-muted disabled:opacity-50"
+            >
+              {uploading ? "Uploading…" : "+ Upload a cover"}
+            </button>
+            <GenerateCoverButton
+              userId={userId}
+              prompt={[isActivity ? title : "", dest1, dest2, dest3, ...types].filter(Boolean).join(", ")}
+              disabled={uploading}
+              onUploaded={(url) => setCover(url)}
+            />
+          </>
+        )}
+        <input ref={coverInput} type="file" accept="image/*" hidden onChange={onCover} />
+      </div>
+
       <label className="block">
         <span className="mb-1 block text-sm font-bold">Budget: {BUDGET_LABELS[budget - 1]}</span>
         <input type="range" min={1} max={5} value={budget} onChange={(e) => setBudget(Number(e.target.value))} className="w-full accent-flockie-orange" />
@@ -193,7 +253,7 @@ export default function TripForm({
       <p className="text-xs font-medium text-muted">Pre-filled from your profile — tweak anything.</p>
       {err && <p className="text-center text-sm font-bold text-flockie-orange">{err}</p>}
 
-      <button type="submit" disabled={saving}
+      <button type="submit" disabled={saving || uploading}
         className="w-full rounded-full border-2 border-ink bg-flockie-orange py-3.5 font-bold text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50">
         {saving
           ? "Saving…"

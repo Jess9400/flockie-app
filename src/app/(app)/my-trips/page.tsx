@@ -28,7 +28,7 @@ export default async function MyTripsPage() {
 
   const { data: trips } = await supabase
     .from("trips")
-    .select("id, kind, title, destination, destinations, start_date, end_date, group_size, trip_type, visibility, status, created_at")
+    .select("id, kind, title, destination, destinations, start_date, end_date, group_size, trip_type, visibility, status, created_at, cover_photo")
     .eq("user_id", user!.id)
     .order("created_at", { ascending: false });
 
@@ -104,8 +104,13 @@ export default async function MyTripsPage() {
             key={t.id}
             className="rounded-2xl border-2 border-ink bg-white p-4 shadow-[0_3px_0_0_rgba(26,26,26,1)]"
           >
-            <div className="flex items-start justify-between">
-              <div className="min-w-0">
+            <div className="flex items-start justify-between gap-3">
+              {t.cover_photo && (
+                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 border-ink">
+                  <Image src={t.cover_photo} alt="" fill sizes="64px" className="object-cover" />
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <span
                     className={`rounded-full border-2 border-ink px-2 py-0.5 text-[10px] font-extrabold uppercase ${

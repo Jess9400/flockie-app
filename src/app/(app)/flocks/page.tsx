@@ -16,7 +16,7 @@ export default async function FlocksPage() {
 
   const { data: trips } = await supabase
     .from("trips")
-    .select("id, user_id, destination, destinations, start_date, end_date, group_size, trip_type, budget, pace")
+    .select("id, user_id, destination, destinations, start_date, end_date, group_size, trip_type, budget, pace, cover_photo")
     .eq("visibility", "public")
     .eq("kind", "trip")
     .eq("status", "active")
@@ -100,8 +100,14 @@ export default async function FlocksPage() {
           return (
             <div
               key={t.id}
-              className="rounded-2xl border-2 border-ink bg-white p-4 shadow-[0_3px_0_0_rgba(26,26,26,1)]"
+              className="overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-[0_3px_0_0_rgba(26,26,26,1)]"
             >
+              {t.cover_photo && (
+                <div className="relative aspect-[16/6] w-full border-b-2 border-ink">
+                  <Image src={t.cover_photo} alt="" fill sizes="(max-width:768px) 100vw, 600px" className="object-cover" />
+                </div>
+              )}
+              <div className="p-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   {members[0].photo ? (
@@ -179,6 +185,7 @@ export default async function FlocksPage() {
 
               <div className="mt-3">
                 <FlockRequestButton tripId={t.id} requested={requested.has(t.id)} />
+              </div>
               </div>
             </div>
           );

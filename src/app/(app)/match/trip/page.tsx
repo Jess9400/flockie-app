@@ -32,7 +32,7 @@ export default async function TripPage({
   const { data: trip } = searchParams.id
     ? await supabase
         .from("trips")
-        .select("id, destination, destinations, title, kind, start_date, end_date, group_size, trip_type, budget, pace, visibility")
+        .select("id, destination, destinations, title, kind, start_date, end_date, group_size, trip_type, budget, pace, visibility, cover_photo")
         .eq("user_id", user!.id)
         .eq("id", searchParams.id)
         .maybeSingle()
