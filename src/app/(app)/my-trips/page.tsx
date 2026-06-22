@@ -8,6 +8,7 @@ import PageTabs from "@/components/PageTabs";
 
 const TRIP_TABS = [
   { href: "/my-trips", label: "My Trips" },
+  { href: "/my-activities", label: "My Activities" },
   { href: "/deals", label: "Deals" },
 ];
 
@@ -31,6 +32,7 @@ export default async function MyTripsPage() {
     .from("trips")
     .select("id, kind, title, destination, destinations, start_date, end_date, group_size, trip_type, visibility, status, created_at, cover_photo")
     .eq("user_id", user!.id)
+    .neq("kind", "activity") // activities live under the My Activities tab
     .order("created_at", { ascending: false });
 
   const { data: matches } = await supabase.rpc("my_matches");
