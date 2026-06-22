@@ -104,8 +104,7 @@ begin
             +abs(p.budget-h.budget)+abs(p.nightlife-h.nightlife)+abs(p.adventurousness-h.adventurousness))::float/24) end)
       + 0.10 * 0.8
       + 0.05 * (case when v.diversity_floor_enabled then random() else 0 end)
-      ) * (case when p.ghost_penalty_until is not null and p.ghost_penalty_until > now() then 0.85 else 1 end)
-      * 100 as score
+      ) * 100 as score
     from public.vibe_interests vi
     join public.profiles p on p.id = vi.user_id
     left join public.profiles h on h.id = v.host_id

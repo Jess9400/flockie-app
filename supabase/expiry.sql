@@ -50,8 +50,6 @@ begin
       and invitation_expires_at < now()
   loop
     update public.vibe_interests set status = 'ghosted' where id = r.id;
-    update public.profiles set ghost_penalty_until = now() + interval '14 days'
-      where id = r.user_id;
     aff := array_append(aff, r.vibe_id);
   end loop;
 
