@@ -3,6 +3,12 @@ import Image from "next/image";
 import { Plus, Pencil, MapPin, CalendarClock, MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import FlockJoinRequests, { type JoinReq } from "@/components/FlockJoinRequests";
+import PageTabs from "@/components/PageTabs";
+
+const TRIP_TABS = [
+  { href: "/my-trips", label: "My Trips" },
+  { href: "/deals", label: "Deals" },
+];
 
 type Match = {
   chat_id: string;
@@ -72,6 +78,7 @@ export default async function MyTripsPage() {
 
   return (
     <main className="px-5 pb-10 pt-6">
+      <PageTabs tabs={TRIP_TABS} />
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-black">My Trips</h1>
         <Link

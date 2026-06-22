@@ -3,7 +3,13 @@ import Image from "next/image";
 import { Plus, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import ShareVibeButton from "@/components/ShareVibeButton";
+import PageTabs from "@/components/PageTabs";
 import { formatVibeWhen } from "@/lib/vibes";
+
+const VIBE_TABS = [
+  { href: "/vibes", label: "Vibes" },
+  { href: "/my-vibes", label: "My Vibes" },
+];
 
 const STATUS_STYLE: Record<string, string> = {
   open: "bg-flockie-blue text-white",
@@ -39,6 +45,7 @@ export default async function MyVibesPage() {
 
   return (
     <main className="px-5 pb-10 pt-6">
+      <PageTabs tabs={VIBE_TABS} />
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-black">My Vibes</h1>
         <Link

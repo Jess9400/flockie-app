@@ -4,7 +4,13 @@ import { createClient } from "@/lib/supabase/server";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
 import VibeSearch from "@/components/VibeSearch";
 import LocationPrompt from "@/components/LocationPrompt";
+import PageTabs from "@/components/PageTabs";
 import { loadVibeMatch } from "@/lib/vibe-stats";
+
+const VIBE_TABS = [
+  { href: "/vibes", label: "Vibes" },
+  { href: "/my-vibes", label: "My Vibes" },
+];
 import type { InterestStatus } from "@/lib/vibes";
 
 export default async function VibesPage({
@@ -93,6 +99,7 @@ export default async function VibesPage({
 
   return (
     <main className="px-5 pt-6">
+      <PageTabs tabs={VIBE_TABS} />
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-black">Vibes</h1>
         <Link

@@ -5,21 +5,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home, Compass, Map, Sparkles, CalendarCheck, MessageCircle, Tag, User, Bell, Menu, X,
+  Home, Compass, Map, Sparkles, MessageCircle, User, Bell, Menu, X,
 } from "lucide-react";
 import Footer from "@/components/Footer";
 import SignOutButton from "@/components/SignOutButton";
 import { createClient } from "@/lib/supabase/client";
 
+// My Vibes now lives as a tab inside Vibes, and Deals as a tab inside My Trips,
+// so they're not top-level nav. Notifications (Inbox) moved to the top-right bell.
 const NAV = [
   { href: "/home", label: "Home", icon: Home },
   { href: "/vibes", label: "Vibes", icon: Sparkles },
-  { href: "/my-vibes", label: "My Vibes", icon: CalendarCheck },
-  { href: "/match", label: "Find a match", icon: Compass },
+  { href: "/match", label: "Find a Buddy", icon: Compass },
   { href: "/my-trips", label: "My Trips", icon: Map },
   { href: "/chats", label: "Chats", icon: MessageCircle },
-  { href: "/inbox", label: "Inbox", icon: Bell, badge: true },
-  { href: "/deals", label: "Deals", icon: Tag },
 ];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
@@ -74,11 +73,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className={navItemCls(item.href)}>
             <Icon size={18} />
             <span className="flex-1">{item.label}</span>
-            {item.badge && unread > 0 && (
-              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-flockie-coral px-1.5 text-xs font-bold text-white">
-                {unread}
-              </span>
-            )}
           </Link>
         );
       })}
@@ -104,6 +98,18 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="flex items-center gap-2">
+          <Link
+            href="/inbox"
+            aria-label="Notifications"
+            className="relative flex h-9 w-9 items-center justify-center rounded-full border-2 border-ink bg-white"
+          >
+            <Bell size={18} />
+            {unread > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-flockie-coral px-1 text-[10px] font-bold text-white">
+                {unread > 9 ? "9+" : unread}
+              </span>
+            )}
+          </Link>
           <div className="relative">
             <button onClick={() => setMenu((v) => !v)} className="flex items-center gap-2 rounded-full border-2 border-ink bg-white py-1 pl-1 pr-3">
               {photo ? (
