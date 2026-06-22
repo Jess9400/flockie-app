@@ -50,9 +50,8 @@ export default async function HomePage() {
   const firstName = (profile?.display_name?.trim() || "there").split(" ")[0];
   const homeCity = profile?.home_city?.trim() || null;
   const nowIso = new Date().toISOString();
-  const in48Iso = new Date(Date.now() + 48 * 3600 * 1000).toISOString();
 
-  // ── Section 3: Happening near you (next 48h, in your city) ─────────────
+  // ── Section 3: Upcoming near you (any future date, in your city) ────────
   let nearQuery = supabase
     .from("vibes")
     .select(
@@ -60,7 +59,6 @@ export default async function HomePage() {
     )
     .in("status", ["open", "ranking", "finalized"])
     .gte("starts_at", nowIso)
-    .lte("starts_at", in48Iso)
     .order("starts_at", { ascending: true })
     .limit(10);
   if (homeCity) nearQuery = nearQuery.ilike("city", homeCity);
@@ -161,7 +159,7 @@ export default async function HomePage() {
           <div>
             <h2 className="text-[22px] font-extrabold sm:text-[28px]">Happening near you</h2>
             <p className="mt-0.5 font-bold text-white/80">
-              {homeCity ? `Next 48 hours in ${homeCity}` : "In the next 48 hours"}
+              {homeCity ? `Upcoming in ${homeCity}` : "Upcoming Vibes"}
             </p>
           </div>
           <Link
@@ -174,7 +172,7 @@ export default async function HomePage() {
 
         {near.length === 0 ? (
           <div className="mt-4 rounded-2xl border-2 border-white/40 bg-white/10 p-6 text-center">
-            <p className="font-bold">Nothing in the next 48 hours{homeCity ? ` in ${homeCity}` : ""} yet.</p>
+            <p className="font-bold">No upcoming Vibes{homeCity ? ` in ${homeCity}` : ""} yet.</p>
             <p className="mt-1 text-sm font-medium text-white/80">
               Be the one who starts something.
             </p>
