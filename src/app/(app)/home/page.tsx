@@ -35,7 +35,11 @@ async function loadHostsAndCounts(
   return { hosts, counts };
 }
 
-export default async function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: { when?: string };
+}) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -50,8 +54,11 @@ export default async function HomePage() {
   const firstName = (profile?.display_name?.trim() || "there").split(" ")[0];
   const homeCity = profile?.home_city?.trim() || null;
   const nowIso = new Date().toISOString();
+  const timing = searchParams.when === "24" ? "24" : searchParams.when === "48" ? "48" : "all";
+  const cutoffHours = timing === "24" ? 24 : timing === "48" ? 48 : null;
+  const timingLabel = timing === "24" ? "in the next 24 hours" : timing === "48" ? "in the next 48 hours" : "upcoming";
 
-  // ── Section 3: Upcoming near you (any future date, in your city) ────────
+  // ── Section 3: Upcoming near you, optionally filtered by timing ─────────
   let nearQuery = supabase
     .from("vibes")
     .select(
@@ -61,6 +68,12 @@ export default async function HomePage() {
     .gte("starts_at", nowIso)
     .order("starts_at", { ascending: true })
     .limit(10);
+  if (cutoffHours) {
+    nearQuery = nearQuery.lte(
+      "starts_at",
+      new Date(Date.now() + cutoffHours * 3600 * 1000).toISOString()
+    );
+  }
   if (homeCity) nearQuery = nearQuery.ilike("city", homeCity);
   const { data: nearRaw } = await nearQuery;
   const near = nearRaw ?? [];
@@ -159,7 +172,7 @@ export default async function HomePage() {
           <div>
             <h2 className="text-[22px] font-extrabold sm:text-[28px]">Happening near you</h2>
             <p className="mt-0.5 font-bold text-white/80">
-              {homeCity ? `Upcoming in ${homeCity}` : "Upcoming Vibes"}
+              {homeCity ? `${timingLabel} in ${homeCity}` : `${timingLabel} Vibes`}
             </p>
           </div>
           <Link
@@ -170,9 +183,27 @@ export default async function HomePage() {
           </Link>
         </div>
 
+        <div className="mt-4 grid grid-cols-3 gap-1 rounded-full border-2 border-ink bg-white/15 p-1 text-center text-xs font-bold">
+          {[
+            { value: "all", label: "Any time", href: "/home" },
+            { value: "24", label: "Next 24h", href: "/home?when=24" },
+            { value: "48", label: "Next 48h", href: "/home?when=48" },
+          ].map((option) => (
+            <Link
+              key={option.value}
+              href={option.href}
+              className={`rounded-full px-2 py-2 transition-colors ${
+                timing === option.value ? "bg-white text-ink" : "text-white hover:bg-white/10"
+              }`}
+            >
+              {option.label}
+            </Link>
+          ))}
+        </div>
+
         {near.length === 0 ? (
           <div className="mt-4 rounded-2xl border-2 border-white/40 bg-white/10 p-6 text-center">
-            <p className="font-bold">No upcoming Vibes{homeCity ? ` in ${homeCity}` : ""} yet.</p>
+            <p className="font-bold">No Vibes {timingLabel}{homeCity ? ` in ${homeCity}` : ""} yet.</p>
             <p className="mt-1 text-sm font-medium text-white/80">
               Be the one who starts something.
             </p>
