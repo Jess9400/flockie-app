@@ -121,7 +121,7 @@ export default async function MyTripsPage() {
                         ? "bg-flockie-blue text-white"
                         : t.visibility === "public"
                           ? "bg-flockie-orange text-white"
-                          : "bg-cream text-ink"
+                          : "bg-navy text-white"
                     }`}
                   >
                     {t.kind === "activity" ? "Activity" : t.visibility === "public" ? "Flock" : "Trip"}
