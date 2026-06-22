@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import InviteFriendsButton from "@/components/InviteFriendsButton";
 import ArchetypeBadge from "@/components/ArchetypeBadge";
+import CompleteVibeCard from "@/components/onboarding/CompleteVibeCard";
 import { ARCHETYPES } from "@/lib/onboarding/archetypes";
 import {
   closeSecondArchetype,
@@ -39,18 +40,6 @@ export default async function VibeRevealPage() {
     ? ARCHETYPES[secondDimension]
     : null;
 
-  // Optional "Complete your Vibe profile" path. Jumps to the first form the
-  // user hasn't filled yet (trip → activity → share popup). Each page skips
-  // itself if already done, so this stays correct even when a form was already
-  // completed just-in-time (posting a trip / creating a Vibe).
-  const completeHref = !profile.trip_prefs_complete
-    ? "/onboarding/trip-vibe"
-    : !profile.activity_prefs_complete
-      ? "/onboarding/activity-vibe"
-      : "/profile?vibe_done=1";
-  const vibeProfileComplete =
-    !!profile.trip_prefs_complete && !!profile.activity_prefs_complete;
-
   const nearby = profile.home_city
     ? await getNearbyVibes(profile.home_city)
     : [];
@@ -80,18 +69,10 @@ export default async function VibeRevealPage() {
       </div>
 
       <div className="-mt-1.5 flex flex-col gap-4 rounded-t-3xl bg-cream px-5 pb-6 pt-5">
-        <section className="rounded-2xl border border-[#F3E2BE] bg-[#FFF6E8] p-3.5">
-          <div className="flex items-start gap-2.5">
-            <span className="text-[19px]">🔍</span>
-            <p className="text-[12px] font-semibold leading-relaxed text-[#8A6A1E]"><b className="text-ink">{confidencePercent}% confident so far.</b> Your vibe sharpens every time you plan a trip or join something — no extra quiz needed.</p>
-          </div>
-          <Link
-            href={completeHref}
-            className="mt-3 block w-full rounded-2xl border-2 border-ink border-b-[5px] bg-navy py-3.5 text-center text-[15px] font-extrabold text-white"
-          >
-            {vibeProfileComplete ? "Share your Vibe →" : "Complete your Vibe profile →"}
-          </Link>
-        </section>
+        <CompleteVibeCard
+          tripDone={!!profile.trip_prefs_complete}
+          activityDone={!!profile.activity_prefs_complete}
+        />
 
         <Section title="How you're wired">
           <div className="rounded-2xl border-2 border-ink/10 bg-white p-3.5">
