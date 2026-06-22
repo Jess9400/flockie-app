@@ -7,6 +7,7 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/home";
+  const referral = searchParams.get("ref");
 
   if (code) {
     const supabase = await createClient();
@@ -16,6 +17,10 @@ export async function GET(request: Request) {
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
+        if (referral) {
+          await supabase.rpc("claim_referral", { p_inviter: referral });
+        }
+
         const { data: profile } = await supabase
           .from("profiles")
           .select("onboarding_complete, vibe_completed_at")

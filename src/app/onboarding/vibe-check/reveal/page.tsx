@@ -106,7 +106,12 @@ export default async function VibeRevealPage() {
                     <p className="mb-1 text-[13.5px] font-extrabold">Nobody&apos;s matched this vibe here yet</p>
                     <p className="mb-3 text-[12px] font-semibold leading-relaxed text-muted">Will your BFF match your vibe? Invite them and find out!</p>
                     <div className="flex justify-center">
-                      <InviteFriendsButton city={profile.home_city ?? undefined} label="Invite your BFF" />
+                      <InviteFriendsButton
+                        inviterId={user.id}
+                        inviterName={profile.display_name ?? undefined}
+                        city={profile.home_city ?? undefined}
+                        label="Invite your BFF"
+                      />
                     </div>
                   </div>
                 ) : (

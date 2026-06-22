@@ -3,12 +3,23 @@
 import { useState } from "react";
 import { Share2 } from "lucide-react";
 
-export default function InviteFriendsButton({ city, label }: { city?: string; label?: string }) {
+export default function InviteFriendsButton({
+  inviterId,
+  inviterName,
+  city,
+  label,
+}: {
+  inviterId: string;
+  inviterName?: string;
+  city?: string;
+  label?: string;
+}) {
   const [copied, setCopied] = useState(false);
-  const url = "https://findflockie.com";
+  const url = `https://app.findflockie.com/join/${inviterId}`;
+  const firstName = inviterName?.split(" ")[0];
   const text = city
-    ? `I'm on Flockie looking for travel buddies${city ? ` in ${city}` : ""} — join me and let's unlock matching here!`
-    : "I'm on Flockie — find people to travel and do things with. Join me!";
+    ? `${firstName ? `${firstName} invited you` : "You're invited"} to Flockie — join me and find people for trips and activities in ${city}!`
+    : `${firstName ? `${firstName} invited you` : "You're invited"} to Flockie — find people to travel and do things with!`;
 
   async function invite() {
     if (typeof navigator !== "undefined" && navigator.share) {
