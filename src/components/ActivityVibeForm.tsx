@@ -6,16 +6,16 @@ import { createClient } from "@/lib/supabase/client";
 import Wizard, { type WizardAnswers, type WizardPage } from "@/components/Wizard";
 import {
   ACTIVITY_CATEGORIES,
-  SKILL_CATEGORIES,
-  SKILL_SCALE,
-  ACTIVITY_SOCIAL_SCALE,
-  INTENSITY_SCALE,
   ACTIVITY_VIBES,
   ACTIVITY_VIBE_MAX,
   ACTIVITY_DEALBREAKERS,
   ACTIVITY_PRIORITIES,
   ACTIVITY_PRIORITY_MAX,
-  ONE_LINER_MAX,
+  ACTIVITY_SOCIAL_CHOICES,
+  ACTIVITY_INTENSITY_CHOICES,
+  SOCIAL_STYLE_CHOICES,
+  MOTIVATION_CHOICES,
+  INITIATOR_CHOICES,
 } from "@/lib/vibe-check";
 
 const ACTIVITY_VIBE_EMOJI: Record<string, string> = {
@@ -28,36 +28,48 @@ const ACTIVITY_VIBE_EMOJI: Record<string, string> = {
   "Educational / structured": "📚",
 };
 
+// 1..5 scale columns answered via single-tap cards (stored as ints).
+const INT_KEYS = ["activity_social", "activity_intensity", "social_style"] as const;
+// Category-token columns stored as text.
+const TEXT_KEYS = ["activity_motivation", "initiator"] as const;
+
 const PAGES: WizardPage[] = [
   {
-    title: "What you're into",
-    subtitle: "Pick all that apply, then rate yourself by category.",
+    title: "",
     fields: [
       {
         type: "multi",
         key: "activities",
         label: "What do you actually do?",
+        hint: "Your top few — no need to pick everything.",
+        max: 6,
         required: true,
         options: ACTIVITY_CATEGORIES.flatMap((cat) =>
           cat.items.map((a) => ({ value: a, label: a, group: cat.group })),
         ),
       },
-      {
-        type: "skills",
-        key: "activity_skills",
-        label: "Your skill level",
-        hint: "Roughly, by category.",
-        categories: SKILL_CATEGORIES,
-        labels: SKILL_SCALE,
-      },
     ],
   },
   {
-    title: "How you like it",
-    subtitle: "Your style when you show up.",
+    title: "",
     fields: [
-      { type: "slider", key: "activity_social", label: "Who do you like to do things with?", left: "Solo", right: "Big group", labels: ACTIVITY_SOCIAL_SCALE },
-      { type: "slider", key: "activity_intensity", label: "How hard do you want to push?", left: "Pure leisure", right: "All in", labels: INTENSITY_SCALE },
+      {
+        type: "select",
+        key: "activity_motivation",
+        label: "What pulls you out of the house?",
+        hint: "The thing you're really after when you go to a local plan.",
+        required: true,
+        options: MOTIVATION_CHOICES,
+      },
+    ],
+  },
+  { title: "", fields: [{ type: "select", key: "activity_social", label: "Ideal group size for a meetup?", required: true, options: ACTIVITY_SOCIAL_CHOICES }] },
+  { title: "", fields: [{ type: "select", key: "social_style", label: "Walking into a room of strangers, you…", required: true, options: SOCIAL_STYLE_CHOICES }] },
+  { title: "", fields: [{ type: "select", key: "activity_intensity", label: "How hard do you want to push?", required: true, options: ACTIVITY_INTENSITY_CHOICES }] },
+  { title: "", fields: [{ type: "select", key: "initiator", label: "Are you more the one who…", required: true, options: INITIATOR_CHOICES }] },
+  {
+    title: "",
+    fields: [
       {
         type: "multi",
         key: "activity_vibe",
@@ -66,24 +78,22 @@ const PAGES: WizardPage[] = [
         max: ACTIVITY_VIBE_MAX,
         options: ACTIVITY_VIBES.map((v) => ({ value: v, label: v, emoji: ACTIVITY_VIBE_EMOJI[v] })),
       },
+    ],
+  },
+  {
+    title: "",
+    fields: [
       {
         type: "multi",
         key: "activity_dealbreakers",
-        label: "Hard preferences",
+        label: "Any hard preferences?",
+        hint: "Used as filters. Skip if none.",
         options: ACTIVITY_DEALBREAKERS.map((v) => ({ value: v, label: v })),
-      },
-      {
-        type: "text",
-        key: "activity_one_liner",
-        label: "Finish: “At an activity, I'm the kind of person who…”",
-        placeholder: "…",
-        max: ONE_LINER_MAX,
       },
     ],
   },
   {
-    title: "What matters most",
-    subtitle: "We'll weight your meetup matches toward these.",
+    title: "",
     fields: [
       {
         type: "multi",
@@ -118,18 +128,20 @@ export default function ActivityVibeForm({
   useEffect(() => {
     supabase
       .from("profiles")
-      .select("activities, activity_skills, activity_social, activity_intensity, activity_vibe, activity_dealbreakers, activity_one_liner, activity_priorities")
+      .select("activities, activity_social, activity_intensity, social_style, activity_motivation, initiator, activity_vibe, activity_dealbreakers, activity_priorities")
       .eq("id", userId)
       .maybeSingle()
       .then(({ data }) => {
+        const ints = Object.fromEntries(
+          INT_KEYS.map((k) => [k, data?.[k] != null ? String(data[k]) : ""]),
+        );
+        const texts = Object.fromEntries(TEXT_KEYS.map((k) => [k, data?.[k] ?? ""]));
         setInitial({
+          ...ints,
+          ...texts,
           activities: data?.activities ?? [],
-          activity_skills: data?.activity_skills ?? {},
-          activity_social: data?.activity_social ?? 3,
-          activity_intensity: data?.activity_intensity ?? 3,
           activity_vibe: data?.activity_vibe ?? [],
           activity_dealbreakers: data?.activity_dealbreakers ?? [],
-          activity_one_liner: data?.activity_one_liner ?? "",
           activity_priorities: data?.activity_priorities ?? [],
         });
       });
@@ -139,16 +151,18 @@ export default function ActivityVibeForm({
   async function complete(a: WizardAnswers) {
     setSaving(true);
     setErr(null);
+    const toInt = (v: unknown) => (v === "" || v == null ? null : Number(v));
     const { error } = await supabase
       .from("profiles")
       .update({
         activities: a.activities ?? [],
-        activity_skills: a.activity_skills ?? {},
-        activity_social: a.activity_social,
-        activity_intensity: a.activity_intensity,
+        activity_social: toInt(a.activity_social),
+        activity_intensity: toInt(a.activity_intensity),
+        social_style: toInt(a.social_style),
+        activity_motivation: (a.activity_motivation as string) || null,
+        initiator: (a.initiator as string) || null,
         activity_vibe: a.activity_vibe ?? [],
         activity_dealbreakers: a.activity_dealbreakers ?? [],
-        activity_one_liner: a.activity_one_liner ?? "",
         activity_priorities: a.activity_priorities ?? [],
       })
       .eq("id", userId);
@@ -168,11 +182,11 @@ export default function ActivityVibeForm({
   return (
     <>
       <Wizard
-        title="Activity vibe"
+        title="Event vibe"
         pages={PAGES}
         initial={initial}
         submitting={saving}
-        finishLabel="Save activity vibe"
+        finishLabel="Save event vibe"
         flat
         onComplete={complete}
         onClose={onClose}

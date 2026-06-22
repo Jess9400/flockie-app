@@ -5,26 +5,18 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Wizard, { type WizardAnswers, type WizardPage } from "@/components/Wizard";
 import {
-  SLIDERS,
   TRIP_VIBES,
-  TRAVEL_STYLES,
   DEALBREAKERS,
   TRIP_PRIORITIES,
   PRIORITY_MAX,
   MAX_TAGS,
-  ONE_LINER_MAX,
-  type SliderKey,
+  PACE_CHOICES,
+  BUDGET_CHOICES,
+  SOCIAL_TRAVEL_CHOICES,
+  PLANNING_CHOICES,
+  NIGHTLIFE_CHOICES,
+  ADVENTURE_CHOICES,
 } from "@/lib/vibe-check";
-
-// Short end-labels for each slider (the long mid text comes from SLIDERS.scale).
-const ENDS: Record<SliderKey, [string, string]> = {
-  planning: ["Wing it", "Plan it"],
-  pace: ["Slow", "Packed"],
-  social_energy: ["Need solo time", "Always social"],
-  budget: ["Budget", "Luxury"],
-  nightlife: ["Early nights", "All night"],
-  adventurousness: ["Familiar", "Adventurous"],
-};
 
 const TRIP_VIBE_EMOJI: Record<string, string> = {
   "Chill / wellness / recharge": "🧘",
@@ -39,65 +31,44 @@ const TRIP_VIBE_EMOJI: Record<string, string> = {
   "Spiritual / retreat": "✨",
 };
 
-function slider(key: SliderKey) {
-  const s = SLIDERS.find((x) => x.key === key)!;
-  return {
-    type: "slider" as const,
-    key,
-    label: s.prompt,
-    left: ENDS[key][0],
-    right: ENDS[key][1],
-    labels: s.scale,
-  };
-}
+// 1..5 scale columns answered via single-tap cards (stored as ints).
+const INT_KEYS = ["pace", "budget", "social_energy", "planning", "nightlife", "adventurousness"] as const;
 
 const PAGES: WizardPage[] = [
-  { title: "How you travel", subtitle: "Plans vs. spontaneity, and your daily rhythm.", fields: [slider("planning"), slider("pace")] },
-  { title: "Energy & budget", subtitle: "How social you run, and how you like to spend.", fields: [slider("social_energy"), slider("budget")] },
-  { title: "Nights & the unknown", subtitle: "Your evenings, and your appetite for the unfamiliar.", fields: [slider("nightlife"), slider("adventurousness")] },
+  { title: "", fields: [{ type: "select", key: "pace", label: "Your natural trip pace?", required: true, options: PACE_CHOICES }] },
+  { title: "", fields: [{ type: "select", key: "budget", label: "Your budget vibe on a trip?", required: true, options: BUDGET_CHOICES }] },
+  { title: "", fields: [{ type: "select", key: "social_energy", label: "Who do you most want to travel with?", required: true, options: SOCIAL_TRAVEL_CHOICES }] },
+  { title: "", fields: [{ type: "select", key: "planning", label: "On a trip, are you a planner?", required: true, options: PLANNING_CHOICES }] },
+  { title: "", fields: [{ type: "select", key: "nightlife", label: "Your evenings on a trip?", required: true, options: NIGHTLIFE_CHOICES }] },
+  { title: "", fields: [{ type: "select", key: "adventurousness", label: "Weird food, getting lost on purpose?", required: true, options: ADVENTURE_CHOICES }] },
   {
-    title: "Your kind of trip",
-    subtitle: `Pick up to ${MAX_TAGS} of each.`,
+    title: "",
     fields: [
       {
         type: "multi",
         key: "trip_vibe",
-        label: "What kind of trip are you usually after?",
+        label: "What's the trip really about?",
+        hint: `Pick up to ${MAX_TAGS}.`,
         max: MAX_TAGS,
         required: true,
         options: TRIP_VIBES.map((v) => ({ value: v, label: v, emoji: TRIP_VIBE_EMOJI[v] })),
       },
-      {
-        type: "multi",
-        key: "travel_style",
-        label: "Which sound most like you?",
-        max: MAX_TAGS,
-        options: TRAVEL_STYLES.map((v) => ({ value: v, label: v })),
-      },
     ],
   },
   {
-    title: "Logistics & you",
-    subtitle: "Hard preferences are used as filters. One line to finish.",
+    title: "",
     fields: [
       {
         type: "multi",
         key: "dealbreakers",
-        label: "Hard preferences",
+        label: "Any hard preferences?",
+        hint: "Used as filters, not just flavor. Skip if none.",
         options: DEALBREAKERS.map((v) => ({ value: v, label: v })),
-      },
-      {
-        type: "text",
-        key: "one_liner",
-        label: "Finish: “The kind of travel buddy I am…”",
-        placeholder: "…",
-        max: ONE_LINER_MAX,
       },
     ],
   },
   {
-    title: "What matters most",
-    subtitle: "We'll weight your matches toward these. Pick the things you can't compromise on.",
+    title: "",
     fields: [
       {
         type: "multi",
@@ -132,21 +103,18 @@ export default function TripVibeForm({
   useEffect(() => {
     supabase
       .from("profiles")
-      .select("planning, pace, social_energy, budget, nightlife, adventurousness, trip_vibe, travel_style, dealbreakers, one_liner, match_priorities")
+      .select("planning, pace, social_energy, budget, nightlife, adventurousness, trip_vibe, dealbreakers, match_priorities")
       .eq("id", userId)
       .maybeSingle()
       .then(({ data }) => {
+        // Scale columns come back as ints; the card controls need string values.
+        const ints = Object.fromEntries(
+          INT_KEYS.map((k) => [k, data?.[k] != null ? String(data[k]) : ""]),
+        );
         setInitial({
-          planning: data?.planning ?? 3,
-          pace: data?.pace ?? 3,
-          social_energy: data?.social_energy ?? 3,
-          budget: data?.budget ?? 3,
-          nightlife: data?.nightlife ?? 3,
-          adventurousness: data?.adventurousness ?? 3,
+          ...ints,
           trip_vibe: data?.trip_vibe ?? [],
-          travel_style: data?.travel_style ?? [],
           dealbreakers: data?.dealbreakers ?? [],
-          one_liner: data?.one_liner ?? "",
           match_priorities: data?.match_priorities ?? [],
         });
       });
@@ -156,19 +124,18 @@ export default function TripVibeForm({
   async function complete(a: WizardAnswers) {
     setSaving(true);
     setErr(null);
+    const toInt = (v: unknown) => (v === "" || v == null ? null : Number(v));
     const { error } = await supabase
       .from("profiles")
       .update({
-        planning: a.planning,
-        pace: a.pace,
-        social_energy: a.social_energy,
-        budget: a.budget,
-        nightlife: a.nightlife,
-        adventurousness: a.adventurousness,
+        planning: toInt(a.planning),
+        pace: toInt(a.pace),
+        social_energy: toInt(a.social_energy),
+        budget: toInt(a.budget),
+        nightlife: toInt(a.nightlife),
+        adventurousness: toInt(a.adventurousness),
         trip_vibe: a.trip_vibe ?? [],
-        travel_style: a.travel_style ?? [],
         dealbreakers: a.dealbreakers ?? [],
-        one_liner: a.one_liner ?? "",
         match_priorities: a.match_priorities ?? [],
       })
       .eq("id", userId);
@@ -189,11 +156,11 @@ export default function TripVibeForm({
   return (
     <>
       <Wizard
-        title="Trip vibe"
+        title="Travel vibe"
         pages={PAGES}
         initial={initial}
         submitting={saving}
-        finishLabel="Save trip vibe"
+        finishLabel="Save travel vibe"
         flat
         onComplete={complete}
         onClose={onClose}

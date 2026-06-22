@@ -128,6 +128,76 @@ export const DEALBREAKERS = [
   "I need quiet sleeping conditions",
 ] as const;
 
+// ─────────────────── Single-tap card questions (screenshot format) ───────────
+// Each is one tap-to-pick screen. `value` is the value stored on the profile —
+// a numeric string for the 1..5 scale dimensions (converted to int on save),
+// or a category token for the trait columns.
+export type Choice = { value: string; label: string; emoji: string };
+
+// Travel (map onto the existing pace/budget/social_energy/planning/nightlife/
+// adventurousness columns the matcher already uses).
+export const PACE_CHOICES: Choice[] = [
+  { value: "1", label: "One place, go deep", emoji: "🐢" },
+  { value: "3", label: "A bit of both", emoji: "⚖️" },
+  { value: "5", label: "Many places, move fast", emoji: "🏃" },
+];
+export const BUDGET_CHOICES: Choice[] = [
+  { value: "1", label: "Stretch every dollar", emoji: "🎒" },
+  { value: "2", label: "Comfortable, not flashy", emoji: "🏨" },
+  { value: "4", label: "Treat myself", emoji: "✨" },
+  { value: "5", label: "Best of everything", emoji: "💎" },
+];
+export const SOCIAL_TRAVEL_CHOICES: Choice[] = [
+  { value: "1", label: "Just one person, properly", emoji: "🧍" },
+  { value: "3", label: "A small handful", emoji: "👥" },
+  { value: "5", label: "The more the merrier", emoji: "🎉" },
+];
+export const PLANNING_CHOICES: Choice[] = [
+  { value: "1", label: "Wing it", emoji: "🎲" },
+  { value: "3", label: "A few anchors, rest loose", emoji: "📌" },
+  { value: "5", label: "Plan it all out", emoji: "🗺️" },
+];
+export const NIGHTLIFE_CHOICES: Choice[] = [
+  { value: "1", label: "Early nights", emoji: "🌅" },
+  { value: "3", label: "Dinner and a drink", emoji: "🍷" },
+  { value: "5", label: "Out till late", emoji: "🌙" },
+];
+export const ADVENTURE_CHOICES: Choice[] = [
+  { value: "1", label: "Keep it familiar", emoji: "🧭" },
+  { value: "3", label: "Adventurous within reason", emoji: "🙂" },
+  { value: "5", label: "The weirder the better", emoji: "🔥" },
+];
+
+// Activity / event cards.
+export const ACTIVITY_SOCIAL_CHOICES: Choice[] = [
+  { value: "2", label: "An intimate few", emoji: "🧍" },
+  { value: "3", label: "A handful", emoji: "👥" },
+  { value: "5", label: "Big and buzzy", emoji: "🎉" },
+];
+export const ACTIVITY_INTENSITY_CHOICES: Choice[] = [
+  { value: "1", label: "Pure leisure", emoji: "🛋️" },
+  { value: "3", label: "Balanced", emoji: "⚖️" },
+  { value: "5", label: "All in", emoji: "🔥" },
+];
+// "Walking into a room of strangers, you…" — extroversion, stored in social_style.
+export const SOCIAL_STYLE_CHOICES: Choice[] = [
+  { value: "5", label: "Work the room", emoji: "🗣️" },
+  { value: "3", label: "Find one or two people", emoji: "🙂" },
+  { value: "1", label: "Hang back, warm up slowly", emoji: "👀" },
+];
+// New trait columns (wired into matching):
+// "What pulls you out of the house?" — activity_motivation.
+export const MOTIVATION_CHOICES: Choice[] = [
+  { value: "people", label: "Meeting new people", emoji: "🤝" },
+  { value: "activity", label: "The actual thing we're doing", emoji: "🎯" },
+  { value: "company", label: "Just not wanting to be alone", emoji: "🌙" },
+];
+// "Are you more the one who…" — initiator (a starter pairs best with a joiner).
+export const INITIATOR_CHOICES: Choice[] = [
+  { value: "starter", label: "Starts the plan", emoji: "✨" },
+  { value: "joiner", label: "Happily joins the plan", emoji: "🙌" },
+];
+
 // The "weight question": which 2-3 trip dimensions matter MOST to this user.
 // `value` must match the keys the matching algo weights (match-priorities.sql).
 export const TRIP_PRIORITIES: { value: string; label: string; emoji: string }[] = [

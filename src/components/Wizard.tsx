@@ -254,7 +254,7 @@ function Field({
       )}
 
       {field.type === "select" && (
-        <div className={`mt-3 ${field.options.length === 2 ? "grid grid-cols-2 gap-3" : "space-y-2.5"}`}>
+        <div className="mt-3 space-y-2.5">
           {field.options.map((o) => {
             const on = value === o.value;
             return (
@@ -263,7 +263,9 @@ function Field({
                 type="button"
                 onClick={() => onChange(o.value)}
                 className={`flex w-full items-center gap-3 rounded-2xl border-2 p-3.5 text-left font-nunito text-[15px] font-semibold transition-colors ${
-                  on ? "border-navy bg-flockie-coral text-white" : "border-navy bg-white text-navy hover:bg-cream"
+                  on
+                    ? "border-flockie-coral bg-flockie-coral/10 text-navy shadow-[0_0_0_1px_var(--tw-shadow-color)] shadow-flockie-coral"
+                    : "border-navy/15 bg-white text-navy hover:bg-cream"
                 }`}
               >
                 {o.emoji && <Emoji>{o.emoji}</Emoji>}
