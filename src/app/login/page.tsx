@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { safeRedirectPath } from "@/lib/redirects";
 
 export default function LoginPage() {
   return (
@@ -16,7 +17,7 @@ export default function LoginPage() {
 function LoginForm() {
   const searchParams = useSearchParams();
   const supabase = createClient();
-  const redirect = searchParams.get("redirect") || "/home";
+  const redirect = safeRedirectPath(searchParams.get("redirect"), "/home");
   const referral = searchParams.get("ref");
   const [loading, setLoading] = useState(false);
 

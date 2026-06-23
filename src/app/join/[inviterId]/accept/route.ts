@@ -12,8 +12,9 @@ export async function GET(
   } = await supabase.auth.getUser();
 
   if (!user) {
+    const redirect = `/join/${params.inviterId}/accept`;
     return NextResponse.redirect(
-      `${origin}/login?ref=${encodeURIComponent(params.inviterId)}`
+      `${origin}/login?ref=${encodeURIComponent(params.inviterId)}&redirect=${encodeURIComponent(redirect)}`
     );
   }
 

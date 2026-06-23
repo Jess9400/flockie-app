@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { safeRedirectPath, withReturnTo } from "@/lib/redirects";
 
 // Handles the OAuth / email-confirmation redirect: exchanges the code for a
 // session, then sends the user into the app.
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/home";
+  const next = safeRedirectPath(searchParams.get("next"), "/home");
   const referral = searchParams.get("ref");
 
   if (code) {
@@ -28,10 +29,14 @@ export async function GET(request: Request) {
           .maybeSingle();
 
         if (!profile?.vibe_completed_at) {
-          return NextResponse.redirect(`${origin}/onboarding/profile`);
+          return NextResponse.redirect(
+            `${origin}${withReturnTo("/onboarding/profile", next)}`
+          );
         }
         if (!profile.onboarding_complete) {
-          return NextResponse.redirect(`${origin}/profile`);
+          return NextResponse.redirect(
+            `${origin}${withReturnTo("/profile", next)}`
+          );
         }
       }
       return NextResponse.redirect(`${origin}${next}`);

@@ -11,9 +11,15 @@ import {
 } from "@/lib/onboarding/scoring";
 import { VibeDimension, VibeScores } from "@/lib/onboarding/types";
 import { getNearbyVibes } from "@/lib/onboarding/vibe-actions";
+import { safeRedirectPath } from "@/lib/redirects";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function VibeRevealPage() {
+export default async function VibeRevealPage({
+  searchParams,
+}: {
+  searchParams: { returnTo?: string };
+}) {
+  const returnTo = safeRedirectPath(searchParams.returnTo, "");
   const supabase = await createClient();
   const {
     data: { user },
@@ -134,10 +140,10 @@ export default async function VibeRevealPage() {
           </div>
 
           <Link
-            href="/vibes"
+            href={returnTo || "/vibes"}
             className="mt-5 block w-full rounded-2xl border-2 border-ink border-b-[5px] bg-flockie-coral py-3.5 text-center text-[15px] font-extrabold text-white md:mx-auto md:mt-7 md:max-w-md"
           >
-            See what&apos;s happening nearby →
+            {returnTo ? "Continue where you left off →" : "See what's happening nearby →"}
           </Link>
         </div>
       </div>
