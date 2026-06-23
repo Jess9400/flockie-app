@@ -4,14 +4,22 @@ import {
   completeVibeCheck,
   getVibeProgress,
 } from "@/lib/onboarding/vibe-actions";
+import { safeRedirectPath, withReturnTo } from "@/lib/redirects";
 
-export default async function VibeCheckPage() {
+export default async function VibeCheckPage({
+  searchParams,
+}: {
+  searchParams: { returnTo?: string };
+}) {
+  const returnTo = safeRedirectPath(searchParams.returnTo, "");
   const progress = await getVibeProgress();
 
-  if (progress.isComplete) redirect("/onboarding/vibe-check/reveal");
+  if (progress.isComplete) {
+    redirect(withReturnTo("/onboarding/vibe-check/reveal", returnTo));
+  }
   if (progress.nextQuestionIndex === -1) {
     await completeVibeCheck();
-    redirect("/onboarding/vibe-check/reveal");
+    redirect(withReturnTo("/onboarding/vibe-check/reveal", returnTo));
   }
 
   return (
@@ -19,6 +27,7 @@ export default async function VibeCheckPage() {
       <VibeQuiz
         initialAnswers={progress.answers}
         initialQuestionIndex={progress.nextQuestionIndex}
+        returnTo={returnTo}
       />
     </main>
   );

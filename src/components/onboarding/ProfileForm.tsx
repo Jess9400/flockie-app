@@ -8,6 +8,7 @@ import {
   ProfileInput,
   saveOnboardingProfile,
 } from "@/lib/onboarding/profile-actions";
+import { withReturnTo } from "@/lib/redirects";
 
 const GENDERS: { value: ProfileInput["gender"]; label: string }[] = [
   { value: "woman", label: "Woman" },
@@ -24,9 +25,10 @@ interface ProfileFormProps {
     gender: ProfileInput["gender"] | null;
     city: string;
   };
+  returnTo?: string | null;
 }
 
-export function ProfileForm({ defaults }: ProfileFormProps) {
+export function ProfileForm({ defaults, returnTo }: ProfileFormProps) {
   const router = useRouter();
   const supabase = createClient();
   const [firstName, setFirstName] = useState(defaults.firstName);
@@ -86,7 +88,7 @@ export function ProfileForm({ defaults }: ProfileFormProps) {
         gender,
         city: city.trim(),
       });
-      router.push("/onboarding/vibe-check");
+      router.push(withReturnTo("/onboarding/vibe-check", returnTo));
     } catch (caught) {
       setError(
         caught instanceof Error ? caught.message : "Something went wrong. Try again."

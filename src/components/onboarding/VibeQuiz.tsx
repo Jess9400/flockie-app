@@ -6,8 +6,17 @@ import { QuestionControls } from "./QuestionControls";
 import { VIBE_QUESTIONS, TOTAL_QUESTIONS } from "@/lib/onboarding/questions";
 import { Answer } from "@/lib/onboarding/types";
 import { completeVibeCheck, saveVibeAnswer } from "@/lib/onboarding/vibe-actions";
+import { withReturnTo } from "@/lib/redirects";
 
-export function VibeQuiz({ initialAnswers, initialQuestionIndex }: { initialAnswers: Partial<Record<string, Answer>>; initialQuestionIndex: number }) {
+export function VibeQuiz({
+  initialAnswers,
+  initialQuestionIndex,
+  returnTo,
+}: {
+  initialAnswers: Partial<Record<string, Answer>>;
+  initialQuestionIndex: number;
+  returnTo?: string | null;
+}) {
   const router = useRouter();
   const [answers, setAnswers] = useState(initialAnswers);
   const [questionIndex, setQuestionIndex] = useState(Math.max(0, Math.min(initialQuestionIndex, TOTAL_QUESTIONS - 1)));
@@ -29,7 +38,7 @@ export function VibeQuiz({ initialAnswers, initialQuestionIndex }: { initialAnsw
         setSaving(false);
       } else {
         await completeVibeCheck();
-        router.push("/onboarding/vibe-check/reveal");
+        router.push(withReturnTo("/onboarding/vibe-check/reveal", returnTo));
       }
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not save your answer. Try again.");

@@ -2,12 +2,16 @@ import { createClient } from "@/lib/supabase/server";
 import ProfileEditor from "@/components/ProfileEditor";
 import { type ReviewItem } from "@/components/ProfileReviews";
 import type { Profile } from "@/lib/vibe-check";
+import { safeRedirectPath } from "@/lib/redirects";
 
 export default async function ProfilePage({
   searchParams,
 }: {
-  searchParams: { compat?: string; vibe_done?: string };
+  searchParams: { compat?: string; returnTo?: string; vibe_done?: string };
 }) {
+  const returnTo =
+    safeRedirectPath(searchParams.returnTo, "") ||
+    (searchParams.compat ? `/compat/${searchParams.compat}` : undefined);
   const supabase = await createClient();
   const {
     data: { user },
@@ -66,7 +70,7 @@ export default async function ProfilePage({
         reviewAvg={reviewAvg}
         reviewCount={reviewCount}
         reviewItems={reviewItems}
-        redirectAfter={searchParams.compat ? `/compat/${searchParams.compat}` : undefined}
+        redirectAfter={returnTo}
         celebrate={searchParams.vibe_done === "1"}
       />
     </main>

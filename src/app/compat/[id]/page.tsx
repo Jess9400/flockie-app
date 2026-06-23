@@ -54,7 +54,7 @@ export default async function CompatPage({ params }: { params: { id: string } })
     if (!me?.onboarding_complete) {
       inner = (
         <Link
-          href={`/profile?compat=${params.id}`}
+          href={`/onboarding/profile?returnTo=${encodeURIComponent(`/compat/${params.id}`)}`}
           className="mt-6 block rounded-full border-2 border-ink bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
         >
           Take the 60-sec vibe check to reveal your score
