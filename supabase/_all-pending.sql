@@ -1152,6 +1152,217 @@ alter table public.trips
 
 
 -- ============================================================
+-- fix-incoming-swipe-rls.sql
+-- ============================================================
+-- Fix: invitees couldn't see the "Match back & chat" button.
+--
+-- The /people/[id] page detects an incoming like by reading the other user's
+-- swipe row (swiper_id = them, target_id = me). The existing "own swipes" policy
+-- only allows reading rows where swiper_id = auth.uid(), so that read was blocked
+-- by RLS and the match-back button never showed.
+--
+-- Add a SELECT-only policy so you can also READ swipes that target you. Writes
+-- (insert/update/delete) stay restricted to your own rows via the existing
+-- "own swipes" policy. Run in the Supabase SQL editor. Safe to re-run.
+
+drop policy if exists "see incoming swipes" on public.buddy_swipes;
+create policy "see incoming swipes" on public.buddy_swipes
+  for select to authenticated
+  using (swiper_id = auth.uid() or target_id = auth.uid());
+
+
+-- ============================================================
+-- fix-flock-chat-on-approve.sql
+-- ============================================================
+-- Fix: approving a join request on a directly-created Flock didn't open a chat.
+--
+-- The Flock group chat is a buddy_chat hung off a buddy_match whose trip_a/trip_b
+-- points at the flock trip. Flocks *converted from a buddy pair* already have
+-- that match+chat, but Flocks *created directly* (Create a Flock) never do — so
+-- respond_join_request accepted the member but no chat existed. This:
+--   1) re-creates respond_join_request to SEED the group chat on first approval,
+--   2) backfills a chat for already-accepted flocks that are missing one.
+-- Run in the Supabase SQL editor. Safe to re-run.
+
+create or replace function public.respond_join_request(p_trip uuid, p_user uuid, p_approve boolean)
+returns void language plpgsql security definer set search_path = public as $$
+declare
+  v_host uuid; v_cohost uuid; v_dest text; v_cap int; v_going int;
+  v_appr uuid[]; v_required uuid[];
+  v_chat uuid; v_match uuid; v_a uuid; v_b uuid;
+begin
+  select user_id, co_host_id, destination, coalesce(group_size, 99)
+    into v_host, v_cohost, v_dest, v_cap
+    from public.trips where id = p_trip;
+  if v_host is null then raise exception 'trip not found'; end if;
+  if auth.uid() <> v_host and auth.uid() is distinct from v_cohost then
+    raise exception 'only the flock hosts can respond';
+  end if;
+
+  if not p_approve then
+    update public.trip_join_requests set status = 'declined'
+      where trip_id = p_trip and user_id = p_user;
+    return;
+  end if;
+
+  -- Record this host's approval. A co-hosted flock needs BOTH hosts.
+  select coalesce(approvals, '{}') into v_appr
+    from public.trip_join_requests where trip_id = p_trip and user_id = p_user;
+  v_appr := (select array(select distinct unnest(v_appr || array[auth.uid()])));
+  v_required := case when v_cohost is null then array[v_host] else array[v_host, v_cohost] end;
+
+  if not (v_required <@ v_appr) then
+    update public.trip_join_requests set approvals = v_appr
+      where trip_id = p_trip and user_id = p_user;
+    return; -- still waiting on the co-host
+  end if;
+
+  -- Capacity guard (host + already-accepted).
+  select count(*) into v_going from public.trip_join_requests
+    where trip_id = p_trip and status = 'accepted';
+  if (1 + v_going) >= v_cap then raise exception 'This Flock is full.'; end if;
+
+  update public.trip_join_requests set status = 'accepted', approvals = v_appr
+    where trip_id = p_trip and user_id = p_user;
+
+  -- Ensure the Flock has a group chat. Seed one if this trip has none yet.
+  select bc.id into v_chat
+    from public.buddy_matches m
+    join public.buddy_chats bc on bc.match_id = m.id
+    where p_trip in (m.trip_a, m.trip_b)
+    limit 1;
+  if v_chat is null then
+    v_a := least(v_host, p_user); v_b := greatest(v_host, p_user);
+    insert into public.buddy_matches (user_a, user_b, trip_a, score)
+      values (v_a, v_b, p_trip, 100)
+      on conflict (user_a, user_b) do update set trip_a = excluded.trip_a
+      returning id into v_match;
+    insert into public.buddy_chats (match_id) values (v_match)
+      on conflict (match_id) do nothing;
+  end if;
+
+  perform public.notify(p_user, 'flock_approved', 'You''re in! ' || v_dest,
+    'Your request to join was approved — say hi in the group chat.',
+    jsonb_build_object('trip_id', p_trip));
+end $$;
+grant execute on function public.respond_join_request(uuid, uuid, boolean) to authenticated;
+
+-- Backfill: seed a chat for public flocks that already have an accepted member
+-- but no chat (the ones approved before this fix).
+do $$
+declare r record; v_match uuid; v_a uuid; v_b uuid;
+begin
+  for r in
+    select t.id as trip_id, t.user_id as host, j.user_id as member
+    from public.trips t
+    join lateral (
+      select user_id from public.trip_join_requests
+      where trip_id = t.id and status = 'accepted'
+      order by user_id limit 1
+    ) j on true
+    where t.visibility = 'public'
+      and not exists (
+        select 1 from public.buddy_matches m
+        join public.buddy_chats bc on bc.match_id = m.id
+        where t.id in (m.trip_a, m.trip_b)
+      )
+  loop
+    v_a := least(r.host, r.member); v_b := greatest(r.host, r.member);
+    insert into public.buddy_matches (user_a, user_b, trip_a, score)
+      values (v_a, v_b, r.trip_id, 100)
+      on conflict (user_a, user_b) do update set trip_a = excluded.trip_a
+      returning id into v_match;
+    insert into public.buddy_chats (match_id) values (v_match)
+      on conflict (match_id) do nothing;
+  end loop;
+end $$;
+
+
+-- ============================================================
+-- chat-kind-tags.sql
+-- ============================================================
+-- Add a `kind` to buddy chat summaries so the Chats list can tag each row as a
+-- Travel Buddy, Activity Buddy, or Flock. (Vibe chats are tagged 'vibe' and
+-- my_flock_chats rows 'flock' in the app.) Run in the Supabase SQL editor.
+-- Safe to re-run. Drop is required because the return signature changes.
+
+drop function if exists public.buddy_chat_summaries();
+create or replace function public.buddy_chat_summaries()
+returns table(chat_id uuid, name text, photo text, last_at timestamptz, unread integer, kind text)
+language sql stable security definer set search_path to 'public'
+as $function$
+  select bc.id,
+    -- For a flock, show the destination instead of one member's name.
+    case when exists (select 1 from public.trips t
+                      where t.id in (mt.trip_a, mt.trip_b) and t.visibility = 'public')
+         then coalesce((select t.destination from public.trips t
+                        where t.id in (mt.trip_a, mt.trip_b) and t.visibility = 'public' limit 1),
+                       o.display_name)
+         else o.display_name end as name,
+    (o.photos)[1] as photo,
+    coalesce(lm.last_at, bc.created_at) as last_at,
+    coalesce((select count(*) from public.buddy_messages m
+      where m.chat_id=bc.id and m.sender_id <> auth.uid()
+        and m.created_at > coalesce((select last_read_at from public.chat_reads r
+              where r.user_id=auth.uid() and r.chat_id=bc.id),'epoch')),0)::int as unread,
+    case
+      when exists (select 1 from public.trips t
+                   where t.id in (mt.trip_a, mt.trip_b) and t.visibility = 'public') then 'flock'
+      when exists (select 1 from public.trips t
+                   where t.id in (mt.trip_a, mt.trip_b) and t.kind = 'activity') then 'activity_buddy'
+      else 'travel_buddy'
+    end as kind
+  from public.buddy_chats bc
+  join public.buddy_matches mt on mt.id = bc.match_id
+  join public.profiles o on o.id = case when mt.user_a=auth.uid() then mt.user_b else mt.user_a end
+  left join lateral (select max(created_at) last_at from public.buddy_messages m where m.chat_id=bc.id) lm on true
+  where auth.uid() in (mt.user_a, mt.user_b)
+  order by last_at desc;
+$function$;
+grant execute on function public.buddy_chat_summaries() to authenticated;
+
+
+-- ============================================================
+-- fix-mark-chat-read.sql
+-- ============================================================
+-- Fix: unread badges counted every message because mark_chat_read wasn't
+-- updating chat_reads.last_read_at on open. Recreate it as a SECURITY DEFINER
+-- upsert (chat_reads PK is (user_id, chat_id)). Run in the Supabase SQL editor.
+-- Safe to re-run.
+create or replace function public.mark_chat_read(p_chat uuid)
+returns void
+language sql
+security definer
+set search_path = public
+as $$
+  insert into public.chat_reads (user_id, chat_id, last_read_at)
+  values (auth.uid(), p_chat, now())
+  on conflict (user_id, chat_id) do update set last_read_at = now();
+$$;
+grant execute on function public.mark_chat_read(uuid) to authenticated;
+
+
+-- ============================================================
+-- delete-trip.sql
+-- ============================================================
+-- Let an owner delete their trip / activity / flock. Cleans up join requests
+-- first so the delete can't be blocked by a foreign key; buddy_matches.trip_a/
+-- trip_b are ON DELETE SET NULL, so any 1:1 chats survive (they just lose the
+-- trip link). Run in the Supabase SQL editor. Safe to re-run.
+create or replace function public.delete_trip(p_trip uuid)
+returns void language plpgsql security definer set search_path = public as $$
+declare v_owner uuid;
+begin
+  select user_id into v_owner from public.trips where id = p_trip;
+  if v_owner is null then return; end if;            -- already gone
+  if v_owner <> auth.uid() then raise exception 'not your trip'; end if;
+  delete from public.trip_join_requests where trip_id = p_trip;
+  delete from public.trips where id = p_trip;
+end $$;
+grant execute on function public.delete_trip(uuid) to authenticated;
+
+
+-- ============================================================
 -- referrals.sql
 -- ============================================================
 -- Personalized web referrals and signup attribution. Safe to re-run.
@@ -1176,8 +1387,15 @@ create policy "referrals visible to participants"
   to authenticated
   using (auth.uid() = inviter_id or auth.uid() = invitee_id);
 
+-- Minimal public inviter data for /join/[inviterId].
 create or replace function public.referral_target(p_inviter uuid)
-returns table (id uuid, name text, photo text, city text, archetype text)
+returns table (
+  id uuid,
+  name text,
+  photo text,
+  city text,
+  archetype text
+)
 language sql security definer set search_path = public stable as $$
   select p.id, p.display_name, p.photos[1], p.home_city, p.archetype
   from public.profiles p
@@ -1185,13 +1403,21 @@ language sql security definer set search_path = public stable as $$
 $$;
 grant execute on function public.referral_target(uuid) to anon, authenticated;
 
+-- Called after OAuth (or explicitly by an already signed-in visitor). Each new
+-- user can be attributed once, and self-referrals are ignored.
 create or replace function public.claim_referral(p_inviter uuid)
 returns boolean
 language plpgsql security definer set search_path = public as $$
-declare inserted_count int;
+declare
+  inserted_count int;
 begin
-  if auth.uid() is null or auth.uid() = p_inviter then return false; end if;
-  if not exists (select 1 from public.profiles where id = p_inviter) then return false; end if;
+  if auth.uid() is null or auth.uid() = p_inviter then
+    return false;
+  end if;
+
+  if not exists (select 1 from public.profiles where id = p_inviter) then
+    return false;
+  end if;
 
   insert into public.referrals (inviter_id, invitee_id)
   values (p_inviter, auth.uid())

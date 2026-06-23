@@ -1,6 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
 
+// Chat type → pill label + colors.
+const KIND_TAG: Record<string, { label: string; cls: string }> = {
+  travel_buddy: { label: "Travel Buddy", cls: "bg-flockie-blue/15 text-flockie-blue" },
+  activity_buddy: { label: "Activity Buddy", cls: "bg-flockie-coral/15 text-flockie-coral" },
+  flock: { label: "Flock", cls: "bg-onboarding-green/15 text-onboarding-green" },
+  vibe: { label: "Vibes Buddy", cls: "bg-flockie-orange/15 text-flockie-orange" },
+};
+
 export default function ChatRow({
   href,
   photo,
@@ -10,6 +18,7 @@ export default function ChatRow({
   unread,
   fallback,
   fallbackTone = "blue",
+  kind,
 }: {
   href: string;
   photo: string | null;
@@ -19,7 +28,9 @@ export default function ChatRow({
   unread: number;
   fallback: string; // emoji or initial
   fallbackTone?: "blue" | "cream";
+  kind?: string;
 }) {
+  const tag = kind ? KIND_TAG[kind] : undefined;
   return (
     <Link
       href={href}
@@ -42,7 +53,14 @@ export default function ChatRow({
 
       {/* Middle */}
       <div className="min-w-0 flex-1 px-1">
-        <p className="truncate font-fredoka text-[17px] font-semibold text-navy">{title}</p>
+        <div className="flex items-center gap-1.5">
+          <p className="truncate font-fredoka text-[17px] font-semibold text-navy">{title}</p>
+          {tag && (
+            <span className={`shrink-0 rounded-full px-1.5 py-0.5 font-nunito text-[10px] font-extrabold ${tag.cls}`}>
+              {tag.label}
+            </span>
+          )}
+        </div>
         <p className="truncate font-nunito text-sm font-normal text-navy/70">{subtitle}</p>
       </div>
 

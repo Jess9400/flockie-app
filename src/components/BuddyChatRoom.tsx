@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Send, Sparkles, X, ImagePlus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatMessageDivider, needsDivider } from "@/lib/chat";
@@ -38,6 +39,7 @@ export default function BuddyChatRoom({
   isGroup?: boolean;
 }) {
   const supabase = createClient();
+  const router = useRouter();
   const [messages, setMessages] = useState<Msg[]>(initialMessages);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
@@ -70,7 +72,8 @@ export default function BuddyChatRoom({
   }, [messages]);
 
   useEffect(() => {
-    supabase.rpc("mark_chat_read", { p_chat: chatId });
+    // Mark read, then bust the router cache so the chats-list badge updates.
+    supabase.rpc("mark_chat_read", { p_chat: chatId }).then(() => router.refresh());
     try {
       const raw = localStorage.getItem(`buddy-dismissed-${chatId}`);
       if (raw) setDismissed(new Set(JSON.parse(raw)));

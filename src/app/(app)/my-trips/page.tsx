@@ -3,10 +3,12 @@ import Image from "next/image";
 import { Plus, Pencil, MapPin, CalendarClock, MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import FlockJoinRequests, { type JoinReq } from "@/components/FlockJoinRequests";
+import DeleteTripButton from "@/components/DeleteTripButton";
 import PageTabs from "@/components/PageTabs";
 
 const TRIP_TABS = [
   { href: "/my-trips", label: "My Trips" },
+  { href: "/my-activities", label: "My Activities" },
   { href: "/deals", label: "Deals" },
 ];
 
@@ -30,6 +32,7 @@ export default async function MyTripsPage() {
     .from("trips")
     .select("id, kind, title, destination, destinations, start_date, end_date, group_size, trip_type, visibility, status, created_at, cover_photo")
     .eq("user_id", user!.id)
+    .neq("kind", "activity") // activities live under the My Activities tab
     .order("created_at", { ascending: false });
 
   const { data: matches } = await supabase.rpc("my_matches");
@@ -118,7 +121,7 @@ export default async function MyTripsPage() {
                         ? "bg-flockie-blue text-white"
                         : t.visibility === "public"
                           ? "bg-flockie-orange text-white"
-                          : "bg-cream text-ink"
+                          : "bg-navy text-white"
                     }`}
                   >
                     {t.kind === "activity" ? "Activity" : t.visibility === "public" ? "Flock" : "Trip"}
@@ -147,12 +150,24 @@ export default async function MyTripsPage() {
                   </div>
                 )}
               </div>
-              <Link
-                href={`/match/trip?id=${t.id}`}
-                className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-sm font-bold"
-              >
-                <Pencil size={14} /> Edit
-              </Link>
+              <div className="flex shrink-0 items-center gap-2">
+                <Link
+                  href={`/match/trip?id=${t.id}`}
+                  className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-sm font-bold"
+                >
+                  <Pencil size={14} /> Edit
+                </Link>
+                <DeleteTripButton
+                  tripId={t.id}
+                  label={
+                    t.kind === "activity"
+                      ? (t.title ? `"${t.title}"` : "this activity")
+                      : t.visibility === "public"
+                        ? "this Flock"
+                        : "this trip"
+                  }
+                />
+              </div>
             </div>
             {reqByTrip[t.id]?.length ? (
               <FlockJoinRequests tripId={t.id} requests={reqByTrip[t.id]} dualApproval={coHostTrips.has(t.id)} canRemove />

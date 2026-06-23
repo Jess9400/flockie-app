@@ -4,6 +4,7 @@ import PageTabs from "@/components/PageTabs";
 
 const TRIP_TABS = [
   { href: "/my-trips", label: "My Trips" },
+  { href: "/my-activities", label: "My Activities" },
   { href: "/deals", label: "Deals" },
 ];
 

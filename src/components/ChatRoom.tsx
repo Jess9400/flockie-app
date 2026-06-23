@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Send, ImagePlus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatMessageDivider, needsDivider } from "@/lib/chat";
@@ -34,6 +35,7 @@ export default function ChatRoom({
   reviewHref?: string | null;
 }) {
   const supabase = createClient();
+  const router = useRouter();
   const [messages, setMessages] = useState<Msg[]>(initialMessages);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
@@ -64,7 +66,8 @@ export default function ChatRoom({
   }, [messages]);
 
   useEffect(() => {
-    supabase.rpc("mark_chat_read", { p_chat: chatId });
+    // Mark read, then bust the router cache so the chats-list badge updates.
+    supabase.rpc("mark_chat_read", { p_chat: chatId }).then(() => router.refresh());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId]);
 

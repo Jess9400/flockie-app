@@ -181,40 +181,6 @@ export default function CreateVibeForm({
             placeholder="Sunset surf + tacos"
           />
         </Field>
-        <Field label="Description">
-          <textarea
-            className={`${inputCls} h-28 resize-none`}
-            maxLength={500}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="What's the plan, the vibe, who it's for…"
-          />
-        </Field>
-        <Field label="Category">
-          <select
-            className={inputCls}
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="">Select…</option>
-            {VIBE_CATEGORIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label="Activity link (optional)">
-          <input
-            className={inputCls}
-            value={activityUrl}
-            onChange={(e) => setActivityUrl(e.target.value)}
-            placeholder="Paste a GetYourGuide (or any) activity link"
-          />
-          <p className="mt-1 text-xs font-medium text-muted">
-            Everyone who gets in receives this link, on the Vibe and in the chat.
-          </p>
-        </Field>
 
         <Field label="Cover photos (up to 5)">
           <div className="grid grid-cols-3 gap-2">
@@ -257,6 +223,41 @@ export default function CreateVibeForm({
               onUploaded={(url) => setPhotos((p) => [...p, url].slice(0, MAX_PHOTOS))}
             />
           )}
+        </Field>
+
+        <Field label="Description">
+          <textarea
+            className={`${inputCls} h-28 resize-none`}
+            maxLength={500}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="What's the plan, the vibe, who it's for…"
+          />
+        </Field>
+        <Field label="Category">
+          <select
+            className={inputCls}
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            <option value="">Select…</option>
+            {VIBE_CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Activity link (optional)">
+          <input
+            className={inputCls}
+            value={activityUrl}
+            onChange={(e) => setActivityUrl(e.target.value)}
+            placeholder="Paste a GetYourGuide (or any) activity link"
+          />
+          <p className="mt-1 text-xs font-medium text-muted">
+            Everyone who gets in receives this link, on the Vibe and in the chat.
+          </p>
         </Field>
       </section>
 
