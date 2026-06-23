@@ -23,7 +23,7 @@ export default async function MatchPage({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("onboarding_complete, activities")
+    .select("onboarding_complete, activities, display_name")
     .eq("id", user!.id)
     .maybeSingle();
   const complete = !!profile?.onboarding_complete && (profile?.activities ?? []).length > 0;
@@ -157,7 +157,11 @@ export default async function MatchPage({
             happen faster.
           </p>
           <div className="mt-5 flex flex-col gap-2">
-            <InviteFriendsButton city={label} />
+            <InviteFriendsButton
+              inviterId={user!.id}
+              inviterName={profile?.display_name ?? undefined}
+              city={label}
+            />
             <Link href="/vibes" className="rounded-full border-2 border-ink bg-white px-5 py-2.5 font-bold text-ink">
               Meanwhile, explore Vibes
             </Link>

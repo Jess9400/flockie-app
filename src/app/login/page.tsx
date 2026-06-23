@@ -17,6 +17,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const supabase = createClient();
   const redirect = searchParams.get("redirect") || "/home";
+  const referral = searchParams.get("ref");
   const [loading, setLoading] = useState(false);
 
   async function handleGoogle() {
@@ -25,10 +26,12 @@ function LoginForm() {
       localStorage.setItem("flockie-pending-terms", "1");
     } catch {}
     setLoading(true);
+    const callbackParams = new URLSearchParams({ next: redirect });
+    if (referral) callbackParams.set("ref", referral);
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirect)}`,
+        redirectTo: `${window.location.origin}/auth/callback?${callbackParams.toString()}`,
       },
     });
   }
