@@ -1,10 +1,6 @@
 -- Flockie — Vibe Buddy / "Create a Vibe" module. Run in Supabase SQL Editor.
 -- Safe to re-run.
 
--- Soft penalty for ghosters (referenced by ranking later)
-alter table public.profiles
-  add column if not exists ghost_penalty_until timestamptz;
-
 -- ───────────────────────────── vibes (events) ─────────────────────────────
 create table if not exists public.vibes (
   id uuid primary key default gen_random_uuid(),
