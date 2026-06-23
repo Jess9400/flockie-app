@@ -120,6 +120,7 @@ language plpgsql security definer set search_path = public as $$
 declare
   v public.vibes;
   v_confirmed int;
+  v_active int;
   v_remaining int;
   v_invited int := 0;
   v_standby int := 0;
@@ -132,7 +133,12 @@ begin
 
   select count(*) into v_confirmed
     from public.vibe_interests where vibe_id = p_vibe and status = 'confirmed';
-  v_remaining := greatest(v.capacity - v_confirmed, 0);
+  select count(*) into v_active
+    from public.vibe_interests
+    where vibe_id = p_vibe
+      and status = 'invited'
+      and (invitation_expires_at is null or invitation_expires_at > now());
+  v_remaining := greatest(v.capacity - v_confirmed - v_active, 0);
 
   for c in
     select vi.user_id,
@@ -176,7 +182,7 @@ begin
     order by score desc
   loop
     rnk := rnk + 1;
-    if rnk <= v_remaining then
+    if rnk <= v_remaining and c.score >= 60 then
       update public.vibe_interests
         set status = 'invited', match_score = c.score,
             invitation_sent_at = now(), invitation_expires_at = now() + interval '24 hours'

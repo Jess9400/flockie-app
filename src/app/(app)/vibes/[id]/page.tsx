@@ -9,6 +9,16 @@ import ShareVibeButton from "@/components/ShareVibeButton";
 import VibeReviewSummary from "@/components/VibeReviewSummary";
 import { formatVibeWhen, DEALBREAKER_RULES, VIBE_REVIEW_TAGS, type InterestStatus } from "@/lib/vibes";
 
+type HostCandidate = {
+  userId: string;
+  status: InterestStatus;
+  matchScore: number | null;
+  invitationExpiresAt: string | null;
+  name: string | null;
+  photo: string | null;
+  oneLiner: string | null;
+};
+
 export default async function VibeDetailPage({
   params,
   searchParams,
@@ -79,6 +89,7 @@ export default async function VibeDetailPage({
 
   // Host-only matching tally
   const tally: Record<string, number> = {};
+  let hostCandidates: HostCandidate[] = [];
   if (isHost) {
     const { data: rows } = await supabase
       .from("vibe_interests")
@@ -87,6 +98,38 @@ export default async function VibeDetailPage({
     rows?.forEach((r) => {
       tally[r.status] = (tally[r.status] ?? 0) + 1;
     });
+
+    const { data: candidateRows } = await supabase
+      .from("vibe_interests")
+      .select("user_id, status, match_score, invitation_expires_at, created_at")
+      .eq("vibe_id", params.id)
+      .in("status", ["interested", "standby", "invited"])
+      .order("created_at", { ascending: false });
+
+    const candidateIds = (candidateRows ?? []).map((row) => row.user_id);
+    const profiles: Record<
+      string,
+      { display_name: string | null; photos: string[] | null; one_liner: string | null }
+    > = {};
+    if (candidateIds.length) {
+      const { data: profileRows } = await supabase
+        .from("profiles")
+        .select("id, display_name, photos, one_liner")
+        .in("id", candidateIds);
+      profileRows?.forEach((profile) => {
+        profiles[profile.id] = profile;
+      });
+    }
+
+    hostCandidates = (candidateRows ?? []).map((row) => ({
+      userId: row.user_id,
+      status: row.status as InterestStatus,
+      matchScore: row.match_score,
+      invitationExpiresAt: row.invitation_expires_at,
+      name: profiles[row.user_id]?.display_name ?? null,
+      photo: profiles[row.user_id]?.photos?.[0] ?? null,
+      oneLiner: profiles[row.user_id]?.one_liner ?? null,
+    }));
   }
 
   const rules = (vibe.dealbreaker_rules ?? {}) as Record<string, boolean>;
@@ -290,6 +333,7 @@ export default async function VibeDetailPage({
             startsAt={vibe.starts_at}
             endsAt={vibe.ends_at}
             signupDeadline={vibe.signup_deadline}
+            candidates={hostCandidates}
           />
         ) : (
           <InterestButton

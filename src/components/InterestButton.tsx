@@ -33,6 +33,7 @@ export default function InterestButton({
   const [busy, setBusy] = useState(false);
   const [gate, setGate] = useState(false);
   const [now, setNow] = useState(() => Date.now());
+  const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 30000);
@@ -86,18 +87,23 @@ export default function InterestButton({
 
   async function confirm() {
     setBusy(true);
+    setMessage(null);
     const { error } = await supabase.rpc("confirm_vibe", { p_vibe: vibeId });
     setBusy(false);
     if (!error) {
       setStatus("confirmed");
       router.refresh();
+    } else {
+      setMessage(error.message);
     }
   }
 
   async function decline() {
     setBusy(true);
-    await supabase.rpc("decline_vibe", { p_vibe: vibeId });
+    setMessage(null);
+    const { error } = await supabase.rpc("decline_vibe", { p_vibe: vibeId });
     setBusy(false);
+    if (error) return setMessage(error.message);
     setStatus("declined");
     router.refresh();
   }
@@ -185,6 +191,9 @@ export default function InterestButton({
   return (
     <>
       {control}
+      {message && (
+        <p className="mt-2 text-center text-sm font-bold text-red-700">{message}</p>
+      )}
 
       {gate && (
         <ActivityVibeForm

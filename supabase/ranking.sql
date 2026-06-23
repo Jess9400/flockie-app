@@ -7,6 +7,7 @@ language plpgsql security definer set search_path = public as $$
 declare
   v public.vibes;
   v_confirmed int;
+  v_active int;
   v_remaining int;
   v_invited int := 0;
   v_standby int := 0;
@@ -19,7 +20,12 @@ begin
 
   select count(*) into v_confirmed
     from public.vibe_interests where vibe_id = p_vibe and status = 'confirmed';
-  v_remaining := greatest(v.capacity - v_confirmed, 0);
+  select count(*) into v_active
+    from public.vibe_interests
+    where vibe_id = p_vibe
+      and status = 'invited'
+      and (invitation_expires_at is null or invitation_expires_at > now());
+  v_remaining := greatest(v.capacity - v_confirmed - v_active, 0);
 
   for c in
     select vi.user_id,
@@ -63,7 +69,7 @@ begin
     order by score desc
   loop
     rnk := rnk + 1;
-    if rnk <= v_remaining then
+    if rnk <= v_remaining and c.score >= 60 then
       update public.vibe_interests
         set status = 'invited', match_score = c.score,
             invitation_sent_at = now(), invitation_expires_at = now() + interval '24 hours'
@@ -93,14 +99,19 @@ grant execute on function public.rank_vibe(uuid) to authenticated;
 create or replace function public.confirm_vibe(p_vibe uuid)
 returns void
 language plpgsql security definer set search_path = public as $$
-declare v public.vibes;
+declare v public.vibes; v_confirmed int; v_updated int;
 begin
-  select * into v from public.vibes where id = p_vibe;
+  select * into v from public.vibes where id = p_vibe for update;
   if v.id is null then raise exception 'vibe not found'; end if;
+  select count(*) into v_confirmed from public.vibe_interests where vibe_id = p_vibe and status = 'confirmed';
+  if v_confirmed >= v.capacity then raise exception 'vibe is full'; end if;
 
   update public.vibe_interests
     set status = 'confirmed', confirmed_at = now()
-    where vibe_id = p_vibe and user_id = auth.uid() and status in ('invited', 'interested');
+    where vibe_id = p_vibe and user_id = auth.uid() and status = 'invited'
+      and (invitation_expires_at is null or invitation_expires_at > now());
+  get diagnostics v_updated = row_count;
+  if v_updated = 0 then raise exception 'invitation required or expired'; end if;
 
   insert into public.vibing_chats (vibe_id) values (p_vibe) on conflict (vibe_id) do nothing;
 

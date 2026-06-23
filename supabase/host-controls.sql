@@ -80,14 +80,16 @@ grant execute on function public.backfill_vibe(uuid) to authenticated;
 -- 5) rank_vibe — score interested, invite up to capacity, standby rest, then top up
 create or replace function public.rank_vibe(p_vibe uuid)
 returns jsonb language plpgsql security definer set search_path = public as $$
-declare v public.vibes; v_confirmed int; v_remaining int; v_invited int := 0; v_standby int := 0; c record; rnk int := 0;
+declare v public.vibes; v_confirmed int; v_active int; v_remaining int; v_invited int := 0; v_standby int := 0; c record; rnk int := 0;
 begin
   select * into v from public.vibes where id = p_vibe;
   if v.id is null then raise exception 'vibe not found'; end if;
   if v.host_id <> auth.uid() then raise exception 'only the host can run matching'; end if;
 
   select count(*) into v_confirmed from public.vibe_interests where vibe_id=p_vibe and status='confirmed';
-  v_remaining := greatest(v.capacity - v_confirmed, 0);
+  select count(*) into v_active from public.vibe_interests
+    where vibe_id=p_vibe and status='invited' and (invitation_expires_at is null or invitation_expires_at > now());
+  v_remaining := greatest(v.capacity - v_confirmed - v_active, 0);
 
   for c in
     select vi.user_id,
@@ -112,7 +114,7 @@ begin
     order by score desc
   loop
     rnk := rnk + 1;
-    if rnk <= v_remaining then
+    if rnk <= v_remaining and c.score >= 60 then
       update public.vibe_interests set status='invited', match_score=c.score,
         invitation_sent_at=now(), invitation_expires_at=now()+interval '24 hours'
         where vibe_id=p_vibe and user_id=c.user_id;
@@ -134,22 +136,77 @@ begin
 end $$;
 grant execute on function public.rank_vibe(uuid) to authenticated;
 
--- 6) confirm via notify
-create or replace function public.confirm_vibe(p_vibe uuid)
+-- 6) Host manually approves/denies pending interest
+create or replace function public.host_invite_interest(p_vibe uuid, p_user uuid)
 returns void language plpgsql security definer set search_path = public as $$
-declare v public.vibes;
+declare v public.vibes; v_status text; v_confirmed int; v_active int;
+begin
+  select * into v from public.vibes where id=p_vibe for update;
+  if v.id is null then raise exception 'vibe not found'; end if;
+  if v.host_id <> auth.uid() then raise exception 'only the host can approve interests'; end if;
+  if v.status = 'cancelled' then raise exception 'vibe is cancelled'; end if;
+
+  select status into v_status from public.vibe_interests where vibe_id=p_vibe and user_id=p_user;
+  if v_status is null then raise exception 'interest not found'; end if;
+  if v_status not in ('interested','standby') then raise exception 'only interested or standby users can be approved'; end if;
+
+  select count(*) into v_confirmed from public.vibe_interests where vibe_id=p_vibe and status='confirmed';
+  select count(*) into v_active from public.vibe_interests
+    where vibe_id=p_vibe and status='invited' and (invitation_expires_at is null or invitation_expires_at > now());
+  if greatest(v.capacity - v_confirmed - v_active, 0) <= 0 then
+    raise exception 'vibe is full';
+  end if;
+
+  update public.vibe_interests
+    set status='invited', invitation_sent_at=now(), invitation_expires_at=now()+interval '24 hours'
+    where vibe_id=p_vibe and user_id=p_user;
+  perform public.notify(p_user, 'vibe_invitation', 'You''re invited to '||v.title,
+          'Confirm within 24 hours.', jsonb_build_object('vibe_id', p_vibe));
+end $$;
+grant execute on function public.host_invite_interest(uuid, uuid) to authenticated;
+
+create or replace function public.host_decline_interest(p_vibe uuid, p_user uuid)
+returns void language plpgsql security definer set search_path = public as $$
+declare v public.vibes; v_status text;
 begin
   select * into v from public.vibes where id=p_vibe;
   if v.id is null then raise exception 'vibe not found'; end if;
+  if v.host_id <> auth.uid() then raise exception 'only the host can deny interests'; end if;
+
+  select status into v_status from public.vibe_interests where vibe_id=p_vibe and user_id=p_user;
+  if v_status is null then raise exception 'interest not found'; end if;
+  if v_status = 'confirmed' then raise exception 'confirmed attendees cannot be denied here'; end if;
+
+  update public.vibe_interests
+    set status='declined', invitation_expires_at=null
+    where vibe_id=p_vibe and user_id=p_user;
+  perform public.notify(p_user, 'vibe_declined', v.title || ' is not a match this time',
+          'The host went with a different mix for this Vibe.', jsonb_build_object('vibe_id', p_vibe));
+  perform public.backfill_vibe(p_vibe);
+end $$;
+grant execute on function public.host_decline_interest(uuid, uuid) to authenticated;
+
+-- 7) confirm via notify
+create or replace function public.confirm_vibe(p_vibe uuid)
+returns void language plpgsql security definer set search_path = public as $$
+declare v public.vibes; v_confirmed int; v_updated int;
+begin
+  select * into v from public.vibes where id=p_vibe for update;
+  if v.id is null then raise exception 'vibe not found'; end if;
+  select count(*) into v_confirmed from public.vibe_interests where vibe_id=p_vibe and status='confirmed';
+  if v_confirmed >= v.capacity then raise exception 'vibe is full'; end if;
   update public.vibe_interests set status='confirmed', confirmed_at=now()
-    where vibe_id=p_vibe and user_id=auth.uid() and status in ('invited','interested');
+    where vibe_id=p_vibe and user_id=auth.uid() and status='invited'
+      and (invitation_expires_at is null or invitation_expires_at > now());
+  get diagnostics v_updated = row_count;
+  if v_updated = 0 then raise exception 'invitation required or expired'; end if;
   insert into public.vibing_chats (vibe_id) values (p_vibe) on conflict (vibe_id) do nothing;
   perform public.notify(auth.uid(), 'vibe_confirmed', 'You''re in for '||v.title,
           'Vibing Chat is now open.', jsonb_build_object('vibe_id', p_vibe));
 end $$;
 grant execute on function public.confirm_vibe(uuid) to authenticated;
 
--- 7) Keep filling open vibes from standby automatically (every 10 min)
+-- 8) Keep filling open vibes from standby automatically (every 10 min)
 create or replace function public.autofill_open_vibes()
 returns void language plpgsql security definer set search_path = public as $$
 declare r record;
