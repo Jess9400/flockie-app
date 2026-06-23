@@ -92,7 +92,11 @@ export default async function CompatPage({ params }: { params: { id: string } })
               Explore Vibes near you
             </Link>
             <div className="flex justify-center">
-              <CompatShareButton userId={user.id} variant="ghost" />
+              <CompatShareButton
+                userId={user.id}
+                variant="ghost"
+                label="Compare with another friend"
+              />
             </div>
           </div>
         </div>
