@@ -116,7 +116,13 @@ export default async function MyTripsPage({
                 {t.visibility === "public" ? "Flock" : "Trip"}
               </span>
               {faded ? (
-                <span className="text-[10px] font-bold uppercase text-muted">Past</span>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase ${
+                    t.status === "cancelled" ? "bg-ink text-white" : "bg-[#06D6A0] text-white"
+                  }`}
+                >
+                  {t.status === "cancelled" ? "Cancelled" : "Completed"}
+                </span>
               ) : (
                 t.status !== "active" && (
                   <span className="text-[10px] font-bold uppercase text-muted">{t.status}</span>

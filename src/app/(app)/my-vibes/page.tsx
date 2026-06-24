@@ -97,10 +97,14 @@ export default async function MyVibesPage({
           <div className="flex shrink-0 flex-col items-end gap-1">
             <span
               className={`rounded-full px-2.5 py-0.5 text-[11px] font-extrabold ${
-                STATUS_STYLE[v.status] ?? "bg-cream text-ink"
+                faded
+                  ? v.status === "cancelled"
+                    ? "bg-ink text-white"
+                    : "bg-[#06D6A0] text-white"
+                  : STATUS_STYLE[v.status] ?? "bg-cream text-ink"
               }`}
             >
-              {faded ? "past" : v.status}
+              {faded ? (v.status === "cancelled" ? "Cancelled" : "Completed") : v.status}
             </span>
             <span className="flex items-center gap-1 text-xs font-bold text-muted">
               <Users size={13} /> {counts[v.id] ?? 0}/{v.capacity}
