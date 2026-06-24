@@ -12,6 +12,7 @@ import {
   DEALBREAKER_RULES,
   SKILL_REQUIREMENTS,
 } from "@/lib/vibes";
+import { FLOCK_LANGUAGES } from "@/lib/trips";
 
 const MAX_PHOTOS = 5;
 
@@ -53,6 +54,10 @@ export default function CreateVibeForm({
   const [locationMsg, setLocationMsg] = useState<string | null>(null);
   const [capacity, setCapacity] = useState(10);
   const [genderPref, setGenderPref] = useState("any");
+  const [whatToBring, setWhatToBring] = useState("");
+  const [language, setLanguage] = useState("");
+  const [ageMin, setAgeMin] = useState(18);
+  const [ageMax, setAgeMax] = useState(99);
   const [skill, setSkill] = useState<number | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [rules, setRules] = useState<Record<string, boolean>>({});
@@ -163,6 +168,12 @@ export default function CreateVibeForm({
     if (new Date(endsAt) <= new Date(startsAt)) {
       return setErr("End time must be after the start time.");
     }
+    if (!language) {
+      return setErr("Pick the event's main language.");
+    }
+    if (ageMin > ageMax) {
+      return setErr("Minimum age can't be greater than the maximum age.");
+    }
 
     setSaving(true);
     // Make sure a profile row exists (FK target) before creating the vibe.
@@ -188,6 +199,10 @@ export default function CreateVibeForm({
         signup_deadline: new Date(deadline).toISOString(),
         capacity,
         gender_pref: genderPref,
+        what_to_bring: whatToBring.trim() || null,
+        language,
+        age_min: ageMin,
+        age_max: ageMax,
         event_vibe_tags: tags,
         required_skill_level: skill,
         dealbreaker_rules: rules,
@@ -297,6 +312,15 @@ export default function CreateVibeForm({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="What's the plan, the vibe, who it's for…"
+          />
+        </Field>
+        <Field label="What to bring / cost split (optional)">
+          <textarea
+            className={`${inputCls} h-20 resize-none`}
+            maxLength={300}
+            value={whatToBring}
+            onChange={(e) => setWhatToBring(e.target.value)}
+            placeholder="e.g. Bring a towel & $10 for the boards — we split the taco bill."
           />
         </Field>
         <Field label="Category">
@@ -444,6 +468,42 @@ export default function CreateVibeForm({
               </button>
             ))}
           </div>
+        </Field>
+
+        <Field label="Event language">
+          <select className={inputCls} value={language} onChange={(e) => setLanguage(e.target.value)}>
+            <option value="">Select…</option>
+            {FLOCK_LANGUAGES.map((l) => (
+              <option key={l} value={l}>
+                {l}
+              </option>
+            ))}
+          </select>
+        </Field>
+
+        <Field label="Age range">
+          <div className="flex items-center gap-3">
+            <input
+              type="number"
+              min={16}
+              max={99}
+              value={ageMin}
+              onChange={(e) => setAgeMin(Number(e.target.value))}
+              className={inputCls}
+              aria-label="Minimum age"
+            />
+            <span className="font-bold text-muted">to</span>
+            <input
+              type="number"
+              min={16}
+              max={99}
+              value={ageMax}
+              onChange={(e) => setAgeMax(Number(e.target.value))}
+              className={inputCls}
+              aria-label="Maximum age"
+            />
+          </div>
+          <p className="mt-1 text-xs font-medium text-muted">Leave 18–99 for any age.</p>
         </Field>
 
         <Field label="Required skill level">

@@ -195,6 +195,13 @@ export default async function VibeDetailPage({
         </a>
       )}
 
+      {vibe.what_to_bring && (
+        <div className="mt-4 rounded-2xl border-2 border-ink bg-cream p-3">
+          <p className="text-xs font-extrabold uppercase tracking-wide text-muted">What to bring / cost</p>
+          <p className="mt-1 whitespace-pre-wrap text-sm font-medium text-ink">{vibe.what_to_bring}</p>
+        </div>
+      )}
+
       {/* host — compact tag, tap to view profile */}
       {host?.id && (
         <Link
@@ -221,6 +228,9 @@ export default async function VibeDetailPage({
       {/* tags + rules */}
       {((vibe.event_vibe_tags?.length ?? 0) > 0 ||
         activeRules.length > 0 ||
+        vibe.language ||
+        (vibe.age_min != null && vibe.age_min > 18) ||
+        (vibe.age_max != null && vibe.age_max < 99) ||
         (vibe.gender_pref && vibe.gender_pref !== "any")) && (
         <div className="mt-4 flex flex-wrap gap-2">
           {vibe.event_vibe_tags?.map((t: string) => (
@@ -228,6 +238,16 @@ export default async function VibeDetailPage({
               {t}
             </span>
           ))}
+          {vibe.language && (
+            <span className="rounded-full border-2 border-ink px-3 py-1 text-xs font-bold">
+              🗣️ {vibe.language}
+            </span>
+          )}
+          {((vibe.age_min != null && vibe.age_min > 18) || (vibe.age_max != null && vibe.age_max < 99)) && (
+            <span className="rounded-full border-2 border-ink px-3 py-1 text-xs font-bold">
+              Ages {vibe.age_min ?? 18}–{vibe.age_max ?? 99}
+            </span>
+          )}
           {activeRules.map((r) => (
             <span key={r.key} className="rounded-full border-2 border-ink px-3 py-1 text-xs font-bold">
               {r.label}
