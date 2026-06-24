@@ -15,6 +15,13 @@ import {
 
 const MAX_PHOTOS = 5;
 
+type ResolvedLocation = {
+  label: string;
+  lat: number;
+  lng: number;
+  city: string | null;
+};
+
 export default function CreateVibeForm({
   userId,
   defaultCity,
@@ -39,6 +46,11 @@ export default function CreateVibeForm({
   const [deadline, setDeadline] = useState("");
   const [city, setCity] = useState(defaultCity ?? "");
   const [locationName, setLocationName] = useState("");
+  const [locationLat, setLocationLat] = useState<number | null>(null);
+  const [locationLng, setLocationLng] = useState<number | null>(null);
+  const [resolvedLocation, setResolvedLocation] = useState<ResolvedLocation | null>(null);
+  const [resolvingLocation, setResolvingLocation] = useState(false);
+  const [locationMsg, setLocationMsg] = useState<string | null>(null);
   const [capacity, setCapacity] = useState(10);
   const [genderPref, setGenderPref] = useState("any");
   const [skill, setSkill] = useState<number | null>(null);
@@ -87,6 +99,48 @@ export default function CreateVibeForm({
     );
   }
 
+  function onLocationChange(value: string) {
+    setLocationName(value);
+    setLocationLat(null);
+    setLocationLng(null);
+    setResolvedLocation(null);
+    setLocationMsg(null);
+  }
+
+  async function findExactLocation() {
+    const query = [locationName.trim(), city.trim()].filter(Boolean).join(", ");
+    if (!query) return;
+    setResolvingLocation(true);
+    setLocationMsg(null);
+    try {
+      const res = await fetch(`/api/geocode?q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      if (!res.ok) {
+        setResolvedLocation(null);
+        setLocationMsg("Couldn’t find a clear pin. Try adding a street, area, or venue name.");
+        return;
+      }
+      setResolvedLocation(data as ResolvedLocation);
+      setLocationLat(data.lat);
+      setLocationLng(data.lng);
+      setLocationMsg("Found a likely exact pin. Use it if the address looks right.");
+    } catch {
+      setResolvedLocation(null);
+      setLocationMsg("Map lookup failed. You can still type the location manually.");
+    } finally {
+      setResolvingLocation(false);
+    }
+  }
+
+  function useResolvedLocation() {
+    if (!resolvedLocation) return;
+    setLocationName(resolvedLocation.label);
+    setLocationLat(resolvedLocation.lat);
+    setLocationLng(resolvedLocation.lng);
+    if (resolvedLocation.city) setCity(resolvedLocation.city);
+    setLocationMsg("Exact address added to the location line.");
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
@@ -126,6 +180,8 @@ export default function CreateVibeForm({
         photos,
         city,
         location_name: locationName || null,
+        location_lat: locationLat,
+        location_lng: locationLng,
         activity_url: activityUrl.trim() || null,
         starts_at: new Date(startsAt).toISOString(),
         ends_at: endsAt ? new Date(endsAt).toISOString() : null,
@@ -309,23 +365,49 @@ export default function CreateVibeForm({
           <input
             className={inputCls}
             value={locationName}
-            onChange={(e) => setLocationName(e.target.value)}
-            placeholder="Café Lisboa, Bairro Alto"
+            onChange={(e) => onLocationChange(e.target.value)}
+            placeholder="Venue name, street, or Google Maps address"
             required
           />
+          <button
+            type="button"
+            onClick={findExactLocation}
+            disabled={resolvingLocation || locationName.trim().length < 3}
+            className="mt-2 rounded-full border-2 border-ink bg-white px-4 py-2 text-sm font-bold disabled:opacity-50"
+          >
+            {resolvingLocation ? "Finding pin…" : "Find exact pin"}
+          </button>
+          {resolvedLocation && (
+            <div className="mt-2 rounded-2xl border-2 border-ink bg-cream p-3">
+              <p className="text-xs font-extrabold text-muted">Suggested exact address</p>
+              <p className="mt-1 text-sm font-bold text-ink">{resolvedLocation.label}</p>
+              <button
+                type="button"
+                onClick={useResolvedLocation}
+                className="mt-2 rounded-full border-2 border-ink bg-flockie-blue px-4 py-2 text-xs font-bold text-white"
+              >
+                Use this address
+              </button>
+            </div>
+          )}
           {locationName.trim().length > 2 && (
             <iframe
               title="Location preview"
               src={`https://maps.google.com/maps?q=${encodeURIComponent(
-                `${locationName}${city ? ", " + city : ""}`
+                resolvedLocation?.lat != null && resolvedLocation?.lng != null
+                  ? `${resolvedLocation.lat},${resolvedLocation.lng}`
+                  : `${locationName}${city ? ", " + city : ""}`
               )}&z=15&output=embed`}
               loading="lazy"
               className="mt-2 h-44 w-full rounded-2xl border-2 border-ink"
               referrerPolicy="no-referrer-when-downgrade"
             />
           )}
+          {locationMsg && (
+            <p className="mt-1 text-xs font-bold text-flockie-orange">{locationMsg}</p>
+          )}
           <p className="mt-1 text-xs font-medium text-muted">
-            Check the pin is right. This map is shared with everyone who gets in.
+            Check the pin is right. If the suggested address is correct, add it to the line so attendees see the exact place.
           </p>
         </Field>
       </section>
