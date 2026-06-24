@@ -16,14 +16,19 @@ end $$;
 -- confirm_vibe: invited user accepts; opens chat + confirms + posts "joined".
 create or replace function public.confirm_vibe(p_vibe uuid)
 returns void language plpgsql security definer set search_path = public as $$
-declare v public.vibes; v_name text;
+declare v public.vibes; v_name text; v_confirmed int; v_updated int;
 begin
-  select * into v from public.vibes where id = p_vibe;
+  select * into v from public.vibes where id = p_vibe for update;
   if v.id is null then raise exception 'vibe not found'; end if;
+  select count(*) into v_confirmed from public.vibe_interests where vibe_id = p_vibe and status = 'confirmed';
+  if v_confirmed >= v.capacity then raise exception 'vibe is full'; end if;
 
   update public.vibe_interests
     set status = 'confirmed', confirmed_at = now()
-    where vibe_id = p_vibe and user_id = auth.uid() and status in ('invited', 'interested');
+    where vibe_id = p_vibe and user_id = auth.uid() and status = 'invited'
+      and (invitation_expires_at is null or invitation_expires_at > now());
+  get diagnostics v_updated = row_count;
+  if v_updated = 0 then raise exception 'invitation required or expired'; end if;
 
   insert into public.vibing_chats (vibe_id) values (p_vibe) on conflict (vibe_id) do nothing;
 
