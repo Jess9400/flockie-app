@@ -4,6 +4,7 @@ import { Plus, Pencil, MapPin, CalendarClock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import DeleteTripButton from "@/components/DeleteTripButton";
 import PageTabs from "@/components/PageTabs";
+import Pagination from "@/components/Pagination";
 
 const TRIP_TABS = [
   { href: "/my-trips", label: "My Trips" },
@@ -11,7 +12,25 @@ const TRIP_TABS = [
   { href: "/deals", label: "Deals" },
 ];
 
-export default async function MyActivitiesPage() {
+const PAGE_SIZE = 5;
+
+type ActivityRow = {
+  id: string;
+  title: string | null;
+  destination: string | null;
+  destinations: string[] | null;
+  start_date: string;
+  end_date: string;
+  trip_type: string[] | null;
+  status: string;
+  cover_photo: string | null;
+};
+
+export default async function MyActivitiesPage({
+  searchParams,
+}: {
+  searchParams: { page?: string };
+}) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -23,6 +42,80 @@ export default async function MyActivitiesPage() {
     .eq("user_id", user!.id)
     .eq("kind", "activity")
     .order("created_at", { ascending: false });
+
+  const all = (activities ?? []) as ActivityRow[];
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const isPast = (t: ActivityRow) =>
+    t.status === "completed" || t.status === "cancelled" || (!!t.end_date && t.end_date < todayStr);
+  const activeList = all.filter((t) => !isPast(t));
+  const pastList = all.filter(isPast);
+
+  const page = Math.max(1, Number(searchParams.page) || 1);
+  const totalPages = Math.max(1, Math.ceil(activeList.length / PAGE_SIZE));
+  const pageList = activeList.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  function ActivityCard({ t, faded }: { t: ActivityRow; faded?: boolean }) {
+    return (
+      <div
+        className={`rounded-2xl border-2 border-ink bg-white p-4 shadow-[0_3px_0_0_rgba(26,26,26,1)] ${faded ? "opacity-60" : ""}`}
+      >
+        <div className="flex items-start justify-between gap-3">
+          {t.cover_photo && (
+            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 border-ink bg-cream">
+              <Image src={t.cover_photo} alt="" fill sizes="64px" className="object-cover" />
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <span className="rounded-full border-2 border-ink bg-flockie-blue px-2 py-0.5 text-[10px] font-extrabold uppercase text-white">
+                Activity
+              </span>
+              {faded ? (
+                <span
+                  className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase ${
+                    t.status === "cancelled" ? "bg-ink text-white" : "bg-[#06D6A0] text-white"
+                  }`}
+                >
+                  {t.status === "cancelled" ? "Cancelled" : "Completed"}
+                </span>
+              ) : (
+                t.status !== "active" && (
+                  <span className="text-[10px] font-bold uppercase text-muted">{t.status}</span>
+                )
+              )}
+            </div>
+            <p className="mt-1 flex items-center gap-1.5 font-extrabold">
+              <MapPin size={15} className="text-flockie-orange" />{" "}
+              {t.title || (t.destinations ?? [t.destination]).filter(Boolean).join(" · ")}
+            </p>
+            <p className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-muted">
+              <CalendarClock size={13} /> {t.start_date} → {t.end_date}
+            </p>
+            {(t.trip_type?.length ?? 0) > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {t.trip_type!.map((tag) => (
+                  <span key={tag} className="rounded-full bg-cream px-2 py-0.5 text-[11px] font-bold">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            {!faded && (
+              <Link
+                href={`/match/trip?id=${t.id}`}
+                className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-sm font-bold"
+              >
+                <Pencil size={14} /> Edit
+              </Link>
+            )}
+            <DeleteTripButton tripId={t.id} label={t.title ? `"${t.title}"` : "this activity"} />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <main className="px-5 pb-10 pt-6">
@@ -41,61 +134,26 @@ export default async function MyActivitiesPage() {
       </p>
 
       <div className="mt-6 space-y-3">
-        {(activities ?? []).length === 0 && (
+        {activeList.length === 0 ? (
           <div className="rounded-3xl border-2 border-dashed border-ink/30 py-12 text-center font-medium text-muted">
-            No activities yet. Post one to find a buddy to do it with.
+            No upcoming activities. Post one to find a buddy to do it with.
           </div>
+        ) : (
+          pageList.map((t) => <ActivityCard key={t.id} t={t} />)
         )}
-        {(activities ?? []).map((t) => (
-          <div
-            key={t.id}
-            className="rounded-2xl border-2 border-ink bg-white p-4 shadow-[0_3px_0_0_rgba(26,26,26,1)]"
-          >
-            <div className="flex items-start justify-between gap-3">
-              {t.cover_photo && (
-                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 border-ink">
-                  <Image src={t.cover_photo} alt="" fill sizes="64px" className="object-cover" />
-                </div>
-              )}
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="rounded-full border-2 border-ink bg-flockie-blue px-2 py-0.5 text-[10px] font-extrabold uppercase text-white">
-                    Activity
-                  </span>
-                  {t.status !== "active" && (
-                    <span className="text-[10px] font-bold uppercase text-muted">{t.status}</span>
-                  )}
-                </div>
-                <p className="mt-1 flex items-center gap-1.5 font-extrabold">
-                  <MapPin size={15} className="text-flockie-orange" />{" "}
-                  {t.title || (t.destinations ?? [t.destination]).filter(Boolean).join(" · ")}
-                </p>
-                <p className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-muted">
-                  <CalendarClock size={13} /> {t.start_date} → {t.end_date}
-                </p>
-                {(t.trip_type?.length ?? 0) > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {t.trip_type!.map((tag: string) => (
-                      <span key={tag} className="rounded-full bg-cream px-2 py-0.5 text-[11px] font-bold">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="flex shrink-0 items-center gap-2">
-                <Link
-                  href={`/match/trip?id=${t.id}`}
-                  className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-sm font-bold"
-                >
-                  <Pencil size={14} /> Edit
-                </Link>
-                <DeleteTripButton tripId={t.id} label={t.title ? `"${t.title}"` : "this activity"} />
-              </div>
-            </div>
-          </div>
-        ))}
       </div>
+      <Pagination page={page} totalPages={totalPages} hrefFor={(p) => (p > 1 ? `/my-activities?page=${p}` : "/my-activities")} />
+
+      {pastList.length > 0 && (
+        <>
+          <h2 className="mt-8 text-lg font-extrabold text-muted">Past activities</h2>
+          <div className="mt-3 space-y-3">
+            {pastList.map((t) => (
+              <ActivityCard key={t.id} t={t} faded />
+            ))}
+          </div>
+        </>
+      )}
     </main>
   );
 }

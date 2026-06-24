@@ -190,13 +190,18 @@ export default async function ChatsPage({
       return b.sortKey - a.sortKey;
     });
 
-  sortRows(buddyRows);
+  // Three tabs: Travel (trips + flocks), Activity (1:1 activity buddies), Vibes.
+  const travelRows = buddyRows.filter((r) => r.kind === "travel_buddy" || r.kind === "flock");
+  const activityRows = buddyRows.filter((r) => r.kind === "activity_buddy");
+  sortRows(travelRows);
+  sortRows(activityRows);
   sortRows(vibeRows);
 
-  // One inbox, two tabs: Travel (1:1 buddy chats) and Events (group Vibe chats).
-  const tab = searchParams.tab === "events" ? "events" : "travel";
-  const travelUnread = buddyRows.filter((r) => r.unread > 0).length;
-  const eventsUnread = vibeRows.filter((r) => r.unread > 0).length;
+  const tab =
+    searchParams.tab === "vibes" ? "vibes" : searchParams.tab === "activity" ? "activity" : "travel";
+  const travelUnread = travelRows.filter((r) => r.unread > 0).length;
+  const activityUnread = activityRows.filter((r) => r.unread > 0).length;
+  const vibesUnread = vibeRows.filter((r) => r.unread > 0).length;
 
   return (
     <main className="mx-auto w-full max-w-2xl px-5 pb-12 pt-6 font-nunito">
@@ -207,29 +212,53 @@ export default async function ChatsPage({
 
       <div className="mt-5 inline-flex gap-1 rounded-full border-2 border-ink bg-white p-1 text-sm font-bold">
         <TabLink href="/chats?tab=travel" active={tab === "travel"} label="Travel" count={travelUnread} />
-        <TabLink href="/chats?tab=events" active={tab === "events"} label="Events" count={eventsUnread} />
+        <TabLink href="/chats?tab=activity" active={tab === "activity"} label="Activity" count={activityUnread} />
+        <TabLink href="/chats?tab=vibes" active={tab === "vibes"} label="Vibes" count={vibesUnread} />
       </div>
 
-      {tab === "travel" ? (
+      {tab === "travel" && (
         <section className="mt-6">
           <p className="font-nunito text-sm font-normal text-navy/60">
-            1:1 chats with your trip &amp; activity buddies
+            Trip &amp; Flock chats — buddies and groups
           </p>
           <div className="mt-3 space-y-3">
-            {buddyRows.length === 0 ? (
+            {travelRows.length === 0 ? (
               <EmptyState
                 variant="buddy"
-                title="No buddy chats yet"
-                body="When you match 1:1 for a trip or activity, your chat will appear here."
+                title="No travel chats yet"
+                body="When you match for a trip or join a Flock, your chat shows up here."
                 cta="Find a Buddy"
                 href="/match"
               />
             ) : (
-              buddyRows.map(renderRow)
+              travelRows.map(renderRow)
             )}
           </div>
         </section>
-      ) : (
+      )}
+
+      {tab === "activity" && (
+        <section className="mt-6">
+          <p className="font-nunito text-sm font-normal text-navy/60">
+            1:1 chats with your activity buddies
+          </p>
+          <div className="mt-3 space-y-3">
+            {activityRows.length === 0 ? (
+              <EmptyState
+                variant="buddy"
+                title="No activity chats yet"
+                body="Match on a 1:1 activity and your chat will appear here."
+                cta="Find a Buddy"
+                href="/match"
+              />
+            ) : (
+              activityRows.map(renderRow)
+            )}
+          </div>
+        </section>
+      )}
+
+      {tab === "vibes" && (
         <section className="mt-6">
           <p className="font-nunito text-sm font-normal text-navy/60">
             Group chats from Vibes you joined

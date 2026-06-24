@@ -3,16 +3,17 @@ import Image from "next/image";
 import { MapPin, CalendarClock, Users, Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import FlockRequestButton from "@/components/FlockRequestButton";
+import FlockFilters from "@/components/FlockFilters";
 import Pagination from "@/components/Pagination";
 import { loadFlockMatch } from "@/lib/vibe-stats";
-import { tripDays } from "@/lib/trips";
+import { tripDays, GROUP_SIZE_BUCKETS } from "@/lib/trips";
 
 const PAGE_SIZE = 6;
 
 export default async function FlocksPage({
   searchParams,
 }: {
-  searchParams: { page?: string };
+  searchParams: { page?: string; continent?: string; gender?: string; size?: string; language?: string };
 }) {
   const supabase = await createClient();
   const {
@@ -21,25 +22,45 @@ export default async function FlocksPage({
 
   const page = Math.max(1, Number(searchParams.page) || 1);
   const from = (page - 1) * PAGE_SIZE;
+  const continent = searchParams.continent ?? "";
+  const gender = searchParams.gender ?? "";
+  const language = searchParams.language ?? "";
+  const sizeBucket = GROUP_SIZE_BUCKETS.find((b) => b.value === searchParams.size);
 
-  const { data: trips, count } = await supabase
+  let query = supabase
     .from("trips")
     .select(
-      "id, user_id, destination, destinations, start_date, end_date, group_size, trip_type, cover_photo",
+      "id, user_id, destination, destinations, start_date, end_date, group_size, trip_type, cover_photo, continent, group_gender, language",
       { count: "exact" }
     )
     .eq("visibility", "public")
     .eq("kind", "trip")
     .eq("status", "active")
     .neq("user_id", user!.id)
-    .gte("end_date", new Date().toISOString().slice(0, 10))
+    .gte("end_date", new Date().toISOString().slice(0, 10));
+
+  if (continent) query = query.eq("continent", continent);
+  if (gender) query = query.eq("group_gender", gender);
+  if (language) query = query.eq("language", language);
+  if (sizeBucket) query = query.gte("group_size", sizeBucket.min).lte("group_size", sizeBucket.max);
+
+  const { data: trips, count } = await query
     .order("start_date", { ascending: true })
     .range(from, from + PAGE_SIZE - 1);
 
   const list = trips ?? [];
   const ids = list.map((t) => t.id);
   const totalPages = Math.max(1, Math.ceil((count ?? 0) / PAGE_SIZE));
-  const hrefFor = (p: number) => (p > 1 ? `/flocks?page=${p}` : "/flocks");
+  const hrefFor = (p: number) => {
+    const sp = new URLSearchParams();
+    if (continent) sp.set("continent", continent);
+    if (gender) sp.set("gender", gender);
+    if (searchParams.size) sp.set("size", searchParams.size);
+    if (language) sp.set("language", language);
+    if (p > 1) sp.set("page", String(p));
+    const qs = sp.toString();
+    return qs ? `/flocks?${qs}` : "/flocks";
+  };
 
   // join requests (accepted = going; mine = requested)
   const acceptedCount: Record<string, number> = {};
@@ -91,9 +112,13 @@ export default async function FlocksPage({
         <span className="rounded-full bg-flockie-blue py-2 text-center text-white">Find a Flock</span>
       </div>
 
+      <FlockFilters />
+
       {cards.length === 0 ? (
         <div className="mt-6 rounded-3xl border-2 border-dashed border-ink/30 py-16 text-center font-medium text-muted">
-          No open trips yet. Post a trip and set it to Public to start a Flock.
+          {continent || gender || language || sizeBucket
+            ? "No Flocks match these filters. Try widening them."
+            : "No open trips yet. Post a trip and set it to Public to start a Flock."}
         </div>
       ) : (
         <>
