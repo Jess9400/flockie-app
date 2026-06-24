@@ -5,6 +5,7 @@ import { ChevronLeft, MapPin, Users, CalendarClock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import InterestButton from "@/components/InterestButton";
 import HostVibeControls from "@/components/HostVibeControls";
+import VibeSettingsButton from "@/components/VibeSettingsButton";
 import ShareVibeButton from "@/components/ShareVibeButton";
 import VibeReviewSummary from "@/components/VibeReviewSummary";
 import { formatVibeWhen, DEALBREAKER_RULES, VIBE_REVIEW_TAGS, type InterestStatus } from "@/lib/vibes";
@@ -137,9 +138,19 @@ export default async function VibeDetailPage({
         </div>
       )}
 
-      <span className="mt-4 inline-block rounded-full border-2 border-ink bg-white px-3 py-0.5 text-xs font-extrabold lowercase">
-        {vibe.category}
-      </span>
+      <div className="mt-4 flex items-center justify-between gap-2">
+        <span className="inline-block rounded-full border-2 border-ink bg-white px-3 py-0.5 text-xs font-extrabold lowercase">
+          {vibe.category}
+        </span>
+        {isHost && (
+          <VibeSettingsButton
+            vibeId={vibe.id}
+            startsAt={vibe.starts_at}
+            endsAt={vibe.ends_at}
+            signupDeadline={vibe.signup_deadline}
+          />
+        )}
+      </div>
       <h1 className="mt-2 text-2xl font-black leading-tight">{vibe.title}</h1>
 
       <div className="mt-3 space-y-1.5 text-sm font-medium text-ink">
@@ -286,13 +297,7 @@ export default async function VibeDetailPage({
 
       <div className="mt-4">
         {isHost ? (
-          <HostVibeControls
-            vibeId={vibe.id}
-            status={vibe.status}
-            startsAt={vibe.starts_at}
-            endsAt={vibe.ends_at}
-            signupDeadline={vibe.signup_deadline}
-          />
+          <HostVibeControls vibeId={vibe.id} status={vibe.status} />
         ) : (
           <InterestButton
             vibeId={vibe.id}

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Share2 } from "lucide-react";
 
-export default function ShareVibeButton({ vibeId }: { vibeId: string }) {
+export default function ShareVibeButton({ vibeId, tile }: { vibeId: string; tile?: boolean }) {
   const [copied, setCopied] = useState(false);
 
   async function share() {
@@ -21,6 +21,19 @@ export default function ShareVibeButton({ vibeId }: { vibeId: string }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {}
+  }
+
+  // Compact tile for the side-by-side host action row.
+  if (tile) {
+    return (
+      <button
+        type="button"
+        onClick={share}
+        className="flex flex-col items-center justify-center gap-1 rounded-2xl border-2 border-ink bg-white py-3 text-[11px] font-bold text-ink"
+      >
+        <Share2 size={18} /> {copied ? "Copied!" : "Invite"}
+      </button>
+    );
   }
 
   return (
