@@ -67,12 +67,12 @@ export default async function VibeDetailPage({
     .eq("vibe_id", params.id)
     .eq("status", "confirmed");
 
-  let attendees: { display_name: string | null; photos: string[] | null }[] = [];
+  let attendees: { id: string; display_name: string | null; photos: string[] | null }[] = [];
   const attendeeIds = (confirmedRows ?? []).map((r) => r.user_id);
   if (attendeeIds.length) {
     const { data: ap } = await supabase
       .from("profiles")
-      .select("display_name, photos")
+      .select("id, display_name, photos")
       .in("id", attendeeIds);
     attendees = ap ?? [];
   }
@@ -195,23 +195,28 @@ export default async function VibeDetailPage({
         </a>
       )}
 
-      {/* host — compact tag */}
-      <div className="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-white py-1 pl-1 pr-3">
-        {host?.photos?.[0] ? (
-          <Image
-            src={host.photos[0]}
-            alt=""
-            width={24}
-            height={24}
-            className="h-6 w-6 rounded-full object-cover"
-          />
-        ) : (
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-flockie-blue text-[10px] font-bold text-white">
-            {(host?.display_name || "F")[0]}
-          </span>
-        )}
-        <span className="text-xs font-bold">Hosted by {host?.display_name || "a flockie"}</span>
-      </div>
+      {/* host — compact tag, tap to view profile */}
+      {host?.id && (
+        <Link
+          href={`/people/${host.id}`}
+          className="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-white py-1 pl-1 pr-3 transition-colors hover:bg-cream"
+        >
+          {host.photos?.[0] ? (
+            <Image
+              src={host.photos[0]}
+              alt=""
+              width={24}
+              height={24}
+              className="h-6 w-6 rounded-full object-cover"
+            />
+          ) : (
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-flockie-blue text-[10px] font-bold text-white">
+              {(host.display_name || "F")[0]}
+            </span>
+          )}
+          <span className="text-xs font-bold">Hosted by {host.display_name || "a flockie"}</span>
+        </Link>
+      )}
 
       {/* tags + rules */}
       {((vibe.event_vibe_tags?.length ?? 0) > 0 ||
@@ -236,29 +241,39 @@ export default async function VibeDetailPage({
         </div>
       )}
 
-      {/* confirmed attendees */}
+      {/* confirmed attendees — tap any to view their profile */}
       {(confirmedCount ?? 0) > 0 && (
         <div className="mt-5">
-          <p className="text-sm font-bold">Going</p>
-          <div className="mt-2 flex -space-x-2">
-            {attendees.map((a, i) =>
-              a.photos?.[0] ? (
-                <Image
-                  key={i}
-                  src={a.photos[0]}
-                  alt=""
-                  width={32}
-                  height={32}
-                  className="h-8 w-8 rounded-full border-2 border-white object-cover"
-                />
-              ) : (
-                <span
-                  key={i}
-                  className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-flockie-blue text-xs font-bold text-white"
-                >
-                  {(a.display_name || "F")[0]}
-                </span>
-              )
+          <p className="text-sm font-bold">
+            Going{(confirmedCount ?? 0) > 0 ? ` · ${confirmedCount}` : ""}
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {attendees.map((a) => (
+              <Link
+                key={a.id}
+                href={`/people/${a.id}`}
+                className="flex items-center gap-1.5 rounded-full border-2 border-ink bg-white py-1 pl-1 pr-3 transition-colors hover:bg-cream"
+              >
+                {a.photos?.[0] ? (
+                  <Image
+                    src={a.photos[0]}
+                    alt=""
+                    width={24}
+                    height={24}
+                    className="h-6 w-6 rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-flockie-blue text-[10px] font-bold text-white">
+                    {(a.display_name || "F")[0]}
+                  </span>
+                )}
+                <span className="text-xs font-bold">{a.display_name || "Flockie"}</span>
+              </Link>
+            ))}
+            {(confirmedCount ?? 0) > attendees.length && (
+              <span className="flex items-center rounded-full bg-cream px-3 py-1 text-xs font-bold text-muted">
+                +{(confirmedCount ?? 0) - attendees.length} more
+              </span>
             )}
           </div>
         </div>
