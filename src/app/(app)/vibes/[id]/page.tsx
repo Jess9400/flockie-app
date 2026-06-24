@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ChevronLeft, MapPin, Users, CalendarClock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import InterestButton from "@/components/InterestButton";
+import HostVibeApplicants, { type HostVibeCandidate } from "@/components/HostVibeApplicants";
 import HostVibeControls from "@/components/HostVibeControls";
 import VibeSettingsButton from "@/components/VibeSettingsButton";
 import ShareVibeButton from "@/components/ShareVibeButton";
@@ -80,6 +81,8 @@ export default async function VibeDetailPage({
 
   // Host-only matching tally (Interested / Invited / Going / Standby counts).
   const tally: Record<string, number> = {};
+  let hostCandidates: HostVibeCandidate[] = [];
+  let activeInviteCount = 0;
   if (isHost) {
     const { data: rows } = await supabase
       .from("vibe_interests")
@@ -88,6 +91,51 @@ export default async function VibeDetailPage({
     rows?.forEach((r) => {
       tally[r.status] = (tally[r.status] ?? 0) + 1;
     });
+
+    const { data: candidateRows } = await supabase
+      .from("vibe_interests")
+      .select("user_id, status, match_score, created_at, invitation_expires_at")
+      .eq("vibe_id", params.id)
+      .in("status", ["interested", "standby", "invited"])
+      .order("match_score", { ascending: false, nullsFirst: false })
+      .order("created_at", { ascending: true });
+
+    const candidateIds = (candidateRows ?? []).map((r) => r.user_id);
+    const now = Date.now();
+    activeInviteCount = (candidateRows ?? []).filter(
+      (r) =>
+        r.status === "invited" &&
+        (!r.invitation_expires_at || new Date(r.invitation_expires_at).getTime() > now)
+    ).length;
+
+    if (candidateIds.length) {
+      const { data: candidateProfiles } = await supabase
+        .from("profiles")
+        .select("id, display_name, photos, one_liner, age, home_city")
+        .in("id", candidateIds);
+      const profileById = new Map((candidateProfiles ?? []).map((p) => [p.id, p]));
+
+      hostCandidates = (candidateRows ?? [])
+        .map((row) => {
+          const profile = profileById.get(row.user_id);
+          if (!profile) return null;
+          return {
+            userId: row.user_id,
+            status: row.status as InterestStatus,
+            matchScore: row.match_score ?? null,
+            createdAt: row.created_at ?? null,
+            invitationExpiresAt: row.invitation_expires_at ?? null,
+            profile: {
+              displayName: profile.display_name ?? null,
+              photos: profile.photos ?? null,
+              oneLiner: profile.one_liner ?? null,
+              age: profile.age ?? null,
+              homeCity: profile.home_city ?? null,
+            },
+          } satisfies HostVibeCandidate;
+        })
+        .filter((candidate): candidate is HostVibeCandidate => candidate !== null);
+    }
   }
 
   const rules = (vibe.dealbreaker_rules ?? {}) as Record<string, boolean>;
@@ -271,22 +319,31 @@ export default async function VibeDetailPage({
       )}
 
       {isHost && (
-        <div className="mt-6 rounded-2xl border-2 border-ink bg-white p-4">
-          <p className="text-sm font-extrabold">Matching results (host only)</p>
-          <div className="mt-3 grid grid-cols-4 gap-2 text-center">
-            {[
-              { k: "interested", label: "Interested" },
-              { k: "invited", label: "Invited" },
-              { k: "confirmed", label: "Going" },
-              { k: "standby", label: "Standby" },
-            ].map((s) => (
-              <div key={s.k} className="rounded-xl bg-cream py-2">
-                <p className="text-xl font-black">{tally[s.k] ?? 0}</p>
-                <p className="text-[11px] font-bold text-muted">{s.label}</p>
-              </div>
-            ))}
+        <>
+          <div className="mt-6 rounded-2xl border-2 border-ink bg-white p-4">
+            <p className="text-sm font-extrabold">Matching results (host only)</p>
+            <div className="mt-3 grid grid-cols-4 gap-2 text-center">
+              {[
+                { k: "interested", label: "Interested" },
+                { k: "invited", label: "Invited" },
+                { k: "confirmed", label: "Going" },
+                { k: "standby", label: "Standby" },
+              ].map((s) => (
+                <div key={s.k} className="rounded-xl bg-cream py-2">
+                  <p className="text-xl font-black">{tally[s.k] ?? 0}</p>
+                  <p className="text-[11px] font-bold text-muted">{s.label}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+          <HostVibeApplicants
+            vibeId={vibe.id}
+            capacity={vibe.capacity}
+            confirmedCount={confirmedCount ?? 0}
+            activeInviteCount={activeInviteCount}
+            candidates={hostCandidates}
+          />
+        </>
       )}
 
       {!isHost && (
