@@ -91,14 +91,23 @@ export default function CreateVibeForm({
     e.preventDefault();
     setErr(null);
 
-    if (!title || !description || !category || !startsAt || !deadline || !city) {
+    if (!title || !description || !category || !startsAt || !endsAt || !deadline || !city) {
       return setErr("Please fill in all required fields.");
     }
     if (!locationName.trim()) {
       return setErr("A location is required — it's sent to attendees and pinned in the chat.");
     }
+    if (photos.length === 0) {
+      return setErr("Add at least one cover photo — upload one or generate it.");
+    }
+    if (tags.length === 0) {
+      return setErr("Pick at least one event vibe tag — it powers the matching.");
+    }
     if (new Date(deadline) >= new Date(startsAt)) {
       return setErr("Signup deadline must be before the start time.");
+    }
+    if (new Date(endsAt) <= new Date(startsAt)) {
+      return setErr("End time must be after the start time.");
     }
 
     setSaving(true);
@@ -182,7 +191,7 @@ export default function CreateVibeForm({
           />
         </Field>
 
-        <Field label="Cover photos (up to 5)">
+        <Field label="Cover photos (required · up to 5)">
           <div className="grid grid-cols-3 gap-2">
             {photos.map((url, i) => (
               <div
@@ -272,7 +281,7 @@ export default function CreateVibeForm({
             onChange={(e) => setStartsAt(e.target.value)}
           />
         </Field>
-        <Field label="Ends (optional)">
+        <Field label="Ends">
           <input
             type="datetime-local"
             className={inputCls}
@@ -368,7 +377,7 @@ export default function CreateVibeForm({
             ))}
           </select>
         </Field>
-        <Field label={`Event vibe tags (max ${EVENT_VIBE_TAGS_MAX})`}>
+        <Field label={`Event vibe tags (pick at least 1 · max ${EVENT_VIBE_TAGS_MAX})`}>
           <div className="flex flex-wrap gap-2">
             {EVENT_VIBE_TAGS.map((t) => {
               const on = tags.includes(t);

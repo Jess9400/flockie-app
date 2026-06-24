@@ -1,35 +1,48 @@
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, CalendarClock, Users, Wallet, Gauge, Plus } from "lucide-react";
+import { MapPin, CalendarClock, Users, Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import FlockRequestButton from "@/components/FlockRequestButton";
+import Pagination from "@/components/Pagination";
 import { loadFlockMatch } from "@/lib/vibe-stats";
-import { BUDGET_LABELS, PACE_LABELS, tripDays } from "@/lib/trips";
+import { tripDays } from "@/lib/trips";
 
-type Member = { id: string; name: string; photo: string | null; isHost: boolean };
+const PAGE_SIZE = 6;
 
-export default async function FlocksPage() {
+export default async function FlocksPage({
+  searchParams,
+}: {
+  searchParams: { page?: string };
+}) {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: trips } = await supabase
+  const page = Math.max(1, Number(searchParams.page) || 1);
+  const from = (page - 1) * PAGE_SIZE;
+
+  const { data: trips, count } = await supabase
     .from("trips")
-    .select("id, user_id, destination, destinations, start_date, end_date, group_size, trip_type, budget, pace, cover_photo")
+    .select(
+      "id, user_id, destination, destinations, start_date, end_date, group_size, trip_type, cover_photo",
+      { count: "exact" }
+    )
     .eq("visibility", "public")
     .eq("kind", "trip")
     .eq("status", "active")
     .neq("user_id", user!.id)
     .gte("end_date", new Date().toISOString().slice(0, 10))
     .order("start_date", { ascending: true })
-    .limit(40);
+    .range(from, from + PAGE_SIZE - 1);
 
   const list = trips ?? [];
   const ids = list.map((t) => t.id);
+  const totalPages = Math.max(1, Math.ceil((count ?? 0) / PAGE_SIZE));
+  const hrefFor = (p: number) => (p > 1 ? `/flocks?page=${p}` : "/flocks");
 
   // join requests (accepted = going; mine = requested)
-  const accepted: Record<string, string[]> = {};
+  const acceptedCount: Record<string, number> = {};
   const requested = new Set<string>();
   if (ids.length) {
     const { data: reqs } = await supabase
@@ -37,25 +50,26 @@ export default async function FlocksPage() {
       .select("trip_id, user_id, status")
       .in("trip_id", ids);
     reqs?.forEach((r) => {
-      if (r.status === "accepted") (accepted[r.trip_id] ??= []).push(r.user_id);
+      if (r.status === "accepted") acceptedCount[r.trip_id] = (acceptedCount[r.trip_id] ?? 0) + 1;
       if (r.user_id === user!.id) requested.add(r.trip_id);
     });
   }
 
-  // profiles for hosts + accepted members
-  const peopleIds = Array.from(
-    new Set([...list.map((t) => t.user_id), ...Object.values(accepted).flat()])
-  );
+  // host profiles
+  const hostIds = Array.from(new Set(list.map((t) => t.user_id)));
   const profiles: Record<string, { display_name: string | null; photos: string[] | null }> = {};
-  if (peopleIds.length) {
+  if (hostIds.length) {
     const { data: pp } = await supabase
       .from("profiles")
       .select("id, display_name, photos")
-      .in("id", peopleIds);
+      .in("id", hostIds);
     pp?.forEach((p) => (profiles[p.id] = { display_name: p.display_name, photos: p.photos }));
   }
 
   const matches = await loadFlockMatch(supabase, ids);
+
+  // Full Flocks drop off the list.
+  const cards = list.filter((t) => 1 + (acceptedCount[t.id] ?? 0) < t.group_size);
 
   return (
     <main className="px-5 pb-10 pt-6">
@@ -77,120 +91,92 @@ export default async function FlocksPage() {
         <span className="rounded-full bg-flockie-blue py-2 text-center text-white">Find a Flock</span>
       </div>
 
-      <div className="mt-6 space-y-3">
-        {list.length === 0 && (
-          <div className="rounded-3xl border-2 border-dashed border-ink/30 py-16 text-center font-medium text-muted">
-            No open trips yet. Post a trip and set it to Public to start a Flock.
-          </div>
-        )}
-        {list.map((t) => {
-          const days = tripDays(t.start_date, t.end_date);
-          const pct = matches[t.id];
-          const members: Member[] = [
-            { id: t.user_id, name: profiles[t.user_id]?.display_name || "Host", photo: profiles[t.user_id]?.photos?.[0] ?? null, isHost: true },
-            ...(accepted[t.id] ?? []).map((uid) => ({
-              id: uid,
-              name: profiles[uid]?.display_name || "Flockie",
-              photo: profiles[uid]?.photos?.[0] ?? null,
-              isHost: false,
-            })),
-          ];
-          const going = members.length;
-          if (going >= t.group_size) return null; // full Flocks drop off the list
-          return (
-            <div
-              key={t.id}
-              className="overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-[0_3px_0_0_rgba(26,26,26,1)]"
-            >
-              {t.cover_photo && (
-                <div className="relative aspect-[16/6] w-full border-b-2 border-ink">
-                  <Image src={t.cover_photo} alt="" fill sizes="(max-width:768px) 100vw, 600px" className="object-cover" />
-                </div>
-              )}
-              <div className="p-4">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  {members[0].photo ? (
-                    <Image src={members[0].photo} alt="" width={28} height={28} className="h-7 w-7 rounded-full object-cover" />
-                  ) : (
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-flockie-blue text-xs font-bold text-white">
-                      {members[0].name[0]}
-                    </span>
-                  )}
-                  <span className="text-sm font-bold">{members[0].name}</span>
-                </div>
-                {typeof pct === "number" && (
-                  <span className="shrink-0 rounded-full bg-flockie-blue px-2.5 py-0.5 text-xs font-bold text-white">
-                    ✨ {pct}% your vibe
-                  </span>
-                )}
-              </div>
-
-              <p className="mt-2 flex items-center gap-1.5 font-extrabold">
-                <MapPin size={15} className="text-flockie-orange" />{" "}
-                {(t.destinations ?? [t.destination]).filter(Boolean).join(" · ")}
-              </p>
-
-              <p className="mt-1 flex items-center gap-1.5 text-xs font-medium text-muted">
-                <CalendarClock size={13} /> {t.start_date} → {t.end_date}
-                {days > 0 && <span className="font-bold text-ink/70">· {days} days</span>}
-              </p>
-
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                <span className="flex items-center gap-1 rounded-full bg-cream px-2.5 py-1 text-[11px] font-bold text-ink">
-                  <Users size={12} /> {going}/{t.group_size} going
-                </span>
-                {t.budget != null && (
-                  <span className="flex items-center gap-1 rounded-full bg-cream px-2.5 py-1 text-[11px] font-bold text-ink">
-                    <Wallet size={12} /> {BUDGET_LABELS[t.budget - 1]}
-                  </span>
-                )}
-                {t.pace != null && (
-                  <span className="flex items-center gap-1 rounded-full bg-cream px-2.5 py-1 text-[11px] font-bold text-ink">
-                    <Gauge size={12} /> {PACE_LABELS[t.pace - 1]}
-                  </span>
-                )}
-              </div>
-
-              {/* confirmed members — tap to view profile */}
-              <div className="mt-3 flex items-center gap-1">
-                {members.slice(0, 6).map((m) => (
-                  <Link key={m.id} href={`/people/${m.id}`} title={m.name} className="relative">
-                    {m.photo ? (
-                      <Image src={m.photo} alt={m.name} width={32} height={32} className="h-8 w-8 rounded-full border-2 border-white object-cover ring-1 ring-ink/10" />
+      {cards.length === 0 ? (
+        <div className="mt-6 rounded-3xl border-2 border-dashed border-ink/30 py-16 text-center font-medium text-muted">
+          No open trips yet. Post a trip and set it to Public to start a Flock.
+        </div>
+      ) : (
+        <>
+          <div className="mt-6 grid grid-cols-3 gap-2.5">
+            {cards.map((t) => {
+              const days = tripDays(t.start_date, t.end_date);
+              const pct = matches[t.id];
+              const going = 1 + (acceptedCount[t.id] ?? 0);
+              const host = profiles[t.user_id];
+              const hostName = host?.display_name || "Host";
+              const destination = (t.destinations ?? [t.destination]).filter(Boolean).join(" · ");
+              return (
+                <div
+                  key={t.id}
+                  className="flex flex-col overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-[0_4px_0_0_rgba(26,26,26,1)]"
+                >
+                  {/* Artwork — square so the whole cover shows, never cropped */}
+                  <div className="relative aspect-square w-full border-b-2 border-ink bg-cream">
+                    {t.cover_photo ? (
+                      <Image
+                        src={t.cover_photo}
+                        alt=""
+                        fill
+                        sizes="(max-width:640px) 33vw, 240px"
+                        className="object-contain"
+                      />
                     ) : (
-                      <span className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-flockie-blue text-xs font-bold text-white ring-1 ring-ink/10">
-                        {m.name[0]}
+                      <div className="flex h-full items-center justify-center text-3xl">🧳</div>
+                    )}
+                    {typeof pct === "number" && (
+                      <span className="absolute right-1.5 top-1.5 rounded-full border-2 border-ink bg-flockie-blue px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-white">
+                        ✨ {pct}%
                       </span>
                     )}
-                    {m.isHost && (
-                      <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-flockie-orange px-1 text-[8px] font-bold text-white">
-                        host
-                      </span>
-                    )}
-                  </Link>
-                ))}
-                {members.length > 6 && (
-                  <span className="ml-1 text-xs font-bold text-muted">+{members.length - 6}</span>
-                )}
-              </div>
+                  </div>
 
-              {(t.trip_type?.length ?? 0) > 0 && (
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {t.trip_type!.map((tag: string) => (
-                    <span key={tag} className="rounded-full border-2 border-ink px-2.5 py-0.5 text-[11px] font-bold">{tag}</span>
-                  ))}
+                  {/* Body */}
+                  <div className="flex flex-1 flex-col p-2.5">
+                    <p className="line-clamp-2 flex items-start gap-1 text-[13px] font-extrabold leading-tight text-ink">
+                      <MapPin size={12} className="mt-0.5 shrink-0 text-flockie-orange" />
+                      <span className="line-clamp-2">{destination}</span>
+                    </p>
+                    <p className="mt-1 flex items-center gap-1 text-[11px] font-medium leading-tight text-muted">
+                      <CalendarClock size={11} className="shrink-0" />
+                      <span className="truncate">
+                        {t.start_date} → {t.end_date}
+                        {days > 0 && ` · ${days}d`}
+                      </span>
+                    </p>
+
+                    <div className="mt-2 flex items-center justify-between gap-1 pt-0.5">
+                      <span className="flex min-w-0 items-center gap-1 text-[11px] font-medium text-ink">
+                        {host?.photos?.[0] ? (
+                          <Image
+                            src={host.photos[0]}
+                            alt=""
+                            width={18}
+                            height={18}
+                            className="h-[18px] w-[18px] shrink-0 rounded-full object-cover"
+                          />
+                        ) : (
+                          <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-flockie-blue text-[9px] font-bold text-white">
+                            {hostName[0]}
+                          </span>
+                        )}
+                        <span className="truncate">{hostName}</span>
+                      </span>
+                      <span className="flex shrink-0 items-center gap-0.5 text-[11px] font-bold text-muted">
+                        <Users size={11} /> {going}/{t.group_size}
+                      </span>
+                    </div>
+
+                    <div className="mt-2.5">
+                      <FlockRequestButton tripId={t.id} requested={requested.has(t.id)} />
+                    </div>
+                  </div>
                 </div>
-              )}
-
-              <div className="mt-3">
-                <FlockRequestButton tripId={t.id} requested={requested.has(t.id)} />
-              </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+              );
+            })}
+          </div>
+          <Pagination page={page} totalPages={totalPages} hrefFor={hrefFor} />
+        </>
+      )}
     </main>
   );
 }

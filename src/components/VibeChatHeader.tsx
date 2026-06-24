@@ -139,8 +139,8 @@ export default function VibeChatHeader({
       {expanded && (
         <div className="space-y-3 pb-4">
           {cover && (
-            <div className="relative h-44 w-full overflow-hidden rounded-2xl">
-              <Image src={cover} alt="" fill sizes="100vw" className="object-cover" />
+            <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-cream">
+              <Image src={cover} alt="" fill sizes="100vw" className="object-contain" />
             </div>
           )}
           {startsAt && (
