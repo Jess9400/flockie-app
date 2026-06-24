@@ -108,14 +108,6 @@ export default function InterestButton({
     router.refresh();
   }
 
-  async function leave() {
-    if (!window.confirm("Leave this Vibe? Your spot opens up for someone else.")) return;
-    setBusy(true);
-    await supabase.rpc("decline_vibe", { p_vibe: vibeId });
-    setBusy(false);
-    setStatus("declined");
-    router.refresh();
-  }
 
   const base =
     "w-full rounded-full border-2 border-ink py-3.5 text-center font-bold disabled:opacity-50";
@@ -135,9 +127,6 @@ export default function InterestButton({
         <Link href={`/vibes/${vibeId}/chat`} className={`${base} block bg-flockie-blue text-white`}>
           Open Vibing Chat
         </Link>
-        <button onClick={leave} disabled={busy} className="w-full py-2 text-center text-sm font-bold text-muted">
-          Leave this Vibe
-        </button>
       </div>
     );
   } else if (status === "invited") {
