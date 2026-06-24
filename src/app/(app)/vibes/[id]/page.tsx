@@ -174,12 +174,6 @@ export default async function VibeDetailPage({
         <ChevronLeft size={16} /> Back
       </Link>
 
-      {vibe.photos?.[0] && (
-        <div className="relative aspect-square w-full overflow-hidden rounded-3xl border-2 border-ink bg-cream">
-          <Image src={vibe.photos[0]} alt="" fill sizes="100vw" className="object-contain" />
-        </div>
-      )}
-
       {vibe.status === "cancelled" && (
         <div className="mt-4 rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-bold text-muted">
           This Vibe was cancelled by the host. The chat is now inactive.
@@ -199,26 +193,41 @@ export default async function VibeDetailPage({
           />
         )}
       </div>
-      <h1 className="mt-2 text-2xl font-black leading-tight">{vibe.title}</h1>
 
-      <div className="mt-3 space-y-1.5 text-sm font-medium text-ink">
-        <p className="flex items-center gap-2">
-          <CalendarClock size={16} className="text-flockie-orange" />
-          {formatVibeWhen(vibe.starts_at)}
-        </p>
-        <p className="flex items-center gap-2">
-          <MapPin size={16} className="text-flockie-orange" />
-          {vibe.location_name ? `${vibe.location_name}, ${vibe.city}` : vibe.city}
-        </p>
-        <p className="flex items-center gap-2">
-          <Users size={16} className="text-flockie-orange" />
-          {confirmedCount ?? 0}/{vibe.capacity} going
-        </p>
+      {/* Medium square cover on the left, info on the right — never cropped. */}
+      <div className="mt-3 flex gap-4">
+        {vibe.photos?.[0] && (
+          <div className="relative aspect-square w-32 shrink-0 self-start overflow-hidden rounded-2xl border-2 border-ink bg-cream sm:w-48">
+            <Image
+              src={vibe.photos[0]}
+              alt=""
+              fill
+              sizes="(max-width:640px) 128px, 192px"
+              className="object-contain"
+            />
+          </div>
+        )}
+        <div className="min-w-0 flex-1">
+          <h1 className="text-xl font-black leading-tight sm:text-2xl">{vibe.title}</h1>
+          <div className="mt-2 space-y-1 text-sm font-medium text-ink">
+            <p className="flex items-center gap-2">
+              <CalendarClock size={15} className="shrink-0 text-flockie-orange" />
+              {formatVibeWhen(vibe.starts_at)}
+            </p>
+            <p className="flex items-center gap-2">
+              <MapPin size={15} className="shrink-0 text-flockie-orange" />
+              {vibe.location_name ? `${vibe.location_name}, ${vibe.city}` : vibe.city}
+            </p>
+            <p className="flex items-center gap-2">
+              <Users size={15} className="shrink-0 text-flockie-orange" />
+              {confirmedCount ?? 0}/{vibe.capacity} going
+            </p>
+          </div>
+          <p className="mt-3 whitespace-pre-wrap text-[15px] font-medium text-ink/80">
+            {vibe.description}
+          </p>
+        </div>
       </div>
-
-      <p className="mt-4 whitespace-pre-wrap text-[15px] font-medium text-ink/80">
-        {vibe.description}
-      </p>
 
       {vibe.activity_url && (
         <a
@@ -339,13 +348,7 @@ export default async function VibeDetailPage({
         </>
       )}
 
-      {!isHost && (
-        <div className="mt-6 flex justify-center">
-          <ShareVibeButton vibeId={vibe.id} />
-        </div>
-      )}
-
-      <div className="mt-4">
+      <div className="mt-6">
         {isHost ? (
           <HostVibeControls vibeId={vibe.id} status={vibe.status} />
         ) : (
@@ -360,6 +363,12 @@ export default async function VibeDetailPage({
           />
         )}
       </div>
+
+      {!isHost && (
+        <div className="mt-3 flex justify-center">
+          <ShareVibeButton vibeId={vibe.id} />
+        </div>
+      )}
     </main>
   );
 }

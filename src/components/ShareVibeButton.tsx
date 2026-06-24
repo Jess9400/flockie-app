@@ -31,7 +31,7 @@ export default function ShareVibeButton({ vibeId, tile }: { vibeId: string; tile
         onClick={share}
         className="flex flex-col items-center justify-center gap-1 rounded-2xl border-2 border-ink bg-white py-3 text-[11px] font-bold text-ink"
       >
-        <Share2 size={18} /> {copied ? "Copied!" : "Invite"}
+        <Share2 size={18} /> {copied ? "Copied!" : "Share"}
       </button>
     );
   }
@@ -42,7 +42,7 @@ export default function ShareVibeButton({ vibeId, tile }: { vibeId: string; tile
       onClick={share}
       className="inline-flex items-center gap-2 rounded-full border-2 border-ink bg-white px-4 py-2 text-sm font-bold text-ink"
     >
-      <Share2 size={15} /> {copied ? "Link copied!" : "Invite / Share"}
+      <Share2 size={15} /> {copied ? "Link copied!" : "Share"}
     </button>
   );
 }
