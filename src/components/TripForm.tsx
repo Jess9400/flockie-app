@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import GenerateCoverButton from "@/components/GenerateCoverButton";
 import { TRIP_VIBES } from "@/lib/vibe-check";
+import { CONTINENTS, FLOCK_LANGUAGES, GROUP_GENDERS } from "@/lib/trips";
 
 const TYPE_MAX = 3;
 const BUDGET_LABELS = ["Backpacker", "Budget", "Mid-range", "Comfort", "Luxury"];
@@ -23,6 +24,9 @@ type Trip = {
   pace?: number | null;
   visibility?: string;
   cover_photo?: string | null;
+  continent?: string | null;
+  language?: string | null;
+  group_gender?: string | null;
 };
 
 // kind: "trip" = 1:1 buddy trip · "activity" = 1:1 activity · "flock" = group trip
@@ -52,6 +56,9 @@ export default function TripForm({
   const [budget, setBudget] = useState(initial.budget ?? 3);
   const [pace, setPace] = useState(initial.pace ?? 3);
   const [cover, setCover] = useState<string | null>(initial.cover_photo ?? null);
+  const [continent, setContinent] = useState(initial.continent ?? "");
+  const [language, setLanguage] = useState(initial.language ?? "");
+  const [groupGender, setGroupGender] = useState(initial.group_gender ?? "any");
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -99,6 +106,8 @@ export default function TripForm({
     if (types.length === 0) {
       return setErr(isActivity ? "Pick at least one activity vibe." : "Pick at least one trip type.");
     }
+    if (isFlock && !continent) return setErr("Pick the continent your Flock is in.");
+    if (isFlock && !language) return setErr("Pick the group's main language.");
 
     setSaving(true);
     const payload = {
@@ -115,6 +124,9 @@ export default function TripForm({
       pace,
       cover_photo: cover,
       visibility: isFlock ? "public" : "private",
+      continent: isFlock ? continent : null,
+      language: isFlock ? language : null,
+      group_gender: isFlock ? groupGender : "any",
       status: "active",
     };
     const res = initial.id
@@ -188,6 +200,48 @@ export default function TripForm({
           You&rsquo;re looking for <span className="font-bold text-ink">1 travel buddy</span> —
           you both swipe, mutual likes connect. Want a group? Create a Flock.
         </p>
+      )}
+
+      {isFlock && (
+        <>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <label className="block">
+              <span className="mb-1 block text-sm font-bold">Continent</span>
+              <select className={inputCls} value={continent} onChange={(e) => setContinent(e.target.value)}>
+                <option value="">Select…</option>
+                {CONTINENTS.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </label>
+            <label className="block">
+              <span className="mb-1 block text-sm font-bold">Group language</span>
+              <select className={inputCls} value={language} onChange={(e) => setLanguage(e.target.value)}>
+                <option value="">Select…</option>
+                {FLOCK_LANGUAGES.map((l) => (
+                  <option key={l} value={l}>{l}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div>
+            <span className="mb-1 block text-sm font-bold">Open to</span>
+            <div className="grid grid-cols-3 gap-2">
+              {GROUP_GENDERS.map((g) => (
+                <button
+                  key={g.value}
+                  type="button"
+                  onClick={() => setGroupGender(g.value)}
+                  className={`rounded-full border-2 border-ink py-2 text-sm font-bold ${
+                    groupGender === g.value ? "bg-flockie-blue text-white" : "bg-white"
+                  }`}
+                >
+                  {g.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
       )}
 
       <div>

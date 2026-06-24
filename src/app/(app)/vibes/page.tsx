@@ -19,11 +19,12 @@ import type { InterestStatus } from "@/lib/vibes";
 export default async function VibesPage({
   searchParams,
 }: {
-  searchParams: { q?: string; city?: string; page?: string };
+  searchParams: { q?: string; city?: string; page?: string; when?: string };
 }) {
   const supabase = await createClient();
   const q = searchParams.q?.trim() ?? "";
   const city = searchParams.city?.trim() ?? "";
+  const when = searchParams.when === "today" || searchParams.when === "48" ? searchParams.when : "all";
   const page = Math.max(1, Number(searchParams.page) || 1);
   const {
     data: { user },
@@ -57,6 +58,15 @@ export default async function VibesPage({
   if (city) query = query.ilike("city", `%${city}%`);
   if (q) query = query.or(`title.ilike.%${q}%,category.ilike.%${q}%`);
 
+  // Time window: Today (until end of today) / Next 48h / Anytime.
+  if (when === "today") {
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+    query = query.lte("starts_at", endOfToday.toISOString());
+  } else if (when === "48") {
+    query = query.lte("starts_at", new Date(Date.now() + 48 * 3600 * 1000).toISOString());
+  }
+
   const from = (page - 1) * PAGE_SIZE;
   const { data: vibes, count } = await query
     .order("starts_at", { ascending: true })
@@ -68,7 +78,17 @@ export default async function VibesPage({
     const sp = new URLSearchParams();
     if (q) sp.set("q", q);
     if (city) sp.set("city", city);
+    if (when !== "all") sp.set("when", when);
     if (p > 1) sp.set("page", String(p));
+    const qs = sp.toString();
+    return qs ? `/vibes?${qs}` : "/vibes";
+  };
+  // Time-filter chips reuse the current search/city but reset to page 1.
+  const whenHref = (value: string) => {
+    const sp = new URLSearchParams();
+    if (q) sp.set("q", q);
+    if (city) sp.set("city", city);
+    if (value !== "all") sp.set("when", value);
     const qs = sp.toString();
     return qs ? `/vibes?${qs}` : "/vibes";
   };
@@ -132,6 +152,24 @@ export default async function VibesPage({
       </p>
 
       <VibeSearch q={q} city={city} />
+
+      <div className="mt-4 grid grid-cols-3 gap-1 rounded-full border-2 border-ink bg-white p-1 text-center text-xs font-bold">
+        {[
+          { value: "today", label: "Today" },
+          { value: "48", label: "Next 48h" },
+          { value: "all", label: "Anytime" },
+        ].map((option) => (
+          <Link
+            key={option.value}
+            href={whenHref(option.value)}
+            className={`rounded-full px-2 py-2 transition-colors ${
+              when === option.value ? "bg-ink text-white" : "text-ink hover:bg-navy/5"
+            }`}
+          >
+            {option.label}
+          </Link>
+        ))}
+      </div>
 
       {!activityCheckDone && (
         <Link
