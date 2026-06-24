@@ -3,12 +3,19 @@ import Image from "next/image";
 import { MapPin, CalendarClock, Users, Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import FlockRequestButton from "@/components/FlockRequestButton";
-import FlockFilters from "@/components/FlockFilters";
+import FilterSheet from "@/components/FilterSheet";
 import Pagination from "@/components/Pagination";
 import { loadFlockMatch } from "@/lib/vibe-stats";
-import { tripDays, GROUP_SIZE_BUCKETS } from "@/lib/trips";
+import { tripDays, GROUP_SIZE_BUCKETS, CONTINENTS, FLOCK_LANGUAGES, GROUP_GENDERS } from "@/lib/trips";
 
 const PAGE_SIZE = 6;
+
+const FLOCK_FILTER_SECTIONS = [
+  { key: "continent", title: "Continent", options: CONTINENTS.map((c) => ({ value: c, label: c })) },
+  { key: "gender", title: "Open to", options: GROUP_GENDERS.map((g) => ({ value: g.value, label: g.label })) },
+  { key: "size", title: "Group size", options: GROUP_SIZE_BUCKETS.map((b) => ({ value: b.value, label: `${b.label} people` })) },
+  { key: "language", title: "Language", options: FLOCK_LANGUAGES.map((l) => ({ value: l, label: l })) },
+];
 
 export default async function FlocksPage({
   searchParams,
@@ -112,7 +119,9 @@ export default async function FlocksPage({
         <span className="rounded-full bg-flockie-blue py-2 text-center text-white">Find a Flock</span>
       </div>
 
-      <FlockFilters />
+      <div className="mt-4">
+        <FilterSheet basePath="/flocks" sections={FLOCK_FILTER_SECTIONS} />
+      </div>
 
       {cards.length === 0 ? (
         <div className="mt-6 rounded-3xl border-2 border-dashed border-ink/30 py-16 text-center font-medium text-muted">

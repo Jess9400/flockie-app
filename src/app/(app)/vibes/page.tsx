@@ -6,6 +6,7 @@ import VibeSearch from "@/components/VibeSearch";
 import LocationPrompt from "@/components/LocationPrompt";
 import PageTabs from "@/components/PageTabs";
 import Pagination from "@/components/Pagination";
+import FilterSheet from "@/components/FilterSheet";
 import { loadVibeMatch } from "@/lib/vibe-stats";
 
 const PAGE_SIZE = 6;
@@ -83,15 +84,6 @@ export default async function VibesPage({
     const qs = sp.toString();
     return qs ? `/vibes?${qs}` : "/vibes";
   };
-  // Time-filter chips reuse the current search/city but reset to page 1.
-  const whenHref = (value: string) => {
-    const sp = new URLSearchParams();
-    if (q) sp.set("q", q);
-    if (city) sp.set("city", city);
-    if (value !== "all") sp.set("when", value);
-    const qs = sp.toString();
-    return qs ? `/vibes?${qs}` : "/vibes";
-  };
   const ids = list.map((v) => v.id);
   const hostIds = Array.from(new Set(list.map((v) => v.host_id)));
 
@@ -153,22 +145,22 @@ export default async function VibesPage({
 
       <VibeSearch q={q} city={city} />
 
-      <div className="mt-4 grid grid-cols-3 gap-1 rounded-full border-2 border-ink bg-white p-1 text-center text-xs font-bold">
-        {[
-          { value: "today", label: "Today" },
-          { value: "48", label: "Next 48h" },
-          { value: "all", label: "Anytime" },
-        ].map((option) => (
-          <Link
-            key={option.value}
-            href={whenHref(option.value)}
-            className={`rounded-full px-2 py-2 transition-colors ${
-              when === option.value ? "bg-ink text-white" : "text-ink hover:bg-navy/5"
-            }`}
-          >
-            {option.label}
-          </Link>
-        ))}
+      <div className="mt-3">
+        <FilterSheet
+          basePath="/vibes"
+          preserveKeys={["q", "city"]}
+          sections={[
+            {
+              key: "when",
+              title: "When",
+              options: [
+                { value: "", label: "Anytime" },
+                { value: "today", label: "Today" },
+                { value: "48", label: "Next 48h" },
+              ],
+            },
+          ]}
+        />
       </div>
 
       {!activityCheckDone && (
