@@ -81,6 +81,7 @@ export default async function VibeDetailPage({
   // Host-only matching tally (Interested / Invited / Going / Standby counts).
   const tally: Record<string, number> = {};
   let hostCandidates: HostVibeCandidate[] = [];
+  let activeInviteCount = 0;
   if (isHost) {
     const { data: rows } = await supabase
       .from("vibe_interests")
@@ -99,6 +100,13 @@ export default async function VibeDetailPage({
       .order("created_at", { ascending: true });
 
     const candidateIds = (candidateRows ?? []).map((r) => r.user_id);
+    const now = Date.now();
+    activeInviteCount = (candidateRows ?? []).filter(
+      (r) =>
+        r.status === "invited" &&
+        (!r.invitation_expires_at || new Date(r.invitation_expires_at).getTime() > now)
+    ).length;
+
     if (candidateIds.length) {
       const { data: candidateProfiles } = await supabase
         .from("profiles")
@@ -317,7 +325,13 @@ export default async function VibeDetailPage({
               ))}
             </div>
           </div>
-          <HostVibeApplicants vibeId={vibe.id} candidates={hostCandidates} />
+          <HostVibeApplicants
+            vibeId={vibe.id}
+            capacity={vibe.capacity}
+            confirmedCount={confirmedCount ?? 0}
+            activeInviteCount={activeInviteCount}
+            candidates={hostCandidates}
+          />
         </>
       )}
 

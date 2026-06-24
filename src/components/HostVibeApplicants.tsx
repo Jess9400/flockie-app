@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Check, X } from "lucide-react";
+import { Check, UserPlus, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { InterestStatus } from "@/lib/vibes";
 
@@ -40,16 +40,32 @@ function formatRequestedAt(iso: string | null) {
 
 export default function HostVibeApplicants({
   vibeId,
+  capacity,
+  confirmedCount,
+  activeInviteCount,
   candidates,
 }: {
   vibeId: string;
+  capacity: number;
+  confirmedCount: number;
+  activeInviteCount: number;
   candidates: HostVibeCandidate[];
 }) {
   const router = useRouter();
   const supabase = createClient();
   const [items, setItems] = useState(candidates);
+  const [limit, setLimit] = useState(capacity);
+  const [activeInvites, setActiveInvites] = useState(activeInviteCount);
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
+  const isFull = confirmedCount + activeInvites >= limit;
+
+  function isActiveInvite(candidate: HostVibeCandidate) {
+    return (
+      candidate.status === "invited" &&
+      (!candidate.invitationExpiresAt || new Date(candidate.invitationExpiresAt) > new Date())
+    );
+  }
 
   async function approve(userId: string) {
     setBusyKey(`approve:${userId}`);
@@ -65,11 +81,35 @@ export default function HostVibeApplicants({
         item.userId === userId ? { ...item, status: "invited", invitationExpiresAt: null } : item
       )
     );
+    setActiveInvites((value) => value + 1);
     setMsg("Invite sent — they still need to confirm.");
     router.refresh();
   }
 
+  async function makeRoomAndInvite(userId: string) {
+    if (!window.confirm("Increase this Vibe's capacity by 1 and invite this person?")) return;
+    setBusyKey(`make-room:${userId}`);
+    setMsg(null);
+    const { data, error } = await supabase.rpc("host_make_room_invite_interest", {
+      p_vibe: vibeId,
+      p_user: userId,
+    });
+    setBusyKey(null);
+    if (error) return setMsg(error.message);
+    const result = data as { capacity?: number } | null;
+    if (typeof result?.capacity === "number") setLimit(result.capacity);
+    setActiveInvites((value) => value + 1);
+    setItems((prev) =>
+      prev.map((item) =>
+        item.userId === userId ? { ...item, status: "invited", invitationExpiresAt: null } : item
+      )
+    );
+    setMsg("Capacity increased by 1 and invite sent.");
+    router.refresh();
+  }
+
   async function deny(userId: string) {
+    const candidate = items.find((item) => item.userId === userId);
     setBusyKey(`deny:${userId}`);
     setMsg(null);
     const { error } = await supabase.rpc("host_decline_interest", {
@@ -79,6 +119,9 @@ export default function HostVibeApplicants({
     setBusyKey(null);
     if (error) return setMsg(error.message);
     setItems((prev) => prev.filter((item) => item.userId !== userId));
+    if (candidate && isActiveInvite(candidate)) {
+      setActiveInvites((value) => Math.max(value - 1, 0));
+    }
     setMsg("Request denied.");
     router.refresh();
   }
@@ -90,6 +133,9 @@ export default function HostVibeApplicants({
           <p className="text-sm font-extrabold">Host review</p>
           <p className="mt-1 text-xs font-semibold text-muted">
             Approve sends an invite. They join only after they confirm.
+          </p>
+          <p className="mt-1 text-xs font-semibold text-muted">
+            Capacity: {confirmedCount + activeInvites}/{limit} spots held or going.
           </p>
         </div>
         <span className="rounded-full bg-cream px-3 py-1 text-xs font-extrabold">
@@ -108,6 +154,7 @@ export default function HostVibeApplicants({
             const photo = candidate.profile.photos?.[0] ?? null;
             const requestedAt = formatRequestedAt(candidate.createdAt);
             const canApprove = candidate.status === "interested" || candidate.status === "standby";
+            const shouldMakeRoom = canApprove && isFull;
 
             return (
               <div key={candidate.userId} className="rounded-2xl border-2 border-ink bg-cream p-3">
@@ -153,11 +200,14 @@ export default function HostVibeApplicants({
 
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   <button
-                    onClick={() => approve(candidate.userId)}
+                    onClick={() =>
+                      shouldMakeRoom ? makeRoomAndInvite(candidate.userId) : approve(candidate.userId)
+                    }
                     disabled={!canApprove || busyKey !== null}
                     className="flex items-center justify-center gap-1 rounded-full border-2 border-ink bg-flockie-orange py-2 text-sm font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-45"
                   >
-                    <Check size={15} /> {candidate.status === "invited" ? "Invited" : "Approve"}
+                    {shouldMakeRoom ? <UserPlus size={15} /> : <Check size={15} />}
+                    {candidate.status === "invited" ? "Invited" : shouldMakeRoom ? "Make room + invite" : "Approve"}
                   </button>
                   <button
                     onClick={() => deny(candidate.userId)}

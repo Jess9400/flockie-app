@@ -165,6 +165,41 @@ begin
 end $$;
 grant execute on function public.host_invite_interest(uuid, uuid) to authenticated;
 
+create or replace function public.host_make_room_invite_interest(p_vibe uuid, p_user uuid)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare v public.vibes; v_status text; v_confirmed int; v_active int; v_new_capacity int;
+begin
+  select * into v from public.vibes where id=p_vibe for update;
+  if v.id is null then raise exception 'vibe not found'; end if;
+  if v.host_id <> auth.uid() then raise exception 'only the host can make room'; end if;
+  if v.status = 'cancelled' then raise exception 'vibe is cancelled'; end if;
+
+  select status into v_status from public.vibe_interests
+    where vibe_id=p_vibe and user_id=p_user
+    for update;
+  if v_status is null then raise exception 'interest not found'; end if;
+  if v_status not in ('interested','standby') then raise exception 'only interested or standby users can be approved'; end if;
+
+  select count(*) into v_confirmed from public.vibe_interests where vibe_id=p_vibe and status='confirmed';
+  select count(*) into v_active from public.vibe_interests
+    where vibe_id=p_vibe and status='invited' and (invitation_expires_at is null or invitation_expires_at > now());
+  if greatest(v.capacity - v_confirmed - v_active, 0) > 0 then
+    raise exception 'room is already available; approve normally';
+  end if;
+
+  v_new_capacity := greatest(v.capacity + 1, v_confirmed + v_active + 1);
+  update public.vibes set capacity=v_new_capacity where id=p_vibe;
+
+  update public.vibe_interests
+    set status='invited', invitation_sent_at=now(), invitation_expires_at=now()+interval '24 hours'
+    where vibe_id=p_vibe and user_id=p_user;
+  perform public.notify(p_user, 'vibe_invitation', 'The host made room for you at '||v.title,
+          'Confirm within 24 hours.', jsonb_build_object('vibe_id', p_vibe));
+
+  return jsonb_build_object('capacity', v_new_capacity);
+end $$;
+grant execute on function public.host_make_room_invite_interest(uuid, uuid) to authenticated;
+
 create or replace function public.host_decline_interest(p_vibe uuid, p_user uuid)
 returns void language plpgsql security definer set search_path = public as $$
 declare v public.vibes; v_status text;
