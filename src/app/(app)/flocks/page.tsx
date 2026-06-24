@@ -11,16 +11,18 @@ import { tripDays, GROUP_SIZE_BUCKETS, CONTINENTS, FLOCK_LANGUAGES, GROUP_GENDER
 const PAGE_SIZE = 6;
 
 const FLOCK_FILTER_SECTIONS = [
-  { key: "continent", title: "Continent", options: CONTINENTS.map((c) => ({ value: c, label: c })) },
+  { key: "continent", title: "Continent", multi: true, options: CONTINENTS.map((c) => ({ value: c, label: c })) },
   { key: "gender", title: "Open to", options: GROUP_GENDERS.map((g) => ({ value: g.value, label: g.label })) },
   { key: "size", title: "Group size", options: GROUP_SIZE_BUCKETS.map((b) => ({ value: b.value, label: `${b.label} people` })) },
-  { key: "language", title: "Language", options: FLOCK_LANGUAGES.map((l) => ({ value: l, label: l })) },
+  { key: "language", title: "Language", multi: true, options: FLOCK_LANGUAGES.map((l) => ({ value: l, label: l })) },
 ];
+
+const toArray = (v?: string | string[]) => (Array.isArray(v) ? v : v ? [v] : []);
 
 export default async function FlocksPage({
   searchParams,
 }: {
-  searchParams: { page?: string; continent?: string; gender?: string; size?: string; language?: string };
+  searchParams: { page?: string; continent?: string | string[]; gender?: string; size?: string; language?: string | string[] };
 }) {
   const supabase = await createClient();
   const {
@@ -29,9 +31,9 @@ export default async function FlocksPage({
 
   const page = Math.max(1, Number(searchParams.page) || 1);
   const from = (page - 1) * PAGE_SIZE;
-  const continent = searchParams.continent ?? "";
-  const gender = searchParams.gender ?? "";
-  const language = searchParams.language ?? "";
+  const continents = toArray(searchParams.continent);
+  const languages = toArray(searchParams.language);
+  const gender = typeof searchParams.gender === "string" ? searchParams.gender : "";
   const sizeBucket = GROUP_SIZE_BUCKETS.find((b) => b.value === searchParams.size);
 
   let query = supabase
@@ -46,9 +48,9 @@ export default async function FlocksPage({
     .neq("user_id", user!.id)
     .gte("end_date", new Date().toISOString().slice(0, 10));
 
-  if (continent) query = query.eq("continent", continent);
+  if (continents.length) query = query.in("continent", continents);
   if (gender) query = query.eq("group_gender", gender);
-  if (language) query = query.eq("language", language);
+  if (languages.length) query = query.in("language", languages);
   if (sizeBucket) query = query.gte("group_size", sizeBucket.min).lte("group_size", sizeBucket.max);
 
   const { data: trips, count } = await query
@@ -60,10 +62,10 @@ export default async function FlocksPage({
   const totalPages = Math.max(1, Math.ceil((count ?? 0) / PAGE_SIZE));
   const hrefFor = (p: number) => {
     const sp = new URLSearchParams();
-    if (continent) sp.set("continent", continent);
+    continents.forEach((c) => sp.append("continent", c));
     if (gender) sp.set("gender", gender);
     if (searchParams.size) sp.set("size", searchParams.size);
-    if (language) sp.set("language", language);
+    languages.forEach((l) => sp.append("language", l));
     if (p > 1) sp.set("page", String(p));
     const qs = sp.toString();
     return qs ? `/flocks?${qs}` : "/flocks";
@@ -125,7 +127,7 @@ export default async function FlocksPage({
 
       {cards.length === 0 ? (
         <div className="mt-6 rounded-3xl border-2 border-dashed border-ink/30 py-16 text-center font-medium text-muted">
-          {continent || gender || language || sizeBucket
+          {continents.length || gender || languages.length || sizeBucket
             ? "No Flocks match these filters. Try widening them."
             : "No open trips yet. Post a trip and set it to Public to start a Flock."}
         </div>
