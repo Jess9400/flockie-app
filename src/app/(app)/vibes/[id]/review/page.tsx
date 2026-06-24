@@ -33,7 +33,7 @@ export default async function VibeReviewPage({
 
   const { data: existing } = await supabase
     .from("vibe_reviews")
-    .select("recommend, tags, comment")
+    .select("rating, tags, comment")
     .eq("vibe_id", params.id)
     .eq("reviewer_id", user!.id)
     .maybeSingle();
@@ -56,7 +56,7 @@ export default async function VibeReviewPage({
         <div className="mt-5">
           <VibeReviewForm
             vibeId={params.id}
-            initialRecommend={existing?.recommend ?? null}
+            initialRating={existing?.rating ?? null}
             initialTags={existing?.tags ?? []}
             initialComment={existing?.comment ?? ""}
           />

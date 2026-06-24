@@ -2,25 +2,28 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ThumbsUp, ThumbsDown } from "lucide-react";
+import { Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { VIBE_REVIEW_TAGS } from "@/lib/vibes";
 import { Chip } from "@/components/profileControls";
 
+const RATING_LABELS = ["", "Not for me", "Meh", "Good", "Great", "Loved it"];
+
 export default function VibeReviewForm({
   vibeId,
-  initialRecommend,
+  initialRating,
   initialTags,
   initialComment,
 }: {
   vibeId: string;
-  initialRecommend: boolean | null;
+  initialRating: number | null;
   initialTags: string[];
   initialComment: string;
 }) {
   const router = useRouter();
   const supabase = createClient();
-  const [recommend, setRecommend] = useState<boolean | null>(initialRecommend);
+  const [rating, setRating] = useState<number>(initialRating ?? 0);
+  const [hover, setHover] = useState(0);
   const [tags, setTags] = useState<string[]>(initialTags);
   const [comment, setComment] = useState(initialComment);
   const [saving, setSaving] = useState(false);
@@ -32,12 +35,12 @@ export default function VibeReviewForm({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (recommend === null) return setErr("Would you recommend this Vibe?");
+    if (rating < 1) return setErr("Tap a star to rate this Vibe.");
     setSaving(true);
     setErr(null);
     const { error } = await supabase.rpc("submit_vibe_review", {
       p_vibe: vibeId,
-      p_recommend: recommend,
+      p_rating: rating,
       p_tags: tags,
       p_comment: comment,
     });
@@ -47,28 +50,31 @@ export default function VibeReviewForm({
     router.refresh();
   }
 
+  const shown = hover || rating;
+
   return (
     <form onSubmit={submit} className="font-nunito">
-      <p className="font-nunito text-sm font-semibold text-navy">Would you recommend this Vibe?</p>
-      <div className="mt-2 flex gap-2">
-        <button
-          type="button"
-          onClick={() => setRecommend(true)}
-          className={`flex flex-1 items-center justify-center gap-2 rounded-full border-2 border-navy py-3 font-fredoka text-sm font-semibold ${
-            recommend === true ? "bg-flockie-coral text-white" : "bg-white text-navy"
-          }`}
-        >
-          <ThumbsUp size={16} /> Yes
-        </button>
-        <button
-          type="button"
-          onClick={() => setRecommend(false)}
-          className={`flex flex-1 items-center justify-center gap-2 rounded-full border-2 border-navy py-3 font-fredoka text-sm font-semibold ${
-            recommend === false ? "bg-navy text-white" : "bg-white text-navy"
-          }`}
-        >
-          <ThumbsDown size={16} /> Not really
-        </button>
+      <p className="font-nunito text-sm font-semibold text-navy">How was it?</p>
+      <div className="mt-2 flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => setRating(i)}
+            onMouseEnter={() => setHover(i)}
+            onMouseLeave={() => setHover(0)}
+            aria-label={`${i} star${i > 1 ? "s" : ""}`}
+            className="p-0.5"
+          >
+            <Star
+              size={36}
+              className={i <= shown ? "fill-flockie-coral text-flockie-coral" : "text-navy/25"}
+            />
+          </button>
+        ))}
+        {shown > 0 && (
+          <span className="ml-2 font-nunito text-sm font-bold text-navy/60">{RATING_LABELS[shown]}</span>
+        )}
       </div>
 
       <p className="mt-6 font-nunito text-sm font-semibold text-navy">
