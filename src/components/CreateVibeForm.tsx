@@ -248,11 +248,11 @@ export default function CreateVibeForm({
         </Field>
 
         <Field label="Cover photos (required · up to 5)">
-          <div className="grid grid-cols-3 gap-2">
+          <div className="flex flex-wrap justify-center gap-2">
             {photos.map((url, i) => (
               <div
                 key={url}
-                className="relative aspect-square overflow-hidden rounded-2xl border-2 border-ink"
+                className="relative h-28 w-28 overflow-hidden rounded-2xl border-2 border-ink"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={url} alt="" className="h-full w-full object-cover" />
@@ -270,7 +270,7 @@ export default function CreateVibeForm({
               <button
                 type="button"
                 onClick={() => photoInput.current?.click()}
-                className="flex aspect-square items-center justify-center rounded-2xl border-2 border-dashed border-ink/40 text-2xl text-muted"
+                className="flex h-28 w-28 items-center justify-center rounded-2xl border-2 border-dashed border-ink/40 text-2xl text-muted"
               >
                 +
               </button>
