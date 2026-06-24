@@ -7,12 +7,13 @@ import { SlidersHorizontal, X } from "lucide-react";
 export type FilterSection = {
   key: string;
   title: string;
+  multi?: boolean; // allow selecting several values (e.g. continents, languages)
   options: { value: string; label: string }[];
 };
 
-// A "Filters" button (sliders icon) that opens a bottom sheet of grouped chip
-// options. Each section is single-select; selections map to URL params that the
-// server page reads. "Show results" applies (and resets to page 1).
+// A "Filters" button (sliders icon) that opens a panel of grouped chip options.
+// Bottom sheet on mobile, centered dialog on desktop. Selections map to URL
+// params the server page reads; "Show results" applies (and resets to page 1).
 export default function FilterSheet({
   basePath,
   sections,
@@ -25,19 +26,31 @@ export default function FilterSheet({
   const router = useRouter();
   const sp = useSearchParams();
   const [open, setOpen] = useState(false);
-  const [sel, setSel] = useState<Record<string, string>>({});
+  const [sel, setSel] = useState<Record<string, string[]>>({});
 
-  const activeCount = sections.filter((s) => sp.get(s.key)).length;
+  const activeCount = sections.reduce((n, s) => n + (sp.getAll(s.key).length > 0 ? 1 : 0), 0);
 
   function openSheet() {
-    setSel(Object.fromEntries(sections.map((s) => [s.key, sp.get(s.key) ?? ""])));
+    setSel(Object.fromEntries(sections.map((s) => [s.key, sp.getAll(s.key)])));
     setOpen(true);
   }
-  function pick(key: string, value: string) {
-    setSel((prev) => ({ ...prev, [key]: prev[key] === value ? "" : value }));
+  function pick(s: FilterSection, value: string) {
+    setSel((prev) => {
+      const cur = prev[s.key] ?? [];
+      if (s.multi) {
+        return { ...prev, [s.key]: cur.includes(value) ? cur.filter((v) => v !== value) : [...cur, value] };
+      }
+      if (value === "") return { ...prev, [s.key]: [] };
+      return { ...prev, [s.key]: cur.includes(value) ? [] : [value] };
+    });
+  }
+  function isOn(s: FilterSection, value: string) {
+    const cur = sel[s.key] ?? [];
+    if (value === "") return cur.length === 0;
+    return cur.includes(value);
   }
   function reset() {
-    setSel(Object.fromEntries(sections.map((s) => [s.key, ""])));
+    setSel(Object.fromEntries(sections.map((s) => [s.key, []])));
   }
   function apply() {
     const params = new URLSearchParams();
@@ -45,8 +58,10 @@ export default function FilterSheet({
       const v = sp.get(k);
       if (v) params.set(k, v);
     });
-    Object.entries(sel).forEach(([k, v]) => {
-      if (v) params.set(k, v);
+    sections.forEach((s) => {
+      (sel[s.key] ?? []).forEach((v) => {
+        if (v) params.append(s.key, v);
+      });
     });
     const qs = params.toString();
     router.push(qs ? `${basePath}?${qs}` : basePath);
@@ -70,11 +85,11 @@ export default function FilterSheet({
 
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4"
           onClick={() => setOpen(false)}
         >
           <div
-            className="flex max-h-[85vh] w-full max-w-2xl flex-col rounded-t-3xl border-t-2 border-ink bg-white"
+            className="flex max-h-[85vh] w-full flex-col rounded-t-3xl border-2 border-ink bg-white sm:max-w-md sm:rounded-3xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b-2 border-ink/10 px-5 py-4">
@@ -91,12 +106,12 @@ export default function FilterSheet({
                   <p className="font-fredoka text-base font-bold text-ink">{s.title}</p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {s.options.map((o) => {
-                      const on = sel[s.key] === o.value;
+                      const on = isOn(s, o.value);
                       return (
                         <button
                           key={o.value || "any"}
                           type="button"
-                          onClick={() => pick(s.key, o.value)}
+                          onClick={() => pick(s, o.value)}
                           className={`rounded-full border-2 px-4 py-2 text-sm font-bold transition-colors ${
                             on
                               ? "border-ink bg-flockie-blue text-white"
