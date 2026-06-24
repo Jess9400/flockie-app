@@ -59,21 +59,18 @@ grant execute on function public.backfill_vibe(uuid) to authenticated;
 --    short of capacity, never re-invites, and respects gender preference. ─────
 create or replace function public.invite_city_fallback(p_vibe uuid)
 returns int language plpgsql security definer set search_path = public as $$
-declare v public.vibes; v_pool int; v_confirmed int; v_active int; v_remaining int; v_added int := 0; c record;
+declare v public.vibes; v_pool int; v_remaining int; v_added int := 0; c record;
 begin
   select * into v from public.vibes where id = p_vibe;
   if v.id is null or v.status = 'cancelled' then return 0; end if;
 
-  -- Everyone already in the funnel for this Vibe.
+  -- Everyone already in the funnel (interested counts — they'll be ranked).
+  -- Cold invites only fill the GAP to capacity, so they never displace
+  -- genuinely-interested people when this runs early (before ranking).
   select count(*) into v_pool from public.vibe_interests
     where vibe_id = p_vibe and status in ('interested','invited','confirmed','standby');
-  if v_pool >= v.capacity then return 0; end if;  -- natural interest can fill it
-
-  select count(*) into v_confirmed from public.vibe_interests where vibe_id=p_vibe and status='confirmed';
-  select count(*) into v_active from public.vibe_interests
-    where vibe_id=p_vibe and status='invited' and (invitation_expires_at is null or invitation_expires_at > now());
-  v_remaining := greatest(v.capacity - v_confirmed - v_active, 0);
-  if v_remaining <= 0 then return 0; end if;
+  v_remaining := v.capacity - v_pool;
+  if v_remaining <= 0 then return 0; end if;  -- enough in the funnel already
 
   for c in
     select p.id,
@@ -194,13 +191,23 @@ end $$;
 do $$ begin perform cron.unschedule('flockie-auto-rank'); exception when others then null; end $$;
 select cron.schedule('flockie-auto-rank', '*/5 * * * *', $$ select public.auto_rank_due_vibes(); $$);
 
--- ── Keep ranked vibes topped up (standby + same-city) every 10 min ──────────
+-- ── Keep vibes topped up every 10 min ───────────────────────────────────────
+--   * Ranked vibes: backfill from standby + same-city.
+--   * Open vibes within 48h of their deadline: start same-city fallback early
+--     so the city pool has lead time to see and confirm the invite.
 create or replace function public.autofill_open_vibes()
 returns void language plpgsql security definer set search_path = public as $$
 declare r record;
 begin
   for r in select id from public.vibes where status = 'ranking' loop
     perform public.backfill_vibe(r.id);
+    perform public.invite_city_fallback(r.id);
+  end loop;
+  for r in
+    select id from public.vibes
+    where status = 'open'
+      and now() >= coalesce(signup_deadline, starts_at - interval '24 hours') - interval '48 hours'
+  loop
     perform public.invite_city_fallback(r.id);
   end loop;
 end $$;
