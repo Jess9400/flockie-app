@@ -92,8 +92,8 @@ export default function HostVibeControls({
         {busy ? "Running…" : status === "open" ? "Run Matching Algo" : "Re-run Matching Algo"}
       </button>
       <p className="px-2 text-center text-xs font-medium text-muted">
-        Ranks interested people by match % and sends invites up to capacity. Run it now if you&rsquo;re
-        oversubscribed and want to lock your group in before the deadline.
+        Matching runs automatically before your Vibe (≈24h ahead, or ~2h for same-day events). Run it
+        now if you&rsquo;re oversubscribed and want to lock your group in early.
       </p>
 
       <Link
