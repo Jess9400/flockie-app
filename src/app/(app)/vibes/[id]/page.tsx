@@ -231,29 +231,22 @@ export default async function VibeDetailPage({
         </a>
       )}
 
-      {/* host */}
-      <div className="mt-5 flex items-center gap-3 rounded-2xl border-2 border-ink bg-white p-3">
+      {/* host — compact tag */}
+      <div className="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-white py-1 pl-1 pr-3">
         {host?.photos?.[0] ? (
           <Image
             src={host.photos[0]}
             alt=""
-            width={44}
-            height={44}
-            className="h-11 w-11 rounded-full object-cover"
+            width={24}
+            height={24}
+            className="h-6 w-6 rounded-full object-cover"
           />
         ) : (
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-flockie-blue font-bold text-white">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-flockie-blue text-[10px] font-bold text-white">
             {(host?.display_name || "F")[0]}
           </span>
         )}
-        <div>
-          <p className="text-sm font-bold">
-            Hosted by {host?.display_name || "a flockie"}
-          </p>
-          {host?.one_liner && (
-            <p className="text-xs font-medium text-muted">{host.one_liner}</p>
-          )}
-        </div>
+        <span className="text-xs font-bold">Hosted by {host?.display_name || "a flockie"}</span>
       </div>
 
       {/* tags + rules */}
