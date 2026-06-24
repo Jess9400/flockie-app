@@ -95,6 +95,10 @@ export default function TripForm({
       return setErr(`${isActivity ? "City" : "At least one destination"} and dates are required.`);
     }
     if (new Date(end) < new Date(start)) return setErr("End date must be after the start date.");
+    if (!cover) return setErr("Add a cover photo — upload one or generate it.");
+    if (types.length === 0) {
+      return setErr(isActivity ? "Pick at least one activity vibe." : "Pick at least one trip type.");
+    }
 
     setSaving(true);
     const payload = {
@@ -206,7 +210,7 @@ export default function TripForm({
       </div>
 
       <div>
-        <span className="mb-1 block text-sm font-bold">Cover photo (optional)</span>
+        <span className="mb-1 block text-sm font-bold">Cover photo</span>
         {cover ? (
           <div className="relative aspect-[16/9] overflow-hidden rounded-2xl border-2 border-ink">
             {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -396,7 +396,7 @@ export default function CreateVibeForm({
             })}
           </div>
         </Field>
-        <Field label="Dealbreaker rules">
+        <Field label="Dealbreaker rules (optional)">
           <div className="flex flex-wrap gap-2">
             {DEALBREAKER_RULES.map((r) => {
               const on = !!rules[r.key];
