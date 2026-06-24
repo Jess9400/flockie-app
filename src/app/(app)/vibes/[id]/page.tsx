@@ -9,6 +9,7 @@ import VibeSettingsButton from "@/components/VibeSettingsButton";
 import LeaveVibeButton from "@/components/LeaveVibeButton";
 import ShareVibeButton from "@/components/ShareVibeButton";
 import VibeReviewSummary from "@/components/VibeReviewSummary";
+import Stars from "@/components/Stars";
 import { formatVibeWhen, DEALBREAKER_RULES, VIBE_REVIEW_TAGS, type InterestStatus } from "@/lib/vibes";
 
 export default async function VibeDetailPage({
@@ -97,12 +98,16 @@ export default async function VibeDetailPage({
   // Vibe reviews (the event) — aggregate into weighted %.
   const { data: reviewRows } = await supabase
     .from("vibe_reviews")
-    .select("recommend, tags")
+    .select("recommend, rating, tags")
     .eq("vibe_id", params.id);
   const reviews = reviewRows ?? [];
   const reviewCount = reviews.length;
   const recommendPct = reviewCount
     ? Math.round((reviews.filter((r) => r.recommend).length / reviewCount) * 100)
+    : 0;
+  const ratedReviews = reviews.filter((r) => r.rating != null);
+  const avgRating = ratedReviews.length
+    ? ratedReviews.reduce((sum, r) => sum + (r.rating as number), 0) / ratedReviews.length
     : 0;
   const tagPcts = reviewCount
     ? VIBE_REVIEW_TAGS.map((tag) => ({
@@ -300,6 +305,15 @@ export default async function VibeDetailPage({
       )}
 
       {/* Vibe reviews */}
+      {ratedReviews.length > 0 && (
+        <div className="mt-5 flex items-center gap-2">
+          <Stars value={avgRating} size={18} />
+          <span className="text-sm font-bold text-ink">{avgRating.toFixed(1)}</span>
+          <span className="text-sm font-medium text-muted">
+            ({ratedReviews.length} review{ratedReviews.length > 1 ? "s" : ""})
+          </span>
+        </div>
+      )}
       <VibeReviewSummary recommendPct={recommendPct} count={reviewCount} tagPcts={tagPcts} />
       {canReview && (
         <Link
