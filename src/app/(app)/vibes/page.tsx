@@ -5,7 +5,10 @@ import VibeCard, { type VibeCardData } from "@/components/VibeCard";
 import VibeSearch from "@/components/VibeSearch";
 import LocationPrompt from "@/components/LocationPrompt";
 import PageTabs from "@/components/PageTabs";
+import Pagination from "@/components/Pagination";
 import { loadVibeMatch } from "@/lib/vibe-stats";
+
+const PAGE_SIZE = 6;
 
 const VIBE_TABS = [
   { href: "/vibes", label: "Vibes" },
@@ -16,11 +19,12 @@ import type { InterestStatus } from "@/lib/vibes";
 export default async function VibesPage({
   searchParams,
 }: {
-  searchParams: { q?: string; city?: string };
+  searchParams: { q?: string; city?: string; page?: string };
 }) {
   const supabase = await createClient();
   const q = searchParams.q?.trim() ?? "";
   const city = searchParams.city?.trim() ?? "";
+  const page = Math.max(1, Number(searchParams.page) || 1);
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -44,7 +48,8 @@ export default async function VibesPage({
   let query = supabase
     .from("vibes")
     .select(
-      "id, host_id, title, category, photos, city, location_name, starts_at, capacity, event_vibe_tags"
+      "id, host_id, title, category, photos, city, location_name, starts_at, capacity, event_vibe_tags",
+      { count: "exact" }
     )
     .gte("starts_at", new Date().toISOString())
     .in("status", ["open", "ranking", "finalized"]);
@@ -52,11 +57,21 @@ export default async function VibesPage({
   if (city) query = query.ilike("city", `%${city}%`);
   if (q) query = query.or(`title.ilike.%${q}%,category.ilike.%${q}%`);
 
-  const { data: vibes } = await query
+  const from = (page - 1) * PAGE_SIZE;
+  const { data: vibes, count } = await query
     .order("starts_at", { ascending: true })
-    .limit(20);
+    .range(from, from + PAGE_SIZE - 1);
 
   const list = vibes ?? [];
+  const totalPages = Math.max(1, Math.ceil((count ?? 0) / PAGE_SIZE));
+  const hrefFor = (p: number) => {
+    const sp = new URLSearchParams();
+    if (q) sp.set("q", q);
+    if (city) sp.set("city", city);
+    if (p > 1) sp.set("page", String(p));
+    const qs = sp.toString();
+    return qs ? `/vibes?${qs}` : "/vibes";
+  };
   const ids = list.map((v) => v.id);
   const hostIds = Array.from(new Set(list.map((v) => v.host_id)));
 
@@ -127,24 +142,28 @@ export default async function VibesPage({
         </Link>
       )}
 
-      <div className="mt-6 space-y-4">
-        {list.length === 0 && (
-          <div className="rounded-3xl border-2 border-dashed border-ink/30 py-16 text-center font-medium text-muted">
-            {q || city
-              ? "No Vibes match your search. Try a different activity or city."
-              : "No Vibes yet. Be the first to create one."}
+      {list.length === 0 ? (
+        <div className="mt-6 rounded-3xl border-2 border-dashed border-ink/30 py-16 text-center font-medium text-muted">
+          {q || city
+            ? "No Vibes match your search. Try a different activity or city."
+            : "No Vibes yet. Be the first to create one."}
+        </div>
+      ) : (
+        <>
+          <div className="mt-6 grid grid-cols-3 gap-2.5">
+            {list.map((v) => (
+              <VibeCard
+                key={v.id}
+                vibe={{ ...v, host: hosts[v.host_id] ?? null } as VibeCardData}
+                confirmedCount={counts[v.id] ?? 0}
+                myStatus={mine[v.id] ?? null}
+                matchPct={vibeMatch[v.id]}
+              />
+            ))}
           </div>
-        )}
-        {list.map((v) => (
-          <VibeCard
-            key={v.id}
-            vibe={{ ...v, host: hosts[v.host_id] ?? null } as VibeCardData}
-            confirmedCount={counts[v.id] ?? 0}
-            myStatus={mine[v.id] ?? null}
-            matchPct={vibeMatch[v.id]}
-          />
-        ))}
-      </div>
+          <Pagination page={page} totalPages={totalPages} hrefFor={hrefFor} />
+        </>
+      )}
 
       <LocationPrompt trackingEnabled={trackingEnabled} />
     </main>

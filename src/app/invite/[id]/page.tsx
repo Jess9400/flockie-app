@@ -54,9 +54,9 @@ export default async function InvitePage({ params }: { params: { id: string } })
       </Link>
 
       <div className="mt-6 overflow-hidden rounded-3xl border-2 border-navy bg-white shadow-[0_6px_0_0_rgba(10,37,69,1)]">
-        <div className="relative h-56 w-full bg-cream">
+        <div className="relative aspect-square w-full bg-cream">
           {v.photos?.[0] ? (
-            <Image src={v.photos[0]} alt="" fill sizes="512px" className="object-cover" />
+            <Image src={v.photos[0]} alt="" fill sizes="512px" className="object-contain" />
           ) : (
             <div className="flex h-full items-center justify-center text-5xl">🎟️</div>
           )}

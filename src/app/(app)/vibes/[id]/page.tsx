@@ -126,8 +126,8 @@ export default async function VibeDetailPage({
       </Link>
 
       {vibe.photos?.[0] && (
-        <div className="relative h-56 w-full overflow-hidden rounded-3xl border-2 border-ink">
-          <Image src={vibe.photos[0]} alt="" fill sizes="100vw" className="object-cover" />
+        <div className="relative aspect-square w-full overflow-hidden rounded-3xl border-2 border-ink bg-cream">
+          <Image src={vibe.photos[0]} alt="" fill sizes="100vw" className="object-contain" />
         </div>
       )}
 

@@ -23,6 +23,8 @@ const STATUS_LABEL: Record<string, string> = {
   standby: "Standby",
 };
 
+// Compact "trading card" — square full-display artwork on top, title + meta below.
+// Sized to fill its grid cell (3-up on the Vibes page) or carousel slot on Home.
 export default function VibeCard({
   vibe,
   confirmedCount,
@@ -41,76 +43,68 @@ export default function VibeCard({
   return (
     <Link
       href={`/vibes/${vibe.id}`}
-      className="block overflow-hidden rounded-3xl border-2 border-ink bg-white shadow-[0_5px_0_0_rgba(26,26,26,1)] transition-transform hover:-translate-y-1"
+      className="flex flex-col overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-[0_4px_0_0_rgba(26,26,26,1)] transition-transform hover:-translate-y-1"
     >
-      <div className="relative h-40 w-full bg-cream">
+      {/* Artwork — square so the whole cover shows, never cropped */}
+      <div className="relative aspect-square w-full border-b-2 border-ink bg-cream">
         {cover ? (
           <Image
             src={cover}
             alt=""
             fill
-            sizes="(max-width:480px) 100vw, 400px"
-            className="object-cover"
+            sizes="(max-width:640px) 33vw, 240px"
+            className="object-contain"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-4xl">🎟️</div>
+          <div className="flex h-full items-center justify-center text-3xl">🎟️</div>
         )}
-        <span className="absolute left-3 top-3 rounded-full border-2 border-ink bg-white px-2.5 py-0.5 text-xs font-extrabold lowercase">
+        <span className="absolute left-1.5 top-1.5 rounded-full border-2 border-ink bg-white px-1.5 py-0.5 text-[9px] font-extrabold lowercase leading-none">
           {vibe.category}
         </span>
         {myStatus && STATUS_LABEL[myStatus] && (
-          <span className="absolute right-3 top-3 rounded-full border-2 border-ink bg-flockie-orange px-2.5 py-0.5 text-xs font-extrabold text-white">
+          <span className="absolute right-1.5 top-1.5 rounded-full border-2 border-ink bg-flockie-orange px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-white">
             {STATUS_LABEL[myStatus]}
           </span>
         )}
         {!myStatus && typeof matchPct === "number" && (
-          <span className="absolute right-3 top-3 rounded-full border-2 border-ink bg-flockie-coral px-2.5 py-0.5 text-xs font-extrabold text-white">
-            {matchPct}% your vibe
+          <span className="absolute right-1.5 top-1.5 rounded-full border-2 border-ink bg-flockie-coral px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-white">
+            {matchPct}%
           </span>
         )}
       </div>
 
-      <div className="p-4">
-        <p className="text-lg font-extrabold leading-tight">{vibe.title}</p>
-        <p className="mt-1 text-sm font-bold text-flockie-orange">
+      {/* Body */}
+      <div className="flex flex-1 flex-col p-2.5">
+        <p className="line-clamp-2 text-[13px] font-extrabold leading-tight text-ink">
+          {vibe.title}
+        </p>
+        <p className="mt-1 text-[11px] font-bold leading-tight text-flockie-orange">
           {formatVibeWhen(vibe.starts_at)}
         </p>
-        <p className="mt-1 flex items-center gap-1 text-sm font-medium text-muted">
-          <MapPin size={14} /> {vibe.location_name || vibe.city}
+        <p className="mt-0.5 flex items-center gap-1 text-[11px] font-medium text-muted">
+          <MapPin size={11} className="shrink-0" />
+          <span className="truncate">{vibe.location_name || vibe.city}</span>
         </p>
 
-        {vibe.event_vibe_tags && vibe.event_vibe_tags.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {vibe.event_vibe_tags.slice(0, 3).map((t) => (
-              <span
-                key={t}
-                className="rounded-full bg-cream px-2 py-0.5 text-[11px] font-bold text-ink"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-        )}
-
-        <div className="mt-3 flex items-center justify-between">
-          <span className="flex items-center gap-1.5 text-sm font-medium text-ink">
+        <div className="mt-2 flex items-center justify-between gap-1 pt-0.5">
+          <span className="flex min-w-0 items-center gap-1 text-[11px] font-medium text-ink">
             {hostAvatar ? (
               <Image
                 src={hostAvatar}
                 alt=""
-                width={20}
-                height={20}
-                className="h-5 w-5 rounded-full object-cover"
+                width={18}
+                height={18}
+                className="h-[18px] w-[18px] shrink-0 rounded-full object-cover"
               />
             ) : (
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-flockie-blue text-[10px] font-bold text-white">
+              <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-flockie-blue text-[9px] font-bold text-white">
                 {hostName[0]}
               </span>
             )}
-            {hostName}
+            <span className="truncate">{hostName}</span>
           </span>
-          <span className="flex items-center gap-1 text-sm font-bold text-muted">
-            <Users size={14} /> {confirmedCount}/{vibe.capacity}
+          <span className="flex shrink-0 items-center gap-0.5 text-[11px] font-bold text-muted">
+            <Users size={11} /> {confirmedCount}/{vibe.capacity}
           </span>
         </div>
       </div>
