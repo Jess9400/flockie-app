@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
 import QuickAction from "@/components/QuickAction";
 import { loadVibeMatch } from "@/lib/vibe-stats";
-import { formatVibeWhen } from "@/lib/vibes";
+import { formatVibeWhen, type InterestStatus } from "@/lib/vibes";
 
 type RecommendedVibe = VibeCardData & { host_id: string; match_score: number };
 
@@ -167,6 +167,18 @@ export default async function HomePage({
   const recMeta = await loadHostsAndCounts(supabase, recommended);
 
   const nearMatch = await loadVibeMatch(supabase, near.map((v) => v.id));
+  const cardStatuses: Record<string, InterestStatus> = {};
+  const cardVibeIds = Array.from(new Set([...near.map((v) => v.id), ...recommended.map((v) => v.id)]));
+  if (cardVibeIds.length) {
+    const { data: cardInterests } = await supabase
+      .from("vibe_interests")
+      .select("vibe_id, status")
+      .eq("user_id", user!.id)
+      .in("vibe_id", cardVibeIds);
+    cardInterests?.forEach((r) => {
+      cardStatuses[r.vibe_id] = r.status as InterestStatus;
+    });
+  }
 
   return (
     <div className="pb-4">
@@ -228,7 +240,9 @@ export default async function HomePage({
                 <VibeCard
                   vibe={{ ...v, host: nearMeta.hosts[v.host_id] ?? null } as VibeCardData}
                   confirmedCount={nearMeta.counts[v.id] ?? 0}
+                  myStatus={cardStatuses[v.id] ?? null}
                   matchPct={nearMatch[v.id]}
+                  canDismiss={v.host_id !== user!.id && !cardStatuses[v.id]}
                 />
               </div>
             ))}
@@ -329,7 +343,9 @@ export default async function HomePage({
                 key={v.id}
                 vibe={{ ...v, host: recMeta.hosts[v.host_id] ?? null } as VibeCardData}
                 confirmedCount={recMeta.counts[v.id] ?? 0}
+                myStatus={cardStatuses[v.id] ?? null}
                 matchPct={v.match_score}
+                canDismiss={v.host_id !== user!.id && !cardStatuses[v.id]}
               />
             ))}
           </div>

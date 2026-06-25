@@ -8,6 +8,7 @@ import PageTabs from "@/components/PageTabs";
 import Pagination from "@/components/Pagination";
 import FilterSheet from "@/components/FilterSheet";
 import { loadVibeMatch } from "@/lib/vibe-stats";
+import type { InterestStatus } from "@/lib/vibes";
 
 const PAGE_SIZE = 6;
 
@@ -15,7 +16,6 @@ const VIBE_TABS = [
   { href: "/vibes", label: "Vibes" },
   { href: "/my-vibes", label: "My Vibes" },
 ];
-import type { InterestStatus } from "@/lib/vibes";
 
 export default async function VibesPage({
   searchParams,
@@ -246,6 +246,7 @@ export default async function VibesPage({
                 matchPct={isPast ? undefined : vibeMatch[v.id]}
                 faded={isPast}
                 rating={isPast ? ratings[v.id] ?? null : undefined}
+                canDismiss={!isPast && v.host_id !== user!.id && !mine[v.id]}
               />
             ))}
           </div>
