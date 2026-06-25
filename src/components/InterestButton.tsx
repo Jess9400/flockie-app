@@ -14,6 +14,7 @@ type Props = {
   initialStatus: InterestStatus | null;
   invitationExpiresAt?: string | null;
   cancelled?: boolean;
+  ended?: boolean;
   autoInterest?: boolean;
   requestMode?: boolean;
 };
@@ -25,6 +26,7 @@ export default function InterestButton({
   initialStatus,
   invitationExpiresAt,
   cancelled,
+  ended,
   autoInterest,
   requestMode,
 }: Props) {
@@ -97,7 +99,7 @@ export default function InterestButton({
 
   // Deep-links: auto-open the right flow once on arrival.
   useEffect(() => {
-    if (status === null && !cancelled) {
+    if (status === null && !cancelled && !ended) {
       if (requestMode) requestPrivate();
       else if (autoInterest) express();
     }
@@ -157,6 +159,12 @@ export default function InterestButton({
     control = (
       <div className={`${base} bg-cream text-muted`}>
         This Vibe was cancelled by the host.
+      </div>
+    );
+  } else if (ended && status !== "confirmed") {
+    control = (
+      <div className={`${base} bg-cream text-muted`}>
+        This Vibe has ended.
       </div>
     );
   } else if (status === "confirmed") {
