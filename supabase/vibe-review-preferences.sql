@@ -99,7 +99,17 @@ grant execute on function public.vibe_match(uuid, uuid) to authenticated;
 -- ── _rank_vibe_core: fold review-fit into the host's ranking ────────────────
 create or replace function public._rank_vibe_core(p_vibe uuid)
 returns jsonb language plpgsql security definer set search_path = public as $$
-declare v public.vibes; v_confirmed int; v_active int; v_remaining int; v_invited int := 0; v_standby int := 0; c record; rnk int := 0;
+declare
+  v public.vibes;
+  v_confirmed int;
+  v_active int;
+  v_remaining int;
+  v_invited int := 0;
+  v_standby int := 0;
+  v_backfilled int := 0;
+  v_city_invited int := 0;
+  c record;
+  rnk int := 0;
 begin
   select * into v from public.vibes where id = p_vibe;
   if v.id is null or v.status = 'cancelled' then return jsonb_build_object('invited',0,'standby',0); end if;
@@ -149,9 +159,15 @@ begin
   end loop;
 
   update public.vibes set status='ranking' where id=p_vibe and status <> 'cancelled';
-  perform public.backfill_vibe(p_vibe);
-  perform public.invite_city_fallback(p_vibe);
-  return jsonb_build_object('invited', v_invited, 'standby', v_standby);
+  v_backfilled := public.backfill_vibe(p_vibe);
+  v_city_invited := public.invite_city_fallback(p_vibe);
+  return jsonb_build_object(
+    'invited', v_invited,
+    'standby', v_standby,
+    'backfilled', v_backfilled,
+    'city_invited', v_city_invited,
+    'total_invited', v_invited + v_backfilled + v_city_invited
+  );
 end $$;
 grant execute on function public._rank_vibe_core(uuid) to authenticated;
 

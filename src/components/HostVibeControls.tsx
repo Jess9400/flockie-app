@@ -33,8 +33,16 @@ export default function HostVibeControls({
     const { data, error } = await supabase.rpc("rank_vibe", { p_vibe: vibeId });
     setBusy(false);
     if (error) return setMsg(error.message);
-    const r = data as { invited: number; standby: number };
-    setMsg(`Matched! Invited ${r.invited}, standby ${r.standby}.`);
+    const r = data as {
+      invited?: number;
+      standby?: number;
+      backfilled?: number;
+      city_invited?: number;
+      total_invited?: number;
+    };
+    const totalInvited =
+      r.total_invited ?? (r.invited ?? 0) + (r.backfilled ?? 0) + (r.city_invited ?? 0);
+    setMsg(`Matched! Invited ${totalInvited}, standby ${r.standby ?? 0}.`);
     router.refresh();
   }
 
@@ -52,7 +60,7 @@ export default function HostVibeControls({
         </Link>
       </div>
       <p className="px-2 text-center text-xs font-medium text-muted">
-        If you don&rsquo;t run matching, invitations are sent automatically at your deadline.
+        If you don&rsquo;t run matching, Flockie starts automatically 48h before your deadline.
       </p>
       {msg && <p className="text-center text-sm font-bold text-flockie-blue">{msg}</p>}
     </div>

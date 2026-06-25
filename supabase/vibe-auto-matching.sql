@@ -3,11 +3,12 @@
 --
 -- What this adds:
 --  * Matching runs AUTOMATICALLY at the right time (no host click needed):
---      run_at = least( deadline (or start-24h if none), start-2h )
---    so far-out events rank ~24h before, today's events rank ~2h before.
+--      run_at = least( deadline-48h (or start-48h if none), start-2h )
+--    so interested users are not left waiting until the deadline.
 --  * Confirm window is now PROXIMITY-AWARE: 24h, but never past (start-30min),
 --    so invites for a same-day Vibe don't expire after the event.
 --  * If natural interest can't fill the room, invite matched SAME-CITY users.
+--  * Host gets quiet threshold nudges: first interest, capacity reached, 2x capacity.
 
 -- ── Dynamic confirm deadline: 24h, capped to just before the event ──────────
 create or replace function public._vibe_confirm_deadline(p_starts timestamptz)
@@ -22,7 +23,7 @@ $$;
 create or replace function public._vibe_run_at(p_starts timestamptz, p_deadline timestamptz)
 returns timestamptz language sql immutable set search_path = public as $$
   select least(
-    coalesce(p_deadline, p_starts - interval '24 hours'),
+    coalesce(p_deadline, p_starts) - interval '48 hours',
     p_starts - interval '2 hours'
   );
 $$;
@@ -106,7 +107,17 @@ grant execute on function public.invite_city_fallback(uuid) to authenticated;
 -- ── Core ranking (NO auth gate — callable by host RPC and by the scheduler) ─
 create or replace function public._rank_vibe_core(p_vibe uuid)
 returns jsonb language plpgsql security definer set search_path = public as $$
-declare v public.vibes; v_confirmed int; v_active int; v_remaining int; v_invited int := 0; v_standby int := 0; c record; rnk int := 0;
+declare
+  v public.vibes;
+  v_confirmed int;
+  v_active int;
+  v_remaining int;
+  v_invited int := 0;
+  v_standby int := 0;
+  v_backfilled int := 0;
+  v_city_invited int := 0;
+  c record;
+  rnk int := 0;
 begin
   select * into v from public.vibes where id = p_vibe;
   if v.id is null or v.status = 'cancelled' then return jsonb_build_object('invited',0,'standby',0); end if;
@@ -156,9 +167,15 @@ begin
   end loop;
 
   update public.vibes set status='ranking' where id=p_vibe and status <> 'cancelled';
-  perform public.backfill_vibe(p_vibe);       -- top up from standby
-  perform public.invite_city_fallback(p_vibe); -- still short? pull in same-city matches
-  return jsonb_build_object('invited', v_invited, 'standby', v_standby);
+  v_backfilled := public.backfill_vibe(p_vibe);        -- top up from standby
+  v_city_invited := public.invite_city_fallback(p_vibe); -- still short? pull in same-city matches
+  return jsonb_build_object(
+    'invited', v_invited,
+    'standby', v_standby,
+    'backfilled', v_backfilled,
+    'city_invited', v_city_invited,
+    'total_invited', v_invited + v_backfilled + v_city_invited
+  );
 end $$;
 grant execute on function public._rank_vibe_core(uuid) to authenticated;
 
@@ -173,6 +190,69 @@ begin
   return public._rank_vibe_core(p_vibe);
 end $$;
 grant execute on function public.rank_vibe(uuid) to authenticated;
+
+-- ── Host nudges when interest becomes actionable, without spamming ─────────
+create or replace function public.notify_vibe_host_interest_threshold()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare
+  v public.vibes;
+  v_interested int;
+  v_title text;
+  v_body text;
+begin
+  if new.status <> 'interested' then return new; end if;
+
+  select * into v from public.vibes where id = new.vibe_id;
+  if v.id is null or v.status = 'cancelled' then return new; end if;
+  if v.host_id = new.user_id then return new; end if;
+
+  select count(*) into v_interested
+    from public.vibe_interests
+    where vibe_id = new.vibe_id and status = 'interested';
+
+  if v_interested = 1 then
+    v_title := 'Someone is interested in ' || v.title;
+    v_body := 'Your Vibe has its first interested person. Share it or run matching when you are ready.';
+  elsif v_interested = v.capacity then
+    v_title := v.title || ' has enough interest to fill';
+    v_body := v_interested || ' people are interested for ' || v.capacity || ' spots. Run matching to let Flockie invite the best fit.';
+  elsif v_interested = v.capacity * 2 then
+    v_title := v.title || ' has 2x interest';
+    v_body := v_interested || ' people are interested. Run matching when you want Flockie to curate the room.';
+  else
+    return new;
+  end if;
+
+  perform public.notify(
+    v.host_id,
+    'vibe_interest_threshold',
+    v_title,
+    v_body,
+    jsonb_build_object('vibe_id', new.vibe_id, 'interested_count', v_interested)
+  );
+
+  return new;
+end $$;
+
+drop trigger if exists vibe_interest_threshold_notify on public.vibe_interests;
+create trigger vibe_interest_threshold_notify
+after insert on public.vibe_interests
+for each row execute function public.notify_vibe_host_interest_threshold();
+
+-- ── If a Vibe is created/updated already inside the 48h window, run now ────
+create or replace function public.run_due_vibe_matching_on_write()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if new.status = 'open' and now() >= public._vibe_run_at(new.starts_at, new.signup_deadline) then
+    perform public._rank_vibe_core(new.id);
+  end if;
+  return new;
+end $$;
+
+drop trigger if exists vibe_due_matching_on_write on public.vibes;
+create trigger vibe_due_matching_on_write
+after insert or update of status, starts_at, signup_deadline on public.vibes
+for each row execute function public.run_due_vibe_matching_on_write();
 
 -- ── Scheduler: auto-run the initial ranking when each Vibe's run_at arrives ──
 create or replace function public.auto_rank_due_vibes()
@@ -192,7 +272,7 @@ do $$ begin perform cron.unschedule('flockie-auto-rank'); exception when others 
 select cron.schedule('flockie-auto-rank', '*/5 * * * *', $$ select public.auto_rank_due_vibes(); $$);
 
 -- ── Keep vibes topped up every 10 min ───────────────────────────────────────
---   * Ranked vibes: backfill from standby + same-city.
+--   * Ranked vibes: rank any new interest, then backfill from standby + same-city.
 --   * Open vibes within 48h of their deadline: start same-city fallback early
 --     so the city pool has lead time to see and confirm the invite.
 create or replace function public.autofill_open_vibes()
@@ -200,13 +280,12 @@ returns void language plpgsql security definer set search_path = public as $$
 declare r record;
 begin
   for r in select id from public.vibes where status = 'ranking' loop
-    perform public.backfill_vibe(r.id);
-    perform public.invite_city_fallback(r.id);
+    perform public._rank_vibe_core(r.id);
   end loop;
   for r in
     select id from public.vibes
     where status = 'open'
-      and now() >= coalesce(signup_deadline, starts_at - interval '24 hours') - interval '48 hours'
+      and now() >= public._vibe_run_at(starts_at, signup_deadline)
   loop
     perform public.invite_city_fallback(r.id);
   end loop;
