@@ -139,8 +139,8 @@ export default function VibeChatHeader({
       {expanded && (
         <div className="max-h-[55vh] space-y-3 overflow-y-auto pb-4">
           {cover && (
-            <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-cream">
-              <Image src={cover} alt="" fill sizes="100vw" className="object-contain" />
+            <div className="relative h-28 w-full overflow-hidden rounded-2xl bg-cream">
+              <Image src={cover} alt="" fill sizes="100vw" className="object-cover" />
             </div>
           )}
           {startsAt && (
@@ -164,7 +164,7 @@ export default function VibeChatHeader({
                 title="Event location"
                 src={mapSrc}
                 loading="lazy"
-                className="h-[250px] w-full rounded-2xl border-2 border-navy"
+                className="h-[150px] w-full rounded-2xl border-2 border-navy"
                 referrerPolicy="no-referrer-when-downgrade"
               />
             ))}
