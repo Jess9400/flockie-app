@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MapPin, Users, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatVibeWhen, type InterestStatus } from "@/lib/vibes";
@@ -49,29 +49,45 @@ export default function VibeCard({
 }) {
   const supabase = createClient();
   const [hidden, setHidden] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [busy, setBusy] = useState(false);
   const cover = vibe.photos?.[0];
   const hostName = vibe.host?.display_name || "A flockie";
   const hostAvatar = vibe.host?.photos?.[0];
 
+  useEffect(() => {
+    if (!hidden) return;
+    const timer = window.setTimeout(() => setCollapsed(true), 5000);
+    return () => window.clearTimeout(timer);
+  }, [hidden]);
+
   async function markNotForMe() {
     setBusy(true);
     const { error } = await supabase.rpc("mark_vibe_not_for_me", { p_vibe: vibe.id });
     setBusy(false);
-    if (!error) setHidden(true);
+    if (!error) {
+      setHidden(true);
+      setCollapsed(false);
+    }
   }
 
   async function undoNotForMe() {
     setBusy(true);
     const { error } = await supabase.rpc("undo_vibe_not_for_me", { p_vibe: vibe.id });
     setBusy(false);
-    if (!error) setHidden(false);
+    if (!error) {
+      setHidden(false);
+      setCollapsed(false);
+    }
   }
+
+  if (collapsed) return null;
 
   if (hidden) {
     return (
       <div className="flex min-h-28 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-ink/25 bg-white/70 p-4 text-center">
         <p className="text-sm font-extrabold text-ink">Hidden</p>
+        <p className="mt-0.5 text-xs font-medium text-muted">We&rsquo;ll tune your future picks.</p>
         <button
           type="button"
           onClick={undoNotForMe}
