@@ -44,7 +44,7 @@ export default async function VibeDetailPage({
 
   const { data: me } = await supabase
     .from("profiles")
-    .select("onboarding_complete, activities")
+    .select("onboarding_complete, activities, vibe_completed_at")
     .eq("id", user!.id)
     .maybeSingle();
   // For Vibe interest we only need the activity vibe check (not full onboarding).
@@ -494,6 +494,7 @@ export default async function VibeDetailPage({
             autoInterest={searchParams.interested === "1"}
             requestMode={searchParams.request === "1"}
             hostCode={searchParams.code ?? null}
+            vibeFormDone={!!me?.vibe_completed_at}
           />
         )}
       </div>
