@@ -190,6 +190,15 @@ export default async function VibeDetailPage({
   const ended = new Date(vibe.ends_at ?? vibe.starts_at) <= new Date();
   const canReview = ended && myInterest?.status === "confirmed";
 
+  // If the viewer didn't get in, suggest better-matched Vibes.
+  let suggestions: { id: string; title: string; photos: string[] | null; match_score: number | null }[] = [];
+  if (!isHost && myInterest && ["standby", "declined", "ghosted"].includes(myInterest.status)) {
+    const { data: rec } = await supabase.rpc("recommended_vibes", { p_limit: 4 });
+    suggestions = ((rec ?? []) as { id: string; title: string; photos: string[] | null; match_score: number | null }[])
+      .filter((r) => r.id !== params.id)
+      .slice(0, 3);
+  }
+
   return (
     <main className="px-5 pb-10 pt-6">
       <Link
@@ -451,6 +460,38 @@ export default async function VibeDetailPage({
       {!isHost && (
         <div className="mt-3 flex justify-center">
           <ShareVibeButton vibeId={vibe.id} />
+        </div>
+      )}
+
+      {suggestions.length > 0 && (
+        <div className="mt-8">
+          <p className="text-sm font-extrabold">Vibes that match you more</p>
+          <p className="mt-0.5 text-xs font-medium text-muted">
+            This one filled up — here&rsquo;s what fits your vibe better.
+          </p>
+          <div className="mt-3 grid grid-cols-3 gap-2.5">
+            {suggestions.map((s) => (
+              <Link
+                key={s.id}
+                href={`/vibes/${s.id}`}
+                className="flex flex-col overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-[0_3px_0_0_rgba(26,26,26,1)]"
+              >
+                <div className="relative aspect-square w-full bg-cream">
+                  {s.photos?.[0] ? (
+                    <Image src={s.photos[0]} alt="" fill sizes="33vw" className="object-contain" />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-2xl">🎟️</div>
+                  )}
+                  {typeof s.match_score === "number" && (
+                    <span className="absolute right-1.5 top-1.5 rounded-full border-2 border-ink bg-flockie-coral px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-white">
+                      {s.match_score}%
+                    </span>
+                  )}
+                </div>
+                <p className="line-clamp-2 p-2 text-[12px] font-extrabold leading-tight text-ink">{s.title}</p>
+              </Link>
+            ))}
+          </div>
         </div>
       )}
     </main>
