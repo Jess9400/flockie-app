@@ -57,6 +57,14 @@ export default async function VibeDetailPage({
     .eq("user_id", user!.id)
     .maybeSingle();
 
+  const { data: myFeedback } = await supabase
+    .from("vibe_feedback")
+    .select("signal")
+    .eq("vibe_id", params.id)
+    .eq("user_id", user!.id)
+    .eq("signal", "not_for_me")
+    .maybeSingle();
+
   // confirmed attendees (avatars) + count
   const { data: confirmedRows } = await supabase
     .from("vibe_interests")
@@ -503,6 +511,7 @@ export default async function VibeDetailPage({
             autoInterest={searchParams.interested === "1"}
             requestMode={searchParams.request === "1"}
             hostCode={searchParams.code ?? null}
+            initialNotForMe={!!myFeedback}
             vibeFormDone={!!me?.vibe_completed_at}
           />
         )}

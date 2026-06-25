@@ -57,6 +57,12 @@ export default async function HomePage({
   const timing = searchParams.when === "24" ? "24" : searchParams.when === "48" ? "48" : "all";
   const cutoffHours = timing === "24" ? 24 : timing === "48" ? 48 : null;
   const timingLabel = timing === "24" ? "in the next 24 hours" : timing === "48" ? "in the next 48 hours" : "upcoming";
+  const { data: hiddenRows } = await supabase
+    .from("vibe_feedback")
+    .select("vibe_id")
+    .eq("user_id", user!.id)
+    .eq("signal", "not_for_me");
+  const hiddenVibeIds = Array.from(new Set((hiddenRows ?? []).map((r) => r.vibe_id)));
 
   // ── Section 3: Upcoming near you, optionally filtered by timing ─────────
   let nearQuery = supabase
@@ -75,6 +81,7 @@ export default async function HomePage({
     );
   }
   if (homeCity) nearQuery = nearQuery.ilike("city", homeCity);
+  if (hiddenVibeIds.length) nearQuery = nearQuery.not("id", "in", `(${hiddenVibeIds.join(",")})`);
   const { data: nearRaw } = await nearQuery;
   const near = nearRaw ?? [];
   const nearMeta = await loadHostsAndCounts(supabase, near);

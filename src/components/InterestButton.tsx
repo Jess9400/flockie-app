@@ -18,6 +18,7 @@ type Props = {
   autoInterest?: boolean;
   requestMode?: boolean;
   hostCode?: string | null;
+  initialNotForMe?: boolean;
   vibeFormDone?: boolean;
 };
 
@@ -32,6 +33,7 @@ export default function InterestButton({
   autoInterest,
   requestMode,
   hostCode,
+  initialNotForMe = false,
   vibeFormDone,
 }: Props) {
   const router = useRouter();
@@ -46,6 +48,7 @@ export default function InterestButton({
   const [popup, setPopup] = useState<null | "interested" | "confirmed">(null);
   const [now, setNow] = useState(() => Date.now());
   const [message, setMessage] = useState<string | null>(null);
+  const [notForMe, setNotForMe] = useState(initialNotForMe);
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 30000);
@@ -63,11 +66,13 @@ export default function InterestButton({
 
   async function doInsert() {
     setBusy(true);
+    await supabase.rpc("undo_vibe_not_for_me", { p_vibe: vibeId });
     const { error } = await supabase
       .from("vibe_interests")
       .insert({ vibe_id: vibeId, user_id: userId, status: "interested" });
     setBusy(false);
     if (!error) {
+      setNotForMe(false);
       setStatus("interested");
       setPopup("interested");
       router.refresh();
@@ -89,6 +94,8 @@ export default function InterestButton({
     const { error } = await supabase.rpc("request_private_vibe", { p_vibe: vibeId });
     setBusy(false);
     if (!error) {
+      await supabase.rpc("undo_vibe_not_for_me", { p_vibe: vibeId });
+      setNotForMe(false);
       setStatus("requested");
       router.refresh();
     } else {
@@ -114,6 +121,8 @@ export default function InterestButton({
     const { error } = await supabase.rpc("redeem_host_code", { p_vibe: vibeId, p_code: c });
     setBusy(false);
     if (error) return setMessage(error.message);
+    await supabase.rpc("undo_vibe_not_for_me", { p_vibe: vibeId });
+    setNotForMe(false);
     setStatus("confirmed");
     setPopup("confirmed");
     router.refresh();
@@ -158,6 +167,26 @@ export default function InterestButton({
     setBusy(false);
     if (error) return setMessage(error.message);
     setStatus("declined");
+    router.refresh();
+  }
+
+  async function markNotForMe() {
+    setBusy(true);
+    setMessage(null);
+    const { error } = await supabase.rpc("mark_vibe_not_for_me", { p_vibe: vibeId });
+    setBusy(false);
+    if (error) return setMessage(error.message);
+    setNotForMe(true);
+    router.refresh();
+  }
+
+  async function undoNotForMe() {
+    setBusy(true);
+    setMessage(null);
+    const { error } = await supabase.rpc("undo_vibe_not_for_me", { p_vibe: vibeId });
+    setBusy(false);
+    if (error) return setMessage(error.message);
+    setNotForMe(false);
     router.refresh();
   }
 
@@ -263,11 +292,25 @@ export default function InterestButton({
         You&rsquo;re in the running · tap to remove
       </button>
     );
+  } else if (notForMe) {
+    control = (
+      <div className="space-y-2">
+        <div className={`${base} bg-cream text-muted`}>
+          Hidden from your recommendations.
+        </div>
+        <button onClick={undoNotForMe} disabled={busy} className={`${base} bg-white`}>
+          Undo
+        </button>
+      </div>
+    );
   } else {
     control = (
       <div className="space-y-2">
         <button onClick={express} disabled={busy} className={`${base} bg-flockie-orange text-white shadow-[0_4px_0_0_#E0512C]`}>
           I&rsquo;m interested
+        </button>
+        <button onClick={markNotForMe} disabled={busy} className={`${base} bg-white text-muted`}>
+          Not for me
         </button>
         {!showCode ? (
           <button
