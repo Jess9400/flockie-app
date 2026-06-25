@@ -32,6 +32,7 @@ function Row({
   past,
   href,
   reviewHref,
+  reviewLabel = "Review this Vibe",
 }: {
   photo: string | null;
   emoji: string;
@@ -41,6 +42,7 @@ function Row({
   past: boolean;
   href?: string;
   reviewHref?: string | null;
+  reviewLabel?: string;
 }) {
   const inner = (
     <>
@@ -76,7 +78,7 @@ function Row({
           href={reviewHref}
           className="mt-1.5 flex items-center justify-center gap-1 rounded-full border-2 border-ink bg-flockie-coral py-1.5 text-xs font-bold text-white"
         >
-          <Star size={13} /> Review this Vibe
+          <Star size={13} /> {reviewLabel}
         </Link>
       )}
     </div>
@@ -133,6 +135,8 @@ export default function ProfileEvents({ data, isOwner }: { data: EventsData; isO
               sub={dateRange(f.start_date, f.end_date)}
               role={f.role === "host" ? "Host" : "Going"}
               past={f.past}
+              reviewHref={isOwner && f.past ? `/flocks/${f.id}/review` : null}
+              reviewLabel="Review your group"
             />
           ))}
         </Section>
