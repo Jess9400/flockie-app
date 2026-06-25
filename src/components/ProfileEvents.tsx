@@ -118,7 +118,7 @@ export default function ProfileEvents({ data, isOwner }: { data: EventsData; isO
               role={v.role === "host" ? "Host" : "Going"}
               past={v.past}
               href={`/vibes/${v.id}`}
-              reviewHref={isOwner && v.past ? `/vibes/${v.id}/review` : null}
+              reviewHref={isOwner && v.past && v.role !== "host" ? `/vibes/${v.id}/review` : null}
             />
           ))}
         </Section>
