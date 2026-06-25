@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import ProfileEditor from "@/components/ProfileEditor";
+import ProfileStats from "@/components/ProfileStats";
+import ProfileEvents from "@/components/ProfileEvents";
 import { type ReviewItem } from "@/components/ProfileReviews";
 import type { Profile } from "@/lib/vibe-check";
 import { safeRedirectPath } from "@/lib/redirects";
@@ -61,6 +63,10 @@ export default async function ProfilePage({
     reviewerPhoto: reviewers[r.reviewer_id]?.photos?.[0] ?? null,
   }));
 
+  // My activity on Flockie — stats + the vibes/flocks/activities/trips I'm in.
+  const { data: statsData } = await supabase.rpc("public_profile_stats", { p_user: user!.id });
+  const { data: eventsData } = await supabase.rpc("public_profile_events", { p_user: user!.id });
+
   return (
     <main className="mx-auto w-full max-w-[720px] px-6 pb-28 pt-6 font-nunito sm:pb-12">
       <ProfileEditor
@@ -73,6 +79,9 @@ export default async function ProfilePage({
         redirectAfter={returnTo}
         celebrate={searchParams.vibe_done === "1"}
       />
+
+      <ProfileStats stats={(statsData ?? {}) as Record<string, number>} />
+      <ProfileEvents data={eventsData ?? {}} isOwner />
     </main>
   );
 }
