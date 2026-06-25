@@ -171,25 +171,10 @@ export default async function VibesPage({
         (Want 1:1? Find a Buddy.)
       </p>
 
-      <div className="mt-4 inline-flex gap-1 rounded-full border-2 border-ink bg-white p-1 text-sm font-bold">
-        <Link
-          href="/vibes"
-          className={`rounded-full px-4 py-1.5 ${!isPast ? "bg-ink text-white" : "text-ink hover:bg-navy/5"}`}
-        >
-          Upcoming
-        </Link>
-        <Link
-          href="/vibes?view=past"
-          className={`rounded-full px-4 py-1.5 ${isPast ? "bg-ink text-white" : "text-ink hover:bg-navy/5"}`}
-        >
-          Past
-        </Link>
-      </div>
-
       <VibeSearch q={q} city={city} />
 
-      {!isPast && (
-        <div className="mt-3">
+      <div className="mt-3 flex items-center justify-between gap-2">
+        {!isPast ? (
           <FilterSheet
             basePath="/vibes"
             preserveKeys={["q", "city"]}
@@ -205,8 +190,24 @@ export default async function VibesPage({
               },
             ]}
           />
+        ) : (
+          <span />
+        )}
+        <div className="inline-flex gap-1 rounded-full border-2 border-ink bg-white p-1 text-sm font-bold">
+          <Link
+            href="/vibes"
+            className={`rounded-full px-3 py-1.5 ${!isPast ? "bg-ink text-white" : "text-ink hover:bg-navy/5"}`}
+          >
+            Upcoming
+          </Link>
+          <Link
+            href="/vibes?view=past"
+            className={`rounded-full px-3 py-1.5 ${isPast ? "bg-ink text-white" : "text-ink hover:bg-navy/5"}`}
+          >
+            Past
+          </Link>
         </div>
-      )}
+      </div>
 
       {!isPast && !activityCheckDone && (
         <Link
