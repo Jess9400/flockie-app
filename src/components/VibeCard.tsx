@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Users } from "lucide-react";
+import { MapPin, Users, Star } from "lucide-react";
 import { formatVibeWhen, type InterestStatus } from "@/lib/vibes";
 
 export type VibeCardData = {
@@ -31,11 +31,15 @@ export default function VibeCard({
   confirmedCount,
   myStatus,
   matchPct,
+  faded,
+  rating,
 }: {
   vibe: VibeCardData;
   confirmedCount: number;
   myStatus?: InterestStatus | null;
   matchPct?: number;
+  faded?: boolean;
+  rating?: number | null;
 }) {
   const cover = vibe.photos?.[0];
   const hostName = vibe.host?.display_name || "A flockie";
@@ -44,7 +48,9 @@ export default function VibeCard({
   return (
     <Link
       href={`/vibes/${vibe.id}`}
-      className="flex flex-col overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-[0_4px_0_0_rgba(26,26,26,1)] transition-transform hover:-translate-y-1"
+      className={`flex flex-col overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-[0_4px_0_0_rgba(26,26,26,1)] ${
+        faded ? "opacity-70" : "transition-transform hover:-translate-y-1"
+      }`}
     >
       {/* Artwork — square so the whole cover shows, never cropped */}
       <div className="relative aspect-square w-full border-b-2 border-ink bg-cream">
@@ -62,15 +68,22 @@ export default function VibeCard({
         <span className="absolute left-1.5 top-1.5 rounded-full border-2 border-ink bg-white px-1.5 py-0.5 text-[9px] font-extrabold lowercase leading-none">
           {vibe.category}
         </span>
-        {myStatus && STATUS_LABEL[myStatus] && (
+        {faded ? (
+          typeof rating === "number" && rating > 0 && (
+            <span className="absolute right-1.5 top-1.5 flex items-center gap-0.5 rounded-full border-2 border-ink bg-white px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-ink">
+              <Star size={9} className="fill-flockie-coral text-flockie-coral" /> {rating.toFixed(1)}
+            </span>
+          )
+        ) : myStatus && STATUS_LABEL[myStatus] ? (
           <span className="absolute right-1.5 top-1.5 rounded-full border-2 border-ink bg-flockie-orange px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-white">
             {STATUS_LABEL[myStatus]}
           </span>
-        )}
-        {!myStatus && typeof matchPct === "number" && (
-          <span className="absolute right-1.5 top-1.5 rounded-full border-2 border-ink bg-flockie-coral px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-white">
-            {matchPct}%
-          </span>
+        ) : (
+          typeof matchPct === "number" && (
+            <span className="absolute right-1.5 top-1.5 rounded-full border-2 border-ink bg-flockie-coral px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-white">
+              {matchPct}%
+            </span>
+          )
         )}
       </div>
 
@@ -105,7 +118,7 @@ export default function VibeCard({
             <span className="truncate">{hostName}</span>
           </span>
           <span className="flex shrink-0 items-center gap-0.5 text-[11px] font-bold text-muted">
-            <Users size={11} /> {confirmedCount}/{vibe.capacity}
+            <Users size={11} /> {faded ? `${confirmedCount} went` : `${confirmedCount}/${vibe.capacity}`}
           </span>
         </div>
       </div>
