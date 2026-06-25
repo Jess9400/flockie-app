@@ -15,6 +15,11 @@ import {
 import { FLOCK_LANGUAGES } from "@/lib/trips";
 
 const MAX_PHOTOS = 5;
+const DURATION_OPTIONS = [
+  { label: "1h", value: 60 },
+  { label: "2h", value: 120 },
+  { label: "3h", value: 180 },
+] as const;
 
 type ResolvedLocation = {
   label: string;
@@ -67,6 +72,8 @@ export default function CreateVibeForm({
   const [photos, setPhotos] = useState<string[]>(clone?.photos ?? []);
   const [startsAt, setStartsAt] = useState("");
   const [endsAt, setEndsAt] = useState("");
+  const [durationOption, setDurationOption] = useState<number | "custom">(120);
+  const [customDurationMinutes, setCustomDurationMinutes] = useState(90);
   const [deadline, setDeadline] = useState("");
   const [city, setCity] = useState(clone?.city ?? defaultCity ?? "");
   const [locationName, setLocationName] = useState(clone?.locationName ?? "");
@@ -169,6 +176,41 @@ export default function CreateVibeForm({
     setLocationLng(resolvedLocation.lng);
     if (resolvedLocation.city) setCity(resolvedLocation.city);
     setLocationMsg("Exact address added to the location line.");
+  }
+
+  function activeDurationMinutes(option = durationOption, custom = customDurationMinutes) {
+    return option === "custom" ? custom : option;
+  }
+
+  function applyEndTime(nextStartsAt: string, nextDurationMinutes = activeDurationMinutes()) {
+    if (!nextStartsAt || nextDurationMinutes <= 0) return;
+    const start = new Date(nextStartsAt);
+    if (Number.isNaN(start.getTime())) return;
+    setEndsAt(toLocalDateTimeInput(new Date(start.getTime() + nextDurationMinutes * 60 * 1000)));
+  }
+
+  function onStartDateChange(value: string) {
+    const nextStartsAt = value ? `${value}T${timePart(startsAt) || "18:00"}` : "";
+    setStartsAt(nextStartsAt);
+    applyEndTime(nextStartsAt);
+  }
+
+  function onStartTimeChange(value: string) {
+    const currentDate = datePart(startsAt) || datePart(toLocalDateTimeInput(new Date()));
+    const nextStartsAt = value ? `${currentDate}T${value}` : "";
+    setStartsAt(nextStartsAt);
+    applyEndTime(nextStartsAt);
+  }
+
+  function pickDuration(value: number | "custom") {
+    setDurationOption(value);
+    applyEndTime(startsAt, activeDurationMinutes(value));
+  }
+
+  function changeCustomDuration(value: string) {
+    const next = Math.max(15, Number(value || 15));
+    setCustomDurationMinutes(next);
+    if (durationOption === "custom") applyEndTime(startsAt, next);
   }
 
   function setWindow(hours: number) {
@@ -386,21 +428,74 @@ export default function CreateVibeForm({
       {/* When & where */}
       <section className="space-y-3">
         <h2 className="text-lg font-extrabold">When &amp; where</h2>
-        <Field label="Starts">
-          <input
-            type="datetime-local"
-            className={inputCls}
-            value={startsAt}
-            onChange={(e) => setStartsAt(e.target.value)}
-          />
+        <Field label="Start date & time">
+          <div className="grid gap-2 sm:grid-cols-2">
+            <input
+              type="date"
+              className={inputCls}
+              value={datePart(startsAt)}
+              onChange={(e) => onStartDateChange(e.target.value)}
+              aria-label="Start date"
+            />
+            <input
+              type="time"
+              className={inputCls}
+              value={timePart(startsAt)}
+              onChange={(e) => onStartTimeChange(e.target.value)}
+              aria-label="Start time"
+            />
+          </div>
         </Field>
-        <Field label="Ends">
-          <input
-            type="datetime-local"
-            className={inputCls}
-            value={endsAt}
-            onChange={(e) => setEndsAt(e.target.value)}
-          />
+        <Field label="How long is it?">
+          <div className="flex flex-wrap gap-2">
+            {DURATION_OPTIONS.map((o) => (
+              <button
+                key={o.value}
+                type="button"
+                onClick={() => pickDuration(o.value)}
+                className={`rounded-full border-2 border-ink px-4 py-2 text-sm font-bold ${
+                  durationOption === o.value ? "bg-flockie-blue text-white" : "bg-white"
+                }`}
+              >
+                {o.label}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => pickDuration("custom")}
+              className={`rounded-full border-2 border-ink px-4 py-2 text-sm font-bold ${
+                durationOption === "custom" ? "bg-flockie-blue text-white" : "bg-white"
+              }`}
+            >
+              Custom
+            </button>
+          </div>
+          {durationOption === "custom" && (
+            <input
+              type="number"
+              min={15}
+              step={15}
+              className={`${inputCls} mt-2`}
+              value={customDurationMinutes}
+              onChange={(e) => changeCustomDuration(e.target.value)}
+              aria-label="Custom duration in minutes"
+            />
+          )}
+          <div className="mt-3 rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-bold">
+            <p className="text-xs font-extrabold uppercase tracking-wide text-muted">
+              Preview
+            </p>
+            <div className="mt-2 grid gap-1 text-ink/80">
+              <p>
+                <span className="text-muted">Starts:</span>{" "}
+                {startsAt ? prettyDateTime(startsAt) : "Choose date + time"}
+              </p>
+              <p>
+                <span className="text-muted">Ends:</span>{" "}
+                {endsAt ? prettyDateTime(endsAt) : "Calculated from duration"}
+              </p>
+            </div>
+          </div>
         </Field>
         <Field label="Interest window — when matching runs">
           <div className="flex flex-wrap gap-2">
@@ -681,6 +776,36 @@ export default function CreateVibeForm({
 
 const inputCls =
   "w-full rounded-2xl border-2 border-ink bg-white px-4 py-2.5 font-medium outline-none";
+
+function pad(value: number) {
+  return String(value).padStart(2, "0");
+}
+
+function toLocalDateTimeInput(date: Date) {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(
+    date.getHours()
+  )}:${pad(date.getMinutes())}`;
+}
+
+function datePart(value: string) {
+  return value.slice(0, 10);
+}
+
+function timePart(value: string) {
+  return value.slice(11, 16);
+}
+
+function prettyDateTime(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Choose date + time";
+  return new Intl.DateTimeFormat("en", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(date);
+}
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
