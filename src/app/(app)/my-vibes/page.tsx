@@ -38,7 +38,7 @@ type VibeRow = {
 export default async function MyVibesPage({
   searchParams,
 }: {
-  searchParams: { page?: string };
+  searchParams: { page?: string; ppage?: string };
 }) {
   const supabase = await createClient();
   const {
@@ -63,6 +63,17 @@ export default async function MyVibesPage({
   const page = Math.max(1, Number(searchParams.page) || 1);
   const totalPages = Math.max(1, Math.ceil(activeList.length / PAGE_SIZE));
   const pageList = activeList.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const ppage = Math.max(1, Number(searchParams.ppage) || 1);
+  const pastTotalPages = Math.max(1, Math.ceil(pastList.length / PAGE_SIZE));
+  const pastPageList = pastList.slice((ppage - 1) * PAGE_SIZE, ppage * PAGE_SIZE);
+  const qs = (params: Record<string, number>) => {
+    const sp = new URLSearchParams();
+    if (params.page > 1) sp.set("page", String(params.page));
+    if (params.ppage > 1) sp.set("ppage", String(params.ppage));
+    const s = sp.toString();
+    return s ? `/my-vibes?${s}` : "/my-vibes";
+  };
 
   const counts: Record<string, number> = {};
   const ids = all.map((v) => v.id);
@@ -156,16 +167,17 @@ export default async function MyVibesPage({
           pageList.map((v) => <VibeRowCard key={v.id} v={v} />)
         )}
       </div>
-      <Pagination page={page} totalPages={totalPages} hrefFor={(p) => (p > 1 ? `/my-vibes?page=${p}` : "/my-vibes")} />
+      <Pagination page={page} totalPages={totalPages} hrefFor={(p) => qs({ page: p, ppage })} />
 
       {pastList.length > 0 && (
         <>
           <h2 className="mt-8 text-lg font-extrabold text-muted">Past Vibes</h2>
           <div className="mt-3 space-y-3">
-            {pastList.map((v) => (
+            {pastPageList.map((v) => (
               <VibeRowCard key={v.id} v={v} faded />
             ))}
           </div>
+          <Pagination page={ppage} totalPages={pastTotalPages} hrefFor={(p) => qs({ page, ppage: p })} />
         </>
       )}
     </main>
