@@ -92,34 +92,36 @@ export default async function VibeChatPage({
     : null;
 
   return (
-    <main className="mx-auto flex h-[calc(100dvh-4rem)] w-full max-w-2xl flex-col px-5 font-nunito">
-      <VibeChatHeader
-        vibeId={params.id}
-        title={vibe?.title ?? "Vibe"}
-        cover={vibe?.photos?.[0] ?? null}
-        startsAt={vibe?.starts_at ?? null}
-        locationLabel={locationLabel}
-        mapSrc={mapSrc}
-        description={vibe?.description ?? null}
-        bookingUrl={vibe?.activity_url ?? null}
-        members={headerMembers}
-      />
+    <main className="fixed inset-x-0 bottom-0 top-16 z-10 bg-cream lg:left-[200px]">
+      <div className="mx-auto flex h-full w-full max-w-2xl flex-col px-5 font-nunito">
+        <VibeChatHeader
+          vibeId={params.id}
+          title={vibe?.title ?? "Vibe"}
+          cover={vibe?.photos?.[0] ?? null}
+          startsAt={vibe?.starts_at ?? null}
+          locationLabel={locationLabel}
+          mapSrc={mapSrc}
+          description={vibe?.description ?? null}
+          bookingUrl={vibe?.activity_url ?? null}
+          members={headerMembers}
+        />
 
-      {vibe?.status === "cancelled" && (
-        <div className="mt-3 shrink-0 rounded-2xl border-2 border-navy bg-cream p-3 text-sm font-bold text-navy/70">
-          This Vibe was cancelled — the chat is now inactive.
-        </div>
-      )}
+        {vibe?.status === "cancelled" && (
+          <div className="mt-3 shrink-0 rounded-2xl border-2 border-navy bg-cream p-3 text-sm font-bold text-navy/70">
+            This Vibe was cancelled — the chat is now inactive.
+          </div>
+        )}
 
-      <ChatRoom
-        chatId={chatId as string}
-        currentUserId={user!.id}
-        members={members}
-        initialMessages={messages ?? []}
-        startsAt={vibe?.starts_at ?? null}
-        bookingUrl={vibe?.activity_url ?? null}
-        reviewHref={vibeEnded ? `/vibes/${params.id}/review` : null}
-      />
+        <ChatRoom
+          chatId={chatId as string}
+          currentUserId={user!.id}
+          members={members}
+          initialMessages={messages ?? []}
+          startsAt={vibe?.starts_at ?? null}
+          bookingUrl={vibe?.activity_url ?? null}
+          reviewHref={vibeEnded ? `/vibes/${params.id}/review` : null}
+        />
+      </div>
     </main>
   );
 }
