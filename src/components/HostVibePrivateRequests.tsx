@@ -13,11 +13,13 @@ export type PrivateRequest = { id: string; name: string | null; photo: string | 
 // Direct invites fill the host's reserved spots (capacity minus the algo share).
 export default function HostVibePrivateRequests({
   vibeId,
+  code,
   requests,
   hostSpots,
   hostFilled,
 }: {
   vibeId: string;
+  code: string | null;
   requests: PrivateRequest[];
   hostSpots: number;
   hostFilled: number;
@@ -30,7 +32,9 @@ export default function HostVibePrivateRequests({
   const left = Math.max(0, hostSpots - hostFilled);
 
   async function copyLink() {
-    const url = `${window.location.origin}/invite/${vibeId}?via=host`;
+    const url = code
+      ? `${window.location.origin}/invite/${vibeId}?code=${code}`
+      : `${window.location.origin}/invite/${vibeId}?via=host`;
     try {
       if (navigator.share) {
         await navigator.share({ title: "Join my Vibe", url });
@@ -63,16 +67,24 @@ export default function HostVibePrivateRequests({
         </span>
       </div>
       <p className="mt-0.5 text-xs font-medium text-muted">
-        Share your private link to invite people straight into your {hostSpots} spots — they still do a
-        quick vibe check, you approve them. ({left} left)
+        Share your link or code (e.g. on Twitter). Anyone who uses it is{" "}
+        <span className="font-bold">instantly confirmed</span> into your {hostSpots} spots — no approval
+        needed. ({left} left)
       </p>
+
+      {code && (
+        <div className="mt-3 flex items-center justify-between gap-2 rounded-2xl border-2 border-dashed border-ink/40 bg-cream px-4 py-2.5">
+          <span className="text-[11px] font-bold uppercase tracking-wide text-muted">Invite code</span>
+          <span className="font-fredoka text-xl font-extrabold tracking-[0.2em] text-ink">{code}</span>
+        </div>
+      )}
 
       <button
         type="button"
         onClick={copyLink}
-        className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-2.5 text-sm font-bold text-ink"
+        className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-coral py-2.5 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
       >
-        <Link2 size={16} /> {copied ? "Link copied!" : "Copy private invite link"}
+        <Link2 size={16} /> {copied ? "Link copied!" : "Share invite link"}
       </button>
 
       {requests.length > 0 && (

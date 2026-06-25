@@ -7,12 +7,45 @@ import ActivityVibeForm from "@/components/ActivityVibeForm";
 export default async function NewVibePage({
   searchParams,
 }: {
-  searchParams: { activity?: string; city?: string; title?: string };
+  searchParams: { activity?: string; city?: string; title?: string; from?: string };
 }) {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // "Run it again": pre-fill from one of my past vibes (dates left blank to re-set).
+  let clone: Parameters<typeof CreateVibeForm>[0]["clone"];
+  if (searchParams.from) {
+    const { data: src } = await supabase
+      .from("vibes")
+      .select("*")
+      .eq("id", searchParams.from)
+      .eq("host_id", user!.id)
+      .maybeSingle();
+    if (src) {
+      clone = {
+        title: src.title,
+        description: src.description ?? "",
+        category: src.category ?? "",
+        activityUrl: src.activity_url ?? "",
+        photos: src.photos ?? [],
+        city: src.city ?? "",
+        locationName: src.location_name ?? "",
+        capacity: src.capacity ?? 10,
+        genderPref: src.gender_pref ?? "any",
+        algoShare: src.algo_share ?? 100,
+        whatToBring: src.what_to_bring ?? "",
+        language: src.language ?? "",
+        ageMin: src.age_min ?? 18,
+        ageMax: src.age_max ?? 99,
+        skill: src.required_skill_level ?? null,
+        tags: src.event_vibe_tags ?? [],
+        rules: (src.dealbreaker_rules ?? {}) as Record<string, boolean>,
+        diversity: src.diversity_floor_enabled ?? false,
+      };
+    }
+  }
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -39,10 +72,11 @@ export default async function NewVibePage({
       >
         <ChevronLeft size={16} /> Back
       </Link>
-      <h1 className="text-2xl font-black">Create a Vibe</h1>
+      <h1 className="text-2xl font-black">{clone ? "Run it again" : "Create a Vibe"}</h1>
       <p className="mt-1 text-sm font-medium text-muted">
-        A curated <span className="font-bold">group</span> room — attendees are
-        matched by vibe, not first-come. No swiping.
+        {clone
+          ? "Same details, fresh date — set a new start, deadline and spots, then publish."
+          : "A curated group room — attendees are matched by vibe, not first-come. No swiping."}
       </p>
       <div className="mt-6">
         <CreateVibeForm
@@ -50,6 +84,7 @@ export default async function NewVibePage({
           defaultCity={searchParams.city ?? profile?.home_city ?? ""}
           defaultActivityUrl={searchParams.activity ?? ""}
           defaultTitle={searchParams.title ?? ""}
+          clone={clone}
         />
       </div>
     </main>

@@ -48,9 +48,10 @@ export default async function InvitePage({
   searchParams,
 }: {
   params: { id: string };
-  searchParams: { via?: string };
+  searchParams: { via?: string; code?: string };
 }) {
   const viaHost = searchParams.via === "host";
+  const hostCode = searchParams.code?.trim() || "";
   const v = await getVibe(params.id);
   if (!v) notFound();
 
@@ -111,6 +112,13 @@ export default async function InvitePage({
             <div className="mt-6 rounded-full border-2 border-navy bg-cream py-3.5 text-center font-fredoka text-sm font-semibold text-navy/60">
               Sign-ups for this Vibe are closed.
             </div>
+          ) : hostCode ? (
+            <Link
+              href={`/vibes/${v.id}?code=${encodeURIComponent(hostCode)}`}
+              className="mt-6 block rounded-full border-2 border-navy bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
+            >
+              Join with host code
+            </Link>
           ) : viaHost ? (
             <Link
               href={`/vibes/${v.id}?request=1`}
@@ -131,9 +139,11 @@ export default async function InvitePage({
             </div>
           )}
           <p className="mt-2 text-center font-nunito text-xs font-medium text-navy/50">
-            {viaHost
-              ? "The host invited you directly — a quick vibe check, then they add you to their spots."
-              : "Tap interested — a quick vibe check, then the host’s algorithm picks the most compatible people."}
+            {hostCode
+              ? "You have a host invite code — tap to join one of the host's spots, confirmed instantly."
+              : viaHost
+                ? "The host invited you directly — a quick vibe check, then they add you to their spots."
+                : "Tap interested — a quick vibe check, then the host’s algorithm picks the most compatible people."}
           </p>
         </div>
       </div>

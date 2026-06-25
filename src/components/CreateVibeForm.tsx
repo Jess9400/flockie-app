@@ -23,47 +23,70 @@ type ResolvedLocation = {
   city: string | null;
 };
 
+export type VibeClone = {
+  title?: string;
+  description?: string;
+  category?: string;
+  activityUrl?: string;
+  photos?: string[];
+  city?: string;
+  locationName?: string;
+  capacity?: number;
+  genderPref?: string;
+  algoShare?: number;
+  whatToBring?: string;
+  language?: string;
+  ageMin?: number;
+  ageMax?: number;
+  skill?: number | null;
+  tags?: string[];
+  rules?: Record<string, boolean>;
+  diversity?: boolean;
+};
+
 export default function CreateVibeForm({
   userId,
   defaultCity,
   defaultActivityUrl = "",
   defaultTitle = "",
+  clone,
 }: {
   userId: string;
   defaultCity: string;
   defaultActivityUrl?: string;
   defaultTitle?: string;
+  clone?: VibeClone;
 }) {
   const supabase = createClient();
 
   const [createdId, setCreatedId] = useState<string | null>(null);
-  const [title, setTitle] = useState(defaultTitle);
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [activityUrl, setActivityUrl] = useState(defaultActivityUrl);
-  const [photos, setPhotos] = useState<string[]>([]);
+  const [title, setTitle] = useState(clone?.title ?? defaultTitle);
+  const [description, setDescription] = useState(clone?.description ?? "");
+  const [category, setCategory] = useState(clone?.category ?? "");
+  const [activityUrl, setActivityUrl] = useState(clone?.activityUrl ?? defaultActivityUrl);
+  const [photos, setPhotos] = useState<string[]>(clone?.photos ?? []);
   const [startsAt, setStartsAt] = useState("");
   const [endsAt, setEndsAt] = useState("");
   const [deadline, setDeadline] = useState("");
-  const [city, setCity] = useState(defaultCity ?? "");
-  const [locationName, setLocationName] = useState("");
+  const [city, setCity] = useState(clone?.city ?? defaultCity ?? "");
+  const [locationName, setLocationName] = useState(clone?.locationName ?? "");
   const [locationLat, setLocationLat] = useState<number | null>(null);
   const [locationLng, setLocationLng] = useState<number | null>(null);
   const [resolvedLocation, setResolvedLocation] = useState<ResolvedLocation | null>(null);
   const [resolvingLocation, setResolvingLocation] = useState(false);
   const [locationMsg, setLocationMsg] = useState<string | null>(null);
-  const [capacity, setCapacity] = useState(10);
-  const [genderPref, setGenderPref] = useState("any");
-  const [algoShare, setAlgoShare] = useState(100);
+  const [capacity, setCapacity] = useState(clone?.capacity ?? 10);
+  const [genderPref, setGenderPref] = useState(clone?.genderPref ?? "any");
+  const [algoShare, setAlgoShare] = useState(clone?.algoShare ?? 100);
   const [interestWindow, setInterestWindow] = useState<number | null>(null);
-  const [whatToBring, setWhatToBring] = useState("");
-  const [language, setLanguage] = useState("");
-  const [ageMin, setAgeMin] = useState(18);
-  const [ageMax, setAgeMax] = useState(99);
-  const [skill, setSkill] = useState<number | null>(null);
-  const [tags, setTags] = useState<string[]>([]);
-  const [rules, setRules] = useState<Record<string, boolean>>({});
-  const [diversity, setDiversity] = useState(false);
+  const [whatToBring, setWhatToBring] = useState(clone?.whatToBring ?? "");
+  const [language, setLanguage] = useState(clone?.language ?? "");
+  const [ageMin, setAgeMin] = useState(clone?.ageMin ?? 18);
+  const [ageMax, setAgeMax] = useState(clone?.ageMax ?? 99);
+  const [skill, setSkill] = useState<number | null>(clone?.skill ?? null);
+  const [tags, setTags] = useState<string[]>(clone?.tags ?? []);
+  const [rules, setRules] = useState<Record<string, boolean>>(clone?.rules ?? {});
+  const [diversity, setDiversity] = useState(clone?.diversity ?? false);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const [uploading, setUploading] = useState(false);
