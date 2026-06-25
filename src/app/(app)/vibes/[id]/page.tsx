@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import InterestButton from "@/components/InterestButton";
 import HostVibeControls from "@/components/HostVibeControls";
 import HostVibeShortlist from "@/components/HostVibeShortlist";
+import HostVibePrivateRequests from "@/components/HostVibePrivateRequests";
 import HostVibeMembers from "@/components/HostVibeMembers";
 import VibeSettingsButton from "@/components/VibeSettingsButton";
 import LeaveVibeButton from "@/components/LeaveVibeButton";
@@ -19,7 +20,7 @@ export default async function VibeDetailPage({
   searchParams,
 }: {
   params: { id: string };
-  searchParams: { interested?: string };
+  searchParams: { interested?: string; request?: string };
 }) {
   const supabase = await createClient();
   const {
@@ -97,6 +98,11 @@ export default async function VibeDetailPage({
   let shortlist: { id: string; name: string | null; photo: string | null; score: number | null }[] = [];
   const previewRejectCap = Math.max(1, Math.floor(vibe.capacity * 0.25));
   const previewRejectsUsed = vibe.preview_rejects_used ?? 0;
+  // Private-link direct invites (v2): the host's reserved spots.
+  const hostAlgoBase = Math.max(1, Math.ceil((vibe.capacity * (vibe.algo_share ?? 100)) / 100));
+  const hostSpots = Math.max(0, vibe.capacity - hostAlgoBase);
+  let privateRequests: { id: string; name: string | null; photo: string | null }[] = [];
+  let hostFilled = 0;
   if (isHost) {
     const { data: rows } = await supabase
       .from("vibe_interests")
@@ -125,6 +131,28 @@ export default async function VibeDetailPage({
           name: byId.get(r.user_id)?.display_name ?? null,
           photo: byId.get(r.user_id)?.photos?.[0] ?? null,
           score: r.match_score ?? null,
+        }));
+      }
+    }
+
+    if (hostSpots > 0) {
+      const { data: prRows } = await supabase
+        .from("vibe_interests")
+        .select("user_id, status")
+        .eq("vibe_id", params.id)
+        .eq("source", "private");
+      const reqIds = (prRows ?? []).filter((r) => r.status === "requested").map((r) => r.user_id);
+      hostFilled = (prRows ?? []).filter((r) => r.status === "invited" || r.status === "confirmed").length;
+      if (reqIds.length) {
+        const { data: pp } = await supabase
+          .from("profiles")
+          .select("id, display_name, photos")
+          .in("id", reqIds);
+        const byId = new Map((pp ?? []).map((p) => [p.id, p]));
+        privateRequests = reqIds.map((id) => ({
+          id,
+          name: byId.get(id)?.display_name ?? null,
+          photo: byId.get(id)?.photos?.[0] ?? null,
         }));
       }
     }
@@ -431,6 +459,15 @@ export default async function VibeDetailPage({
         />
       )}
 
+      {isHost && hostSpots > 0 && (
+        <HostVibePrivateRequests
+          vibeId={vibe.id}
+          requests={privateRequests}
+          hostSpots={hostSpots}
+          hostFilled={hostFilled}
+        />
+      )}
+
       {isHost && (
         <HostVibeMembers
           vibeId={vibe.id}
@@ -453,6 +490,7 @@ export default async function VibeDetailPage({
             invitationExpiresAt={myInterest?.invitation_expires_at ?? null}
             cancelled={vibe.status === "cancelled"}
             autoInterest={searchParams.interested === "1"}
+            requestMode={searchParams.request === "1"}
           />
         )}
       </div>

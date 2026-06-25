@@ -15,6 +15,7 @@ type Props = {
   invitationExpiresAt?: string | null;
   cancelled?: boolean;
   autoInterest?: boolean;
+  requestMode?: boolean;
 };
 
 export default function InterestButton({
@@ -25,6 +26,7 @@ export default function InterestButton({
   invitationExpiresAt,
   cancelled,
   autoInterest,
+  requestMode,
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
@@ -32,6 +34,7 @@ export default function InterestButton({
   const [hasActivities, setHasActivities] = useState(activitiesDone);
   const [busy, setBusy] = useState(false);
   const [gate, setGate] = useState(false);
+  const [gateFor, setGateFor] = useState<"interest" | "request">("interest");
   const [now, setNow] = useState(() => Date.now());
   const [message, setMessage] = useState<string | null>(null);
 
@@ -62,6 +65,7 @@ export default function InterestButton({
   }
 
   async function express() {
+    setGateFor("interest");
     if (!hasActivities) {
       setGate(true);
       return;
@@ -69,10 +73,33 @@ export default function InterestButton({
     await doInsert();
   }
 
-  // Invite deep-link: auto-open the interest flow once on arrival.
+  // Private link: request to join the host's direct spots (still vibe-checked).
+  async function doRequest() {
+    setBusy(true);
+    const { error } = await supabase.rpc("request_private_vibe", { p_vibe: vibeId });
+    setBusy(false);
+    if (!error) {
+      setStatus("requested");
+      router.refresh();
+    } else {
+      setMessage(error.message);
+    }
+  }
+
+  async function requestPrivate() {
+    setGateFor("request");
+    if (!hasActivities) {
+      setGate(true);
+      return;
+    }
+    await doRequest();
+  }
+
+  // Deep-links: auto-open the right flow once on arrival.
   useEffect(() => {
-    if (autoInterest && status === null && !cancelled) {
-      express();
+    if (status === null && !cancelled) {
+      if (requestMode) requestPrivate();
+      else if (autoInterest) express();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -186,6 +213,12 @@ export default function InterestButton({
         On standby — we&rsquo;ll show you Vibes that match your style.
       </div>
     );
+  } else if (status === "requested") {
+    control = (
+      <div className={`${base} bg-cream`}>
+        Request sent — waiting for the host to add you.
+      </div>
+    );
   } else if (status === "shortlisted") {
     control = (
       <div className={`${base} bg-cream`}>
@@ -220,7 +253,8 @@ export default function InterestButton({
           onDone={() => {
             setGate(false);
             setHasActivities(true);
-            doInsert();
+            if (gateFor === "request") doRequest();
+            else doInsert();
           }}
         />
       )}
