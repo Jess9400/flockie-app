@@ -36,7 +36,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const [{ count }, { data: p }] = await Promise.all([
-        supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).is("read_at", null),
+        supabase
+          .from("notifications")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .is("read_at", null)
+          .is("dismissed_at", null),
         supabase.from("profiles").select("display_name, photos").eq("id", user.id).maybeSingle(),
       ]);
       if (!active) return;
