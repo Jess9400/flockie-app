@@ -193,16 +193,16 @@ export default async function VibesPage({
         ) : (
           <span />
         )}
-        <div className="inline-flex gap-1 rounded-full border-2 border-ink bg-white p-1 text-sm font-bold">
+        <div className="inline-flex shrink-0 gap-0.5 rounded-full border-2 border-ink bg-white p-0.5 text-xs font-bold">
           <Link
             href="/vibes"
-            className={`rounded-full px-3 py-1.5 ${!isPast ? "bg-ink text-white" : "text-ink hover:bg-navy/5"}`}
+            className={`rounded-full px-2.5 py-1 ${!isPast ? "bg-ink text-white" : "text-ink hover:bg-navy/5"}`}
           >
             Upcoming
           </Link>
           <Link
             href="/vibes?view=past"
-            className={`rounded-full px-3 py-1.5 ${isPast ? "bg-ink text-white" : "text-ink hover:bg-navy/5"}`}
+            className={`rounded-full px-2.5 py-1 ${isPast ? "bg-ink text-white" : "text-ink hover:bg-navy/5"}`}
           >
             Past
           </Link>
