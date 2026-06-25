@@ -489,6 +489,7 @@ export default async function VibeDetailPage({
             initialStatus={(myInterest?.status as InterestStatus) ?? null}
             invitationExpiresAt={myInterest?.invitation_expires_at ?? null}
             cancelled={vibe.status === "cancelled"}
+            ended={ended}
             autoInterest={searchParams.interested === "1"}
             requestMode={searchParams.request === "1"}
           />
