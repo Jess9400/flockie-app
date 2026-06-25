@@ -5,6 +5,7 @@ import { ChevronLeft, MapPin, Users, CalendarClock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import InterestButton from "@/components/InterestButton";
 import HostVibeControls from "@/components/HostVibeControls";
+import HostVibeMembers from "@/components/HostVibeMembers";
 import VibeSettingsButton from "@/components/VibeSettingsButton";
 import LeaveVibeButton from "@/components/LeaveVibeButton";
 import ShareVibeButton from "@/components/ShareVibeButton";
@@ -79,9 +80,18 @@ export default async function VibeDetailPage({
   }
 
   const isHost = host?.id === user!.id;
+  const eventStarted = new Date(vibe.starts_at) <= new Date();
 
   // Host-only matching tally (Interested / Invited / Going / Standby counts).
   const tally: Record<string, number> = {};
+  let hostMembers: {
+    id: string;
+    display_name: string | null;
+    photos: string[] | null;
+    status: "invited" | "confirmed";
+  }[] = [];
+  let normalRemovalCount = 0;
+  const normalRemovalLimit = Math.min(3, Math.max(1, Math.floor(vibe.capacity * 0.2)));
   if (isHost) {
     const { data: rows } = await supabase
       .from("vibe_interests")
@@ -90,6 +100,35 @@ export default async function VibeDetailPage({
     rows?.forEach((r) => {
       tally[r.status] = (tally[r.status] ?? 0) + 1;
     });
+
+    const { data: memberRows } = await supabase
+      .from("vibe_interests")
+      .select("user_id, status")
+      .eq("vibe_id", params.id)
+      .in("status", ["invited", "confirmed"]);
+    const memberIds = (memberRows ?? []).map((r) => r.user_id);
+    if (memberIds.length) {
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, display_name, photos")
+        .in("id", memberIds);
+      const statusByUser = new Map(
+        (memberRows ?? []).map((r) => [r.user_id, r.status as "invited" | "confirmed"])
+      );
+      hostMembers = (profiles ?? []).map((profile) => ({
+        id: profile.id,
+        display_name: profile.display_name,
+        photos: profile.photos,
+        status: statusByUser.get(profile.id) ?? "invited",
+      }));
+    }
+
+    const { count } = await supabase
+      .from("vibe_removals")
+      .select("id", { count: "exact", head: true })
+      .eq("vibe_id", params.id)
+      .eq("is_safety", false);
+    normalRemovalCount = count ?? 0;
   }
 
   const rules = (vibe.dealbreaker_rules ?? {}) as Record<string, boolean>;
@@ -344,6 +383,16 @@ export default async function VibeDetailPage({
             ))}
           </div>
         </div>
+      )}
+
+      {isHost && (
+        <HostVibeMembers
+          vibeId={vibe.id}
+          members={hostMembers}
+          eventStarted={eventStarted}
+          normalRemovalLimit={normalRemovalLimit}
+          normalRemovalUsed={normalRemovalCount}
+        />
       )}
 
       <div className="mt-6">

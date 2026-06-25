@@ -47,6 +47,25 @@ create table if not exists public.vibe_interests (
   unique (vibe_id, user_id)
 );
 
+create table if not exists public.vibe_removals (
+  id uuid primary key default gen_random_uuid(),
+  vibe_id uuid references public.vibes (id) on delete cascade,
+  user_id uuid references public.profiles (id) on delete cascade,
+  host_id uuid references public.profiles (id) on delete cascade,
+  reason text not null check (reason in ('known_conflict', 'other', 'safety')),
+  note text,
+  previous_status text,
+  is_safety boolean not null default false,
+  disputed_at timestamptz,
+  dispute_note text,
+  reviewed_at timestamptz,
+  review_status text,
+  created_at timestamptz default now(),
+  unique (vibe_id, user_id)
+);
+create index if not exists vibe_removals_vibe_idx on public.vibe_removals (vibe_id, created_at desc);
+create index if not exists vibe_removals_user_idx on public.vibe_removals (user_id, created_at desc);
+
 -- one chat per vibe
 create table if not exists public.vibing_chats (
   id uuid primary key default gen_random_uuid(),
@@ -79,6 +98,7 @@ create index if not exists notifications_user_idx on public.notifications (user_
 alter table public.vibes enable row level security;
 alter table public.vibe_pins enable row level security;
 alter table public.vibe_interests enable row level security;
+alter table public.vibe_removals enable row level security;
 alter table public.vibing_chats enable row level security;
 alter table public.vibing_messages enable row level security;
 alter table public.notifications enable row level security;
@@ -129,6 +149,13 @@ create policy "interests self update" on public.vibe_interests for update to aut
 drop policy if exists "interests self delete" on public.vibe_interests;
 create policy "interests self delete" on public.vibe_interests for delete to authenticated
   using (user_id = auth.uid());
+
+drop policy if exists "removals read" on public.vibe_removals;
+create policy "removals read" on public.vibe_removals for select to authenticated
+  using (
+    user_id = auth.uid()
+    or auth.uid() = (select host_id from public.vibes v where v.id = vibe_id)
+  );
 
 -- chats + messages: confirmed attendees and host only
 drop policy if exists "chats member read" on public.vibing_chats;

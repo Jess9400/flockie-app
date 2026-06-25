@@ -210,7 +210,7 @@ begin
 
   select status into v_status from public.vibe_interests where vibe_id=p_vibe and user_id=p_user;
   if v_status is null then raise exception 'interest not found'; end if;
-  if v_status = 'confirmed' then raise exception 'confirmed attendees cannot be denied here'; end if;
+  if v_status not in ('interested','standby') then raise exception 'only interested or standby users can be denied here'; end if;
 
   update public.vibe_interests
     set status='declined', invitation_expires_at=null
@@ -220,6 +220,147 @@ begin
   perform public.backfill_vibe(p_vibe);
 end $$;
 grant execute on function public.host_decline_interest(uuid, uuid) to authenticated;
+
+-- 6b) Host removes invited/confirmed people with guardrails.
+-- Normal removal is limited: min(3, max(1, floor(capacity * 20%))).
+-- Safety removal is unlimited, requires a note, and is logged for review.
+create table if not exists public.vibe_removals (
+  id uuid primary key default gen_random_uuid(),
+  vibe_id uuid references public.vibes (id) on delete cascade,
+  user_id uuid references public.profiles (id) on delete cascade,
+  host_id uuid references public.profiles (id) on delete cascade,
+  reason text not null check (reason in ('known_conflict', 'other', 'safety')),
+  note text,
+  previous_status text,
+  is_safety boolean not null default false,
+  disputed_at timestamptz,
+  dispute_note text,
+  reviewed_at timestamptz,
+  review_status text,
+  created_at timestamptz default now(),
+  unique (vibe_id, user_id)
+);
+create index if not exists vibe_removals_vibe_idx on public.vibe_removals (vibe_id, created_at desc);
+create index if not exists vibe_removals_user_idx on public.vibe_removals (user_id, created_at desc);
+alter table public.vibe_removals enable row level security;
+
+drop policy if exists "removals read" on public.vibe_removals;
+create policy "removals read" on public.vibe_removals for select to authenticated
+  using (
+    user_id = auth.uid()
+    or auth.uid() = (select host_id from public.vibes v where v.id = vibe_id)
+  );
+
+create or replace function public.host_remove_vibe_member(
+  p_vibe uuid,
+  p_user uuid,
+  p_reason text,
+  p_note text default null
+)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare
+  v public.vibes;
+  v_status text;
+  v_is_safety boolean;
+  v_note text;
+  v_limit int;
+  v_used int;
+begin
+  select * into v from public.vibes where id = p_vibe for update;
+  if v.id is null then raise exception 'vibe not found'; end if;
+  if v.host_id <> auth.uid() then raise exception 'only the host can remove members'; end if;
+  if v.host_id = p_user then raise exception 'host cannot remove themselves'; end if;
+  if v.status = 'cancelled' then raise exception 'vibe is cancelled'; end if;
+
+  if p_reason not in ('known_conflict', 'other', 'safety') then
+    raise exception 'invalid removal reason';
+  end if;
+
+  v_note := nullif(trim(coalesce(p_note, '')), '');
+  v_is_safety := p_reason = 'safety';
+
+  if p_reason in ('other', 'safety') and v_note is null then
+    raise exception 'a note is required for this removal reason';
+  end if;
+
+  select status into v_status
+    from public.vibe_interests
+    where vibe_id = p_vibe and user_id = p_user
+    for update;
+  if v_status is null then raise exception 'member not found'; end if;
+  if v_status not in ('invited', 'confirmed') then
+    raise exception 'only invited or confirmed people can be removed';
+  end if;
+
+  if not v_is_safety and v.starts_at <= now() then
+    raise exception 'normal removal is only available before the Vibe starts';
+  end if;
+
+  if not v_is_safety then
+    v_limit := least(3, greatest(1, floor(v.capacity * 0.2)::int));
+    select count(*) into v_used
+      from public.vibe_removals
+      where vibe_id = p_vibe and is_safety = false;
+    if v_used >= v_limit then
+      raise exception 'normal removal limit reached';
+    end if;
+  else
+    v_limit := null;
+    v_used := null;
+  end if;
+
+  insert into public.vibe_removals (
+    vibe_id, user_id, host_id, reason, note, previous_status, is_safety
+  )
+  values (
+    p_vibe, p_user, v.host_id, p_reason, v_note, v_status, v_is_safety
+  )
+  on conflict (vibe_id, user_id) do update
+    set reason = excluded.reason,
+        note = excluded.note,
+        previous_status = excluded.previous_status,
+        is_safety = excluded.is_safety,
+        created_at = now();
+
+  update public.vibe_interests
+    set status = 'removed', invitation_expires_at = null
+    where vibe_id = p_vibe and user_id = p_user;
+
+  perform public.notify(
+    p_user,
+    'vibe_removed',
+    'This Vibe is no longer available',
+    'We''ll keep showing you better matches. If this feels wrong, you can tell us what happened.',
+    jsonb_build_object('vibe_id', p_vibe)
+  );
+
+  perform public.backfill_vibe(p_vibe);
+
+  return jsonb_build_object('normal_limit', v_limit, 'normal_used', v_used, 'safety', v_is_safety);
+end $$;
+grant execute on function public.host_remove_vibe_member(uuid, uuid, text, text) to authenticated;
+
+create or replace function public.appeal_vibe_removal(p_vibe uuid, p_note text)
+returns void language plpgsql security definer set search_path = public as $$
+declare v_note text;
+begin
+  v_note := nullif(trim(coalesce(p_note, '')), '');
+  if v_note is null then raise exception 'appeal note is required'; end if;
+
+  update public.vibe_removals
+    set disputed_at = now(), dispute_note = v_note
+    where vibe_id = p_vibe and user_id = auth.uid();
+  if not found then raise exception 'removal not found'; end if;
+
+  perform public.notify(
+    auth.uid(),
+    'vibe_removal_appeal',
+    'Thanks — we got your note',
+    'We''ll review what happened. You won''t be placed back into this Vibe automatically.',
+    jsonb_build_object('vibe_id', p_vibe)
+  );
+end $$;
+grant execute on function public.appeal_vibe_removal(uuid, text) to authenticated;
 
 -- 7) confirm via notify
 create or replace function public.confirm_vibe(p_vibe uuid)

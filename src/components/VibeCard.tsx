@@ -21,6 +21,7 @@ const STATUS_LABEL: Record<string, string> = {
   invited: "Invited",
   confirmed: "Confirmed",
   standby: "Standby",
+  removed: "Removed",
 };
 
 // Compact "trading card" — square full-display artwork on top, title + meta below.
