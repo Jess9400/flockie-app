@@ -410,7 +410,7 @@ export default function CreateVibeForm({
           {photos.length < MAX_PHOTOS && (
             <GenerateCoverButton
               userId={userId}
-              prompt={[title, category, city ? `in ${city}` : ""].filter(Boolean).join(", ")}
+              prompt={[title, category].filter(Boolean).join(", ")}
               disabled={uploading}
               onUploaded={(url) => setPhotos((p) => [...p, url].slice(0, MAX_PHOTOS))}
             />
