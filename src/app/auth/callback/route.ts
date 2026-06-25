@@ -24,19 +24,23 @@ export async function GET(request: Request) {
 
         const { data: profile } = await supabase
           .from("profiles")
-          .select("onboarding_complete, vibe_completed_at")
+          .select("onboarding_complete, vibe_completed_at, activity_prefs_complete")
           .eq("id", user.id)
           .maybeSingle();
 
-        if (!profile?.vibe_completed_at) {
-          return NextResponse.redirect(
-            `${origin}${withReturnTo("/onboarding/profile", next)}`
-          );
+        // Lower friction for Vibe invites: a user who's done the activity form
+        // (Tier 1) is let straight in; brand-new users heading to a Vibe get the
+        // short path (profile basics → activity form → the Vibe), skipping the
+        // personality vibe-check (they're nudged to finish it after they're in).
+        const quickDone = !!profile?.activity_prefs_complete;
+        const isVibeInvite = next.startsWith("/vibes/") || next.startsWith("/invite/");
+
+        if (!profile?.vibe_completed_at && !quickDone) {
+          const dest = isVibeInvite ? "/onboarding/profile?quick=1" : "/onboarding/profile";
+          return NextResponse.redirect(`${origin}${withReturnTo(dest, next)}`);
         }
-        if (!profile.onboarding_complete) {
-          return NextResponse.redirect(
-            `${origin}${withReturnTo("/profile", next)}`
-          );
+        if (!profile.onboarding_complete && !quickDone) {
+          return NextResponse.redirect(`${origin}${withReturnTo("/profile", next)}`);
         }
       }
       return NextResponse.redirect(`${origin}${next}`);

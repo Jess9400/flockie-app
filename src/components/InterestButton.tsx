@@ -19,6 +19,7 @@ type Props = {
   requestMode?: boolean;
   hostCode?: string | null;
   initialNotForMe?: boolean;
+  vibeFormDone?: boolean;
 };
 
 export default function InterestButton({
@@ -33,6 +34,7 @@ export default function InterestButton({
   requestMode,
   hostCode,
   initialNotForMe = false,
+  vibeFormDone,
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
@@ -43,6 +45,7 @@ export default function InterestButton({
   const [gateFor, setGateFor] = useState<"interest" | "request">("interest");
   const [showCode, setShowCode] = useState(false);
   const [codeInput, setCodeInput] = useState("");
+  const [popup, setPopup] = useState<null | "interested" | "confirmed">(null);
   const [now, setNow] = useState(() => Date.now());
   const [message, setMessage] = useState<string | null>(null);
   const [notForMe, setNotForMe] = useState(initialNotForMe);
@@ -71,6 +74,7 @@ export default function InterestButton({
     if (!error) {
       setNotForMe(false);
       setStatus("interested");
+      setPopup("interested");
       router.refresh();
     }
   }
@@ -120,6 +124,7 @@ export default function InterestButton({
     await supabase.rpc("undo_vibe_not_for_me", { p_vibe: vibeId });
     setNotForMe(false);
     setStatus("confirmed");
+    setPopup("confirmed");
     router.refresh();
   }
 
@@ -148,6 +153,7 @@ export default function InterestButton({
     setBusy(false);
     if (!error) {
       setStatus("confirmed");
+      setPopup("confirmed");
       router.refresh();
     } else {
       setMessage(error.message);
@@ -354,6 +360,55 @@ export default function InterestButton({
             else doInsert();
           }}
         />
+      )}
+
+      {popup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-sm rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_6px_0_0_rgba(10,37,69,1)]">
+            <p className="text-4xl">{popup === "confirmed" ? "🎉" : "✨"}</p>
+            <h2 className="mt-2 font-fredoka text-2xl font-bold text-ink">
+              {popup === "confirmed" ? "You're in!" : "You're in the running!"}
+            </h2>
+            <p className="mt-1 font-nunito text-sm font-medium text-muted">
+              {popup === "confirmed"
+                ? "You're confirmed — the Vibing Chat is open."
+                : "We'll notify you the moment matching runs and invites go out."}
+            </p>
+
+            {!vibeFormDone && (
+              <div className="mt-4 rounded-2xl border-2 border-ink bg-cream p-3">
+                <p className="text-sm font-bold text-ink">Want better matches?</p>
+                <p className="mt-0.5 text-xs font-medium text-muted">
+                  Take the 60-second Vibe form so the algorithm reads you right.
+                </p>
+                <Link
+                  href="/onboarding/vibe-check"
+                  className="mt-3 block rounded-full border-2 border-ink bg-flockie-blue py-2.5 font-fredoka text-sm font-semibold text-white"
+                >
+                  Complete Vibe form →
+                </Link>
+              </div>
+            )}
+
+            <div className="mt-4 flex flex-col gap-2">
+              {popup === "confirmed" && (
+                <Link
+                  href={`/vibes/${vibeId}/chat`}
+                  className="block rounded-full border-2 border-ink bg-flockie-coral py-2.5 font-fredoka text-sm font-semibold text-white shadow-[0_3px_0_0_#E0512C]"
+                >
+                  Open Vibing Chat
+                </Link>
+              )}
+              <button
+                type="button"
+                onClick={() => setPopup(null)}
+                className="rounded-full border-2 border-ink bg-white py-2.5 font-fredoka text-sm font-semibold text-ink"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

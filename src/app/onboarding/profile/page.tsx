@@ -6,9 +6,10 @@ import { safeRedirectPath, withReturnTo } from "@/lib/redirects";
 export default async function OnboardingProfilePage({
   searchParams,
 }: {
-  searchParams: { returnTo?: string };
+  searchParams: { returnTo?: string; quick?: string };
 }) {
   const returnTo = safeRedirectPath(searchParams.returnTo, "");
+  const quick = searchParams.quick === "1";
   const defaults = await getOnboardingProfileDefaults();
   if (defaults.vibeComplete) {
     redirect(withReturnTo("/onboarding/vibe-check/reveal", returnTo));
@@ -16,7 +17,7 @@ export default async function OnboardingProfilePage({
 
   return (
     <main className="mx-auto min-h-dvh max-w-md">
-      <ProfileForm defaults={defaults} returnTo={returnTo} />
+      <ProfileForm defaults={defaults} returnTo={returnTo} quick={quick} />
     </main>
   );
 }

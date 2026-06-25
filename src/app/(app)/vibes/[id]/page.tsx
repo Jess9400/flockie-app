@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft, MapPin, Users, CalendarClock } from "lucide-react";
+import { ChevronLeft, MapPin, Users, CalendarClock, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import InterestButton from "@/components/InterestButton";
 import HostVibeControls from "@/components/HostVibeControls";
@@ -44,7 +44,7 @@ export default async function VibeDetailPage({
 
   const { data: me } = await supabase
     .from("profiles")
-    .select("onboarding_complete, activities")
+    .select("onboarding_complete, activities, vibe_completed_at")
     .eq("id", user!.id)
     .maybeSingle();
   // For Vibe interest we only need the activity vibe check (not full onboarding).
@@ -436,7 +436,7 @@ export default async function VibeDetailPage({
         </Link>
       )}
 
-      {isHost && (
+      {isHost && !ended && (
         <div className="mt-6 rounded-2xl border-2 border-ink bg-white p-4">
           <p className="text-sm font-extrabold">Matching results (host only)</p>
           <p className="mt-0.5 text-xs font-medium text-muted">
@@ -458,7 +458,7 @@ export default async function VibeDetailPage({
         </div>
       )}
 
-      {isHost && vibe.status === "reviewing" && (
+      {isHost && !ended && vibe.status === "reviewing" && (
         <HostVibeShortlist
           vibeId={vibe.id}
           candidates={shortlist}
@@ -467,7 +467,7 @@ export default async function VibeDetailPage({
         />
       )}
 
-      {isHost && hostSpots > 0 && (
+      {isHost && !ended && hostSpots > 0 && (
         <HostVibePrivateRequests
           vibeId={vibe.id}
           code={vibe.host_invite_code ?? null}
@@ -477,7 +477,7 @@ export default async function VibeDetailPage({
         />
       )}
 
-      {isHost && (
+      {isHost && !ended && (
         <HostVibeMembers
           vibeId={vibe.id}
           members={hostMembers}
@@ -489,7 +489,16 @@ export default async function VibeDetailPage({
 
       <div className="mt-6">
         {isHost ? (
-          <HostVibeControls vibeId={vibe.id} status={vibe.status} />
+          ended ? (
+            <Link
+              href={`/vibes/new?from=${vibe.id}`}
+              className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3.5 text-center font-bold text-white shadow-[0_4px_0_0_#E0512C]"
+            >
+              <RefreshCw size={18} /> Re-run Vibe
+            </Link>
+          ) : (
+            <HostVibeControls vibeId={vibe.id} status={vibe.status} />
+          )
         ) : (
           <InterestButton
             vibeId={vibe.id}
@@ -503,6 +512,7 @@ export default async function VibeDetailPage({
             requestMode={searchParams.request === "1"}
             hostCode={searchParams.code ?? null}
             initialNotForMe={!!myFeedback}
+            vibeFormDone={!!me?.vibe_completed_at}
           />
         )}
       </div>

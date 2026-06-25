@@ -6,6 +6,8 @@ import { Pencil } from "lucide-react";
 import FingerprintBar from "@/components/FingerprintBar";
 import PhotoStrip from "@/components/PhotoStrip";
 import ProfileReviews, { type ReviewItem } from "@/components/ProfileReviews";
+import ProfileStats from "@/components/ProfileStats";
+import ProfileEvents, { type EventsData } from "@/components/ProfileEvents";
 import VibeQuizResult from "@/components/VibeQuizResult";
 import TripVibeForm from "@/components/TripVibeForm";
 import ActivityVibeForm from "@/components/ActivityVibeForm";
@@ -44,6 +46,8 @@ export default function ProfileTabs({
   reviewCount,
   reviewItems,
   onEditProfile,
+  stats,
+  events,
 }: {
   userId: string;
   profile: ProfileData;
@@ -51,6 +55,8 @@ export default function ProfileTabs({
   reviewCount: number;
   reviewItems: ReviewItem[];
   onEditProfile: () => void;
+  stats?: Record<string, number>;
+  events?: EventsData;
 }) {
   const router = useRouter();
   const [tab, setTab] = useState<TabKey>("profile");
@@ -122,6 +128,8 @@ export default function ProfileTabs({
             )}
             {p.video_url && <video src={p.video_url} controls className="mt-5 w-full rounded-2xl" />}
             <Socials instagram={p.instagram} x={p.x_handle} tiktok={p.tiktok} />
+            {stats && <div className="mt-6"><ProfileStats stats={stats} /></div>}
+            {events && <div className="mt-6"><ProfileEvents data={events} isOwner /></div>}
           </TabShell>
         )}
 
