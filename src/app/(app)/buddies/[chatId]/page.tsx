@@ -236,43 +236,47 @@ export default async function BuddyChatPage({
   const isHostOfFlock = !!flockHostId && user!.id === flockHostId;
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-5 pt-2 font-nunito">
-      <BuddyChatHeader
-        matchId={chat.match_id}
-        chatId={params.chatId}
-        initialMuted={!!muteRow}
-        name={otherName}
-        age={other?.age ?? null}
-        photo={arr(other?.photos)[0] ?? null}
-        otherCity={other?.home_city ?? null}
-        destination={destination}
-        dateRange={dateRange}
-        score={score}
-        sharedVibe={sharedVibe}
-        sharedTravelStyle={sharedTravelStyle}
-        compatLine={compatLine}
-        peek={peek}
-        isGroup={!!flockTripId}
-        groupTitle={flockTitle}
-        groupMembers={groupMembers}
-      />
+    <main className="fixed inset-x-0 bottom-0 top-16 z-10 bg-cream lg:left-[200px]">
+      <div className="mx-auto flex h-full w-full max-w-2xl flex-col px-5 font-nunito">
+        <BuddyChatHeader
+          matchId={chat.match_id}
+          chatId={params.chatId}
+          initialMuted={!!muteRow}
+          name={otherName}
+          age={other?.age ?? null}
+          photo={arr(other?.photos)[0] ?? null}
+          otherCity={other?.home_city ?? null}
+          destination={destination}
+          dateRange={dateRange}
+          score={score}
+          sharedVibe={sharedVibe}
+          sharedTravelStyle={sharedTravelStyle}
+          compatLine={compatLine}
+          peek={peek}
+          isGroup={!!flockTripId}
+          groupTitle={flockTitle}
+          groupMembers={groupMembers}
+        />
 
-      {flockTripId && flockReqs.length > 0 && (
-        <FlockJoinRequests tripId={flockTripId} requests={flockReqs} dualApproval canRemove={isHostOfFlock} />
-      )}
+        {flockTripId && flockReqs.length > 0 && (
+          <div className="shrink-0">
+            <FlockJoinRequests tripId={flockTripId} requests={flockReqs} dualApproval canRemove={isHostOfFlock} />
+          </div>
+        )}
 
-      <BuddyChatRoom
-        chatId={params.chatId}
-        currentUserId={user!.id}
-        otherId={otherId}
-        otherName={otherName}
-        initialMessages={messages ?? []}
-        icebreaker={icebreaker}
-        tripStartIso={trip?.start_date ?? null}
-        tripEndIso={trip?.end_date ?? null}
-        members={chatMembers}
-        isGroup={!!flockTripId}
-      />
+        <BuddyChatRoom
+          chatId={params.chatId}
+          currentUserId={user!.id}
+          otherId={otherId}
+          otherName={otherName}
+          initialMessages={messages ?? []}
+          icebreaker={icebreaker}
+          tripStartIso={trip?.start_date ?? null}
+          tripEndIso={trip?.end_date ?? null}
+          members={chatMembers}
+          isGroup={!!flockTripId}
+        />
+      </div>
     </main>
   );
 }

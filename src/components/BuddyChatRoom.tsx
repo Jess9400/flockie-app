@@ -164,14 +164,14 @@ export default function BuddyChatRoom({
   });
 
   return (
-    <div className="relative flex h-[calc(100vh-13rem)] flex-col font-nunito">
+    <div className="relative flex min-h-0 flex-1 flex-col font-nunito">
       {toast && (
         <div className="absolute left-1/2 top-2 z-30 -translate-x-1/2 rounded-full border-2 border-navy bg-flockie-coral px-4 py-1.5 font-fredoka text-sm font-semibold text-white shadow-[0_3px_0_rgba(10,37,69,1)]">
           🎉 You matched! Say hi 👋
         </div>
       )}
 
-      <div className="flex-1 space-y-1 overflow-y-auto py-4">
+      <div className="min-h-0 flex-1 space-y-1 overflow-y-auto py-4">
         {/* Algo icebreaker */}
         <div className="mx-auto my-3 max-w-[92%] rounded-2xl border-2 border-flockie-blue bg-cream p-4">
           <p className="flex items-center gap-1.5 font-fredoka text-sm font-semibold text-flockie-blue">
@@ -254,7 +254,7 @@ export default function BuddyChatRoom({
         <div ref={endRef} />
       </div>
 
-      <form onSubmit={send} className="flex items-center gap-2 pt-1">
+      <form onSubmit={send} className="flex shrink-0 items-center gap-2 pb-3 pt-1">
         <input ref={imgInput} type="file" accept="image/*" hidden onChange={onImage} />
         <button
           type="button"

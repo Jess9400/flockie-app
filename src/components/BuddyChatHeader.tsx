@@ -93,7 +93,7 @@ export default function BuddyChatHeader({
   if (isGroup) {
     const shown = groupMembers.slice(0, 6);
     return (
-      <div className="sticky top-16 z-20 -mx-5 border-b-2 border-navy bg-white px-5">
+      <div className="z-20 -mx-5 shrink-0 border-b-2 border-navy bg-white px-5">
         <div className="flex items-center justify-between pt-3">
           <Link href="/chats" className="flex items-center gap-1 font-nunito text-sm font-bold text-navy/60">
             <ChevronLeft size={16} /> Chats
@@ -138,7 +138,7 @@ export default function BuddyChatHeader({
         </div>
 
         {expanded && (
-          <div className="space-y-2 pb-4">
+          <div className="max-h-[55vh] space-y-2 overflow-y-auto pb-4">
             {dateRange && <p className="font-nunito text-sm font-medium text-navy">📅 {dateRange}</p>}
             <p className="font-nunito text-xs font-bold uppercase tracking-wide text-navy/55">Members</p>
             <div className="flex flex-wrap gap-2">
@@ -260,7 +260,7 @@ export default function BuddyChatHeader({
 
       {/* expanded details */}
       {expanded && (
-        <div className="space-y-3 pb-4">
+        <div className="max-h-[55vh] space-y-3 overflow-y-auto pb-4">
           {compatLine && (
             <p className="font-nunito text-sm font-medium text-navy/80">{compatLine}</p>
           )}
