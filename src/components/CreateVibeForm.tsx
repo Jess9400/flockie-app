@@ -54,6 +54,8 @@ export default function CreateVibeForm({
   const [locationMsg, setLocationMsg] = useState<string | null>(null);
   const [capacity, setCapacity] = useState(10);
   const [genderPref, setGenderPref] = useState("any");
+  const [algoShare, setAlgoShare] = useState(100);
+  const [interestWindow, setInterestWindow] = useState<number | null>(null);
   const [whatToBring, setWhatToBring] = useState("");
   const [language, setLanguage] = useState("");
   const [ageMin, setAgeMin] = useState(18);
@@ -146,6 +148,12 @@ export default function CreateVibeForm({
     setLocationMsg("Exact address added to the location line.");
   }
 
+  function setWindow(hours: number) {
+    setInterestWindow(hours);
+    const d = new Date(Date.now() + hours * 3600 * 1000);
+    setDeadline(new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16));
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
@@ -199,6 +207,8 @@ export default function CreateVibeForm({
         signup_deadline: new Date(deadline).toISOString(),
         capacity,
         gender_pref: genderPref,
+        algo_share: algoShare,
+        interest_window_hours: interestWindow,
         what_to_bring: whatToBring.trim() || null,
         language,
         age_min: ageMin,
@@ -369,13 +379,36 @@ export default function CreateVibeForm({
             onChange={(e) => setEndsAt(e.target.value)}
           />
         </Field>
-        <Field label="Signup deadline (when matching runs)">
+        <Field label="Interest window — when matching runs">
+          <div className="flex flex-wrap gap-2">
+            {[
+              { h: 24, l: "In 24h" },
+              { h: 48, l: "In 48h" },
+            ].map((o) => (
+              <button
+                key={o.h}
+                type="button"
+                onClick={() => setWindow(o.h)}
+                className={`rounded-full border-2 border-ink px-4 py-2 text-sm font-bold ${
+                  interestWindow === o.h ? "bg-flockie-blue text-white" : "bg-white"
+                }`}
+              >
+                {o.l}
+              </button>
+            ))}
+          </div>
           <input
             type="datetime-local"
-            className={inputCls}
+            className={`${inputCls} mt-2`}
             value={deadline}
-            onChange={(e) => setDeadline(e.target.value)}
+            onChange={(e) => {
+              setInterestWindow(null);
+              setDeadline(e.target.value);
+            }}
           />
+          <p className="mt-1 text-xs font-medium text-muted">
+            Interest stays open until this time, then the algorithm ranks everyone and builds your list.
+          </p>
         </Field>
         <Field label="City">
           <input
@@ -468,6 +501,28 @@ export default function CreateVibeForm({
               </button>
             ))}
           </div>
+        </Field>
+
+        <Field label="How much should the algorithm fill?">
+          <div className="grid grid-cols-3 gap-2">
+            {[50, 75, 100].map((p) => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => setAlgoShare(p)}
+                className={`rounded-full border-2 border-ink py-2 text-sm font-bold ${
+                  algoShare === p ? "bg-flockie-blue text-white" : "bg-white"
+                }`}
+              >
+                {p}%
+              </button>
+            ))}
+          </div>
+          <p className="mt-1 text-xs font-medium text-muted">
+            {algoShare === 100
+              ? "The algorithm fills the whole room."
+              : `The algorithm fills ${algoShare}% — the rest are yours to invite via your private link.`}
+          </p>
         </Field>
 
         <Field label="Event language">
