@@ -90,9 +90,11 @@ create table if not exists public.notifications (
   body text,
   data jsonb,
   read_at timestamptz,
+  dismissed_at timestamptz,
   created_at timestamptz default now()
 );
 create index if not exists notifications_user_idx on public.notifications (user_id, created_at desc);
+create index if not exists notifications_active_user_idx on public.notifications (user_id, dismissed_at, created_at desc);
 
 -- ───────────────────────────── RLS ─────────────────────────────
 alter table public.vibes enable row level security;

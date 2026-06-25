@@ -9,8 +9,9 @@ export default async function InboxPage() {
 
   const { data: notifications } = await supabase
     .from("notifications")
-    .select("id, type, title, body, data, read_at, created_at")
+    .select("id, type, title, body, data, read_at, dismissed_at, created_at")
     .eq("user_id", user!.id)
+    .is("dismissed_at", null)
     .order("created_at", { ascending: false })
     .limit(50);
 
