@@ -43,7 +43,14 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   };
 }
 
-export default async function InvitePage({ params }: { params: { id: string } }) {
+export default async function InvitePage({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: { via?: string };
+}) {
+  const viaHost = searchParams.via === "host";
   const v = await getVibe(params.id);
   if (!v) notFound();
 
@@ -100,7 +107,18 @@ export default async function InvitePage({ params }: { params: { id: string } })
             </p>
           )}
 
-          {v.status === "open" ? (
+          {v.status === "cancelled" ? (
+            <div className="mt-6 rounded-full border-2 border-navy bg-cream py-3.5 text-center font-fredoka text-sm font-semibold text-navy/60">
+              Sign-ups for this Vibe are closed.
+            </div>
+          ) : viaHost ? (
+            <Link
+              href={`/vibes/${v.id}?request=1`}
+              className="mt-6 block rounded-full border-2 border-navy bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
+            >
+              Request to join
+            </Link>
+          ) : v.status === "open" ? (
             <Link
               href={`/vibes/${v.id}?interested=1`}
               className="mt-6 block rounded-full border-2 border-navy bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
@@ -113,8 +131,9 @@ export default async function InvitePage({ params }: { params: { id: string } })
             </div>
           )}
           <p className="mt-2 text-center font-nunito text-xs font-medium text-navy/50">
-            Tap interested — a quick vibe check, then the host&rsquo;s algorithm picks the most
-            compatible people.
+            {viaHost
+              ? "The host invited you directly — a quick vibe check, then they add you to their spots."
+              : "Tap interested — a quick vibe check, then the host’s algorithm picks the most compatible people."}
           </p>
         </div>
       </div>
