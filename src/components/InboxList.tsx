@@ -18,6 +18,8 @@ const STYLE: Record<string, string> = {
   vibe_invitation: "border-flockie-orange bg-flockie-orange/10",
   vibe_confirmed: "border-[#06D6A0] bg-[#06D6A0]/10",
   vibe_standby: "border-ink/15 bg-cream",
+  vibe_removed: "border-ink/15 bg-cream",
+  vibe_removal_appeal: "border-flockie-blue bg-flockie-blue/10",
   vibing_message: "border-flockie-blue bg-flockie-blue/10",
   vibe_recommendation: "border-flockie-blue bg-flockie-blue/10",
   activity_like: "border-flockie-orange bg-flockie-orange/10",

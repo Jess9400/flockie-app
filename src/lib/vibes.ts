@@ -87,4 +87,5 @@ export type InterestStatus =
   | "confirmed"
   | "declined"
   | "standby"
-  | "ghosted";
+  | "ghosted"
+  | "removed";

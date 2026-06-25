@@ -108,6 +108,18 @@ export default function InterestButton({
     router.refresh();
   }
 
+  async function appealRemoval() {
+    const note = window.prompt("Tell us what happened. This is private to Flockie.");
+    if (!note?.trim()) return;
+    setBusy(true);
+    setMessage(null);
+    const { error } = await supabase.rpc("appeal_vibe_removal", {
+      p_vibe: vibeId,
+      p_note: note.trim(),
+    });
+    setBusy(false);
+    setMessage(error ? error.message : "Thanks — we got your note.");
+  }
 
   const base =
     "w-full rounded-full border-2 border-ink py-3.5 text-center font-bold disabled:opacity-50";
@@ -155,6 +167,17 @@ export default function InterestButton({
     control = (
       <div className={`${base} bg-cream text-muted`}>
         You passed on this one.
+      </div>
+    );
+  } else if (status === "removed") {
+    control = (
+      <div className="space-y-2">
+        <div className={`${base} bg-cream text-muted`}>
+          This Vibe is no longer available. We&rsquo;ll keep showing you better matches.
+        </div>
+        <button onClick={appealRemoval} disabled={busy} className={`${base} bg-white`}>
+          Tell us what happened
+        </button>
       </div>
     );
   } else if (status === "standby") {

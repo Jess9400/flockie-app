@@ -523,7 +523,7 @@ begin
 end $$;
 grant execute on function public.host_make_room_invite_interest(uuid, uuid) to authenticated;
 
--- host_decline_interest: host denies a pending/invited user who is not confirmed.
+-- host_decline_interest: host denies a pending interested/standby user.
 create or replace function public.host_decline_interest(p_vibe uuid, p_user uuid)
 returns void language plpgsql security definer set search_path = public as $$
 declare v public.vibes; v_status text;
@@ -534,7 +534,7 @@ begin
 
   select status into v_status from public.vibe_interests where vibe_id = p_vibe and user_id = p_user;
   if v_status is null then raise exception 'interest not found'; end if;
-  if v_status = 'confirmed' then raise exception 'confirmed attendees cannot be denied here'; end if;
+  if v_status not in ('interested','standby') then raise exception 'only interested or standby users can be denied here'; end if;
 
   update public.vibe_interests
     set status = 'declined', invitation_expires_at = null
