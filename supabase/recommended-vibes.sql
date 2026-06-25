@@ -114,6 +114,10 @@ language sql security definer set search_path = public stable as $$
     and not exists (
       select 1 from public.vibe_interests vi where vi.vibe_id = v.id and vi.user_id = m.id
     )
+    and not exists (
+      select 1 from public.vibe_feedback vf
+      where vf.vibe_id = v.id and vf.user_id = m.id and vf.signal = 'not_for_me'
+    )
   order by match_score desc nulls last, v.starts_at asc
   limit p_limit;
 $$;

@@ -49,6 +49,13 @@ export default async function VibesPage({
     .maybeSingle();
   const trackingEnabled = !!loc?.location_tracking_enabled;
 
+  const { data: hiddenRows } = await supabase
+    .from("vibe_feedback")
+    .select("vibe_id")
+    .eq("user_id", user!.id)
+    .eq("signal", "not_for_me");
+  const hiddenVibeIds = Array.from(new Set((hiddenRows ?? []).map((r) => r.vibe_id)));
+
   const nowIso = new Date().toISOString();
   let query = supabase
     .from("vibes")
@@ -67,6 +74,7 @@ export default async function VibesPage({
 
   if (city) query = query.ilike("city", `%${city}%`);
   if (q) query = query.or(`title.ilike.%${q}%,category.ilike.%${q}%`);
+  if (!isPast && hiddenVibeIds.length) query = query.not("id", "in", `(${hiddenVibeIds.join(",")})`);
 
   // Time window (upcoming only): Today / Next 48h / Anytime.
   if (!isPast && when === "today") {

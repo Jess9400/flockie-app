@@ -129,6 +129,7 @@ begin
       and array_length(coalesce(p.activities,'{}'), 1) is not null
       and p.home_city is not null and lower(p.home_city) = lower(v.city)
       and not exists (select 1 from public.vibe_interests vi where vi.vibe_id=p_vibe and vi.user_id=p.id)
+      and not exists (select 1 from public.vibe_feedback vf where vf.vibe_id=p_vibe and vf.user_id=p.id and vf.signal='not_for_me')
       and (v.gender_pref is null or v.gender_pref = 'any'
            or (v.gender_pref='women' and p.gender='woman') or (v.gender_pref='men' and p.gender='man'))
       and (v.age_min is null or p.age is null or p.age >= v.age_min)

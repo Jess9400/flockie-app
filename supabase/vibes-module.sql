@@ -66,6 +66,17 @@ create table if not exists public.vibe_removals (
 create index if not exists vibe_removals_vibe_idx on public.vibe_removals (vibe_id, created_at desc);
 create index if not exists vibe_removals_user_idx on public.vibe_removals (user_id, created_at desc);
 
+create table if not exists public.vibe_feedback (
+  id uuid primary key default gen_random_uuid(),
+  vibe_id uuid references public.vibes (id) on delete cascade,
+  user_id uuid references public.profiles (id) on delete cascade,
+  signal text not null check (signal in ('not_for_me')),
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  unique (vibe_id, user_id, signal)
+);
+create index if not exists vibe_feedback_user_signal_idx on public.vibe_feedback (user_id, signal, created_at desc);
+
 -- one chat per vibe
 create table if not exists public.vibing_chats (
   id uuid primary key default gen_random_uuid(),
@@ -99,6 +110,7 @@ alter table public.vibes enable row level security;
 alter table public.vibe_pins enable row level security;
 alter table public.vibe_interests enable row level security;
 alter table public.vibe_removals enable row level security;
+alter table public.vibe_feedback enable row level security;
 alter table public.vibing_chats enable row level security;
 alter table public.vibing_messages enable row level security;
 alter table public.notifications enable row level security;
@@ -156,6 +168,38 @@ create policy "removals read" on public.vibe_removals for select to authenticate
     user_id = auth.uid()
     or auth.uid() = (select host_id from public.vibes v where v.id = vibe_id)
   );
+
+drop policy if exists "vibe feedback own read" on public.vibe_feedback;
+create policy "vibe feedback own read" on public.vibe_feedback for select to authenticated
+  using (user_id = auth.uid());
+drop policy if exists "vibe feedback own insert" on public.vibe_feedback;
+create policy "vibe feedback own insert" on public.vibe_feedback for insert to authenticated
+  with check (user_id = auth.uid());
+drop policy if exists "vibe feedback own delete" on public.vibe_feedback;
+create policy "vibe feedback own delete" on public.vibe_feedback for delete to authenticated
+  using (user_id = auth.uid());
+
+create or replace function public.mark_vibe_not_for_me(p_vibe uuid)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if exists (select 1 from public.vibes where id = p_vibe and host_id = auth.uid()) then
+    raise exception 'hosts cannot hide their own vibe';
+  end if;
+
+  insert into public.vibe_feedback (vibe_id, user_id, signal)
+  values (p_vibe, auth.uid(), 'not_for_me')
+  on conflict (vibe_id, user_id, signal)
+  do update set updated_at = now();
+end $$;
+grant execute on function public.mark_vibe_not_for_me(uuid) to authenticated;
+
+create or replace function public.undo_vibe_not_for_me(p_vibe uuid)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  delete from public.vibe_feedback
+  where vibe_id = p_vibe and user_id = auth.uid() and signal = 'not_for_me';
+end $$;
+grant execute on function public.undo_vibe_not_for_me(uuid) to authenticated;
 
 -- chats + messages: confirmed attendees and host only
 drop policy if exists "chats member read" on public.vibing_chats;
