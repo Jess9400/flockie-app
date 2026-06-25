@@ -26,9 +26,10 @@ export default async function FlockReviewPage({ params }: { params: { tripId: st
         <ChevronLeft size={16} /> Back
       </Link>
 
-      <h1 className="font-fredoka text-3xl font-bold text-navy">Review your group</h1>
+      <h1 className="font-fredoka text-3xl font-bold text-navy">Review your flockmates</h1>
       <p className="mt-1 font-nunito text-sm font-normal text-navy/60">
-        {dest} — rate each person and leave a short note. It helps great travel buddies stand out.
+        {dest} — rate <span className="font-bold">each person individually</span> and leave a short note.
+        It helps great travel buddies stand out.
       </p>
 
       {targets.length === 0 ? (

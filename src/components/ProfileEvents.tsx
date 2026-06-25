@@ -136,7 +136,7 @@ export default function ProfileEvents({ data, isOwner }: { data: EventsData; isO
               role={f.role === "host" ? "Host" : "Going"}
               past={f.past}
               reviewHref={isOwner && f.past ? `/flocks/${f.id}/review` : null}
-              reviewLabel="Review your group"
+              reviewLabel="Review your flockmates"
             />
           ))}
         </Section>
