@@ -172,7 +172,7 @@ export default async function VibesPage({
           <Plus size={16} /> Create
         </Link>
       </div>
-      <p className="mt-1 text-sm font-medium text-muted">
+      <p className="mt-3 max-w-xl text-sm font-medium text-muted">
         Curated <span className="font-bold">group</span> activities &amp; events —
         no swiping. Tap &ldquo;I&rsquo;m interested&rdquo; and the host&rsquo;s
         algorithm builds the room from the most compatible people, up to capacity.
