@@ -79,7 +79,7 @@ export default function VibeChatHeader({
   }
 
   return (
-    <div className="sticky top-16 z-20 -mx-5 border-b-2 border-navy bg-cream px-5">
+    <div className="z-20 -mx-5 shrink-0 border-b-2 border-navy bg-cream px-5">
       {/* Collapsed bar */}
       <div className="flex items-center gap-3 py-3">
         <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-cream">
@@ -137,7 +137,7 @@ export default function VibeChatHeader({
 
       {/* Expanded detail */}
       {expanded && (
-        <div className="space-y-3 pb-4">
+        <div className="max-h-[55vh] space-y-3 overflow-y-auto pb-4">
           {cover && (
             <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-cream">
               <Image src={cover} alt="" fill sizes="100vw" className="object-contain" />

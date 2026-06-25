@@ -116,8 +116,8 @@ export default function ChatRoom({
   const startsSoon = startsAt != null && hoursUntil(startsAt) > 0 && hoursUntil(startsAt) < 24;
 
   return (
-    <div className="flex h-[calc(100vh-13rem)] flex-col font-nunito">
-      <div className="flex-1 space-y-1 overflow-y-auto py-4">
+    <div className="flex min-h-0 flex-1 flex-col font-nunito">
+      <div className="min-h-0 flex-1 space-y-1 overflow-y-auto py-4">
         {/* Welcome breadcrumb */}
         <p className="px-6 py-2 text-center font-nunito text-[13px] font-medium italic text-navy/50">
           This is the start of your Vibe chat. Say hi 👋
@@ -199,7 +199,7 @@ export default function ChatRoom({
 
       {/* Smart prompts above input */}
       {(bookingUrl || startsSoon || reviewHref) && (
-        <div className="flex flex-wrap gap-2 pb-2">
+        <div className="flex shrink-0 flex-wrap gap-2 pb-2">
           {reviewHref && (
             <Link
               href={reviewHref}
@@ -226,7 +226,7 @@ export default function ChatRoom({
         </div>
       )}
 
-      <form onSubmit={send} className="flex items-center gap-2 pt-1">
+      <form onSubmit={send} className="flex shrink-0 items-center gap-2 pb-3 pt-1">
         <input ref={imgInput} type="file" accept="image/*" hidden onChange={onImage} />
         <button
           type="button"

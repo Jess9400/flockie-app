@@ -92,7 +92,7 @@ export default async function VibeChatPage({
     : null;
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-5 pt-2 font-nunito">
+    <main className="mx-auto flex h-[calc(100dvh-4rem)] w-full max-w-2xl flex-col px-5 font-nunito">
       <VibeChatHeader
         vibeId={params.id}
         title={vibe?.title ?? "Vibe"}
@@ -106,7 +106,7 @@ export default async function VibeChatPage({
       />
 
       {vibe?.status === "cancelled" && (
-        <div className="mt-3 rounded-2xl border-2 border-navy bg-cream p-3 text-sm font-bold text-navy/70">
+        <div className="mt-3 shrink-0 rounded-2xl border-2 border-navy bg-cream p-3 text-sm font-bold text-navy/70">
           This Vibe was cancelled — the chat is now inactive.
         </div>
       )}
