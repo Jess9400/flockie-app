@@ -79,6 +79,19 @@ export default async function PersonPage({
     reviewerPhoto: reviewers[r.reviewer_id]?.photos?.[0] ?? null,
   }));
 
+  // Social proof: activity across Vibes, Activities, Trips & Flocks (all cities).
+  const { data: statsData } = await supabase.rpc("public_profile_stats", { p_user: params.id });
+  const stats = (statsData ?? {}) as Record<string, number>;
+  const statItems = [
+    { label: "Vibes hosted", value: stats.vibes_hosted },
+    { label: "Vibes joined", value: stats.vibes_attended },
+    { label: "Activities", value: stats.activities_created },
+    { label: "Trips", value: stats.trips_created },
+    { label: "Flocks hosted", value: stats.flocks_created },
+    { label: "Flocks joined", value: stats.flocks_joined },
+    { label: "Travel buddies", value: stats.buddies_matched },
+  ].filter((s) => (s.value ?? 0) > 0);
+
   return (
     <main className="px-5 pb-10 pt-6">
       <Link href="/match" className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted">
@@ -112,6 +125,20 @@ export default async function PersonPage({
 
       {incomingLike && (
         <MatchBackButton personId={params.id} name={(profile.display_name || "They").split(" ")[0]} />
+      )}
+
+      {statItems.length > 0 && (
+        <div className="mt-5">
+          <p className="text-sm font-extrabold text-navy">On Flockie</p>
+          <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4">
+            {statItems.map((s) => (
+              <div key={s.label} className="rounded-2xl border-2 border-ink bg-white py-2.5 text-center">
+                <p className="text-xl font-black text-navy">{s.value}</p>
+                <p className="text-[10px] font-bold leading-tight text-muted">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
       <div className="mt-5">
