@@ -15,7 +15,7 @@ type TripEvt = {
   role?: string;
 };
 
-type EventsData = {
+export type EventsData = {
   is_owner?: boolean;
   vibes?: VibeEvt[];
   flocks?: TripEvt[];

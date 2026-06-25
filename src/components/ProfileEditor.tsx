@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Settings, Share2 } from "lucide-react";
 import ProfileTabs from "@/components/ProfileTabs";
 import { type ReviewItem } from "@/components/ProfileReviews";
+import { type EventsData } from "@/components/ProfileEvents";
 import VibeCheckForm from "@/components/VibeCheckForm";
 import VibeShareCard from "@/components/VibeShareCard";
 import VibeCompletePopup from "@/components/VibeCompletePopup";
@@ -19,6 +20,8 @@ export default function ProfileEditor({
   reviewItems = [],
   redirectAfter,
   celebrate,
+  stats,
+  events,
 }: {
   userId: string;
   profile: Partial<Profile>;
@@ -28,6 +31,8 @@ export default function ProfileEditor({
   reviewItems?: ReviewItem[];
   redirectAfter?: string;
   celebrate?: boolean;
+  stats?: Record<string, number>;
+  events?: EventsData;
 }) {
   // Start in edit mode if the profile isn't complete yet (first-time onboarding).
   const [editing, setEditing] = useState(!complete);
@@ -96,6 +101,8 @@ export default function ProfileEditor({
           reviewCount={reviewCount}
           reviewItems={reviewItems}
           onEditProfile={() => setEditing(true)}
+          stats={stats}
+          events={events}
         />
       </div>
 
