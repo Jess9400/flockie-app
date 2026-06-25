@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import ProfileView from "@/components/ProfileView";
 import ProfileSocials from "@/components/ProfileSocials";
 import ProfileReviews, { type ReviewItem } from "@/components/ProfileReviews";
+import ProfileEvents from "@/components/ProfileEvents";
 import MatchBackButton from "@/components/MatchBackButton";
 import Stars from "@/components/Stars";
 import type { Profile } from "@/lib/vibe-check";
@@ -82,6 +83,8 @@ export default async function PersonPage({
   // Social proof: activity across Vibes, Activities, Trips & Flocks (all cities).
   const { data: statsData } = await supabase.rpc("public_profile_stats", { p_user: params.id });
   const stats = (statsData ?? {}) as Record<string, number>;
+  const { data: eventsData } = await supabase.rpc("public_profile_events", { p_user: params.id });
+  const isOwnProfile = user?.id === params.id;
   const statItems = [
     { label: "Vibes hosted", value: stats.vibes_hosted },
     { label: "Vibes joined", value: stats.vibes_attended },
@@ -140,6 +143,8 @@ export default async function PersonPage({
           </div>
         </div>
       )}
+
+      <ProfileEvents data={eventsData ?? {}} isOwner={isOwnProfile} />
 
       <div className="mt-5">
         <ProfileView profile={profile as Partial<Profile> & { archetype?: string | null }} />
