@@ -138,11 +138,6 @@ export default function VibeChatHeader({
       {/* Expanded detail */}
       {expanded && (
         <div className="max-h-[55vh] space-y-3 overflow-y-auto pb-4">
-          {cover && (
-            <div className="relative h-28 w-full overflow-hidden rounded-2xl bg-cream">
-              <Image src={cover} alt="" fill sizes="100vw" className="object-cover" />
-            </div>
-          )}
           {startsAt && (
             <p className="flex items-center gap-1.5 font-nunito text-sm font-medium text-navy">
               <CalendarClock size={15} className="text-flockie-coral" />
