@@ -14,7 +14,11 @@ type Props = {
   initialStatus: InterestStatus | null;
   invitationExpiresAt?: string | null;
   cancelled?: boolean;
+  ended?: boolean;
   autoInterest?: boolean;
+  requestMode?: boolean;
+  hostCode?: string | null;
+  vibeFormDone?: boolean;
 };
 
 export default function InterestButton({
@@ -24,7 +28,11 @@ export default function InterestButton({
   initialStatus,
   invitationExpiresAt,
   cancelled,
+  ended,
   autoInterest,
+  requestMode,
+  hostCode,
+  vibeFormDone,
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
@@ -32,6 +40,10 @@ export default function InterestButton({
   const [hasActivities, setHasActivities] = useState(activitiesDone);
   const [busy, setBusy] = useState(false);
   const [gate, setGate] = useState(false);
+  const [gateFor, setGateFor] = useState<"interest" | "request">("interest");
+  const [showCode, setShowCode] = useState(false);
+  const [codeInput, setCodeInput] = useState("");
+  const [popup, setPopup] = useState<null | "interested" | "confirmed">(null);
   const [now, setNow] = useState(() => Date.now());
   const [message, setMessage] = useState<string | null>(null);
 
@@ -57,11 +69,13 @@ export default function InterestButton({
     setBusy(false);
     if (!error) {
       setStatus("interested");
+      setPopup("interested");
       router.refresh();
     }
   }
 
   async function express() {
+    setGateFor("interest");
     if (!hasActivities) {
       setGate(true);
       return;
@@ -69,10 +83,48 @@ export default function InterestButton({
     await doInsert();
   }
 
-  // Invite deep-link: auto-open the interest flow once on arrival.
+  // Private link: request to join the host's direct spots (still vibe-checked).
+  async function doRequest() {
+    setBusy(true);
+    const { error } = await supabase.rpc("request_private_vibe", { p_vibe: vibeId });
+    setBusy(false);
+    if (!error) {
+      setStatus("requested");
+      router.refresh();
+    } else {
+      setMessage(error.message);
+    }
+  }
+
+  async function requestPrivate() {
+    setGateFor("request");
+    if (!hasActivities) {
+      setGate(true);
+      return;
+    }
+    await doRequest();
+  }
+
+  // Host invite code → instantly confirmed into a host spot (no algo/approval).
+  async function redeemCode(code: string) {
+    const c = code.trim();
+    if (!c) return;
+    setBusy(true);
+    setMessage(null);
+    const { error } = await supabase.rpc("redeem_host_code", { p_vibe: vibeId, p_code: c });
+    setBusy(false);
+    if (error) return setMessage(error.message);
+    setStatus("confirmed");
+    setPopup("confirmed");
+    router.refresh();
+  }
+
+  // Deep-links: auto-open the right flow once on arrival.
   useEffect(() => {
-    if (autoInterest && status === null && !cancelled) {
-      express();
+    if (status === null && !cancelled && !ended) {
+      if (hostCode) redeemCode(hostCode);
+      else if (requestMode) requestPrivate();
+      else if (autoInterest) express();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -92,6 +144,7 @@ export default function InterestButton({
     setBusy(false);
     if (!error) {
       setStatus("confirmed");
+      setPopup("confirmed");
       router.refresh();
     } else {
       setMessage(error.message);
@@ -130,6 +183,12 @@ export default function InterestButton({
     control = (
       <div className={`${base} bg-cream text-muted`}>
         This Vibe was cancelled by the host.
+      </div>
+    );
+  } else if (ended && status !== "confirmed") {
+    control = (
+      <div className={`${base} bg-cream text-muted`}>
+        This Vibe has ended.
       </div>
     );
   } else if (status === "confirmed") {
@@ -186,6 +245,12 @@ export default function InterestButton({
         On standby — we&rsquo;ll show you Vibes that match your style.
       </div>
     );
+  } else if (status === "requested") {
+    control = (
+      <div className={`${base} bg-cream`}>
+        Request sent — waiting for the host to add you.
+      </div>
+    );
   } else if (status === "shortlisted") {
     control = (
       <div className={`${base} bg-cream`}>
@@ -200,9 +265,37 @@ export default function InterestButton({
     );
   } else {
     control = (
-      <button onClick={express} disabled={busy} className={`${base} bg-flockie-orange text-white shadow-[0_4px_0_0_#E0512C]`}>
-        I&rsquo;m interested
-      </button>
+      <div className="space-y-2">
+        <button onClick={express} disabled={busy} className={`${base} bg-flockie-orange text-white shadow-[0_4px_0_0_#E0512C]`}>
+          I&rsquo;m interested
+        </button>
+        {!showCode ? (
+          <button
+            type="button"
+            onClick={() => setShowCode(true)}
+            className="w-full py-1 text-center text-xs font-bold text-muted underline"
+          >
+            Have a host invite code?
+          </button>
+        ) : (
+          <div className="flex gap-2">
+            <input
+              value={codeInput}
+              onChange={(e) => setCodeInput(e.target.value)}
+              placeholder="HOST CODE"
+              className="h-11 w-full rounded-full border-2 border-ink px-4 text-sm font-bold uppercase tracking-[0.2em] outline-none"
+            />
+            <button
+              type="button"
+              onClick={() => redeemCode(codeInput)}
+              disabled={busy}
+              className="shrink-0 rounded-full border-2 border-ink bg-flockie-blue px-6 text-sm font-bold text-white disabled:opacity-50"
+            >
+              Join
+            </button>
+          </div>
+        )}
+      </div>
     );
   }
 
@@ -220,9 +313,59 @@ export default function InterestButton({
           onDone={() => {
             setGate(false);
             setHasActivities(true);
-            doInsert();
+            if (gateFor === "request") doRequest();
+            else doInsert();
           }}
         />
+      )}
+
+      {popup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-sm rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_6px_0_0_rgba(10,37,69,1)]">
+            <p className="text-4xl">{popup === "confirmed" ? "🎉" : "✨"}</p>
+            <h2 className="mt-2 font-fredoka text-2xl font-bold text-ink">
+              {popup === "confirmed" ? "You're in!" : "You're in the running!"}
+            </h2>
+            <p className="mt-1 font-nunito text-sm font-medium text-muted">
+              {popup === "confirmed"
+                ? "You're confirmed — the Vibing Chat is open."
+                : "We'll notify you the moment matching runs and invites go out."}
+            </p>
+
+            {!vibeFormDone && (
+              <div className="mt-4 rounded-2xl border-2 border-ink bg-cream p-3">
+                <p className="text-sm font-bold text-ink">Want better matches?</p>
+                <p className="mt-0.5 text-xs font-medium text-muted">
+                  Take the 60-second Vibe form so the algorithm reads you right.
+                </p>
+                <Link
+                  href="/onboarding/vibe-check"
+                  className="mt-3 block rounded-full border-2 border-ink bg-flockie-blue py-2.5 font-fredoka text-sm font-semibold text-white"
+                >
+                  Complete Vibe form →
+                </Link>
+              </div>
+            )}
+
+            <div className="mt-4 flex flex-col gap-2">
+              {popup === "confirmed" && (
+                <Link
+                  href={`/vibes/${vibeId}/chat`}
+                  className="block rounded-full border-2 border-ink bg-flockie-coral py-2.5 font-fredoka text-sm font-semibold text-white shadow-[0_3px_0_0_#E0512C]"
+                >
+                  Open Vibing Chat
+                </Link>
+              )}
+              <button
+                type="button"
+                onClick={() => setPopup(null)}
+                className="rounded-full border-2 border-ink bg-white py-2.5 font-fredoka text-sm font-semibold text-ink"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

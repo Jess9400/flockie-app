@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft, MapPin, Users, CalendarClock } from "lucide-react";
+import { ChevronLeft, MapPin, Users, CalendarClock, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import InterestButton from "@/components/InterestButton";
 import HostVibeControls from "@/components/HostVibeControls";
 import HostVibeShortlist from "@/components/HostVibeShortlist";
+import HostVibePrivateRequests from "@/components/HostVibePrivateRequests";
 import HostVibeMembers from "@/components/HostVibeMembers";
 import VibeSettingsButton from "@/components/VibeSettingsButton";
 import LeaveVibeButton from "@/components/LeaveVibeButton";
@@ -19,7 +20,7 @@ export default async function VibeDetailPage({
   searchParams,
 }: {
   params: { id: string };
-  searchParams: { interested?: string };
+  searchParams: { interested?: string; request?: string; code?: string };
 }) {
   const supabase = await createClient();
   const {
@@ -43,7 +44,7 @@ export default async function VibeDetailPage({
 
   const { data: me } = await supabase
     .from("profiles")
-    .select("onboarding_complete, activities")
+    .select("onboarding_complete, activities, vibe_completed_at")
     .eq("id", user!.id)
     .maybeSingle();
   // For Vibe interest we only need the activity vibe check (not full onboarding).
@@ -97,6 +98,11 @@ export default async function VibeDetailPage({
   let shortlist: { id: string; name: string | null; photo: string | null; score: number | null }[] = [];
   const previewRejectCap = Math.max(1, Math.floor(vibe.capacity * 0.25));
   const previewRejectsUsed = vibe.preview_rejects_used ?? 0;
+  // Private-link direct invites (v2): the host's reserved spots.
+  const hostAlgoBase = Math.max(1, Math.ceil((vibe.capacity * (vibe.algo_share ?? 100)) / 100));
+  const hostSpots = Math.max(0, vibe.capacity - hostAlgoBase);
+  let privateRequests: { id: string; name: string | null; photo: string | null }[] = [];
+  let hostFilled = 0;
   if (isHost) {
     const { data: rows } = await supabase
       .from("vibe_interests")
@@ -125,6 +131,28 @@ export default async function VibeDetailPage({
           name: byId.get(r.user_id)?.display_name ?? null,
           photo: byId.get(r.user_id)?.photos?.[0] ?? null,
           score: r.match_score ?? null,
+        }));
+      }
+    }
+
+    if (hostSpots > 0) {
+      const { data: prRows } = await supabase
+        .from("vibe_interests")
+        .select("user_id, status")
+        .eq("vibe_id", params.id)
+        .eq("source", "private");
+      const reqIds = (prRows ?? []).filter((r) => r.status === "requested").map((r) => r.user_id);
+      hostFilled = (prRows ?? []).filter((r) => r.status === "invited" || r.status === "confirmed").length;
+      if (reqIds.length) {
+        const { data: pp } = await supabase
+          .from("profiles")
+          .select("id, display_name, photos")
+          .in("id", reqIds);
+        const byId = new Map((pp ?? []).map((p) => [p.id, p]));
+        privateRequests = reqIds.map((id) => ({
+          id,
+          name: byId.get(id)?.display_name ?? null,
+          photo: byId.get(id)?.photos?.[0] ?? null,
         }));
       }
     }
@@ -189,6 +217,15 @@ export default async function VibeDetailPage({
 
   const ended = new Date(vibe.ends_at ?? vibe.starts_at) <= new Date();
   const canReview = ended && myInterest?.status === "confirmed";
+
+  // If the viewer didn't get in, suggest better-matched Vibes.
+  let suggestions: { id: string; title: string; photos: string[] | null; match_score: number | null }[] = [];
+  if (!isHost && myInterest && ["standby", "declined", "ghosted"].includes(myInterest.status)) {
+    const { data: rec } = await supabase.rpc("recommended_vibes", { p_limit: 4 });
+    suggestions = ((rec ?? []) as { id: string; title: string; photos: string[] | null; match_score: number | null }[])
+      .filter((r) => r.id !== params.id)
+      .slice(0, 3);
+  }
 
   return (
     <main className="px-5 pb-10 pt-6">
@@ -391,7 +428,7 @@ export default async function VibeDetailPage({
         </Link>
       )}
 
-      {isHost && (
+      {isHost && !ended && (
         <div className="mt-6 rounded-2xl border-2 border-ink bg-white p-4">
           <p className="text-sm font-extrabold">Matching results (host only)</p>
           <p className="mt-0.5 text-xs font-medium text-muted">
@@ -413,7 +450,7 @@ export default async function VibeDetailPage({
         </div>
       )}
 
-      {isHost && vibe.status === "reviewing" && (
+      {isHost && !ended && vibe.status === "reviewing" && (
         <HostVibeShortlist
           vibeId={vibe.id}
           candidates={shortlist}
@@ -422,7 +459,17 @@ export default async function VibeDetailPage({
         />
       )}
 
-      {isHost && (
+      {isHost && !ended && hostSpots > 0 && (
+        <HostVibePrivateRequests
+          vibeId={vibe.id}
+          code={vibe.host_invite_code ?? null}
+          requests={privateRequests}
+          hostSpots={hostSpots}
+          hostFilled={hostFilled}
+        />
+      )}
+
+      {isHost && !ended && (
         <HostVibeMembers
           vibeId={vibe.id}
           members={hostMembers}
@@ -434,7 +481,16 @@ export default async function VibeDetailPage({
 
       <div className="mt-6">
         {isHost ? (
-          <HostVibeControls vibeId={vibe.id} status={vibe.status} />
+          ended ? (
+            <Link
+              href={`/vibes/new?from=${vibe.id}`}
+              className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3.5 text-center font-bold text-white shadow-[0_4px_0_0_#E0512C]"
+            >
+              <RefreshCw size={18} /> Re-run Vibe
+            </Link>
+          ) : (
+            <HostVibeControls vibeId={vibe.id} status={vibe.status} />
+          )
         ) : (
           <InterestButton
             vibeId={vibe.id}
@@ -443,7 +499,11 @@ export default async function VibeDetailPage({
             initialStatus={(myInterest?.status as InterestStatus) ?? null}
             invitationExpiresAt={myInterest?.invitation_expires_at ?? null}
             cancelled={vibe.status === "cancelled"}
+            ended={ended}
             autoInterest={searchParams.interested === "1"}
+            requestMode={searchParams.request === "1"}
+            hostCode={searchParams.code ?? null}
+            vibeFormDone={!!me?.vibe_completed_at}
           />
         )}
       </div>
@@ -451,6 +511,38 @@ export default async function VibeDetailPage({
       {!isHost && (
         <div className="mt-3 flex justify-center">
           <ShareVibeButton vibeId={vibe.id} />
+        </div>
+      )}
+
+      {suggestions.length > 0 && (
+        <div className="mt-8">
+          <p className="text-sm font-extrabold">Vibes that match you more</p>
+          <p className="mt-0.5 text-xs font-medium text-muted">
+            This one filled up — here&rsquo;s what fits your vibe better.
+          </p>
+          <div className="mt-3 grid grid-cols-3 gap-2.5">
+            {suggestions.map((s) => (
+              <Link
+                key={s.id}
+                href={`/vibes/${s.id}`}
+                className="flex flex-col overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-[0_3px_0_0_rgba(26,26,26,1)]"
+              >
+                <div className="relative aspect-square w-full bg-cream">
+                  {s.photos?.[0] ? (
+                    <Image src={s.photos[0]} alt="" fill sizes="33vw" className="object-contain" />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-2xl">🎟️</div>
+                  )}
+                  {typeof s.match_score === "number" && (
+                    <span className="absolute right-1.5 top-1.5 rounded-full border-2 border-ink bg-flockie-coral px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-white">
+                      {s.match_score}%
+                    </span>
+                  )}
+                </div>
+                <p className="line-clamp-2 p-2 text-[12px] font-extrabold leading-tight text-ink">{s.title}</p>
+              </Link>
+            ))}
+          </div>
         </div>
       )}
     </main>

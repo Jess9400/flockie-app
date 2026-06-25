@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, Users } from "lucide-react";
+import { Plus, Users, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import ShareVibeButton from "@/components/ShareVibeButton";
 import PageTabs from "@/components/PageTabs";
@@ -38,7 +38,7 @@ type VibeRow = {
 export default async function MyVibesPage({
   searchParams,
 }: {
-  searchParams: { page?: string };
+  searchParams: { page?: string; ppage?: string };
 }) {
   const supabase = await createClient();
   const {
@@ -63,6 +63,17 @@ export default async function MyVibesPage({
   const page = Math.max(1, Number(searchParams.page) || 1);
   const totalPages = Math.max(1, Math.ceil(activeList.length / PAGE_SIZE));
   const pageList = activeList.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const ppage = Math.max(1, Number(searchParams.ppage) || 1);
+  const pastTotalPages = Math.max(1, Math.ceil(pastList.length / PAGE_SIZE));
+  const pastPageList = pastList.slice((ppage - 1) * PAGE_SIZE, ppage * PAGE_SIZE);
+  const qs = (params: Record<string, number>) => {
+    const sp = new URLSearchParams();
+    if (params.page > 1) sp.set("page", String(params.page));
+    if (params.ppage > 1) sp.set("ppage", String(params.ppage));
+    const s = sp.toString();
+    return s ? `/my-vibes?${s}` : "/my-vibes";
+  };
 
   const counts: Record<string, number> = {};
   const ids = all.map((v) => v.id);
@@ -117,6 +128,16 @@ export default async function MyVibesPage({
             <ShareVibeButton vibeId={v.id} />
           </div>
         )}
+        {faded && (
+          <div className="mt-3 border-t-2 border-ink/10 pt-3">
+            <Link
+              href={`/vibes/new?from=${v.id}`}
+              className="flex items-center justify-center gap-1 rounded-full border-2 border-ink bg-flockie-orange py-2 text-xs font-bold text-white shadow-[0_2px_0_0_#E0512C]"
+            >
+              <RefreshCw size={13} /> Run it again
+            </Link>
+          </div>
+        )}
       </div>
     );
   }
@@ -146,16 +167,17 @@ export default async function MyVibesPage({
           pageList.map((v) => <VibeRowCard key={v.id} v={v} />)
         )}
       </div>
-      <Pagination page={page} totalPages={totalPages} hrefFor={(p) => (p > 1 ? `/my-vibes?page=${p}` : "/my-vibes")} />
+      <Pagination page={page} totalPages={totalPages} hrefFor={(p) => qs({ page: p, ppage })} />
 
       {pastList.length > 0 && (
         <>
           <h2 className="mt-8 text-lg font-extrabold text-muted">Past Vibes</h2>
           <div className="mt-3 space-y-3">
-            {pastList.map((v) => (
+            {pastPageList.map((v) => (
               <VibeRowCard key={v.id} v={v} faded />
             ))}
           </div>
+          <Pagination page={ppage} totalPages={pastTotalPages} hrefFor={(p) => qs({ page, ppage: p })} />
         </>
       )}
     </main>

@@ -9,7 +9,7 @@ export type Notif = {
   type: string;
   title: string;
   body: string | null;
-  data: { vibe_id?: string; like_from?: string; chat_id?: string } | null;
+  data: { vibe_id?: string; like_from?: string; chat_id?: string; href?: string } | null;
   read_at: string | null;
   dismissed_at: string | null;
   created_at: string;
@@ -70,13 +70,15 @@ export default function InboxList({ notifications }: { notifications: Notif[] })
     <div className="space-y-3">
       {visibleNotifications.map((n) => {
         const vibeId = n.data?.vibe_id;
-        const href = vibeId
-          ? `/vibes/${vibeId}`
-          : n.data?.chat_id
-            ? `/buddies/${n.data.chat_id}`
-            : n.data?.like_from
-              ? `/people/${n.data.like_from}`
-              : null;
+        const href = n.data?.href
+          ? n.data.href
+          : vibeId
+            ? `/vibes/${vibeId}`
+            : n.data?.chat_id
+              ? `/buddies/${n.data.chat_id}`
+              : n.data?.like_from
+                ? `/people/${n.data.like_from}`
+                : null;
         const card = (
           <div
             className={`rounded-2xl border-2 p-4 ${STYLE[n.type] ?? "border-ink/15 bg-white"} ${
