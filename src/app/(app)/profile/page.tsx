@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import ProfileEditor from "@/components/ProfileEditor";
-import ProfileStats from "@/components/ProfileStats";
-import ProfileEvents from "@/components/ProfileEvents";
+import { type EventsData } from "@/components/ProfileEvents";
 import { type ReviewItem } from "@/components/ProfileReviews";
 import type { Profile } from "@/lib/vibe-check";
 import { safeRedirectPath } from "@/lib/redirects";
@@ -78,10 +77,9 @@ export default async function ProfilePage({
         reviewItems={reviewItems}
         redirectAfter={returnTo}
         celebrate={searchParams.vibe_done === "1"}
+        stats={(statsData ?? {}) as Record<string, number>}
+        events={(eventsData ?? {}) as EventsData}
       />
-
-      <ProfileStats stats={(statsData ?? {}) as Record<string, number>} />
-      <ProfileEvents data={eventsData ?? {}} isOwner />
     </main>
   );
 }
