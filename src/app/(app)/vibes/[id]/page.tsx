@@ -5,6 +5,7 @@ import { ChevronLeft, MapPin, Users, CalendarClock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import InterestButton from "@/components/InterestButton";
 import HostVibeControls from "@/components/HostVibeControls";
+import HostVibeShortlist from "@/components/HostVibeShortlist";
 import HostVibeMembers from "@/components/HostVibeMembers";
 import VibeSettingsButton from "@/components/VibeSettingsButton";
 import LeaveVibeButton from "@/components/LeaveVibeButton";
@@ -92,6 +93,10 @@ export default async function VibeDetailPage({
   }[] = [];
   let normalRemovalCount = 0;
   const normalRemovalLimit = Math.min(3, Math.max(1, Math.floor(vibe.capacity * 0.2)));
+  // Pre-invite review (v2): the ranked shortlist the host can prune before invites.
+  let shortlist: { id: string; name: string | null; photo: string | null; score: number | null }[] = [];
+  const previewRejectCap = Math.max(1, Math.floor(vibe.capacity * 0.25));
+  const previewRejectsUsed = vibe.preview_rejects_used ?? 0;
   if (isHost) {
     const { data: rows } = await supabase
       .from("vibe_interests")
@@ -100,6 +105,29 @@ export default async function VibeDetailPage({
     rows?.forEach((r) => {
       tally[r.status] = (tally[r.status] ?? 0) + 1;
     });
+
+    if (vibe.status === "reviewing") {
+      const { data: slRows } = await supabase
+        .from("vibe_interests")
+        .select("user_id, match_score")
+        .eq("vibe_id", params.id)
+        .eq("status", "shortlisted")
+        .order("match_score", { ascending: false, nullsFirst: false });
+      const slIds = (slRows ?? []).map((r) => r.user_id);
+      if (slIds.length) {
+        const { data: slProfiles } = await supabase
+          .from("profiles")
+          .select("id, display_name, photos")
+          .in("id", slIds);
+        const byId = new Map((slProfiles ?? []).map((p) => [p.id, p]));
+        shortlist = (slRows ?? []).map((r) => ({
+          id: r.user_id,
+          name: byId.get(r.user_id)?.display_name ?? null,
+          photo: byId.get(r.user_id)?.photos?.[0] ?? null,
+          score: r.match_score ?? null,
+        }));
+      }
+    }
 
     const { data: memberRows } = await supabase
       .from("vibe_interests")
@@ -383,6 +411,15 @@ export default async function VibeDetailPage({
             ))}
           </div>
         </div>
+      )}
+
+      {isHost && vibe.status === "reviewing" && (
+        <HostVibeShortlist
+          vibeId={vibe.id}
+          candidates={shortlist}
+          rejectCap={previewRejectCap}
+          rejectsUsed={previewRejectsUsed}
+        />
       )}
 
       {isHost && (

@@ -186,6 +186,12 @@ export default function InterestButton({
         On standby — we&rsquo;ll show you Vibes that match your style.
       </div>
     );
+  } else if (status === "shortlisted") {
+    control = (
+      <div className={`${base} bg-cream`}>
+        You&rsquo;re in the running — invites go out once matching is finalized.
+      </div>
+    );
   } else if (status === "interested") {
     control = (
       <button onClick={untap} disabled={busy} className={`${base} bg-cream`}>

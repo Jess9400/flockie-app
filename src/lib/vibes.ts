@@ -83,6 +83,7 @@ export type VibeStatus =
 
 export type InterestStatus =
   | "interested"
+  | "shortlisted"
   | "invited"
   | "confirmed"
   | "declined"

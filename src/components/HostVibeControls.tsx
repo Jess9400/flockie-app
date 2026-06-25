@@ -33,8 +33,8 @@ export default function HostVibeControls({
     const { data, error } = await supabase.rpc("rank_vibe", { p_vibe: vibeId });
     setBusy(false);
     if (error) return setMsg(error.message);
-    const r = data as { invited: number; standby: number };
-    setMsg(`Matched! Invited ${r.invited}, standby ${r.standby}.`);
+    const r = data as { shortlisted?: number; standby?: number };
+    setMsg(`Shortlist ready — ${r.shortlisted ?? 0} to review, ${r.standby ?? 0} on standby.`);
     router.refresh();
   }
 
