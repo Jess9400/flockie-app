@@ -23,6 +23,10 @@ const NAV = [
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  // Chat rooms fill the viewport exactly (no page scroll, no footer) so the
+  // chat window stays static and only the message list scrolls inside it.
+  const isChatRoom =
+    /^\/vibes\/[^/]+\/chat$/.test(pathname) || /^\/buddies\/[^/]+$/.test(pathname);
   const [open, setOpen] = useState(false);
   const [menu, setMenu] = useState(false);
   const [unread, setUnread] = useState(0);
@@ -159,9 +163,15 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       )}
 
       {/* Main */}
-      <div className="flex min-h-screen flex-col pt-16 lg:pl-[200px]">
-        <div className="mx-auto w-full max-w-4xl flex-1">{children}</div>
-        <Footer />
+      <div
+        className={`flex flex-col pt-16 lg:pl-[200px] ${
+          isChatRoom ? "h-[100dvh] overflow-hidden" : "min-h-screen"
+        }`}
+      >
+        <div className={`mx-auto w-full max-w-4xl flex-1 ${isChatRoom ? "min-h-0" : ""}`}>
+          {children}
+        </div>
+        {!isChatRoom && <Footer />}
       </div>
     </div>
   );

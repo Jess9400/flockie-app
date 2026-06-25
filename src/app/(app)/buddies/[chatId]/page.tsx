@@ -236,7 +236,7 @@ export default async function BuddyChatPage({
   const isHostOfFlock = !!flockHostId && user!.id === flockHostId;
 
   return (
-    <main className="fixed inset-x-0 bottom-0 top-16 z-10 bg-cream lg:left-[200px]">
+    <main className="h-full">
       <div className="mx-auto flex h-full w-full max-w-2xl flex-col px-5 font-nunito">
         <BuddyChatHeader
           matchId={chat.match_id}
