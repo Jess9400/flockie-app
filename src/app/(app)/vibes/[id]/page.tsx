@@ -20,7 +20,7 @@ export default async function VibeDetailPage({
   searchParams,
 }: {
   params: { id: string };
-  searchParams: { interested?: string; request?: string };
+  searchParams: { interested?: string; request?: string; code?: string };
 }) {
   const supabase = await createClient();
   const {
@@ -462,6 +462,7 @@ export default async function VibeDetailPage({
       {isHost && hostSpots > 0 && (
         <HostVibePrivateRequests
           vibeId={vibe.id}
+          code={vibe.host_invite_code ?? null}
           requests={privateRequests}
           hostSpots={hostSpots}
           hostFilled={hostFilled}
@@ -492,6 +493,7 @@ export default async function VibeDetailPage({
             ended={ended}
             autoInterest={searchParams.interested === "1"}
             requestMode={searchParams.request === "1"}
+            hostCode={searchParams.code ?? null}
           />
         )}
       </div>

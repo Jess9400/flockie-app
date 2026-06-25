@@ -17,6 +17,7 @@ type Props = {
   ended?: boolean;
   autoInterest?: boolean;
   requestMode?: boolean;
+  hostCode?: string | null;
 };
 
 export default function InterestButton({
@@ -29,6 +30,7 @@ export default function InterestButton({
   ended,
   autoInterest,
   requestMode,
+  hostCode,
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
@@ -37,6 +39,8 @@ export default function InterestButton({
   const [busy, setBusy] = useState(false);
   const [gate, setGate] = useState(false);
   const [gateFor, setGateFor] = useState<"interest" | "request">("interest");
+  const [showCode, setShowCode] = useState(false);
+  const [codeInput, setCodeInput] = useState("");
   const [now, setNow] = useState(() => Date.now());
   const [message, setMessage] = useState<string | null>(null);
 
@@ -97,10 +101,24 @@ export default function InterestButton({
     await doRequest();
   }
 
+  // Host invite code → instantly confirmed into a host spot (no algo/approval).
+  async function redeemCode(code: string) {
+    const c = code.trim();
+    if (!c) return;
+    setBusy(true);
+    setMessage(null);
+    const { error } = await supabase.rpc("redeem_host_code", { p_vibe: vibeId, p_code: c });
+    setBusy(false);
+    if (error) return setMessage(error.message);
+    setStatus("confirmed");
+    router.refresh();
+  }
+
   // Deep-links: auto-open the right flow once on arrival.
   useEffect(() => {
     if (status === null && !cancelled && !ended) {
-      if (requestMode) requestPrivate();
+      if (hostCode) redeemCode(hostCode);
+      else if (requestMode) requestPrivate();
       else if (autoInterest) express();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -241,9 +259,37 @@ export default function InterestButton({
     );
   } else {
     control = (
-      <button onClick={express} disabled={busy} className={`${base} bg-flockie-orange text-white shadow-[0_4px_0_0_#E0512C]`}>
-        I&rsquo;m interested
-      </button>
+      <div className="space-y-2">
+        <button onClick={express} disabled={busy} className={`${base} bg-flockie-orange text-white shadow-[0_4px_0_0_#E0512C]`}>
+          I&rsquo;m interested
+        </button>
+        {!showCode ? (
+          <button
+            type="button"
+            onClick={() => setShowCode(true)}
+            className="w-full py-1 text-center text-xs font-bold text-muted underline"
+          >
+            Have a host invite code?
+          </button>
+        ) : (
+          <div className="flex gap-2">
+            <input
+              value={codeInput}
+              onChange={(e) => setCodeInput(e.target.value)}
+              placeholder="HOST CODE"
+              className="h-11 w-full rounded-full border-2 border-ink px-4 text-sm font-bold uppercase tracking-[0.2em] outline-none"
+            />
+            <button
+              type="button"
+              onClick={() => redeemCode(codeInput)}
+              disabled={busy}
+              className="shrink-0 rounded-full border-2 border-ink bg-flockie-blue px-6 text-sm font-bold text-white disabled:opacity-50"
+            >
+              Join
+            </button>
+          </div>
+        )}
+      </div>
     );
   }
 
