@@ -49,6 +49,25 @@ export type VibeClone = {
   diversity?: boolean;
 };
 
+const CATEGORY_TAG_SUGGESTIONS: Record<string, string[]> = {
+  coffee: ["chill", "quiet", "social"],
+  dinner: ["social", "chill", "creative"],
+  nightlife: ["party", "energetic", "social"],
+  hiking: ["energetic", "social", "beginner-friendly"],
+  running: ["energetic", "competitive", "social"],
+  cycling: ["energetic", "competitive", "social"],
+  climbing: ["energetic", "competitive", "beginner-friendly"],
+  surf: ["energetic", "social", "beginner-friendly"],
+  yoga: ["spiritual", "chill", "beginner-friendly"],
+  dance: ["energetic", "social", "creative"],
+  painting: ["creative", "chill", "educational"],
+  photography: ["creative", "educational", "chill"],
+  music: ["creative", "social", "energetic"],
+  cooking: ["creative", "social", "educational"],
+  wellness: ["spiritual", "chill", "quiet"],
+  coworking: ["quiet", "educational", "chill"],
+};
+
 export default function CreateVibeForm({
   userId,
   defaultCity,
@@ -68,6 +87,7 @@ export default function CreateVibeForm({
   const [title, setTitle] = useState(clone?.title ?? defaultTitle);
   const [description, setDescription] = useState(clone?.description ?? "");
   const [category, setCategory] = useState(clone?.category ?? "");
+  const [customActivity, setCustomActivity] = useState("");
   const [activityUrl, setActivityUrl] = useState(clone?.activityUrl ?? defaultActivityUrl);
   const [photos, setPhotos] = useState<string[]>(clone?.photos ?? []);
   const [startsAt, setStartsAt] = useState("");
@@ -134,6 +154,21 @@ export default function CreateVibeForm({
           ? [...cur, t]
           : cur
     );
+  }
+
+  function seedActivity(nextCategory: string) {
+    setCategory(nextCategory);
+    const suggested = suggestedTagsForActivity(nextCategory);
+    if (suggested.length > 0) {
+      setTags(suggested.slice(0, EVENT_VIBE_TAGS_MAX));
+    }
+  }
+
+  function useCustomActivity() {
+    const next = normalizeActivity(customActivity);
+    if (!next) return;
+    seedActivity(next);
+    setCustomActivity("");
   }
 
   function onLocationChange(value: string) {
@@ -292,6 +327,8 @@ export default function CreateVibeForm({
     setCreatedId(data.id);
   }
 
+  const suggestedTags = suggestedTagsForActivity(category);
+
   if (createdId) {
     return (
       <div className="rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_6px_0_0_rgba(10,37,69,1)]">
@@ -398,19 +435,51 @@ export default function CreateVibeForm({
             placeholder="e.g. Bring a towel & $10 for the boards — we split the taco bill."
           />
         </Field>
-        <Field label="Category">
-          <select
-            className={inputCls}
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="">Select…</option>
-            {VIBE_CATEGORIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
+        <Field label="What are you doing?">
+          <div className="grid grid-cols-2 gap-2">
+            {VIBE_CATEGORIES.filter((c) => c !== "other").map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => seedActivity(c)}
+                className={`rounded-2xl border-2 border-ink px-3 py-2 text-left text-sm font-bold ${
+                  category === c ? "bg-flockie-blue text-white" : "bg-white"
+                }`}
+              >
+                {formatActivityLabel(c)}
+              </button>
             ))}
-          </select>
+          </div>
+          <div className="mt-2 grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+            <input
+              className={inputCls}
+              maxLength={32}
+              value={customActivity}
+              onChange={(e) => setCustomActivity(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  useCustomActivity();
+                }
+              }}
+              placeholder="Write your own: pottery, karaoke, book swap..."
+            />
+            <button
+              type="button"
+              onClick={useCustomActivity}
+              className="rounded-2xl border-2 border-ink bg-white px-4 text-sm font-bold"
+            >
+              Use
+            </button>
+          </div>
+          {category && !VIBE_CATEGORIES.includes(category as (typeof VIBE_CATEGORIES)[number]) && (
+            <p className="mt-2 rounded-2xl border-2 border-[#49a56c] bg-[#49a56c]/10 px-3 py-2 text-xs font-bold text-ink">
+              Custom activity selected: {category}
+            </p>
+          )}
+          <p className="mt-1 text-xs font-medium text-muted">
+            Pick the activity first. Flockie pre-fills the likely vibe tags, and you can swap them below.
+          </p>
         </Field>
         <Field label="Activity link (optional)">
           <input
@@ -692,24 +761,36 @@ export default function CreateVibeForm({
             ))}
           </select>
         </Field>
-        <Field label={`Event vibe tags (pick at least 1 · max ${EVENT_VIBE_TAGS_MAX})`}>
+        <Field label={`Event vibe tags (${tags.length}/${EVENT_VIBE_TAGS_MAX})`}>
           <div className="flex flex-wrap gap-2">
             {EVENT_VIBE_TAGS.map((t) => {
               const on = tags.includes(t);
+              const suggested = suggestedTags.includes(t);
               return (
                 <button
                   key={t}
                   type="button"
                   onClick={() => toggleTag(t)}
-                  className={`rounded-full border-2 border-ink px-3 py-1 text-xs font-bold ${
-                    on ? "bg-flockie-blue text-white" : "bg-white"
+                  className={`rounded-full border-2 px-3 py-1 text-xs font-bold ${
+                    on
+                      ? suggested
+                        ? "border-ink bg-flockie-orange text-white"
+                        : "border-ink bg-flockie-blue text-white"
+                      : suggested
+                        ? "border-dashed border-ink bg-cream"
+                        : "border-ink bg-white"
                   }`}
                 >
+                  {suggested && !on ? "+ " : ""}
                   {t}
+                  {suggested && on ? " · suggested" : ""}
                 </button>
               );
             })}
           </div>
+          <p className="mt-1 text-xs font-medium text-muted">
+            We pre-fill these from your activity so the algorithm always has a signal. Tap to swap.
+          </p>
         </Field>
         <Field label="Dealbreaker rules (optional)">
           <div className="flex flex-wrap gap-2">
@@ -814,4 +895,53 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       {children}
     </label>
   );
+}
+
+function normalizeActivity(value: string) {
+  return value.trim().replace(/\s+/g, " ").slice(0, 32);
+}
+
+function formatActivityLabel(value: string) {
+  return value
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function suggestedTagsForActivity(activity: string) {
+  const value = activity.trim().toLowerCase();
+  if (!value) return [];
+
+  const mapped = CATEGORY_TAG_SUGGESTIONS[value];
+  if (mapped) return mapped.filter((tag) => EVENT_VIBE_TAGS.includes(tag as (typeof EVENT_VIBE_TAGS)[number]));
+
+  const inferred = new Set<string>();
+  if (/(run|hike|gym|sport|tennis|padel|football|bike|cycle|climb|swim|surf|dance)/i.test(value)) {
+    inferred.add("energetic");
+    inferred.add("social");
+    inferred.add("beginner-friendly");
+  }
+  if (/(paint|photo|pottery|art|craft|music|karaoke|write|book|cook|workshop)/i.test(value)) {
+    inferred.add("creative");
+    inferred.add("social");
+  }
+  if (/(learn|class|lesson|language|study|cowork|work|focus)/i.test(value)) {
+    inferred.add("educational");
+    inferred.add("quiet");
+  }
+  if (/(coffee|tea|walk|brunch|picnic|museum|book)/i.test(value)) {
+    inferred.add("chill");
+    inferred.add("quiet");
+  }
+  if (/(drink|bar|party|club|night|karaoke)/i.test(value)) {
+    inferred.add("party");
+    inferred.add("energetic");
+    inferred.add("social");
+  }
+
+  const tags = Array.from(inferred).filter((tag) =>
+    EVENT_VIBE_TAGS.includes(tag as (typeof EVENT_VIBE_TAGS)[number])
+  );
+  return tags.length > 0 ? tags.slice(0, 3) : ["social", "chill", "beginner-friendly"];
 }
