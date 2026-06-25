@@ -26,7 +26,7 @@ export default function VibeSearch({ q, city }: { q: string; city: string }) {
   const active = q || city;
 
   return (
-    <form onSubmit={submit} className="mt-4 flex flex-col gap-2 sm:flex-row">
+    <form onSubmit={submit} className="mt-7 flex flex-col gap-2 sm:flex-row">
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}

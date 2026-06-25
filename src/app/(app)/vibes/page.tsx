@@ -181,7 +181,7 @@ export default async function VibesPage({
 
       <VibeSearch q={q} city={city} />
 
-      <div className="mt-3 flex items-center justify-between gap-2">
+      <div className="mt-6 flex items-center justify-between gap-2">
         {!isPast ? (
           <FilterSheet
             basePath="/vibes"
