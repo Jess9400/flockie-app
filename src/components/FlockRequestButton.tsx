@@ -37,7 +37,7 @@ export default function FlockRequestButton({
     <button
       onClick={request}
       disabled={busy}
-      className={`rounded-full border-2 border-ink bg-flockie-orange font-bold text-white shadow-[0_3px_0_0_#E0512C] disabled:opacity-50 ${sizing}`}
+      className={`rounded-full border-2 border-ink bg-flockie-orange font-bold text-white shadow-[0_3px_0_0_#E0512C] transition-transform active:translate-y-[2px] active:shadow-[0_1px_0_0_#E0512C] disabled:opacity-50 ${sizing}`}
     >
       Request to join
     </button>

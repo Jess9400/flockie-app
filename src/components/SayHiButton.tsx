@@ -57,7 +57,7 @@ export default function SayHiButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="mt-3 w-full rounded-full border-2 border-ink bg-flockie-coral py-1.5 text-xs font-bold text-white"
+        className="mt-3 w-full rounded-full border-2 border-ink bg-flockie-coral py-1.5 text-xs font-bold text-white transition-transform active:scale-95"
       >
         Say hi
       </button>
