@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, Pencil, MapPin, CalendarClock } from "lucide-react";
+import { Plus, Pencil, MapPin, CalendarClock, MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import FlockJoinRequests, { type JoinReq } from "@/components/FlockJoinRequests";
 import DeleteTripButton from "@/components/DeleteTripButton";
@@ -104,6 +104,32 @@ export default async function MyTripsPage({
     });
   }
 
+  // Buddy/Flock chat per trip — the chat hangs off a buddy_match for the trip.
+  const allTripIds = all.map((t) => t.id);
+  const chatByTrip: Record<string, string> = {};
+  if (allTripIds.length) {
+    const inList = `(${allTripIds.join(",")})`;
+    const { data: matches } = await supabase
+      .from("buddy_matches")
+      .select("id, trip_a, trip_b")
+      .or(`trip_a.in.${inList},trip_b.in.${inList}`);
+    const matchIds = (matches ?? []).map((m) => m.id);
+    const chatByMatch: Record<string, string> = {};
+    if (matchIds.length) {
+      const { data: chats } = await supabase
+        .from("buddy_chats")
+        .select("id, match_id")
+        .in("match_id", matchIds);
+      chats?.forEach((c) => (chatByMatch[c.match_id] = c.id));
+    }
+    (matches ?? []).forEach((m) => {
+      const cid = chatByMatch[m.id];
+      if (!cid) return;
+      if (m.trip_a && allTripIds.includes(m.trip_a)) chatByTrip[m.trip_a] = cid;
+      if (m.trip_b && allTripIds.includes(m.trip_b)) chatByTrip[m.trip_b] = cid;
+    });
+  }
+
   function TripCard({ t, faded }: { t: TripRow; faded?: boolean }) {
     return (
       <div
@@ -155,7 +181,15 @@ export default async function MyTripsPage({
               </div>
             )}
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+            {!faded && (
+              <Link
+                href={chatByTrip[t.id] ? `/buddies/${chatByTrip[t.id]}` : "/chats?tab=travel"}
+                className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-flockie-blue px-3 py-1.5 text-sm font-bold text-white"
+              >
+                <MessageCircle size={14} /> {t.visibility === "public" ? "Flock Chat" : "Chat"}
+              </Link>
+            )}
             {!faded && (
               <Link
                 href={`/match/trip?id=${t.id}`}
