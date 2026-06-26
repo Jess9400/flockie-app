@@ -50,6 +50,8 @@ export default async function BuddyChatPage({
   let flockHostId: string | null = null;
   let flockCoHost: string | null = null;
   let flockTitle = "";
+  let flockStart: string | null = null;
+  let flockEnd: string | null = null;
   let flockReqs: JoinReq[] = [];
   const chatMembers: Record<string, { name: string; photo: string | null }> = {};
   if (flockTripIds.length) {
@@ -58,7 +60,7 @@ export default async function BuddyChatPage({
     // directly-created flocks and rendered them as a 1:1.)
     const { data: fls } = await supabase
       .from("trips")
-      .select("id, user_id, destination, co_host_id")
+      .select("id, user_id, destination, co_host_id, start_date, end_date")
       .in("id", flockTripIds)
       .eq("visibility", "public")
       .limit(1);
@@ -68,6 +70,8 @@ export default async function BuddyChatPage({
       flockHostId = fl.user_id;
       flockCoHost = fl.co_host_id ?? null;
       flockTitle = fl.destination ?? "Flock";
+      flockStart = fl.start_date ?? null;
+      flockEnd = fl.end_date ?? null;
       const { data: jr } = await supabase
         .from("trip_join_requests")
         .select("user_id, status")
@@ -240,6 +244,25 @@ export default async function BuddyChatPage({
   }));
   const isHostOfFlock = !!flockHostId && user!.id === flockHostId;
 
+  // A Flock is a group already committed to a SPECIFIC trip — show that trip's
+  // dates and a planning prompt, not the 1:1 "pick a destination together" copy.
+  const isFlock = !!flockTripId;
+  let flockDateRange: string | null = null;
+  if (flockStart && flockEnd) {
+    const s = new Date(flockStart);
+    const e = new Date(flockEnd);
+    const days = Math.max(1, Math.round((+e - +s) / 86400000) + 1);
+    flockDateRange = `${format(s, "MMM d")} → ${format(e, "MMM d")} · ${days} days`;
+  }
+  const flockIcebreaker =
+    `You're all going to ${flockTitle}${flockDateRange ? `, ${flockDateRange}` : ""}. 🎒\n` +
+    `Say hi and start sorting it together — lock the dates that work, where you're staying, and the must-dos everyone wants in.`;
+  const headerDestination = isFlock ? flockTitle : destination;
+  const headerDateRange = isFlock ? flockDateRange : dateRange;
+  const finalIcebreaker = isFlock ? flockIcebreaker : icebreaker;
+  const finalTripStart = isFlock ? flockStart : trip?.start_date ?? null;
+  const finalTripEnd = isFlock ? flockEnd : trip?.end_date ?? null;
+
   return (
     <main className="h-full">
       <div className="mx-auto flex h-full w-full max-w-2xl flex-col px-5 font-nunito">
@@ -251,8 +274,8 @@ export default async function BuddyChatPage({
           age={other?.age ?? null}
           photo={arr(other?.photos)[0] ?? null}
           otherCity={other?.home_city ?? null}
-          destination={destination}
-          dateRange={dateRange}
+          destination={headerDestination}
+          dateRange={headerDateRange}
           score={score}
           sharedVibe={sharedVibe}
           sharedTravelStyle={sharedTravelStyle}
@@ -275,9 +298,9 @@ export default async function BuddyChatPage({
           otherId={otherId}
           otherName={otherName}
           initialMessages={messages ?? []}
-          icebreaker={icebreaker}
-          tripStartIso={trip?.start_date ?? null}
-          tripEndIso={trip?.end_date ?? null}
+          icebreaker={finalIcebreaker}
+          tripStartIso={finalTripStart}
+          tripEndIso={finalTripEnd}
           members={chatMembers}
           isGroup={!!flockTripId}
         />
