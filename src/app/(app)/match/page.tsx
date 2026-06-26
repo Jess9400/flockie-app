@@ -26,7 +26,19 @@ export default async function MatchPage({
     .select("onboarding_complete, activities, display_name")
     .eq("id", user!.id)
     .maybeSingle();
-  const complete = !!profile?.onboarding_complete && (profile?.activities ?? []).length > 0;
+
+  // Trip matching only needs the Trip vibe (trip_prefs); activity matching
+  // needs the activity vibe check. Migration-safe: if the trip_prefs column
+  // doesn't exist yet, the query errors and we degrade open (no gate).
+  const { data: prefs, error: prefsErr } = await supabase
+    .from("profiles")
+    .select("trip_prefs_complete")
+    .eq("id", user!.id)
+    .maybeSingle();
+  const tripPrefsDone = prefsErr ? true : !!prefs?.trip_prefs_complete;
+  const complete = isActivity
+    ? !!profile?.onboarding_complete && (profile?.activities ?? []).length > 0
+    : tripPrefsDone;
 
   const subToggle = (
     <div className="mt-3 inline-flex gap-1 rounded-full border-2 border-ink bg-cream p-1 text-xs font-bold">
