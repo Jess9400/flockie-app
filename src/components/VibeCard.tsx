@@ -144,10 +144,6 @@ export default function VibeCard({
             <span className="absolute right-1.5 top-1.5 rounded-full border-2 border-ink bg-flockie-orange px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-white">
               {STATUS_LABEL[myStatus]}
             </span>
-          ) : typeof matchPct === "number" && !canDismiss ? (
-            <span className="absolute right-1.5 top-1.5 rounded-full border-2 border-ink bg-flockie-coral px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-white">
-              {matchPct}%
-            </span>
           ) : null}
         </div>
 
@@ -185,9 +181,9 @@ export default function VibeCard({
               <Users size={11} /> {faded ? `${confirmedCount} went` : `${confirmedCount}/${vibe.capacity}`}
             </span>
           </div>
-          {canDismiss && !faded && !myStatus && typeof matchPct === "number" && (
+          {!faded && typeof matchPct === "number" && (
             <span className="mt-2 w-fit rounded-full border-2 border-ink bg-flockie-coral px-2 py-0.5 text-[10px] font-extrabold leading-none text-white">
-              {matchPct}%
+              {matchPct}% match
             </span>
           )}
         </div>
