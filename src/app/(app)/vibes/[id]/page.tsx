@@ -44,11 +44,16 @@ export default async function VibeDetailPage({
 
   const { data: me } = await supabase
     .from("profiles")
-    .select("onboarding_complete, activities, vibe_completed_at")
+    .select("onboarding_complete, activities, vibe_completed_at, home_city")
     .eq("id", user!.id)
     .maybeSingle();
   // For Vibe interest we only need the activity vibe check (not full onboarding).
   const activitiesDone = (me?.activities ?? []).length > 0;
+  // Warn before registering for a Vibe outside the user's home city.
+  const differentCity =
+    !!vibe.city &&
+    !!me?.home_city &&
+    vibe.city.trim().toLowerCase() !== me.home_city.trim().toLowerCase();
 
   const { data: myInterest } = await supabase
     .from("vibe_interests")
@@ -500,20 +505,32 @@ export default async function VibeDetailPage({
             <HostVibeControls vibeId={vibe.id} status={vibe.status} />
           )
         ) : (
-          <InterestButton
-            vibeId={vibe.id}
-            userId={user!.id}
-            activitiesDone={activitiesDone}
-            initialStatus={(myInterest?.status as InterestStatus) ?? null}
-            invitationExpiresAt={myInterest?.invitation_expires_at ?? null}
-            cancelled={vibe.status === "cancelled"}
-            ended={ended}
-            autoInterest={searchParams.interested === "1"}
-            requestMode={searchParams.request === "1"}
-            hostCode={searchParams.code ?? null}
-            initialNotForMe={!!myFeedback}
-            vibeFormDone={!!me?.vibe_completed_at}
-          />
+          <>
+            {differentCity && !ended && vibe.status !== "cancelled" && (
+              <div className="mb-2 flex items-start gap-2 rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-bold text-ink">
+                <span className="text-base leading-none">📍</span>
+                <span>
+                  Heads up — this Vibe is in{" "}
+                  <span className="text-flockie-coral">{vibe.city}</span>, not your home city.
+                  You can still join if you&rsquo;ll be there.
+                </span>
+              </div>
+            )}
+            <InterestButton
+              vibeId={vibe.id}
+              userId={user!.id}
+              activitiesDone={activitiesDone}
+              initialStatus={(myInterest?.status as InterestStatus) ?? null}
+              invitationExpiresAt={myInterest?.invitation_expires_at ?? null}
+              cancelled={vibe.status === "cancelled"}
+              ended={ended}
+              autoInterest={searchParams.interested === "1"}
+              requestMode={searchParams.request === "1"}
+              hostCode={searchParams.code ?? null}
+              initialNotForMe={!!myFeedback}
+              vibeFormDone={!!me?.vibe_completed_at}
+            />
+          </>
         )}
       </div>
 
