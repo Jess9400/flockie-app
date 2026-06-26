@@ -302,20 +302,12 @@ export default async function HomePage({
               {homeCity ? ` in ${homeCity}` : ""} yet.
             </p>
             <p className="mt-1 text-sm font-medium text-white/80">Make the first move 👇</p>
-            <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
-              <Link
-                href="/vibes/new"
-                className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-coral px-5 py-2 text-sm font-bold text-white"
-              >
-                <Plus size={15} /> Create a Vibe
-              </Link>
-              <Link
-                href="/match?mode=activity"
-                className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink bg-white px-5 py-2 text-sm font-bold text-ink"
-              >
-                Match with people in {homeCity ?? "your city"} <ArrowRight size={15} />
-              </Link>
-            </div>
+            <Link
+              href="/vibes/new"
+              className="mt-4 inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-coral px-5 py-2 text-sm font-bold text-white"
+            >
+              <Plus size={15} /> Create a Vibe
+            </Link>
           </div>
         ) : (
           <div className="mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -379,7 +371,7 @@ export default async function HomePage({
                       <Users size={11} /> {f.going}/{f.group_size} · {hostName}
                     </p>
                     <div className="mt-2.5">
-                      <FlockRequestButton tripId={f.id} requested={f.requested} />
+                      <FlockRequestButton tripId={f.id} requested={f.requested} compact />
                     </div>
                   </div>
                 </div>

@@ -6,9 +6,11 @@ import { createClient } from "@/lib/supabase/client";
 export default function FlockRequestButton({
   tripId,
   requested,
+  compact = false,
 }: {
   tripId: string;
   requested: boolean;
+  compact?: boolean;
 }) {
   const supabase = createClient();
   const [done, setDone] = useState(requested);
@@ -21,9 +23,11 @@ export default function FlockRequestButton({
     if (!error) setDone(true);
   }
 
+  const sizing = compact ? "px-3 py-1 text-xs" : "px-4 py-2 text-sm";
+
   if (done) {
     return (
-      <span className="rounded-full border-2 border-ink bg-cream px-4 py-2 text-sm font-bold text-muted">
+      <span className={`rounded-full border-2 border-ink bg-cream font-bold text-muted ${sizing}`}>
         Requested
       </span>
     );
@@ -33,7 +37,7 @@ export default function FlockRequestButton({
     <button
       onClick={request}
       disabled={busy}
-      className="rounded-full border-2 border-ink bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C] disabled:opacity-50"
+      className={`rounded-full border-2 border-ink bg-flockie-orange font-bold text-white shadow-[0_3px_0_0_#E0512C] disabled:opacity-50 ${sizing}`}
     >
       Request to join
     </button>
