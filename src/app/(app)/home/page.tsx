@@ -4,6 +4,7 @@ import { ArrowRight, MapPin, Plus, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
 import FlockRequestButton from "@/components/FlockRequestButton";
+import SayHiButton from "@/components/SayHiButton";
 import { loadVibeMatch } from "@/lib/vibe-stats";
 import { type InterestStatus } from "@/lib/vibes";
 
@@ -173,7 +174,7 @@ export default async function HomePage({
             href="/match?mode=activity"
             className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
           >
-            See all <ArrowRight size={15} />
+            Swipe more <ArrowRight size={15} />
           </Link>
         </div>
 
@@ -196,36 +197,35 @@ export default async function HomePage({
               const name = (p.display_name ?? "Someone").split(" ")[0];
               const photo = p.photos?.[0] ?? null;
               return (
-                <Link
+                <div
                   key={p.id}
-                  href={`/people/${p.id}`}
-                  className="flex w-40 shrink-0 snap-start flex-col items-center rounded-2xl border-[3px] border-ink bg-white p-4 text-center shadow-[0_5px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-1"
+                  className="flex w-40 shrink-0 snap-start flex-col items-center rounded-2xl border-[3px] border-ink bg-white p-4 text-center shadow-[0_5px_0_0_rgba(10,37,69,1)]"
                 >
-                  <div className="relative h-20 w-20 overflow-hidden rounded-full border-2 border-ink bg-cream">
-                    {photo ? (
-                      <Image src={photo} alt="" fill sizes="80px" className="object-cover" />
-                    ) : (
-                      <span className="flex h-full items-center justify-center text-2xl font-black text-flockie-blue">
-                        {name[0]}
-                      </span>
+                  <Link href={`/people/${p.id}`} className="flex w-full flex-col items-center">
+                    <div className="relative h-20 w-20 overflow-hidden rounded-full border-2 border-ink bg-cream">
+                      {photo ? (
+                        <Image src={photo} alt="" fill sizes="80px" className="object-cover" />
+                      ) : (
+                        <span className="flex h-full items-center justify-center text-2xl font-black text-flockie-blue">
+                          {name[0]}
+                        </span>
+                      )}
+                      {typeof p.score === "number" && (
+                        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full border-2 border-ink bg-flockie-blue px-1.5 text-[10px] font-extrabold leading-tight text-white">
+                          {Math.round(p.score)}%
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-3 w-full truncate text-sm font-extrabold">
+                      {name}
+                      {p.age ? `, ${p.age}` : ""}
+                    </p>
+                    {p.one_liner && (
+                      <p className="mt-0.5 line-clamp-2 text-xs font-medium text-muted">{p.one_liner}</p>
                     )}
-                    {typeof p.score === "number" && (
-                      <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full border-2 border-ink bg-flockie-blue px-1.5 text-[10px] font-extrabold leading-tight text-white">
-                        {Math.round(p.score)}%
-                      </span>
-                    )}
-                  </div>
-                  <p className="mt-3 w-full truncate text-sm font-extrabold">
-                    {name}
-                    {p.age ? `, ${p.age}` : ""}
-                  </p>
-                  {p.one_liner && (
-                    <p className="mt-0.5 line-clamp-2 text-xs font-medium text-muted">{p.one_liner}</p>
-                  )}
-                  <span className="mt-3 w-full rounded-full border-2 border-ink bg-flockie-coral py-1.5 text-xs font-bold text-white">
-                    Say hi
-                  </span>
-                </Link>
+                  </Link>
+                  <SayHiButton personId={p.id} personName={name} />
+                </div>
               );
             })}
           </div>
