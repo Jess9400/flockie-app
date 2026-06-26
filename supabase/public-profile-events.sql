@@ -12,12 +12,17 @@ begin
     'vibes', (
       select coalesce(jsonb_agg(x order by x.starts_at desc), '[]'::jsonb) from (
         select v.id, v.title, (v.photos)[1] as photo, v.starts_at,
-               'host'::text as role, (coalesce(v.ends_at, v.starts_at) <= now()) as past
+               'host'::text as role, (coalesce(v.ends_at, v.starts_at) <= now()) as past,
+               false as reviewed
         from public.vibes v
         where v.host_id = p_user and v.status <> 'cancelled'
         union all
         select v.id, v.title, (v.photos)[1] as photo, v.starts_at,
-               'going'::text as role, (coalesce(v.ends_at, v.starts_at) <= now()) as past
+               'going'::text as role, (coalesce(v.ends_at, v.starts_at) <= now()) as past,
+               exists(
+                 select 1 from public.vibe_reviews r
+                 where r.reviewer_id = p_user and r.vibe_id = v.id
+               ) as reviewed
         from public.vibe_interests vi
         join public.vibes v on v.id = vi.vibe_id
         where vi.user_id = p_user and vi.status = 'confirmed'

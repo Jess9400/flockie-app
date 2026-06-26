@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Star } from "lucide-react";
 import { formatVibeWhen } from "@/lib/vibes";
 
-type VibeEvt = { id: string; title: string; photo: string | null; starts_at: string; role: string; past: boolean };
+type VibeEvt = { id: string; title: string; photo: string | null; starts_at: string; role: string; past: boolean; reviewed?: boolean };
 type TripEvt = {
   id: string;
   destination?: string | null;
@@ -119,6 +119,7 @@ export default function ProfileEvents({ data, isOwner }: { data: EventsData; isO
               past={v.past}
               href={`/vibes/${v.id}`}
               reviewHref={isOwner && v.past && v.role !== "host" ? `/vibes/${v.id}/review` : null}
+              reviewLabel={v.reviewed ? "Edit your review" : "Review this Vibe"}
             />
           ))}
         </Section>
