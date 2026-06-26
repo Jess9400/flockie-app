@@ -135,6 +135,10 @@ export default async function HomePage({
   });
   const flocks = (flockRows ?? []) as HomeFlock[];
   const people = (peopleRows ?? []) as CityPerson[];
+  // "Explore around the world" = vibes outside the user's home city.
+  const exploreVibes = homeCity
+    ? allVibes.filter((v) => (v.city ?? "").trim().toLowerCase() !== homeCity.toLowerCase())
+    : allVibes;
 
   const vibeCell = (v: VibeRow) => (
     <div key={v.id} className="w-72 shrink-0 snap-start">
@@ -229,33 +233,13 @@ export default async function HomePage({
       </section>
 
       {/* ── Join a vibe (all cities) ────────────────────────────────────── */}
-      <section className="mx-4 mt-8">
-        <div className="flex items-end justify-between gap-3 px-1">
-          <div>
-            <h2 className="text-[22px] font-extrabold sm:text-[28px]">Join a vibe</h2>
-            <p className="mt-0.5 font-bold text-navy/60">Group plans everywhere — jump into one.</p>
-          </div>
-          <Link
-            href="/vibes"
-            className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
-          >
-            See all <ArrowRight size={15} />
-          </Link>
-        </div>
-
-        {allVibes.length === 0 ? (
-          <div className="mt-4 rounded-3xl border-2 border-dashed border-ink/25 bg-white p-6 text-center font-medium text-muted">
-            No Vibes scheduled yet.
-          </div>
-        ) : (
-          <div className="mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {allVibes.map(vibeCell)}
-          </div>
-        )}
+      <section className="mx-4 mt-8 px-1">
+        <h2 className="text-[22px] font-extrabold sm:text-[28px]">Join a vibe</h2>
+        <p className="mt-0.5 font-bold text-navy/60">Group plans everywhere — jump into one.</p>
       </section>
 
       {/* ── Happening near you (same city + filters) ────────────────────── */}
-      <section className="mx-4 mt-8 rounded-3xl border-[3px] border-ink bg-flockie-blue p-5 text-white sm:p-6">
+      <section className="mx-4 mt-4 rounded-3xl border-[3px] border-ink bg-flockie-blue p-5 text-white sm:p-6">
         <div className="flex items-center justify-between gap-3">
           <span className="inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-white px-2.5 py-1 text-xs font-extrabold text-ink">
             <span className="relative flex h-2 w-2">
@@ -296,17 +280,16 @@ export default async function HomePage({
         </div>
 
         {near.length === 0 ? (
-          <div className="mt-4 rounded-2xl border-2 border-white/40 bg-white/10 p-6 text-center">
-            <p className="font-bold">
+          <div className="mt-3 flex flex-col items-center gap-2 rounded-2xl border-2 border-white/40 bg-white/10 p-4 text-center sm:flex-row sm:justify-between sm:text-left">
+            <p className="text-sm font-bold">
               No Vibes {timingLabel}
-              {homeCity ? ` in ${homeCity}` : ""} yet.
+              {homeCity ? ` in ${homeCity}` : ""} yet. Make the first move 👇
             </p>
-            <p className="mt-1 text-sm font-medium text-white/80">Make the first move 👇</p>
             <Link
               href="/vibes/new"
-              className="mt-4 inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-coral px-5 py-2 text-sm font-bold text-white"
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-coral px-4 py-1.5 text-sm font-bold text-white"
             >
-              <Plus size={15} /> Create a Vibe
+              <Plus size={14} /> Create a Vibe
             </Link>
           </div>
         ) : (
@@ -315,6 +298,27 @@ export default async function HomePage({
           </div>
         )}
       </section>
+
+      {/* ── Explore vibes around the world (other cities) ───────────────── */}
+      {exploreVibes.length > 0 && (
+        <section className="mx-4 mt-8">
+          <div className="flex items-end justify-between gap-3 px-1">
+            <div>
+              <h2 className="text-[22px] font-extrabold sm:text-[28px]">Explore vibes around the world</h2>
+              <p className="mt-0.5 font-bold text-navy/60">Group plans in other cities — jump into one.</p>
+            </div>
+            <Link
+              href="/vibes"
+              className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
+            >
+              See all <ArrowRight size={15} />
+            </Link>
+          </div>
+          <div className="mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {exploreVibes.map(vibeCell)}
+          </div>
+        </section>
+      )}
 
       {/* ── Find a flock (newest open group trips) ──────────────────────── */}
       <section className="mx-4 mt-8">
