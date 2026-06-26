@@ -33,27 +33,14 @@ export default async function VibesPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("activities, home_city")
-    .eq("id", user!.id)
-    .single();
+  const [{ data: profile }, { data: loc }, { data: hiddenRows }] = await Promise.all([
+    supabase.from("profiles").select("activities, home_city").eq("id", user!.id).single(),
+    supabase.from("profiles").select("location_tracking_enabled").eq("id", user!.id).maybeSingle(),
+    supabase.from("vibe_feedback").select("vibe_id").eq("user_id", user!.id).eq("signal", "not_for_me"),
+  ]);
 
   const activityCheckDone = (profile?.activities ?? []).length > 0;
-
-  // Location tracking preference (separate, migration-safe query).
-  const { data: loc } = await supabase
-    .from("profiles")
-    .select("location_tracking_enabled")
-    .eq("id", user!.id)
-    .maybeSingle();
   const trackingEnabled = !!loc?.location_tracking_enabled;
-
-  const { data: hiddenRows } = await supabase
-    .from("vibe_feedback")
-    .select("vibe_id")
-    .eq("user_id", user!.id)
-    .eq("signal", "not_for_me");
   const hiddenVibeIds = Array.from(new Set((hiddenRows ?? []).map((r) => r.vibe_id)));
 
   const nowIso = new Date().toISOString();
@@ -110,55 +97,49 @@ export default async function VibesPage({
   const counts: Record<string, number> = {};
   const mine: Record<string, InterestStatus> = {};
 
-  if (hostIds.length) {
-    const { data: hp } = await supabase
-      .from("profiles")
-      .select("id, display_name, photos")
-      .in("id", hostIds);
-    hp?.forEach((h) => {
-      hosts[h.id] = { display_name: h.display_name, photos: h.photos };
-    });
-  }
+  const [
+    { data: hostProfiles },
+    vibeMatch,
+    { data: reviewRows },
+    { data: confirmed },
+    { data: myInterests },
+  ] = await Promise.all([
+    hostIds.length
+      ? supabase.from("profiles").select("id, display_name, photos").in("id", hostIds)
+      : Promise.resolve({ data: [] }),
+    isPast ? Promise.resolve({} as Record<string, number>) : loadVibeMatch(supabase, ids),
+    isPast && ids.length
+      ? supabase.from("vibe_reviews").select("vibe_id, rating").in("vibe_id", ids)
+      : Promise.resolve({ data: [] }),
+    ids.length
+      ? supabase.from("vibe_interests").select("vibe_id").eq("status", "confirmed").in("vibe_id", ids)
+      : Promise.resolve({ data: [] }),
+    ids.length
+      ? supabase.from("vibe_interests").select("vibe_id, status").eq("user_id", user!.id).in("vibe_id", ids)
+      : Promise.resolve({ data: [] }),
+  ]);
 
-  const vibeMatch = isPast ? {} : await loadVibeMatch(supabase, ids);
+  hostProfiles?.forEach((h) => {
+    hosts[h.id] = { display_name: h.display_name, photos: h.photos };
+  });
 
-  // Average ⭐ rating per past vibe (for the recap cards).
   const ratings: Record<string, number> = {};
-  if (isPast && ids.length) {
-    const { data: rv } = await supabase
-      .from("vibe_reviews")
-      .select("vibe_id, rating")
-      .in("vibe_id", ids);
-    const agg: Record<string, { sum: number; n: number }> = {};
-    rv?.forEach((r) => {
-      if (r.rating != null) {
-        (agg[r.vibe_id] ??= { sum: 0, n: 0 });
-        agg[r.vibe_id].sum += r.rating as number;
-        agg[r.vibe_id].n += 1;
-      }
-    });
-    Object.entries(agg).forEach(([id, a]) => (ratings[id] = a.sum / a.n));
-  }
+  const agg: Record<string, { sum: number; n: number }> = {};
+  reviewRows?.forEach((r) => {
+    if (r.rating != null) {
+      (agg[r.vibe_id] ??= { sum: 0, n: 0 });
+      agg[r.vibe_id].sum += r.rating as number;
+      agg[r.vibe_id].n += 1;
+    }
+  });
+  Object.entries(agg).forEach(([id, a]) => (ratings[id] = a.sum / a.n));
 
-  if (ids.length) {
-    const { data: confirmed } = await supabase
-      .from("vibe_interests")
-      .select("vibe_id")
-      .eq("status", "confirmed")
-      .in("vibe_id", ids);
-    confirmed?.forEach((r) => {
-      counts[r.vibe_id] = (counts[r.vibe_id] ?? 0) + 1;
-    });
-
-    const { data: myInterests } = await supabase
-      .from("vibe_interests")
-      .select("vibe_id, status")
-      .eq("user_id", user!.id)
-      .in("vibe_id", ids);
-    myInterests?.forEach((r) => {
-      mine[r.vibe_id] = r.status as InterestStatus;
-    });
-  }
+  confirmed?.forEach((r) => {
+    counts[r.vibe_id] = (counts[r.vibe_id] ?? 0) + 1;
+  });
+  myInterests?.forEach((r) => {
+    mine[r.vibe_id] = r.status as InterestStatus;
+  });
 
   return (
     <main className="px-5 pt-6">
