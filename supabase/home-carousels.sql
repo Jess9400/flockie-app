@@ -55,7 +55,7 @@ language sql security definer set search_path = public stable as $$
     and t.user_id <> auth.uid()
     and t.end_date >= current_date
     and (1 + coalesce(a.accepted, 0)) < t.group_size
-  order by t.start_date asc
+  order by t.created_at desc
   limit p_limit;
 $$;
 grant execute on function public.home_flocks(int) to authenticated;

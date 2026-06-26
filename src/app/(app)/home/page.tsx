@@ -31,6 +31,11 @@ type HomeFlock = {
   host_photo: string | null;
 };
 
+type VibeRow = VibeCardData & { host_id: string };
+
+const VIBE_COLS =
+  "id, host_id, title, category, photos, city, location_name, starts_at, capacity, event_vibe_tags";
+
 async function loadHostsAndCounts(
   supabase: Awaited<ReturnType<typeof createClient>>,
   list: { id: string; host_id: string }[]
@@ -78,12 +83,10 @@ export default async function HomePage({
     timing === "24" ? "in the next 24 hours" : timing === "48" ? "in the next 48 hours" : "upcoming";
   const hiddenVibeIds = Array.from(new Set((hiddenRows ?? []).map((r) => r.vibe_id)));
 
-  // ── Vibes happening near you ───────────────────────────────────────────
+  // ── Vibes: "near you" (same city + timing filter) and "all cities" ─────
   let nearQuery = supabase
     .from("vibes")
-    .select(
-      "id, host_id, title, category, photos, city, location_name, starts_at, capacity, event_vibe_tags"
-    )
+    .select(VIBE_COLS)
     .in("status", ["open", "ranking", "finalized"])
     .gte("starts_at", nowIso)
     .order("starts_at", { ascending: true })
@@ -96,26 +99,53 @@ export default async function HomePage({
   }
   if (homeCity) nearQuery = nearQuery.ilike("city", homeCity);
   if (hiddenVibeIds.length) nearQuery = nearQuery.not("id", "in", `(${hiddenVibeIds.join(",")})`);
-  const { data: nearRaw } = await nearQuery;
-  const near = nearRaw ?? [];
 
-  const nearIds = near.map((v) => v.id);
-  const [nearMeta, nearMatch, { data: cardInterests }, { data: flockRows }, { data: peopleRows }] =
+  let allQuery = supabase
+    .from("vibes")
+    .select(VIBE_COLS)
+    .in("status", ["open", "ranking", "finalized"])
+    .gte("starts_at", nowIso)
+    .order("starts_at", { ascending: true })
+    .limit(15);
+  if (hiddenVibeIds.length) allQuery = allQuery.not("id", "in", `(${hiddenVibeIds.join(",")})`);
+
+  const [{ data: nearRaw }, { data: allRaw }] = await Promise.all([nearQuery, allQuery]);
+  const near = (nearRaw ?? []) as VibeRow[];
+  const allVibes = (allRaw ?? []) as VibeRow[];
+
+  // One metadata pass over the union of both lists.
+  const vibeUnion = Array.from(new Map([...near, ...allVibes].map((v) => [v.id, v])).values());
+  const unionIds = vibeUnion.map((v) => v.id);
+
+  const [vibeMeta, vibeMatch, { data: cardInterests }, { data: flockRows }, { data: peopleRows }] =
     await Promise.all([
-      loadHostsAndCounts(supabase, near),
-      loadVibeMatch(supabase, nearIds),
-      nearIds.length
-        ? supabase.from("vibe_interests").select("vibe_id, status").eq("user_id", user!.id).in("vibe_id", nearIds)
+      loadHostsAndCounts(supabase, vibeUnion),
+      loadVibeMatch(supabase, unionIds),
+      unionIds.length
+        ? supabase.from("vibe_interests").select("vibe_id, status").eq("user_id", user!.id).in("vibe_id", unionIds)
         : Promise.resolve({ data: [] }),
       supabase.rpc("home_flocks", { p_limit: 10 }),
       supabase.rpc("city_people", { p_limit: 12 }),
     ]);
+
   const cardStatuses: Record<string, InterestStatus> = {};
   cardInterests?.forEach((r) => {
     cardStatuses[r.vibe_id] = r.status as InterestStatus;
   });
   const flocks = (flockRows ?? []) as HomeFlock[];
   const people = (peopleRows ?? []) as CityPerson[];
+
+  const vibeCell = (v: VibeRow) => (
+    <div key={v.id} className="w-72 shrink-0 snap-start">
+      <VibeCard
+        vibe={{ ...v, host: vibeMeta.hosts[v.host_id] ?? null } as VibeCardData}
+        confirmedCount={vibeMeta.counts[v.id] ?? 0}
+        myStatus={cardStatuses[v.id] ?? null}
+        matchPct={vibeMatch[v.id]}
+        canDismiss={v.host_id !== user!.id && !cardStatuses[v.id]}
+      />
+    </div>
+  );
 
   return (
     <div className="pb-4">
@@ -125,39 +155,106 @@ export default async function HomePage({
         <p className="mt-2 text-lg font-bold text-ink/70">What do you want to do today?</p>
       </section>
 
-      {/* ── Intent picker ───────────────────────────────────────────────── */}
-      <section className="mx-4 mt-5 grid gap-4 sm:grid-cols-2">
-        <Link
-          href="/match?mode=activity"
-          className="rounded-3xl border-[3px] border-ink bg-flockie-blue p-5 text-white shadow-[0_5px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-1"
-        >
-          <p className="text-3xl">🧭</p>
-          <h2 className="mt-2 text-lg font-extrabold">Find a buddy for an activity</h2>
-          <p className="mt-1 text-sm font-medium text-white/90">
-            Get matched 1:1 with someone to do it with — coffee, surf, a hike.
-          </p>
-          <span className="mt-4 inline-flex items-center gap-1 rounded-full border-2 border-ink bg-white px-4 py-2 text-sm font-bold text-ink">
-            Find a buddy <ArrowRight size={15} />
-          </span>
-        </Link>
+      {/* ── Find a buddy for an activity (people in your city) ───────────── */}
+      <section className="mx-4 mt-6">
+        <div className="flex items-end justify-between gap-3 px-1">
+          <div>
+            <h2 className="text-[22px] font-extrabold sm:text-[28px]">Find a buddy for an activity</h2>
+            <p className="mt-0.5 font-bold text-navy/60">
+              People in {homeCity ?? "your city"} up for doing something — say hi.
+            </p>
+          </div>
+          <Link
+            href="/match?mode=activity"
+            className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
+          >
+            See all <ArrowRight size={15} />
+          </Link>
+        </div>
 
-        <Link
-          href="/vibes"
-          className="rounded-3xl border-[3px] border-ink bg-flockie-coral p-5 text-white shadow-[0_5px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-1"
-        >
-          <p className="text-3xl">🎟️</p>
-          <h2 className="mt-2 text-lg font-extrabold">Join a vibe</h2>
-          <p className="mt-1 text-sm font-medium text-white/90">
-            Hop into a group plan that&rsquo;s already happening near you.
-          </p>
-          <span className="mt-4 inline-flex items-center gap-1 rounded-full border-2 border-ink bg-white px-4 py-2 text-sm font-bold text-ink">
-            Browse vibes <ArrowRight size={15} />
-          </span>
-        </Link>
+        {people.length === 0 ? (
+          <div className="mt-4 rounded-3xl border-2 border-dashed border-ink/25 bg-white p-6 text-center">
+            <p className="font-bold">No one in {homeCity ?? "your city"} yet.</p>
+            <p className="mt-1 text-sm font-medium text-muted">
+              Post an activity and be the first others can say hi to.
+            </p>
+            <Link
+              href="/match?mode=activity"
+              className="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-flockie-coral px-5 py-2 text-sm font-bold text-white"
+            >
+              Find a buddy <ArrowRight size={15} />
+            </Link>
+          </div>
+        ) : (
+          <div className="mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {people.map((p) => {
+              const name = (p.display_name ?? "Someone").split(" ")[0];
+              const photo = p.photos?.[0] ?? null;
+              return (
+                <Link
+                  key={p.id}
+                  href={`/people/${p.id}`}
+                  className="flex w-40 shrink-0 snap-start flex-col items-center rounded-2xl border-[3px] border-ink bg-white p-4 text-center shadow-[0_5px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-1"
+                >
+                  <div className="relative h-20 w-20 overflow-hidden rounded-full border-2 border-ink bg-cream">
+                    {photo ? (
+                      <Image src={photo} alt="" fill sizes="80px" className="object-cover" />
+                    ) : (
+                      <span className="flex h-full items-center justify-center text-2xl font-black text-flockie-blue">
+                        {name[0]}
+                      </span>
+                    )}
+                    {typeof p.score === "number" && (
+                      <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full border-2 border-ink bg-flockie-blue px-1.5 text-[10px] font-extrabold leading-tight text-white">
+                        {Math.round(p.score)}%
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-3 w-full truncate text-sm font-extrabold">
+                    {name}
+                    {p.age ? `, ${p.age}` : ""}
+                  </p>
+                  {p.one_liner && (
+                    <p className="mt-0.5 line-clamp-2 text-xs font-medium text-muted">{p.one_liner}</p>
+                  )}
+                  <span className="mt-3 w-full rounded-full border-2 border-ink bg-flockie-coral py-1.5 text-xs font-bold text-white">
+                    Say hi
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </section>
 
-      {/* ── Happening near you ──────────────────────────────────────────── */}
-      <section className="mx-4 mt-6 rounded-3xl border-[3px] border-ink bg-flockie-blue p-5 text-white sm:p-6">
+      {/* ── Join a vibe (all cities) ────────────────────────────────────── */}
+      <section className="mx-4 mt-8">
+        <div className="flex items-end justify-between gap-3 px-1">
+          <div>
+            <h2 className="text-[22px] font-extrabold sm:text-[28px]">Join a vibe</h2>
+            <p className="mt-0.5 font-bold text-navy/60">Group plans everywhere — jump into one.</p>
+          </div>
+          <Link
+            href="/vibes"
+            className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
+          >
+            See all <ArrowRight size={15} />
+          </Link>
+        </div>
+
+        {allVibes.length === 0 ? (
+          <div className="mt-4 rounded-3xl border-2 border-dashed border-ink/25 bg-white p-6 text-center font-medium text-muted">
+            No Vibes scheduled yet.
+          </div>
+        ) : (
+          <div className="mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {allVibes.map(vibeCell)}
+          </div>
+        )}
+      </section>
+
+      {/* ── Happening near you (same city + filters) ────────────────────── */}
+      <section className="mx-4 mt-8 rounded-3xl border-[3px] border-ink bg-flockie-blue p-5 text-white sm:p-6">
         <div className="flex items-center justify-between gap-3">
           <span className="inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-white px-2.5 py-1 text-xs font-extrabold text-ink">
             <span className="relative flex h-2 w-2">
@@ -203,46 +300,42 @@ export default async function HomePage({
               No Vibes {timingLabel}
               {homeCity ? ` in ${homeCity}` : ""} yet.
             </p>
-            <p className="mt-1 text-sm font-medium text-white/80">Be the one who starts something.</p>
-            <Link
-              href="/vibes/new"
-              className="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-flockie-coral px-5 py-2 text-sm font-bold text-white"
-            >
-              Create a Vibe
-            </Link>
+            <p className="mt-1 text-sm font-medium text-white/80">Check the full list above to find one.</p>
           </div>
         ) : (
           <div className="mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {near.map((v) => (
-              <div key={v.id} className="w-72 shrink-0 snap-start">
-                <VibeCard
-                  vibe={{ ...v, host: nearMeta.hosts[v.host_id] ?? null } as VibeCardData}
-                  confirmedCount={nearMeta.counts[v.id] ?? 0}
-                  myStatus={cardStatuses[v.id] ?? null}
-                  matchPct={nearMatch[v.id]}
-                  canDismiss={v.host_id !== user!.id && !cardStatuses[v.id]}
-                />
-              </div>
-            ))}
+            {near.map(vibeCell)}
           </div>
         )}
       </section>
 
-      {/* ── Flocks you can join (carousel) ──────────────────────────────── */}
-      {flocks.length > 0 && (
-        <section className="mx-4 mt-6">
-          <div className="flex items-end justify-between gap-3 px-1">
-            <div>
-              <h2 className="text-[22px] font-extrabold sm:text-[28px]">Flocks you can join</h2>
-              <p className="mt-0.5 font-bold text-navy/60">Open group trips looking for travelers.</p>
-            </div>
+      {/* ── Find a flock (newest open group trips) ──────────────────────── */}
+      <section className="mx-4 mt-8">
+        <div className="flex items-end justify-between gap-3 px-1">
+          <div>
+            <h2 className="text-[22px] font-extrabold sm:text-[28px]">Find a flock</h2>
+            <p className="mt-0.5 font-bold text-navy/60">Newest open group trips you can join.</p>
+          </div>
+          <Link
+            href="/flocks"
+            className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
+          >
+            See all <ArrowRight size={15} />
+          </Link>
+        </div>
+
+        {flocks.length === 0 ? (
+          <div className="mt-4 rounded-3xl border-2 border-dashed border-ink/25 bg-white p-6 text-center">
+            <p className="font-bold">No open flocks right now.</p>
+            <p className="mt-1 text-sm font-medium text-muted">Start one and let travelers request in.</p>
             <Link
-              href="/flocks"
-              className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
+              href="/match/trip?kind=flock"
+              className="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-flockie-blue px-5 py-2 text-sm font-bold text-white"
             >
-              See all <ArrowRight size={15} />
+              Create a flock <ArrowRight size={15} />
             </Link>
           </div>
+        ) : (
           <div className="mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {flocks.map((f) => {
               const dest = (f.destinations ?? [f.destination]).filter(Boolean).join(" · ") || "Trip";
@@ -278,69 +371,11 @@ export default async function HomePage({
               );
             })}
           </div>
-        </section>
-      )}
-
-      {/* ── People in your city (carousel) ──────────────────────────────── */}
-      {people.length > 0 && (
-        <section className="mx-4 mt-6">
-          <div className="flex items-end justify-between gap-3 px-1">
-            <div>
-              <h2 className="text-[22px] font-extrabold sm:text-[28px]">
-                People in {homeCity ?? "your city"}
-              </h2>
-              <p className="mt-0.5 font-bold text-navy/60">Up for doing something — say hi.</p>
-            </div>
-            <Link
-              href="/match?mode=activity"
-              className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
-            >
-              See all <ArrowRight size={15} />
-            </Link>
-          </div>
-          <div className="mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {people.map((p) => {
-              const name = (p.display_name ?? "Someone").split(" ")[0];
-              const photo = p.photos?.[0] ?? null;
-              return (
-                <Link
-                  key={p.id}
-                  href={`/people/${p.id}`}
-                  className="flex w-40 shrink-0 snap-start flex-col items-center rounded-2xl border-[3px] border-ink bg-white p-4 text-center shadow-[0_5px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-1"
-                >
-                  <div className="relative h-20 w-20 overflow-hidden rounded-full border-2 border-ink bg-cream">
-                    {photo ? (
-                      <Image src={photo} alt="" fill sizes="80px" className="object-cover" />
-                    ) : (
-                      <span className="flex h-full items-center justify-center text-2xl font-black text-flockie-blue">
-                        {name[0]}
-                      </span>
-                    )}
-                    {typeof p.score === "number" && (
-                      <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full border-2 border-ink bg-flockie-blue px-1.5 text-[10px] font-extrabold leading-tight text-white">
-                        {Math.round(p.score)}%
-                      </span>
-                    )}
-                  </div>
-                  <p className="mt-3 w-full truncate text-sm font-extrabold">
-                    {name}
-                    {p.age ? `, ${p.age}` : ""}
-                  </p>
-                  {p.one_liner && (
-                    <p className="mt-0.5 line-clamp-2 text-xs font-medium text-muted">{p.one_liner}</p>
-                  )}
-                  <span className="mt-3 w-full rounded-full border-2 border-ink bg-flockie-coral py-1.5 text-xs font-bold text-white">
-                    Say hi
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      )}
+        )}
+      </section>
 
       {/* ── Didn't find what you're looking for? ────────────────────────── */}
-      <section className="mx-4 mt-6 rounded-3xl border-[3px] border-ink bg-cream p-5 sm:p-6">
+      <section className="mx-4 mt-8 rounded-3xl border-[3px] border-ink bg-cream p-5 sm:p-6">
         <h2 className="text-[22px] font-extrabold sm:text-[26px]">
           Didn&rsquo;t find what you&rsquo;re looking for?
         </h2>
@@ -357,41 +392,6 @@ export default async function HomePage({
             className="flex items-center justify-center gap-2 rounded-2xl border-[3px] border-ink bg-flockie-blue px-5 py-3 font-bold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-0.5"
           >
             <Plus size={18} /> Create an activity
-          </Link>
-        </div>
-      </section>
-
-      {/* ── Find your people (kept) ─────────────────────────────────────── */}
-      <section className="mx-4 mt-6">
-        <h2 className="px-1 text-[22px] font-extrabold text-navy sm:text-[28px]">Find your people</h2>
-        <p className="px-1 font-bold text-navy/60">A 1:1 travel buddy, or a whole group to go with.</p>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <Link
-            href="/match"
-            className="rounded-3xl border-[3px] border-ink bg-flockie-blue p-5 text-white shadow-[0_5px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-1"
-          >
-            <p className="text-3xl">🧳</p>
-            <h3 className="mt-2 text-lg font-extrabold">Find a Buddy</h3>
-            <p className="mt-1 text-sm font-medium text-white/90">
-              Swipe vibe-matched people for a trip or an activity in your city.
-            </p>
-            <span className="mt-4 inline-flex items-center gap-1 rounded-full border-2 border-ink bg-white px-4 py-2 text-sm font-bold text-ink">
-              Start matching <ArrowRight size={15} />
-            </span>
-          </Link>
-
-          <Link
-            href="/flocks"
-            className="rounded-3xl border-[3px] border-ink bg-flockie-coral p-5 text-white shadow-[0_5px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-1"
-          >
-            <p className="text-3xl">🪺</p>
-            <h3 className="mt-2 text-lg font-extrabold">Find a flock</h3>
-            <p className="mt-1 text-sm font-medium text-white/90">
-              Join an open group trip, or start one and let travelers request in.
-            </p>
-            <span className="mt-4 inline-flex items-center gap-1 rounded-full border-2 border-ink bg-white px-4 py-2 text-sm font-bold text-ink">
-              Browse flocks <ArrowRight size={15} />
-            </span>
           </Link>
         </div>
       </section>
