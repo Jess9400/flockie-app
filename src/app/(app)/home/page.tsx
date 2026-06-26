@@ -7,6 +7,7 @@ import FlockRequestButton from "@/components/FlockRequestButton";
 import SayHiButton from "@/components/SayHiButton";
 import HomeHero from "@/components/HomeHero";
 import CreateFab from "@/components/CreateFab";
+import MatchKeyTip from "@/components/MatchKeyTip";
 import { loadVibeMatch } from "@/lib/vibe-stats";
 import { type InterestStatus } from "@/lib/vibes";
 
@@ -173,6 +174,9 @@ export default async function HomePage({
     <div className="home-stagger pb-24">
       {/* ── Welcome ─────────────────────────────────────────────────────── */}
       <HomeHero firstName={firstName} homeCity={homeCity} liveCount={liveCount ?? 0} />
+
+      {/* What does the % mean? (dismissible legend) */}
+      <MatchKeyTip />
 
       {/* ── Find a buddy for an activity (people in your city) ───────────── */}
       <section className="mx-4 mt-6">
