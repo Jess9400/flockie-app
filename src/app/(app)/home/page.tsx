@@ -71,12 +71,13 @@ export default async function HomePage({
   const nowIso = new Date().toISOString();
 
   const [{ data: profile }, { data: hiddenRows }] = await Promise.all([
-    supabase.from("profiles").select("display_name, home_city").eq("id", user!.id).maybeSingle(),
+    supabase.from("profiles").select("display_name, home_city, vibe_completed_at").eq("id", user!.id).maybeSingle(),
     supabase.from("vibe_feedback").select("vibe_id").eq("user_id", user!.id).eq("signal", "not_for_me"),
   ]);
 
   const firstName = (profile?.display_name?.trim() || "there").split(" ")[0];
   const homeCity = profile?.home_city?.trim() || null;
+  const vibeFormDone = !!profile?.vibe_completed_at;
   const timing = searchParams.when === "24" ? "24" : searchParams.when === "48" ? "48" : "all";
   const cutoffHours = timing === "24" ? 24 : timing === "48" ? 48 : null;
   const timingLabel =
@@ -179,10 +180,10 @@ export default async function HomePage({
               Post an activity and be the first others can say hi to.
             </p>
             <Link
-              href="/match?mode=activity"
+              href="/match/trip?kind=activity"
               className="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-flockie-coral px-5 py-2 text-sm font-bold text-white"
             >
-              Find a buddy <ArrowRight size={15} />
+              <Plus size={15} /> Create an activity
             </Link>
           </div>
         ) : (
@@ -276,16 +277,16 @@ export default async function HomePage({
           {homeCity ? `${timingLabel} in ${homeCity}` : `${timingLabel} Vibes`}
         </p>
 
-        <div className="mt-4 grid grid-cols-3 gap-1 rounded-full border-2 border-ink bg-white/15 p-1 text-center text-xs font-bold">
+        <div className="mt-3 inline-flex gap-1 rounded-full border-2 border-ink bg-white/15 p-0.5 text-xs font-bold">
           {[
             { value: "all", label: "Any time", href: "/home" },
-            { value: "24", label: "Next 24h", href: "/home?when=24" },
-            { value: "48", label: "Next 48h", href: "/home?when=48" },
+            { value: "24", label: "24h", href: "/home?when=24" },
+            { value: "48", label: "48h", href: "/home?when=48" },
           ].map((option) => (
             <Link
               key={option.value}
               href={option.href}
-              className={`rounded-full px-2 py-2 transition-colors ${
+              className={`rounded-full px-3 py-1 transition-colors ${
                 timing === option.value ? "bg-white text-ink" : "text-white hover:bg-white/10"
               }`}
             >
@@ -300,7 +301,21 @@ export default async function HomePage({
               No Vibes {timingLabel}
               {homeCity ? ` in ${homeCity}` : ""} yet.
             </p>
-            <p className="mt-1 text-sm font-medium text-white/80">Check the full list above to find one.</p>
+            <p className="mt-1 text-sm font-medium text-white/80">Make the first move 👇</p>
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
+              <Link
+                href="/vibes/new"
+                className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-coral px-5 py-2 text-sm font-bold text-white"
+              >
+                <Plus size={15} /> Create a Vibe
+              </Link>
+              <Link
+                href="/match?mode=activity"
+                className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink bg-white px-5 py-2 text-sm font-bold text-ink"
+              >
+                Match with people in {homeCity ?? "your city"} <ArrowRight size={15} />
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -379,8 +394,20 @@ export default async function HomePage({
         <h2 className="text-[22px] font-extrabold sm:text-[26px]">
           Didn&rsquo;t find what you&rsquo;re looking for?
         </h2>
-        <p className="mt-0.5 font-bold text-ink/60">Start your own and let your people come to you.</p>
+        <p className="mt-0.5 font-bold text-ink/60">
+          {vibeFormDone
+            ? "Start your own and let your people come to you."
+            : "Finish your vibe check and we’ll match you to the right people and Vibes."}
+        </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          {!vibeFormDone && (
+            <Link
+              href="/onboarding/vibe-check"
+              className="flex items-center justify-center gap-2 rounded-2xl border-[3px] border-ink bg-ink px-5 py-3 font-bold text-white shadow-[0_4px_0_0_rgba(10,37,69,0.45)] transition-transform hover:-translate-y-0.5 sm:col-span-2"
+            >
+              ✨ Complete your vibe check
+            </Link>
+          )}
           <Link
             href="/vibes/new"
             className="flex items-center justify-center gap-2 rounded-2xl border-[3px] border-ink bg-flockie-coral px-5 py-3 font-bold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-0.5"
