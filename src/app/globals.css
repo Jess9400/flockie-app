@@ -24,3 +24,50 @@ body {
   width: 100%;
   accent-color: var(--flockie-coral);
 }
+
+/* ── Home motion ──────────────────────────────────────────────────────── */
+@keyframes wave {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  10%, 30% { transform: rotate(14deg); }
+  20% { transform: rotate(-8deg); }
+  40% { transform: rotate(-4deg); }
+  50% { transform: rotate(10deg); }
+}
+.animate-wave {
+  display: inline-block;
+  transform-origin: 70% 70%;
+  animation: wave 2.6s ease-in-out infinite;
+}
+
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.animate-floaty { animation: floaty 5s ease-in-out infinite; }
+
+/* Right-edge fade so carousels bleed off-screen and hint "there's more". */
+.carousel-fade {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+}
+
+/* Staggered fade-up of each top-level home section on load. */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+.home-stagger > * { animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.home-stagger > *:nth-child(1) { animation-delay: 0.04s; }
+.home-stagger > *:nth-child(2) { animation-delay: 0.1s; }
+.home-stagger > *:nth-child(3) { animation-delay: 0.16s; }
+.home-stagger > *:nth-child(4) { animation-delay: 0.22s; }
+.home-stagger > *:nth-child(5) { animation-delay: 0.28s; }
+.home-stagger > *:nth-child(6) { animation-delay: 0.34s; }
+.home-stagger > *:nth-child(7) { animation-delay: 0.4s; }
+.home-stagger > *:nth-child(n + 8) { animation-delay: 0.46s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-wave,
+  .animate-floaty { animation: none !important; }
+  .home-stagger > * { animation: none !important; }
+}

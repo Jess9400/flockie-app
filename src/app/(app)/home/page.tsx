@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/server";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
 import FlockRequestButton from "@/components/FlockRequestButton";
 import SayHiButton from "@/components/SayHiButton";
+import HomeHero from "@/components/HomeHero";
+import CreateFab from "@/components/CreateFab";
 import { loadVibeMatch } from "@/lib/vibe-stats";
 import { type InterestStatus } from "@/lib/vibes";
 
@@ -111,7 +113,21 @@ export default async function HomePage({
     .limit(15);
   if (hiddenVibeIds.length) allQuery = allQuery.not("id", "in", `(${hiddenVibeIds.join(",")})`);
 
-  const [{ data: nearRaw }, { data: allRaw }] = await Promise.all([nearQuery, allQuery]);
+  // Count of vibes in the user's city over the next week — for the hero line.
+  const weekIso = new Date(Date.now() + 7 * 864e5).toISOString();
+  let cityWeekQuery = supabase
+    .from("vibes")
+    .select("id", { count: "exact", head: true })
+    .in("status", ["open", "ranking", "finalized"])
+    .gte("starts_at", nowIso)
+    .lte("starts_at", weekIso);
+  if (homeCity) cityWeekQuery = cityWeekQuery.ilike("city", homeCity);
+
+  const [{ data: nearRaw }, { data: allRaw }, { count: liveCount }] = await Promise.all([
+    nearQuery,
+    allQuery,
+    cityWeekQuery,
+  ]);
   const near = (nearRaw ?? []) as VibeRow[];
   const allVibes = (allRaw ?? []) as VibeRow[];
 
@@ -154,18 +170,20 @@ export default async function HomePage({
   );
 
   return (
-    <div className="pb-4">
+    <div className="home-stagger pb-24">
       {/* ── Welcome ─────────────────────────────────────────────────────── */}
-      <section className="px-5 pt-10 text-center sm:pt-14">
-        <h1 className="text-[32px] font-black leading-tight sm:text-5xl">Hey {firstName} 👋</h1>
-        <p className="mt-2 text-lg font-bold text-ink/70">What do you want to do today?</p>
-      </section>
+      <HomeHero firstName={firstName} homeCity={homeCity} liveCount={liveCount ?? 0} />
 
       {/* ── Find a buddy for an activity (people in your city) ───────────── */}
       <section className="mx-4 mt-6">
         <div className="flex items-end justify-between gap-3 px-1">
           <div>
-            <h2 className="text-[22px] font-extrabold sm:text-[28px]">Find a buddy for an activity</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-[22px] font-extrabold sm:text-[28px]">Find a buddy for an activity</h2>
+              <span className="-rotate-6 rounded-full border-2 border-ink bg-flockie-coral px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-white shadow-[0_2px_0_0_rgba(10,37,69,1)]">
+                ✨ Top picks
+              </span>
+            </div>
             <p className="mt-0.5 font-bold text-navy/60">
               People in {homeCity ?? "your city"} up for doing something — say hi.
             </p>
@@ -192,24 +210,35 @@ export default async function HomePage({
             </Link>
           </div>
         ) : (
-          <div className="mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="carousel-fade mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {people.map((p) => {
               const name = (p.display_name ?? "Someone").split(" ")[0];
               const photo = p.photos?.[0] ?? null;
               return (
                 <div
                   key={p.id}
-                  className="flex w-40 shrink-0 snap-start flex-col items-center rounded-2xl border-[3px] border-ink bg-white p-4 text-center shadow-[0_5px_0_0_rgba(10,37,69,1)]"
+                  className="flex w-40 shrink-0 snap-start flex-col items-center rounded-2xl border-[3px] border-ink bg-white p-4 text-center shadow-[0_5px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-1"
                 >
                   <Link href={`/people/${p.id}`} className="flex w-full flex-col items-center">
-                    <div className="relative h-20 w-20 overflow-hidden rounded-full border-2 border-ink bg-cream">
-                      {photo ? (
-                        <Image src={photo} alt="" fill sizes="80px" className="object-cover" />
-                      ) : (
-                        <span className="flex h-full items-center justify-center text-2xl font-black text-flockie-blue">
-                          {name[0]}
-                        </span>
-                      )}
+                    <div
+                      className="relative h-[88px] w-[88px] rounded-full p-[3px]"
+                      style={
+                        typeof p.score === "number"
+                          ? {
+                              background: `conic-gradient(#FF6B4A ${Math.round(p.score) * 3.6}deg, rgba(10,37,69,0.12) 0deg)`,
+                            }
+                          : undefined
+                      }
+                    >
+                      <div className="relative h-full w-full overflow-hidden rounded-full border-2 border-ink bg-cream">
+                        {photo ? (
+                          <Image src={photo} alt="" fill sizes="88px" className="object-cover" />
+                        ) : (
+                          <span className="flex h-full items-center justify-center text-2xl font-black text-flockie-blue">
+                            {name[0]}
+                          </span>
+                        )}
+                      </div>
                       {typeof p.score === "number" && (
                         <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full border-2 border-ink bg-flockie-blue px-1.5 text-[10px] font-extrabold leading-tight text-white">
                           {Math.round(p.score)}%
@@ -293,7 +322,7 @@ export default async function HomePage({
             </Link>
           </div>
         ) : (
-          <div className="mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="carousel-fade mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {near.map(vibeCell)}
           </div>
         )}
@@ -314,7 +343,7 @@ export default async function HomePage({
               See all <ArrowRight size={15} />
             </Link>
           </div>
-          <div className="mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="carousel-fade mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {exploreVibes.map(vibeCell)}
           </div>
         </section>
@@ -347,14 +376,14 @@ export default async function HomePage({
             </Link>
           </div>
         ) : (
-          <div className="mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="carousel-fade mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {flocks.map((f) => {
               const dest = (f.destinations ?? [f.destination]).filter(Boolean).join(" · ") || "Trip";
               const hostName = f.host_name || "Host";
               return (
                 <div
                   key={f.id}
-                  className="flex w-56 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border-[3px] border-ink bg-white shadow-[0_5px_0_0_rgba(10,37,69,1)]"
+                  className="flex w-56 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border-[3px] border-ink bg-white shadow-[0_5px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-1"
                 >
                   <div className="relative aspect-[4/3] w-full border-b-2 border-ink bg-cream">
                     {f.cover_photo ? (
@@ -418,6 +447,8 @@ export default async function HomePage({
           </Link>
         </div>
       </section>
+
+      <CreateFab />
     </div>
   );
 }
