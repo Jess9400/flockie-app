@@ -1,9 +1,35 @@
 import Link from "next/link";
-import { ArrowRight, Plus } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, MapPin, Plus, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
+import FlockRequestButton from "@/components/FlockRequestButton";
 import { loadVibeMatch } from "@/lib/vibe-stats";
 import { type InterestStatus } from "@/lib/vibes";
+
+type CityPerson = {
+  id: string;
+  display_name: string | null;
+  age: number | null;
+  photos: string[] | null;
+  one_liner: string | null;
+  home_city: string | null;
+  score: number | null;
+};
+
+type HomeFlock = {
+  id: string;
+  destination: string | null;
+  destinations: string[] | null;
+  start_date: string;
+  end_date: string;
+  group_size: number;
+  cover_photo: string | null;
+  going: number;
+  requested: boolean;
+  host_name: string | null;
+  host_photo: string | null;
+};
 
 async function loadHostsAndCounts(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -74,17 +100,22 @@ export default async function HomePage({
   const near = nearRaw ?? [];
 
   const nearIds = near.map((v) => v.id);
-  const [nearMeta, nearMatch, { data: cardInterests }] = await Promise.all([
-    loadHostsAndCounts(supabase, near),
-    loadVibeMatch(supabase, nearIds),
-    nearIds.length
-      ? supabase.from("vibe_interests").select("vibe_id, status").eq("user_id", user!.id).in("vibe_id", nearIds)
-      : Promise.resolve({ data: [] }),
-  ]);
+  const [nearMeta, nearMatch, { data: cardInterests }, { data: flockRows }, { data: peopleRows }] =
+    await Promise.all([
+      loadHostsAndCounts(supabase, near),
+      loadVibeMatch(supabase, nearIds),
+      nearIds.length
+        ? supabase.from("vibe_interests").select("vibe_id, status").eq("user_id", user!.id).in("vibe_id", nearIds)
+        : Promise.resolve({ data: [] }),
+      supabase.rpc("home_flocks", { p_limit: 10 }),
+      supabase.rpc("city_people", { p_limit: 12 }),
+    ]);
   const cardStatuses: Record<string, InterestStatus> = {};
   cardInterests?.forEach((r) => {
     cardStatuses[r.vibe_id] = r.status as InterestStatus;
   });
+  const flocks = (flockRows ?? []) as HomeFlock[];
+  const people = (peopleRows ?? []) as CityPerson[];
 
   return (
     <div className="pb-4">
@@ -196,6 +227,117 @@ export default async function HomePage({
           </div>
         )}
       </section>
+
+      {/* ── Flocks you can join (carousel) ──────────────────────────────── */}
+      {flocks.length > 0 && (
+        <section className="mx-4 mt-6">
+          <div className="flex items-end justify-between gap-3 px-1">
+            <div>
+              <h2 className="text-[22px] font-extrabold sm:text-[28px]">Flocks you can join</h2>
+              <p className="mt-0.5 font-bold text-navy/60">Open group trips looking for travelers.</p>
+            </div>
+            <Link
+              href="/flocks"
+              className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
+            >
+              See all <ArrowRight size={15} />
+            </Link>
+          </div>
+          <div className="mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {flocks.map((f) => {
+              const dest = (f.destinations ?? [f.destination]).filter(Boolean).join(" · ") || "Trip";
+              const hostName = f.host_name || "Host";
+              return (
+                <div
+                  key={f.id}
+                  className="flex w-56 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border-[3px] border-ink bg-white shadow-[0_5px_0_0_rgba(10,37,69,1)]"
+                >
+                  <div className="relative aspect-[4/3] w-full border-b-2 border-ink bg-cream">
+                    {f.cover_photo ? (
+                      <Image src={f.cover_photo} alt="" fill sizes="224px" className="object-cover" />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-4xl">🧳</div>
+                    )}
+                  </div>
+                  <div className="flex flex-1 flex-col p-3">
+                    <p className="flex items-start gap-1 text-sm font-extrabold leading-tight">
+                      <MapPin size={13} className="mt-0.5 shrink-0 text-flockie-coral" />
+                      <span className="line-clamp-2">{dest}</span>
+                    </p>
+                    <p className="mt-1 text-xs font-medium text-muted">
+                      {f.start_date} → {f.end_date}
+                    </p>
+                    <p className="mt-1 flex items-center gap-1 text-xs font-bold text-navy/70">
+                      <Users size={11} /> {f.going}/{f.group_size} · {hostName}
+                    </p>
+                    <div className="mt-2.5">
+                      <FlockRequestButton tripId={f.id} requested={f.requested} />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* ── People in your city (carousel) ──────────────────────────────── */}
+      {people.length > 0 && (
+        <section className="mx-4 mt-6">
+          <div className="flex items-end justify-between gap-3 px-1">
+            <div>
+              <h2 className="text-[22px] font-extrabold sm:text-[28px]">
+                People in {homeCity ?? "your city"}
+              </h2>
+              <p className="mt-0.5 font-bold text-navy/60">Up for doing something — say hi.</p>
+            </div>
+            <Link
+              href="/match?mode=activity"
+              className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
+            >
+              See all <ArrowRight size={15} />
+            </Link>
+          </div>
+          <div className="mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {people.map((p) => {
+              const name = (p.display_name ?? "Someone").split(" ")[0];
+              const photo = p.photos?.[0] ?? null;
+              return (
+                <Link
+                  key={p.id}
+                  href={`/people/${p.id}`}
+                  className="flex w-40 shrink-0 snap-start flex-col items-center rounded-2xl border-[3px] border-ink bg-white p-4 text-center shadow-[0_5px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-1"
+                >
+                  <div className="relative h-20 w-20 overflow-hidden rounded-full border-2 border-ink bg-cream">
+                    {photo ? (
+                      <Image src={photo} alt="" fill sizes="80px" className="object-cover" />
+                    ) : (
+                      <span className="flex h-full items-center justify-center text-2xl font-black text-flockie-blue">
+                        {name[0]}
+                      </span>
+                    )}
+                    {typeof p.score === "number" && (
+                      <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full border-2 border-ink bg-flockie-blue px-1.5 text-[10px] font-extrabold leading-tight text-white">
+                        {Math.round(p.score)}%
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-3 w-full truncate text-sm font-extrabold">
+                    {name}
+                    {p.age ? `, ${p.age}` : ""}
+                  </p>
+                  {p.one_liner && (
+                    <p className="mt-0.5 line-clamp-2 text-xs font-medium text-muted">{p.one_liner}</p>
+                  )}
+                  <span className="mt-3 w-full rounded-full border-2 border-ink bg-flockie-coral py-1.5 text-xs font-bold text-white">
+                    Say hi
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* ── Didn't find what you're looking for? ────────────────────────── */}
       <section className="mx-4 mt-6 rounded-3xl border-[3px] border-ink bg-cream p-5 sm:p-6">
