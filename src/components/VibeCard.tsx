@@ -131,7 +131,7 @@ export default function VibeCard({
           ) : (
             <div className="flex h-full items-center justify-center text-3xl">🎟️</div>
           )}
-          <span className="absolute left-1.5 top-1.5 rounded-full border-2 border-ink bg-white px-1.5 py-0.5 text-[9px] font-extrabold lowercase leading-none">
+          <span className="absolute left-1.5 top-1.5 rounded-full border-2 border-ink bg-white px-1.5 py-0.5 text-[9px] font-extrabold lowercase leading-none text-ink">
             {vibe.category}
           </span>
           {faded ? (

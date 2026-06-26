@@ -13,7 +13,17 @@ export type JoinReq = {
   photo: string | null;
   oneLiner: string | null;
   status: string;
+  match?: number | null;
 };
+
+function MatchBadge({ pct }: { pct?: number | null }) {
+  if (typeof pct !== "number") return null;
+  return (
+    <span className="shrink-0 rounded-full border-2 border-ink bg-flockie-coral px-1.5 py-0.5 text-[10px] font-extrabold leading-none text-white">
+      {pct}%
+    </span>
+  );
+}
 
 export default function FlockJoinRequests({
   tripId,
@@ -77,8 +87,9 @@ export default function FlockJoinRequests({
                   </span>
                 )}
                 <span className="min-w-0">
-                  <span className="block truncate text-sm font-bold">
-                    {r.name}{r.age ? `, ${r.age}` : ""}
+                  <span className="flex items-center gap-1.5 truncate text-sm font-bold">
+                    <span className="truncate">{r.name}{r.age ? `, ${r.age}` : ""}</span>
+                    <MatchBadge pct={r.match} />
                   </span>
                   {r.oneLiner && <span className="block truncate text-[11px] font-medium text-muted">{r.oneLiner}</span>}
                 </span>
@@ -129,6 +140,7 @@ export default function FlockJoinRequests({
                   )}
                   {r.name}
                 </Link>
+                <MatchBadge pct={r.match} />
                 {canRemove && (
                   <button
                     type="button"

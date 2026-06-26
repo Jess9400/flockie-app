@@ -83,6 +83,14 @@ export default async function MyTripsPage({
         .in("id", reqUserIds);
       data?.forEach((p) => (rp[p.id] = p));
     }
+    // Vibe-match between me (host) and each requester, so I can gauge fit.
+    const matchByUser: Record<string, number | null> = {};
+    await Promise.all(
+      reqUserIds.map(async (uid) => {
+        const { data } = await supabase.rpc("buddy_pair_score", { p_a: user!.id, p_b: uid });
+        matchByUser[uid] = typeof data === "number" ? Math.round(data) : null;
+      })
+    );
     (jr ?? []).forEach((r) => {
       (reqByTrip[r.trip_id] ??= []).push({
         userId: r.user_id,
@@ -91,6 +99,7 @@ export default async function MyTripsPage({
         age: rp[r.user_id]?.age ?? null,
         photo: rp[r.user_id]?.photos?.[0] ?? null,
         oneLiner: rp[r.user_id]?.one_liner ?? null,
+        match: matchByUser[r.user_id] ?? null,
       });
     });
   }
