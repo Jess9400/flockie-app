@@ -20,6 +20,10 @@ export default async function VibeRevealPage({
   searchParams: { returnTo?: string };
 }) {
   const returnTo = safeRedirectPath(searchParams.returnTo, "");
+  const hasSpecificReturn = !!returnTo && !isGenericSignupDestination(returnTo);
+  const ctaLabel = hasSpecificReturn
+    ? "Continue where you left off →"
+    : "Explore Vibes near you →";
   const supabase = await createClient();
   const {
     data: { user },
@@ -143,12 +147,21 @@ export default async function VibeRevealPage({
             href={returnTo || "/vibes"}
             className="mt-5 block w-full rounded-2xl border-2 border-ink border-b-[5px] bg-flockie-coral py-3.5 text-center text-[15px] font-extrabold text-white md:mx-auto md:mt-7 md:max-w-md"
           >
-            {returnTo ? "Continue where you left off →" : "See what's happening nearby →"}
+            {ctaLabel}
           </Link>
         </div>
       </div>
     </main>
   );
+}
+
+function isGenericSignupDestination(path: string) {
+  try {
+    const { pathname } = new URL(path, "https://app.findflockie.com");
+    return pathname === "/home" || pathname === "/vibes";
+  } catch {
+    return false;
+  }
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
