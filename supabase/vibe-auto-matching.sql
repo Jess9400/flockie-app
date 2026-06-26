@@ -63,6 +63,7 @@ declare v public.vibes; v_pool int; v_remaining int; v_added int := 0; c record;
 begin
   select * into v from public.vibes where id = p_vibe;
   if v.id is null or v.status = 'cancelled' then return 0; end if;
+  if v.starts_at <= now() then return 0; end if;  -- never invite into a started/finished Vibe
 
   -- Everyone already in the funnel (interested counts — they'll be ranked).
   -- Cold invites only fill the GAP to capacity, so they never displace
@@ -183,6 +184,7 @@ begin
   for r in
     select id from public.vibes
     where status = 'open'
+      and starts_at > now()
       and now() >= public._vibe_run_at(starts_at, signup_deadline)
   loop
     perform public._rank_vibe_core(r.id);
@@ -200,13 +202,14 @@ create or replace function public.autofill_open_vibes()
 returns void language plpgsql security definer set search_path = public as $$
 declare r record;
 begin
-  for r in select id from public.vibes where status = 'ranking' loop
+  for r in select id from public.vibes where status = 'ranking' and starts_at > now() loop
     perform public.backfill_vibe(r.id);
     perform public.invite_city_fallback(r.id);
   end loop;
   for r in
     select id from public.vibes
     where status = 'open'
+      and starts_at > now()
       and now() >= coalesce(signup_deadline, starts_at - interval '24 hours') - interval '48 hours'
   loop
     perform public.invite_city_fallback(r.id);
