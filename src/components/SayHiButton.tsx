@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { createClient } from "@/lib/supabase/client";
 
 const ACTIVITIES = [
@@ -21,7 +22,10 @@ export default function SayHiButton({
   personName: string;
 }) {
   const supabase = createClient();
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => setMounted(true), []);
   const [busy, setBusy] = useState(false);
   const [custom, setCustom] = useState("");
   const [sent, setSent] = useState<string | null>(null);
@@ -62,11 +66,13 @@ export default function SayHiButton({
         Say hi
       </button>
 
-      {open && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-          onClick={() => !busy && close()}
-        >
+      {open &&
+        mounted &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+            onClick={() => !busy && close()}
+          >
           <div
             className="w-full max-w-sm rounded-3xl border-[3px] border-ink bg-white p-6 text-center shadow-[0_6px_0_0_rgba(10,37,69,1)]"
             onClick={(e) => e.stopPropagation()}
@@ -133,8 +139,9 @@ export default function SayHiButton({
               </>
             )}
           </div>
-        </div>
-      )}
+        </div>,
+          document.body
+        )}
     </>
   );
 }
