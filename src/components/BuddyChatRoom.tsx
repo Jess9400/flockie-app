@@ -175,7 +175,7 @@ export default function BuddyChatRoom({
         {/* Algo icebreaker */}
         <div className="mx-auto my-3 max-w-[92%] rounded-2xl border-2 border-flockie-blue bg-cream p-4">
           <p className="flex items-center gap-1.5 font-fredoka text-sm font-semibold text-flockie-blue">
-            <Sparkles size={15} /> The algo says:
+            <Sparkles size={15} /> {isGroup ? "Trip plan:" : "The algo says:"}
           </p>
           <p className="mt-1.5 whitespace-pre-line font-nunito text-sm font-medium text-navy">
             {icebreaker}
@@ -184,6 +184,7 @@ export default function BuddyChatRoom({
 
         {rows.map(({ m, divider, firstInSeq }) => {
           const mine = m.sender_id === currentUserId;
+          const mem = members?.[m.sender_id];
           return (
             <div key={m.id}>
               {divider && (
@@ -195,11 +196,28 @@ export default function BuddyChatRoom({
                   <span className="h-px flex-1 bg-navy/10" />
                 </div>
               )}
-              <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
+              <div className={`flex items-end gap-2 ${mine ? "justify-end" : "justify-start"}`}>
+                {!mine && isGroup && (
+                  <div className="h-7 w-7 shrink-0">
+                    {firstInSeq &&
+                      (mem?.photo ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={mem.photo}
+                          alt=""
+                          className="h-7 w-7 rounded-full border-2 border-ink object-cover"
+                        />
+                      ) : (
+                        <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-ink bg-flockie-blue text-[10px] font-bold text-white">
+                          {(mem?.name ?? "F")[0]}
+                        </span>
+                      ))}
+                  </div>
+                )}
                 <div className={`flex max-w-[70%] flex-col ${mine ? "items-end" : "items-start"}`}>
                   {!mine && isGroup && firstInSeq && (
                     <p className="mb-0.5 ml-1 font-nunito text-xs font-medium text-navy/60">
-                      {members?.[m.sender_id]?.name ?? "Flockie"}
+                      {mem?.name ?? "Flockie"}
                     </p>
                   )}
                   {isImageUrl(m.content) ? (
