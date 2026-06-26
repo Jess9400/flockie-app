@@ -17,21 +17,17 @@ async function loadHostsAndCounts(
   const hostIds = Array.from(new Set(list.map((v) => v.host_id)));
   const ids = list.map((v) => v.id);
 
-  if (hostIds.length) {
-    const { data: hp } = await supabase
-      .from("profiles")
-      .select("id, display_name, photos")
-      .in("id", hostIds);
-    hp?.forEach((h) => (hosts[h.id] = { display_name: h.display_name, photos: h.photos }));
-  }
-  if (ids.length) {
-    const { data: confirmed } = await supabase
-      .from("vibe_interests")
-      .select("vibe_id")
-      .eq("status", "confirmed")
-      .in("vibe_id", ids);
-    confirmed?.forEach((r) => (counts[r.vibe_id] = (counts[r.vibe_id] ?? 0) + 1));
-  }
+  const [hostResult, confirmedResult] = await Promise.all([
+    hostIds.length
+      ? supabase.from("profiles").select("id, display_name, photos").in("id", hostIds)
+      : Promise.resolve({ data: [] }),
+    ids.length
+      ? supabase.from("vibe_interests").select("vibe_id").eq("status", "confirmed").in("vibe_id", ids)
+      : Promise.resolve({ data: [] }),
+  ]);
+
+  hostResult.data?.forEach((h) => (hosts[h.id] = { display_name: h.display_name, photos: h.photos }));
+  confirmedResult.data?.forEach((r) => (counts[r.vibe_id] = (counts[r.vibe_id] ?? 0) + 1));
   return { hosts, counts };
 }
 
@@ -44,24 +40,38 @@ export default async function HomePage({
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  const nowIso = new Date().toISOString();
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("display_name, home_city, onboarding_complete")
-    .eq("id", user!.id)
-    .maybeSingle();
+  const [{ data: profile }, { data: hiddenRows }, { data: myInterests }, { data: hosting }] =
+    await Promise.all([
+      supabase
+        .from("profiles")
+        .select("display_name, home_city, onboarding_complete")
+        .eq("id", user!.id)
+        .maybeSingle(),
+      supabase
+        .from("vibe_feedback")
+        .select("vibe_id")
+        .eq("user_id", user!.id)
+        .eq("signal", "not_for_me"),
+      supabase
+        .from("vibe_interests")
+        .select("vibe_id, status")
+        .eq("user_id", user!.id)
+        .in("status", ["invited", "confirmed"]),
+      supabase
+        .from("vibes")
+        .select("id, title, starts_at, status")
+        .eq("host_id", user!.id)
+        .in("status", ["open", "ranking"])
+        .gte("starts_at", nowIso),
+    ]);
 
   const firstName = (profile?.display_name?.trim() || "there").split(" ")[0];
   const homeCity = profile?.home_city?.trim() || null;
-  const nowIso = new Date().toISOString();
   const timing = searchParams.when === "24" ? "24" : searchParams.when === "48" ? "48" : "all";
   const cutoffHours = timing === "24" ? 24 : timing === "48" ? 48 : null;
   const timingLabel = timing === "24" ? "in the next 24 hours" : timing === "48" ? "in the next 48 hours" : "upcoming";
-  const { data: hiddenRows } = await supabase
-    .from("vibe_feedback")
-    .select("vibe_id")
-    .eq("user_id", user!.id)
-    .eq("signal", "not_for_me");
   const hiddenVibeIds = Array.from(new Set((hiddenRows ?? []).map((r) => r.vibe_id)));
 
   // ── Section 3: Upcoming near you, optionally filtered by timing ─────────
@@ -82,9 +92,13 @@ export default async function HomePage({
   }
   if (homeCity) nearQuery = nearQuery.ilike("city", homeCity);
   if (hiddenVibeIds.length) nearQuery = nearQuery.not("id", "in", `(${hiddenVibeIds.join(",")})`);
-  const { data: nearRaw } = await nearQuery;
+
+  const recommendedQuery = profile?.onboarding_complete
+    ? supabase.rpc("recommended_vibes", { p_limit: 6 })
+    : Promise.resolve({ data: [] });
+  const [{ data: nearRaw }, { data: rec }] = await Promise.all([nearQuery, recommendedQuery]);
   const near = nearRaw ?? [];
-  const nearMeta = await loadHostsAndCounts(supabase, near);
+  const recommended = (rec ?? []) as RecommendedVibe[];
 
   // ── Section 4: Your Vibes (action items) ───────────────────────────────
   type Row = {
@@ -97,53 +111,57 @@ export default async function HomePage({
   };
   const rows: Row[] = [];
 
-  const { data: myInterests } = await supabase
-    .from("vibe_interests")
-    .select("vibe_id, status")
-    .eq("user_id", user!.id)
-    .in("status", ["invited", "confirmed"]);
-
   const interestVibeIds = (myInterests ?? []).map((i) => i.vibe_id);
   const statusByVibe = new Map<string, string>(
     (myInterests ?? []).map((i) => [i.vibe_id, i.status])
   );
 
-  if (interestVibeIds.length) {
-    const { data: iv } = await supabase
-      .from("vibes")
-      .select("id, title, starts_at")
-      .in("id", interestVibeIds)
-      .gte("starts_at", nowIso);
-    iv?.forEach((v) => {
-      const st = statusByVibe.get(v.id);
-      if (st === "invited") {
-        rows.push({
-          key: `inv-${v.id}`,
-          href: `/vibes/${v.id}`,
-          icon: "invite",
-          title: `You're invited to ${v.title}`,
-          sub: `Respond before it fills · ${formatVibeWhen(v.starts_at)}`,
-          starts_at: v.starts_at,
-        });
-      } else if (st === "confirmed") {
-        rows.push({
-          key: `go-${v.id}`,
-          href: `/vibes/${v.id}`,
-          icon: "going",
-          title: `You're going to ${v.title}`,
-          sub: formatVibeWhen(v.starts_at),
-          starts_at: v.starts_at,
-        });
-      }
-    });
-  }
+  const cardVibeIds = Array.from(new Set([...near.map((v) => v.id), ...recommended.map((v) => v.id)]));
+  const [
+    nearMeta,
+    recMeta,
+    nearMatch,
+    { data: cardInterests },
+    { data: interestVibes },
+  ] = await Promise.all([
+    loadHostsAndCounts(supabase, near),
+    loadHostsAndCounts(supabase, recommended),
+    loadVibeMatch(supabase, near.map((v) => v.id)),
+    cardVibeIds.length
+      ? supabase
+          .from("vibe_interests")
+          .select("vibe_id, status")
+          .eq("user_id", user!.id)
+          .in("vibe_id", cardVibeIds)
+      : Promise.resolve({ data: [] }),
+    interestVibeIds.length
+      ? supabase.from("vibes").select("id, title, starts_at").in("id", interestVibeIds).gte("starts_at", nowIso)
+      : Promise.resolve({ data: [] }),
+  ]);
 
-  const { data: hosting } = await supabase
-    .from("vibes")
-    .select("id, title, starts_at, status")
-    .eq("host_id", user!.id)
-    .in("status", ["open", "ranking"])
-    .gte("starts_at", nowIso);
+  interestVibes?.forEach((v) => {
+    const st = statusByVibe.get(v.id);
+    if (st === "invited") {
+      rows.push({
+        key: `inv-${v.id}`,
+        href: `/vibes/${v.id}`,
+        icon: "invite",
+        title: `You're invited to ${v.title}`,
+        sub: `Respond before it fills · ${formatVibeWhen(v.starts_at)}`,
+        starts_at: v.starts_at,
+      });
+    } else if (st === "confirmed") {
+      rows.push({
+        key: `go-${v.id}`,
+        href: `/vibes/${v.id}`,
+        icon: "going",
+        title: `You're going to ${v.title}`,
+        sub: formatVibeWhen(v.starts_at),
+        starts_at: v.starts_at,
+      });
+    }
+  });
+
   hosting?.forEach((v) =>
     rows.push({
       key: `host-${v.id}`,
@@ -159,26 +177,10 @@ export default async function HomePage({
   const yourVibes = rows.slice(0, 5);
 
   // ── Section 5: Picked for you ──────────────────────────────────────────
-  let recommended: RecommendedVibe[] = [];
-  if (profile?.onboarding_complete) {
-    const { data: rec } = await supabase.rpc("recommended_vibes", { p_limit: 6 });
-    recommended = (rec ?? []) as RecommendedVibe[];
-  }
-  const recMeta = await loadHostsAndCounts(supabase, recommended);
-
-  const nearMatch = await loadVibeMatch(supabase, near.map((v) => v.id));
   const cardStatuses: Record<string, InterestStatus> = {};
-  const cardVibeIds = Array.from(new Set([...near.map((v) => v.id), ...recommended.map((v) => v.id)]));
-  if (cardVibeIds.length) {
-    const { data: cardInterests } = await supabase
-      .from("vibe_interests")
-      .select("vibe_id, status")
-      .eq("user_id", user!.id)
-      .in("vibe_id", cardVibeIds);
-    cardInterests?.forEach((r) => {
-      cardStatuses[r.vibe_id] = r.status as InterestStatus;
-    });
-  }
+  cardInterests?.forEach((r) => {
+    cardStatuses[r.vibe_id] = r.status as InterestStatus;
+  });
 
   return (
     <div className="pb-4">
