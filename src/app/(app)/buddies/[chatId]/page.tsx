@@ -48,20 +48,25 @@ export default async function BuddyChatPage({
   const flockTripIds = [matchExt?.trip_a, matchExt?.trip_b].filter(Boolean) as string[];
   let flockTripId: string | null = null;
   let flockHostId: string | null = null;
+  let flockCoHost: string | null = null;
   let flockTitle = "";
   let flockReqs: JoinReq[] = [];
   const chatMembers: Record<string, { name: string; photo: string | null }> = {};
   if (flockTripIds.length) {
-    const { data: fl } = await supabase
+    // Any public trip behind this chat is a Flock — group chat for host + all
+    // accepted members. (Previously required a co-host, which wrongly excluded
+    // directly-created flocks and rendered them as a 1:1.)
+    const { data: fls } = await supabase
       .from("trips")
-      .select("id, user_id, destination")
+      .select("id, user_id, destination, co_host_id")
       .in("id", flockTripIds)
       .eq("visibility", "public")
-      .not("co_host_id", "is", null)
-      .maybeSingle();
+      .limit(1);
+    const fl = fls?.[0] ?? null;
     if (fl) {
       flockTripId = fl.id;
       flockHostId = fl.user_id;
+      flockCoHost = fl.co_host_id ?? null;
       flockTitle = fl.destination ?? "Flock";
       const { data: jr } = await supabase
         .from("trip_join_requests")
@@ -260,7 +265,7 @@ export default async function BuddyChatPage({
 
         {flockTripId && flockReqs.length > 0 && (
           <div className="shrink-0">
-            <FlockJoinRequests tripId={flockTripId} requests={flockReqs} dualApproval canRemove={isHostOfFlock} />
+            <FlockJoinRequests tripId={flockTripId} requests={flockReqs} dualApproval={!!flockCoHost} canRemove={isHostOfFlock} />
           </div>
         )}
 
