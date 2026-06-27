@@ -8,6 +8,7 @@ import SayHiButton from "@/components/SayHiButton";
 import HomeHero from "@/components/HomeHero";
 import CreateFab from "@/components/CreateFab";
 import MatchKeyTip from "@/components/MatchKeyTip";
+import InviteFriendsButton from "@/components/InviteFriendsButton";
 import { loadVibeMatch } from "@/lib/vibe-stats";
 import { type InterestStatus } from "@/lib/vibes";
 
@@ -192,26 +193,39 @@ export default async function HomePage({
               People in {homeCity ?? "your city"} up for doing something — say hi.
             </p>
           </div>
-          <Link
-            href="/match?mode=activity"
-            className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
-          >
-            Swipe more <ArrowRight size={15} />
-          </Link>
+          {people.length > 0 && (
+            <Link
+              href="/match?mode=activity"
+              className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
+            >
+              Swipe more <ArrowRight size={15} />
+            </Link>
+          )}
         </div>
 
         {people.length === 0 ? (
           <div className="mt-4 rounded-3xl border-2 border-dashed border-ink/25 bg-white p-6 text-center">
-            <p className="font-bold">No one in {homeCity ?? "your city"} yet.</p>
-            <p className="mt-1 text-sm font-medium text-muted">
-              Post an activity and be the first others can say hi to.
+            <p className="font-bold">
+              No new activity buddies in {homeCity ?? "your city"} right now.
             </p>
-            <Link
-              href="/match/trip?kind=activity"
-              className="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-flockie-coral px-5 py-2 text-sm font-bold text-white"
-            >
-              <Plus size={15} /> Create an activity
-            </Link>
+            <p className="mx-auto mt-1 max-w-xl text-sm font-medium leading-relaxed text-muted">
+              Creating an activity won’t produce a match until someone compatible
+              is available. Invite a friend or explore Vibes while the local pool grows.
+            </p>
+            <div className="mt-4 flex flex-col justify-center gap-2 sm:flex-row">
+              <InviteFriendsButton
+                inviterId={user!.id}
+                inviterName={profile?.display_name ?? undefined}
+                city={homeCity ?? undefined}
+                label="Invite a friend"
+              />
+              <Link
+                href="/vibes"
+                className="inline-flex items-center justify-center rounded-full border-2 border-ink bg-white px-5 py-2.5 text-sm font-bold text-ink"
+              >
+                Explore Vibes
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="carousel-fade mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

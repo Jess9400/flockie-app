@@ -19,6 +19,14 @@ language sql security definer set search_path = public stable as $$
     and cp.onboarding_complete
     and coalesce(me.home_city, '') <> ''
     and lower(coalesce(cp.home_city, '')) = lower(me.home_city)
+    and not exists (
+      select 1 from public.buddy_swipes s
+      where s.swiper_id = auth.uid() and s.target_id = cp.id
+    )
+    and not exists (
+      select 1 from public.activity_candidate_decisions d
+      where d.user_id = auth.uid() and d.candidate_id = cp.id
+    )
   order by score desc nulls last
   limit p_limit;
 $$;

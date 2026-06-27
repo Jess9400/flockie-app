@@ -152,7 +152,20 @@ export default async function MatchPage({
     // Discovery pool: anyone in the activity's city who is open to discovery —
     // no posted activity or city-count gate required.
     const { data: cands } = await supabase.rpc("activity_candidates", { p_trip: selectedId, p_limit: 30 });
-    body = <SwipeDeck candidates={await enrich(cands ?? [])} activityTitle={post.title || label} />;
+    body =
+      (cands ?? []).length > 0 ? (
+        <SwipeDeck
+          candidates={await enrich(cands ?? [])}
+          activityId={selectedId}
+          activityTitle={post.title || label}
+        />
+      ) : (
+        <ActivityEmptyState
+          userId={user!.id}
+          userName={profile?.display_name ?? undefined}
+          city={label}
+        />
+      );
   } else {
     // Trips still use the destination/date-overlap pool + the city gate.
     let { data: count, error: countErr } = await supabase.rpc("buddy_dest_count", { p_kind: mode, p_trip: selectedId });
@@ -217,6 +230,42 @@ function Gate({ text, cta, href }: { text: string; cta: string; href: string }) 
       <Link href={href} className="mt-5 inline-block rounded-full border-2 border-ink bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_4px_0_0_#E0512C]">
         {cta}
       </Link>
+    </div>
+  );
+}
+
+function ActivityEmptyState({
+  userId,
+  userName,
+  city,
+}: {
+  userId: string;
+  userName?: string;
+  city: string;
+}) {
+  return (
+    <div className="mt-6 rounded-3xl border-2 border-dashed border-ink/30 bg-white p-7 text-center">
+      <p className="text-3xl">👋</p>
+      <p className="mt-3 text-lg font-extrabold">Your activity is saved</p>
+      <p className="mt-1 text-sm font-medium leading-relaxed text-muted">
+        There are no new compatible people in {city || "your city"} right now.
+        Posting saves what you want to do, but it cannot create a match until
+        someone compatible is available.
+      </p>
+      <div className="mt-5 flex flex-col justify-center gap-2 sm:flex-row">
+        <InviteFriendsButton
+          inviterId={userId}
+          inviterName={userName}
+          city={city || undefined}
+          label="Invite a friend"
+        />
+        <Link
+          href="/vibes"
+          className="inline-flex items-center justify-center rounded-full border-2 border-ink bg-white px-5 py-2.5 font-bold text-ink"
+        >
+          Explore Vibes
+        </Link>
+      </div>
     </div>
   );
 }
