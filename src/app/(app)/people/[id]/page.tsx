@@ -1,13 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft, MapPin } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import ProfileView from "@/components/ProfileView";
-import ProfileSocials from "@/components/ProfileSocials";
-import ProfileReviews, { type ReviewItem } from "@/components/ProfileReviews";
-import ProfileEvents from "@/components/ProfileEvents";
-import MatchBackButton from "@/components/MatchBackButton";
-import Stars from "@/components/Stars";
+import PublicProfileDashboard from "@/components/PublicProfileDashboard";
+import { type EventsData } from "@/components/ProfileEvents";
+import { type ReviewItem } from "@/components/ProfileReviews";
 import type { Profile } from "@/lib/vibe-check";
 
 export default async function PersonPage({
@@ -20,12 +17,18 @@ export default async function PersonPage({
   const { data: profile } = await supabase
     .from("profiles")
     .select(
-      "display_name, age, gender, relationship_status, home_city, instagram, x_handle, tiktok, photos, video_url, planning, pace, social_energy, budget, nightlife, adventurousness, trip_vibe, travel_style, dealbreakers, one_liner, activities, activity_skills, activity_social, activity_intensity, activity_vibe, activity_one_liner, onboarding_complete, archetype"
+      "display_name, age, home_city, instagram, x_handle, tiktok, photos, video_url, trip_vibe, one_liner, activities, activity_vibe, archetype"
     )
     .eq("id", params.id)
     .maybeSingle();
 
   if (!profile) notFound();
+
+  const { data: bioRow } = await supabase
+    .from("profiles")
+    .select("bio")
+    .eq("id", params.id)
+    .maybeSingle();
 
   // Incoming like? (this person liked me and we're not matched yet → match back)
   const {
@@ -69,8 +72,6 @@ export default async function PersonPage({
       .in("id", reviewerIds);
     rp?.forEach((p) => (reviewers[p.id] = { display_name: p.display_name, photos: p.photos }));
   }
-  const reviewCount = reviews.length;
-  const reviewAvg = reviewCount ? reviews.reduce((s, r) => s + r.rating, 0) / reviewCount : 0;
   const reviewItems: ReviewItem[] = reviews.map((r) => ({
     id: r.id,
     rating: r.rating,
@@ -84,73 +85,25 @@ export default async function PersonPage({
   const { data: statsData } = await supabase.rpc("public_profile_stats", { p_user: params.id });
   const stats = (statsData ?? {}) as Record<string, number>;
   const { data: eventsData } = await supabase.rpc("public_profile_events", { p_user: params.id });
-  const isOwnProfile = user?.id === params.id;
-  const statItems = [
-    { label: "Vibes hosted", value: stats.vibes_hosted },
-    { label: "Vibes joined", value: stats.vibes_attended },
-    { label: "Activities", value: stats.activities_created },
-    { label: "Trips", value: stats.trips_created },
-    { label: "Flocks hosted", value: stats.flocks_created },
-    { label: "Flocks joined", value: stats.flocks_joined },
-    { label: "Travel buddies", value: stats.buddies_matched },
-  ].filter((s) => (s.value ?? 0) > 0);
 
   return (
-    <main className="px-5 pb-10 pt-6">
+    <main className="mx-auto w-full max-w-[1180px] px-4 pb-28 pt-6 font-nunito sm:px-6 sm:pb-12">
       <Link href="/match" className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted">
         <ChevronLeft size={16} /> Back
       </Link>
 
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black">
-            {profile.display_name || "Flockie"}
-            {profile.age ? `, ${profile.age}` : ""}
-          </h1>
-          {profile.home_city && (
-            <p className="mt-0.5 flex items-center gap-1 text-sm font-medium text-muted">
-              <MapPin size={14} /> {profile.home_city}
-            </p>
-          )}
-          {reviewCount > 0 && (
-            <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-navy">
-              <Stars value={reviewAvg} size={14} /> {reviewAvg.toFixed(1)} · {reviewCount} review
-              {reviewCount > 1 ? "s" : ""}
-            </p>
-          )}
-        </div>
-        <ProfileSocials
-          instagram={profile.instagram}
-          x_handle={profile.x_handle}
-          tiktok={profile.tiktok}
-        />
-      </div>
-
-      {incomingLike && (
-        <MatchBackButton personId={params.id} name={(profile.display_name || "They").split(" ")[0]} />
-      )}
-
-      {statItems.length > 0 && (
-        <div className="mt-5">
-          <p className="text-sm font-extrabold text-navy">On Flockie</p>
-          <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4">
-            {statItems.map((s) => (
-              <div key={s.label} className="rounded-2xl border-2 border-ink bg-white py-2.5 text-center">
-                <p className="text-xl font-black text-navy">{s.value}</p>
-                <p className="text-[10px] font-bold leading-tight text-muted">{s.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <ProfileEvents data={eventsData ?? {}} isOwner={isOwnProfile} />
-
-      <div className="mt-5">
-        <ProfileView profile={profile as Partial<Profile> & { archetype?: string | null }} />
-      </div>
-
-      <ProfileReviews avg={reviewAvg} count={reviewCount} items={reviewItems} />
+      <PublicProfileDashboard
+        personId={params.id}
+        profile={
+          { ...profile, bio: bioRow?.bio ?? null } as Partial<Profile> & {
+            archetype?: string | null;
+          }
+        }
+        reviewItems={reviewItems}
+        stats={stats}
+        events={(eventsData ?? {}) as EventsData}
+        incomingLike={incomingLike}
+      />
     </main>
   );
 }
