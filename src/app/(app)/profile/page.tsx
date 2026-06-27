@@ -52,7 +52,6 @@ export default async function ProfilePage({
     rp?.forEach((p) => (reviewers[p.id] = { display_name: p.display_name, photos: p.photos }));
   }
   const reviewCount = reviews.length;
-  const reviewAvg = reviewCount ? reviews.reduce((s, r) => s + r.rating, 0) / reviewCount : 0;
   const reviewItems: ReviewItem[] = reviews.map((r) => ({
     id: r.id,
     rating: r.rating,
@@ -67,12 +66,11 @@ export default async function ProfilePage({
   const { data: eventsData } = await supabase.rpc("public_profile_events", { p_user: user!.id });
 
   return (
-    <main className="mx-auto w-full max-w-[720px] px-6 pb-28 pt-6 font-nunito sm:pb-12">
+    <main className="mx-auto w-full max-w-[1180px] px-4 pb-28 pt-6 font-nunito sm:px-6 sm:pb-12">
       <ProfileEditor
         userId={user!.id}
         profile={{ ...(profile ?? {}), bio: bioRow?.bio ?? null } as Partial<Profile>}
         complete={complete}
-        reviewAvg={reviewAvg}
         reviewCount={reviewCount}
         reviewItems={reviewItems}
         redirectAfter={returnTo}
