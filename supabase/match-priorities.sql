@@ -273,6 +273,12 @@ language sql security definer set search_path = public stable as $$
     and coalesce(array_length(cp.activities, 1), 0) > 0
     and lower(coalesce(cp.home_city, '')) = lower(coalesce(me_t.destination, ''))
     and not public.buddy_hard_block(auth.uid(), cp.id)  -- hard dealbreaker filter
+    and not exists (
+      select 1 from public.activity_candidate_decisions d
+      where d.user_id = auth.uid()
+        and d.activity_id = p_trip
+        and d.candidate_id = cp.id
+    )
     and not exists (select 1 from public.buddy_swipes s where s.swiper_id = auth.uid() and s.target_id = cp.id)
   order by score desc
   limit p_limit;

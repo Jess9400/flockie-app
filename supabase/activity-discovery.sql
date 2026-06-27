@@ -4,6 +4,34 @@
 alter table public.profiles
   add column if not exists open_to_discovery boolean not null default true;
 
+create table if not exists public.activity_candidate_decisions (
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  activity_id uuid not null references public.trips(id) on delete cascade,
+  candidate_id uuid not null references public.profiles(id) on delete cascade,
+  liked boolean not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (user_id, activity_id, candidate_id),
+  check (user_id <> candidate_id)
+);
+create index if not exists activity_candidate_decisions_user_candidate_idx
+  on public.activity_candidate_decisions (user_id, candidate_id);
+alter table public.activity_candidate_decisions enable row level security;
+drop policy if exists "manage own activity candidate decisions"
+  on public.activity_candidate_decisions;
+create policy "manage own activity candidate decisions"
+  on public.activity_candidate_decisions for all to authenticated
+  using (user_id = auth.uid())
+  with check (
+    user_id = auth.uid()
+    and exists (
+      select 1 from public.trips t
+      where t.id = activity_id
+        and t.user_id = auth.uid()
+        and t.kind = 'activity'
+    )
+  );
+
 -- People in the activity's city, open to discovery, with an activity check done.
 drop function if exists public.activity_candidates(uuid, int);
 create or replace function public.activity_candidates(p_trip uuid, p_limit int default 30)
@@ -41,6 +69,12 @@ language sql security definer set search_path = public stable as $$
     and cp.onboarding_complete
     and coalesce(array_length(cp.activities, 1), 0) > 0
     and lower(coalesce(cp.home_city, '')) = lower(coalesce(me_t.destination, ''))
+    and not exists (
+      select 1 from public.activity_candidate_decisions d
+      where d.user_id = auth.uid()
+        and d.activity_id = p_trip
+        and d.candidate_id = cp.id
+    )
     and not exists (select 1 from public.buddy_swipes s where s.swiper_id = auth.uid() and s.target_id = cp.id)
   order by score desc
   limit p_limit;
@@ -96,3 +130,51 @@ begin
   return jsonb_build_object('matched', false);
 end $$;
 grant execute on function public.buddy_swipe(uuid, boolean, text) to authenticated;
+
+drop function if exists public.activity_candidate_decide(uuid, uuid, boolean);
+create or replace function public.activity_candidate_decide(
+  p_activity uuid,
+  p_target uuid,
+  p_liked boolean
+)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare
+  v_title text;
+  v_result jsonb;
+begin
+  if p_target = auth.uid() then
+    raise exception 'You cannot choose yourself.';
+  end if;
+
+  select t.title into v_title
+  from public.trips t
+  where t.id = p_activity
+    and t.user_id = auth.uid()
+    and t.kind = 'activity'
+    and t.status = 'active';
+
+  if not found then
+    raise exception 'Activity not found or no longer active.';
+  end if;
+
+  insert into public.activity_candidate_decisions (
+    user_id, activity_id, candidate_id, liked, updated_at
+  )
+  values (auth.uid(), p_activity, p_target, p_liked, now())
+  on conflict (user_id, activity_id, candidate_id)
+  do update set liked = excluded.liked, updated_at = now();
+
+  if p_liked then
+    select public.buddy_swipe(
+      p_target,
+      true,
+      coalesce(nullif(trim(v_title), ''), 'an activity')
+    )
+    into v_result;
+    return v_result;
+  end if;
+
+  return jsonb_build_object('matched', false);
+end $$;
+grant execute on function public.activity_candidate_decide(uuid, uuid, boolean)
+  to authenticated;

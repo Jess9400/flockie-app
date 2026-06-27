@@ -26,9 +26,11 @@ type Candidate = {
 
 export default function SwipeDeck({
   candidates,
+  activityId,
   activityTitle,
 }: {
   candidates: Candidate[];
+  activityId?: string | null;
   activityTitle?: string | null;
 }) {
   const supabase = createClient();
@@ -36,6 +38,7 @@ export default function SwipeDeck({
   const [busy, setBusy] = useState(false);
   const [media, setMedia] = useState(0);
   const [match, setMatch] = useState<{ name: string; chatId: string } | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [drag, setDrag] = useState(0);
   const draggingRef = useRef(false);
   const startXRef = useRef(0);
@@ -85,12 +88,23 @@ export default function SwipeDeck({
   async function act(liked: boolean) {
     if (!c || busy) return;
     setBusy(true);
-    const { data } = await supabase.rpc("buddy_swipe", {
-      p_target: c.id,
-      p_liked: liked,
-      p_activity_title: activityTitle ?? null,
-    });
+    setActionError(null);
+    const { data, error } = activityId
+      ? await supabase.rpc("activity_candidate_decide", {
+          p_activity: activityId,
+          p_target: c.id,
+          p_liked: liked,
+        })
+      : await supabase.rpc("buddy_swipe", {
+          p_target: c.id,
+          p_liked: liked,
+          p_activity_title: activityTitle ?? null,
+        });
     setBusy(false);
+    if (error) {
+      setActionError("We couldn’t save that choice. Please try again.");
+      return;
+    }
     const res = data as { matched: boolean; chat_id?: string } | null;
     if (liked && res?.matched && res.chat_id) {
       setMatch({ name: c.display_name || "this flockie", chatId: res.chat_id });
@@ -240,6 +254,11 @@ export default function SwipeDeck({
           <Heart size={28} fill="currentColor" />
         </button>
       </div>
+      {actionError && (
+        <p className="mt-3 text-center text-sm font-bold text-red-700">
+          {actionError}
+        </p>
+      )}
 
       {match && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-6">
