@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { Settings, Share2 } from "lucide-react";
-import ProfileTabs from "@/components/ProfileTabs";
+import OwnerProfileDashboard from "@/components/OwnerProfileDashboard";
 import { type ReviewItem } from "@/components/ProfileReviews";
 import { type EventsData } from "@/components/ProfileEvents";
 import VibeCheckForm from "@/components/VibeCheckForm";
@@ -15,7 +13,6 @@ export default function ProfileEditor({
   userId,
   profile,
   complete,
-  reviewAvg = 0,
   reviewCount = 0,
   reviewItems = [],
   redirectAfter,
@@ -26,7 +23,6 @@ export default function ProfileEditor({
   userId: string;
   profile: Partial<Profile>;
   complete: boolean;
-  reviewAvg?: number;
   reviewCount?: number;
   reviewItems?: ReviewItem[];
   redirectAfter?: string;
@@ -53,7 +49,7 @@ export default function ProfileEditor({
 
   if (editing) {
     return (
-      <div className="font-nunito">
+      <div className="mx-auto max-w-[720px] font-nunito">
         {complete && (
           <button
             onClick={() => setEditing(false)}
@@ -74,37 +70,16 @@ export default function ProfileEditor({
 
   return (
     <div className="relative">
-      {/* Top-right overlay controls */}
-      <div className="absolute right-3 top-3 z-10 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => setShowShare(true)}
-          aria-label="Share my vibe"
-          className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-navy bg-white/90 text-navy backdrop-blur hover:bg-white"
-        >
-          <Share2 size={18} />
-        </button>
-        <Link
-          href="/settings"
-          aria-label="Settings"
-          className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-navy bg-white/90 text-navy backdrop-blur hover:bg-white"
-        >
-          <Settings size={18} />
-        </Link>
-      </div>
-
-      <div className="pt-14">
-        <ProfileTabs
-          userId={userId}
-          profile={profile}
-          reviewAvg={reviewAvg}
-          reviewCount={reviewCount}
-          reviewItems={reviewItems}
-          onEditProfile={() => setEditing(true)}
-          stats={stats}
-          events={events}
-        />
-      </div>
+      <OwnerProfileDashboard
+        userId={userId}
+        profile={profile}
+        reviewCount={reviewCount}
+        reviewItems={reviewItems}
+        onEditProfile={() => setEditing(true)}
+        onShare={() => setShowShare(true)}
+        stats={stats}
+        events={events}
+      />
 
       {showShare && (
         <VibeShareCard
