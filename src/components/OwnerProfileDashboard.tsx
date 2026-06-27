@@ -29,6 +29,7 @@ type DashboardProfile = Partial<Profile> & {
   vibe_scores?: VibeScores | null;
   trip_prefs_complete?: boolean | null;
   activity_prefs_complete?: boolean | null;
+  social_visibility?: "members" | "connections" | "private" | null;
 };
 
 type SetupKey = "trip" | "activity" | null;
@@ -61,6 +62,7 @@ export default function OwnerProfileDashboard({
   const tripComplete = !!profile.trip_prefs_complete || profile.planning != null;
   const activityComplete =
     !!profile.activity_prefs_complete || (profile.activities?.length ?? 0) > 0;
+  const socialVisibility = profile.social_visibility ?? "connections";
   const upcoming = useMemo(() => buildUpcoming(events), [events]);
   const visibleReviews = showAllReviews ? reviewItems : reviewItems.slice(0, 2);
 
@@ -217,7 +219,7 @@ export default function OwnerProfileDashboard({
 
           <Panel
             title="Visibility summary"
-            description="This is informational for now; existing privacy behavior is unchanged in PR 1."
+            description="These rules are enforced by the profile privacy layer."
             badge={
               <Link
                 href="/settings"
@@ -232,6 +234,24 @@ export default function OwnerProfileDashboard({
               title="Public profile"
               description="Photo, name, age, city, bio, public interests, qualitative reviews, and completed public history."
               label="Visible"
+            />
+            <VisibilityRow
+              icon="🔗"
+              title="Social accounts"
+              description={
+                socialVisibility === "members"
+                  ? "Visible to signed-in Flockie members."
+                  : socialVisibility === "private"
+                    ? "Hidden from everyone else."
+                    : "Visible after you share a confirmed plan or buddy match."
+              }
+              label={
+                socialVisibility === "members"
+                  ? "Members"
+                  : socialVisibility === "private"
+                    ? "Only you"
+                    : "Connections"
+              }
             />
             <VisibilityRow
               icon="🔒"

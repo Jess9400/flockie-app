@@ -17,7 +17,7 @@ export default async function ReviewPage({
   if (user!.id === params.userId) notFound();
 
   const { data: subject } = await supabase
-    .from("profiles")
+    .from("public_profiles")
     .select("display_name")
     .eq("id", params.userId)
     .maybeSingle();

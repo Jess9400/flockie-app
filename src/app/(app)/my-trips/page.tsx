@@ -78,7 +78,7 @@ export default async function MyTripsPage({
     const rp: Record<string, { display_name: string | null; age: number | null; photos: string[] | null; one_liner: string | null }> = {};
     if (reqUserIds.length) {
       const { data } = await supabase
-        .from("profiles")
+        .from("public_profiles")
         .select("id, display_name, age, photos, one_liner")
         .in("id", reqUserIds);
       data?.forEach((p) => (rp[p.id] = p));

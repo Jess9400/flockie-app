@@ -120,10 +120,10 @@ export async function restartVibeCheck() {
 export async function getNearbyVibes(city: string, limit = 3) {
   const { supabase, user } = await authenticatedClient();
   const { data, error } = await supabase
-    .from("profiles")
+    .from("public_profiles")
     .select("id, display_name, photos, home_city, archetype")
     .eq("home_city", city)
-    .not("vibe_completed_at", "is", null)
+    .not("archetype", "is", null)
     .neq("id", user.id)
     .limit(limit);
 

@@ -15,20 +15,14 @@ export default async function PersonPage({
   const supabase = await createClient();
 
   const { data: profile } = await supabase
-    .from("profiles")
+    .from("public_profiles")
     .select(
-      "display_name, age, home_city, instagram, x_handle, tiktok, photos, video_url, trip_vibe, one_liner, activities, activity_vibe, archetype"
+      "display_name, age, home_city, instagram, x_handle, tiktok, photos, video_url, bio, trip_vibe, one_liner, activities, activity_vibe, archetype"
     )
     .eq("id", params.id)
     .maybeSingle();
 
   if (!profile) notFound();
-
-  const { data: bioRow } = await supabase
-    .from("profiles")
-    .select("bio")
-    .eq("id", params.id)
-    .maybeSingle();
 
   // Incoming like? (this person liked me and we're not matched yet → match back)
   const {
@@ -67,7 +61,7 @@ export default async function PersonPage({
   const reviewers: Record<string, { display_name: string | null; photos: string[] | null }> = {};
   if (reviewerIds.length) {
     const { data: rp } = await supabase
-      .from("profiles")
+      .from("public_profiles")
       .select("id, display_name, photos")
       .in("id", reviewerIds);
     rp?.forEach((p) => (reviewers[p.id] = { display_name: p.display_name, photos: p.photos }));
@@ -94,11 +88,7 @@ export default async function PersonPage({
 
       <PublicProfileDashboard
         personId={params.id}
-        profile={
-          { ...profile, bio: bioRow?.bio ?? null } as Partial<Profile> & {
-            archetype?: string | null;
-          }
-        }
+        profile={profile as Partial<Profile> & { archetype?: string | null }}
         reviewItems={reviewItems}
         stats={stats}
         events={(eventsData ?? {}) as EventsData}

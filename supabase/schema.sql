@@ -22,6 +22,8 @@ create table if not exists public.profiles (
   planning_style text,
   preferred_season text,
   mbti text,
+  social_visibility text not null default 'connections'
+    check (social_visibility in ('members', 'connections', 'private')),
   home_city text,
   location geography(point),
   onboarding_complete boolean not null default false,
@@ -63,10 +65,11 @@ create trigger on_auth_user_created
 alter table public.profiles enable row level security;
 
 drop policy if exists "profiles are viewable by authenticated users" on public.profiles;
-create policy "profiles are viewable by authenticated users"
+drop policy if exists "users view own profile" on public.profiles;
+create policy "users view own profile"
   on public.profiles for select
   to authenticated
-  using (true);
+  using (auth.uid() = id);
 
 drop policy if exists "users manage own profile" on public.profiles;
 create policy "users manage own profile"

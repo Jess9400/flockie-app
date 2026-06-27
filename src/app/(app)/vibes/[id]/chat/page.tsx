@@ -60,7 +60,7 @@ export default async function VibeChatPage({
   const profiles: Record<string, { display_name: string | null; photos: string[] | null; age: number | null; home_city: string | null }> = {};
   if (memberIds.length) {
     const { data: mp } = await supabase
-      .from("profiles")
+      .from("public_profiles")
       .select("id, display_name, photos, age, home_city")
       .in("id", memberIds);
     mp?.forEach((m) => (profiles[m.id] = m));
