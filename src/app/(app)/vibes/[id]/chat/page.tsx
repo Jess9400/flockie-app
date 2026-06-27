@@ -33,10 +33,15 @@ export default async function VibeChatPage({
   }
 
   const { data: vibe } = await supabase
-    .from("vibes")
-    .select("title, description, photos, starts_at, ends_at, location_name, city, host_id, activity_url, status")
+    .from("vibe_directory")
+    .select("title, description, photos, starts_at, ends_at, city, host_id, status")
     .eq("id", params.id)
     .maybeSingle();
+
+  const { data: logisticsRows } = await supabase.rpc("vibe_private_logistics", {
+    p_vibe: params.id,
+  });
+  const logistics = logisticsRows?.[0] ?? null;
 
   const vibeEnded = vibe ? new Date(vibe.ends_at ?? vibe.starts_at) <= new Date() : false;
 
@@ -84,11 +89,15 @@ export default async function VibeChatPage({
     }))
     .sort((a, b) => (a.isHost === b.isHost ? 0 : a.isHost ? -1 : 1));
 
-  const locationLabel = vibe?.location_name
-    ? `${vibe.location_name}, ${vibe.city}`
+  const locationLabel = logistics?.location_name
+    ? logistics.location_name
     : vibe?.city ?? "";
-  const mapSrc = locationLabel
-    ? `https://maps.google.com/maps?q=${encodeURIComponent(locationLabel)}&z=14&output=embed`
+  const mapQuery =
+    logistics?.location_lat != null && logistics?.location_lng != null
+      ? `${logistics.location_lat},${logistics.location_lng}`
+      : locationLabel;
+  const mapSrc = mapQuery
+    ? `https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&z=14&output=embed`
     : null;
 
   return (
@@ -102,7 +111,7 @@ export default async function VibeChatPage({
           locationLabel={locationLabel}
           mapSrc={mapSrc}
           description={vibe?.description ?? null}
-          bookingUrl={vibe?.activity_url ?? null}
+          bookingUrl={logistics?.activity_url ?? null}
           members={headerMembers}
         />
 
@@ -118,7 +127,7 @@ export default async function VibeChatPage({
           members={members}
           initialMessages={messages ?? []}
           startsAt={vibe?.starts_at ?? null}
-          bookingUrl={vibe?.activity_url ?? null}
+          bookingUrl={logistics?.activity_url ?? null}
           reviewHref={vibeEnded ? `/vibes/${params.id}/review` : null}
         />
       </div>

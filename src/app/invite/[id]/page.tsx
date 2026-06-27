@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { MapPin, CalendarClock, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { formatVibeWhen } from "@/lib/vibes";
+import { formatApproximateVibeLocation } from "@/lib/vibe-location";
 import type { Metadata } from "next";
 
 type PublicVibe = {
@@ -13,7 +14,8 @@ type PublicVibe = {
   category: string;
   photos: string[] | null;
   city: string;
-  location_name: string | null;
+  area: string | null;
+  country: string | null;
   starts_at: string;
   capacity: number;
   event_vibe_tags: string[] | null;
@@ -54,6 +56,8 @@ export default async function InvitePage({
   const hostCode = searchParams.code?.trim() || "";
   const v = await getVibe(params.id);
   if (!v) notFound();
+  const approximateLocation =
+    formatApproximateVibeLocation(v) || "Location shared after confirmation";
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-lg px-5 py-8 font-nunito">
@@ -79,7 +83,7 @@ export default async function InvitePage({
 
           <div className="mt-3 space-y-1.5 font-nunito text-sm font-medium text-navy">
             <p className="flex items-center gap-2"><CalendarClock size={16} className="text-flockie-coral" /> {formatVibeWhen(v.starts_at)}</p>
-            <p className="flex items-center gap-2"><MapPin size={16} className="text-flockie-coral" /> {v.location_name ? `${v.location_name}, ${v.city}` : v.city}</p>
+            <p className="flex items-center gap-2"><MapPin size={16} className="text-flockie-coral" /> {approximateLocation}</p>
             <p className="flex items-center gap-2"><Users size={16} className="text-flockie-coral" /> {v.confirmed_count}/{v.capacity} going</p>
           </div>
 

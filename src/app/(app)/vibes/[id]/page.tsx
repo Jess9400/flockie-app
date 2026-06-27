@@ -14,6 +14,7 @@ import ShareVibeButton from "@/components/ShareVibeButton";
 import VibeReviewSummary from "@/components/VibeReviewSummary";
 import Stars from "@/components/Stars";
 import { formatVibeWhen, DEALBREAKER_RULES, VIBE_REVIEW_TAGS, type InterestStatus } from "@/lib/vibes";
+import { formatApproximateVibeLocation } from "@/lib/vibe-location";
 
 export default async function VibeDetailPage({
   params,
@@ -28,12 +29,13 @@ export default async function VibeDetailPage({
   } = await supabase.auth.getUser();
 
   const { data: vibe } = await supabase
-    .from("vibes")
+    .from("vibe_directory")
     .select("*")
     .eq("id", params.id)
     .maybeSingle();
 
   if (!vibe) notFound();
+  const isHost = vibe.host_id === user!.id;
 
   // host (plain query, no embed)
   const { data: host } = await supabase
@@ -61,6 +63,31 @@ export default async function VibeDetailPage({
     .eq("vibe_id", params.id)
     .eq("user_id", user!.id)
     .maybeSingle();
+
+  let privateLogistics: {
+    location_name: string | null;
+    location_lat: number | null;
+    location_lng: number | null;
+    activity_url: string | null;
+  } | null = null;
+  if (isHost || myInterest?.status === "confirmed") {
+    const { data } = await supabase.rpc("vibe_private_logistics", { p_vibe: params.id });
+    privateLogistics = data?.[0] ?? null;
+  }
+
+  let hostInviteCode: string | null = null;
+  let hostAlgoShare = 100;
+  let previewRejectsUsed = 0;
+  if (isHost) {
+    const { data } = await supabase
+      .from("vibes")
+      .select("host_invite_code, algo_share, preview_rejects_used")
+      .eq("id", params.id)
+      .maybeSingle();
+    hostInviteCode = data?.host_invite_code ?? null;
+    hostAlgoShare = data?.algo_share ?? 100;
+    previewRejectsUsed = data?.preview_rejects_used ?? 0;
+  }
 
   const { data: myFeedback } = await supabase
     .from("vibe_feedback")
@@ -94,8 +121,12 @@ export default async function VibeDetailPage({
     attendees = ap ?? [];
   }
 
-  const isHost = host?.id === user!.id;
   const eventStarted = new Date(vibe.starts_at) <= new Date();
+  const approximateLocation =
+    formatApproximateVibeLocation(vibe) || "Location shared after confirmation";
+  const locationLabel = privateLogistics?.location_name
+    ? privateLogistics.location_name
+    : approximateLocation;
 
   // Host-only matching tally (Interested / Invited / Going / Standby counts).
   const tally: Record<string, number> = {};
@@ -110,9 +141,8 @@ export default async function VibeDetailPage({
   // Pre-invite review (v2): the ranked shortlist the host can prune before invites.
   let shortlist: { id: string; name: string | null; photo: string | null; score: number | null }[] = [];
   const previewRejectCap = Math.max(1, Math.floor(vibe.capacity * 0.25));
-  const previewRejectsUsed = vibe.preview_rejects_used ?? 0;
   // Private-link direct invites (v2): the host's reserved spots.
-  const hostAlgoBase = Math.max(1, Math.ceil((vibe.capacity * (vibe.algo_share ?? 100)) / 100));
+  const hostAlgoBase = Math.max(1, Math.ceil((vibe.capacity * hostAlgoShare) / 100));
   const hostSpots = Math.max(0, vibe.capacity - hostAlgoBase);
   let privateRequests: { id: string; name: string | null; photo: string | null }[] = [];
   let hostFilled = 0;
@@ -293,8 +323,13 @@ export default async function VibeDetailPage({
             </p>
             <p className="flex items-center gap-2">
               <MapPin size={15} className="shrink-0 text-flockie-orange" />
-              {vibe.location_name ? `${vibe.location_name}, ${vibe.city}` : vibe.city}
+              {locationLabel}
             </p>
+            {!privateLogistics && (
+              <p className="pl-[23px] text-xs font-medium text-muted">
+                Approximate area · exact location unlocks after confirmation
+              </p>
+            )}
             <p className="flex items-center gap-2">
               <Users size={15} className="shrink-0 text-flockie-orange" />
               {confirmedCount ?? 0}/{vibe.capacity} going
@@ -306,9 +341,9 @@ export default async function VibeDetailPage({
         </div>
       </div>
 
-      {vibe.activity_url && (
+      {privateLogistics?.activity_url && (
         <a
-          href={vibe.activity_url}
+          href={privateLogistics.activity_url}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-4 flex w-fit items-center gap-2 rounded-full border-2 border-ink bg-flockie-blue px-4 py-2 text-sm font-bold text-white"
@@ -475,7 +510,7 @@ export default async function VibeDetailPage({
       {isHost && !ended && hostSpots > 0 && (
         <HostVibePrivateRequests
           vibeId={vibe.id}
-          code={vibe.host_invite_code ?? null}
+          code={hostInviteCode}
           requests={privateRequests}
           hostSpots={hostSpots}
           hostFilled={hostFilled}
