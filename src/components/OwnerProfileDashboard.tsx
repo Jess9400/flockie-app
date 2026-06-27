@@ -230,7 +230,7 @@ export default function OwnerProfileDashboard({
             <VisibilityRow
               icon="👤"
               title="Public profile"
-              description="Photo, name, age, city, bio, public interests, reviews, and Flockie activity."
+              description="Photo, name, age, city, bio, public interests, qualitative reviews, and completed public history."
               label="Visible"
             />
             <VisibilityRow
@@ -242,14 +242,14 @@ export default function OwnerProfileDashboard({
             <VisibilityRow
               icon="📅"
               title="Plan visibility"
-              description="Private trips and activities stay owner-only; public Vibes and flocks follow existing visibility rules."
-              label="Existing rules"
+              description="Upcoming plans stay on your owner dashboard; completed public Vibes and flocks can appear on your public profile."
+              label="Profile display"
             />
           </Panel>
 
           <Panel
             title="My upcoming plans"
-            description="A management preview. Private trips stay owner-only; public Vibes and flocks may also appear publicly."
+            description="A private management preview on your owner dashboard."
             badge={
               <Link href="/my-vibes" className="text-xs font-extrabold text-flockie-coral">
                 See all →

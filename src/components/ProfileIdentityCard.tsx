@@ -18,13 +18,16 @@ export default function ProfileIdentityCard({
   stats,
   onEdit,
   onShare,
+  mode = "owner",
 }: {
   profile: IdentityProfile;
   reviewCount: number;
   stats?: Record<string, number>;
-  onEdit: () => void;
-  onShare: () => void;
+  onEdit?: () => void;
+  onShare?: () => void;
+  mode?: "owner" | "public";
 }) {
+  const isOwner = mode === "owner";
   const photo = profile.photos?.[0];
   const nameAge = [profile.display_name?.trim(), profile.age ? String(profile.age) : null]
     .filter(Boolean)
@@ -51,23 +54,27 @@ export default function ProfileIdentityCard({
         )}
         <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-navy via-navy/45 to-transparent" />
 
-        <div className="absolute right-3 top-3 flex gap-2">
-          <button
-            type="button"
-            onClick={onShare}
-            aria-label="Share profile"
-            className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink bg-white/95 text-navy shadow-[0_3px_0_0_#10233d]"
-          >
-            <Share2 size={17} />
-          </button>
-          <Link
-            href="/settings"
-            aria-label="Settings"
-            className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink bg-white/95 text-navy shadow-[0_3px_0_0_#10233d]"
-          >
-            <Settings size={17} />
-          </Link>
-        </div>
+        {isOwner && (
+          <div className="absolute right-3 top-3 flex gap-2">
+            {onShare && (
+              <button
+                type="button"
+                onClick={onShare}
+                aria-label="Share profile"
+                className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink bg-white/95 text-navy shadow-[0_3px_0_0_#10233d]"
+              >
+                <Share2 size={17} />
+              </button>
+            )}
+            <Link
+              href="/settings"
+              aria-label="Settings"
+              className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink bg-white/95 text-navy shadow-[0_3px_0_0_#10233d]"
+            >
+              <Settings size={17} />
+            </Link>
+          </div>
+        )}
 
         <div className="absolute inset-x-5 bottom-5 text-white">
           <h1 className="font-fredoka text-4xl font-bold leading-none">
@@ -92,11 +99,11 @@ export default function ProfileIdentityCard({
           <p className="whitespace-pre-line text-sm font-medium leading-relaxed text-navy/80">
             {profile.bio}
           </p>
-        ) : (
+        ) : isOwner ? (
           <p className="text-sm font-medium text-muted">
             Add a short bio so people understand what it feels like to hang out with you.
           </p>
-        )}
+        ) : null}
 
         {tags.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1.5">
@@ -125,13 +132,15 @@ export default function ProfileIdentityCard({
           <TrustItem value={stats?.vibes_hosted ?? 0} label="Hosted" />
         </div>
 
-        <button
-          type="button"
-          onClick={onEdit}
-          className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-coral px-5 py-2.5 font-fredoka text-sm font-semibold text-white shadow-[0_3px_0_0_#10233d]"
-        >
-          <Pencil size={15} /> Edit public profile
-        </button>
+        {isOwner && onEdit && (
+          <button
+            type="button"
+            onClick={onEdit}
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-coral px-5 py-2.5 font-fredoka text-sm font-semibold text-white shadow-[0_3px_0_0_#10233d]"
+          >
+            <Pencil size={15} /> Edit public profile
+          </button>
+        )}
       </div>
     </section>
   );
