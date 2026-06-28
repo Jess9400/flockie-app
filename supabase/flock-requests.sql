@@ -32,8 +32,8 @@ begin
 end $$;
 grant execute on function public.decline_join_request(uuid, uuid) to authenticated;
 
--- Accepted members can read each other's requests on a trip (so confirmed
--- attendees + browsers can see who's going). Requesters always see their own.
-drop policy if exists "join requests readable" on public.trip_join_requests;
-create policy "join requests readable" on public.trip_join_requests for select to authenticated
-  using (true);
+-- join requests SELECT policy: SUPERSEDED — do not recreate here.
+-- The live, scoped policy is in supabase/trip-requests-rls-enforce.sql (#90 —
+-- requester / trip host / co-host / accepted member, via can_see_trip_requests).
+-- The old `using (true)` version (any authed user reads every join request) was
+-- removed 2026-06-28 so re-running this file can't re-open the table.
