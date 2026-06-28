@@ -52,7 +52,7 @@ async function loadHostsAndCounts(
 
   const [hostResult, confirmedResult] = await Promise.all([
     hostIds.length
-      ? supabase.from("profiles").select("id, display_name, photos").in("id", hostIds)
+      ? supabase.from("public_profiles").select("id, display_name, photos").in("id", hostIds)
       : Promise.resolve({ data: [] }),
     ids.length
       ? supabase.from("vibe_interests").select("vibe_id").eq("status", "confirmed").in("vibe_id", ids)

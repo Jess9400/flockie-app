@@ -5,9 +5,6 @@ import BuddyChatRoom from "@/components/BuddyChatRoom";
 import BuddyChatHeader from "@/components/BuddyChatHeader";
 import FlockJoinRequests, { type JoinReq } from "@/components/FlockJoinRequests";
 import { type PeekData } from "@/components/ProfilePeek";
-import { SLIDERS } from "@/lib/vibe-check";
-
-const SLIDER_KEYS = ["planning", "pace", "social_energy", "budget", "nightlife", "adventurousness"] as const;
 
 export default async function BuddyChatPage({
   params,
@@ -80,7 +77,7 @@ export default async function BuddyChatPage({
       const ids = (jr ?? []).map((r) => r.user_id);
       if (ids.length) {
         const { data: rp } = await supabase
-          .from("profiles")
+          .from("public_profiles")
           .select("id, display_name, age, photos, one_liner")
           .in("id", ids);
         const map: Record<string, { display_name: string | null; age: number | null; photos: string[] | null; one_liner: string | null }> = {};
@@ -106,7 +103,7 @@ export default async function BuddyChatPage({
       ) as string[];
       if (memberIds.length) {
         const { data: mp } = await supabase
-          .from("profiles")
+          .from("public_profiles")
           .select("id, display_name, photos")
           .in("id", memberIds);
         mp?.forEach((p) => (chatMembers[p.id] = { name: p.display_name || "Flockie", photo: p.photos?.[0] ?? null }));
@@ -114,12 +111,12 @@ export default async function BuddyChatPage({
     }
   }
 
-  const fields =
-    "id, display_name, age, photos, home_city, one_liner, trip_vibe, travel_style, planning, pace, social_energy, budget, nightlife, adventurousness";
+  const publicFields =
+    "id, display_name, age, photos, home_city, one_liner, trip_vibe";
   const [{ data: other }, { data: me }, { data: trips }, { data: messages }, { data: muteRow }] =
     await Promise.all([
-      supabase.from("profiles").select(fields).eq("id", otherId).maybeSingle(),
-      supabase.from("profiles").select(fields).eq("id", user!.id).maybeSingle(),
+      supabase.from("public_profiles").select(publicFields).eq("id", otherId).maybeSingle(),
+      supabase.from("profiles").select("id, trip_vibe").eq("id", user!.id).maybeSingle(),
       supabase
         .from("trips")
         .select("id, destination, destinations, start_date, end_date")
@@ -180,29 +177,9 @@ export default async function BuddyChatPage({
   // Shared tags + compatibility score.
   const arr = (v: unknown) => (Array.isArray(v) ? (v as string[]) : []);
   const sharedVibe = arr(other?.trip_vibe).filter((t) => arr(me?.trip_vibe).includes(t));
-  const sharedTravelStyle = arr(other?.travel_style).filter((t) => arr(me?.travel_style).includes(t));
-  const common = [...sharedVibe, ...sharedTravelStyle];
-
-  const diffs: number[] = [];
-  for (const k of SLIDER_KEYS) {
-    const a = other?.[k] as number | null | undefined;
-    const b = me?.[k] as number | null | undefined;
-    if (a != null && b != null) diffs.push(1 - Math.abs(a - b) / 4);
-  }
-  const sliderScore = diffs.length ? diffs.reduce((s, x) => s + x, 0) / diffs.length : null;
-  const union = new Set([...arr(other?.trip_vibe), ...arr(me?.trip_vibe)]);
-  const inter = arr(other?.trip_vibe).filter((t) => arr(me?.trip_vibe).includes(t));
-  const tagScore = union.size ? inter.length / union.size : null;
-  let score: number | null = null;
-  if (sliderScore != null || tagScore != null) {
-    const parts: [number, number][] = [];
-    if (sliderScore != null) parts.push([0.6, sliderScore]);
-    if (tagScore != null) parts.push([0.4, tagScore]);
-    const wsum = parts.reduce((s, [w]) => s + w, 0);
-    score = Math.round((parts.reduce((s, [w, v]) => s + w * v, 0) / wsum) * 100);
-  }
-  // Persisted score (from match time) wins when available.
-  if (matchExt?.score != null) score = Math.round(Number(matchExt.score));
+  const common = sharedVibe;
+  const score =
+    matchExt?.score != null ? Math.round(Number(matchExt.score)) : null;
 
   const compatLine = common.length
     ? `You both align on ${common.slice(0, 3).join(", ").toLowerCase()}.`
@@ -217,13 +194,6 @@ export default async function BuddyChatPage({
           common.length ? ` — ${common.slice(0, 3).join(", ").toLowerCase()}` : ""
         }. Pick a destination together and start planning. No pressure.`;
 
-  const peekAnswers = SLIDERS.map((s) => {
-    const v = other?.[s.key] as number | null | undefined;
-    return v != null ? { label: s.label, answer: s.scale[v - 1] } : null;
-  })
-    .filter(Boolean)
-    .slice(0, 3) as { label: string; answer: string }[];
-
   const peek: PeekData = {
     id: otherId,
     name: otherName,
@@ -231,9 +201,9 @@ export default async function BuddyChatPage({
     city: other?.home_city ?? null,
     photos: arr(other?.photos),
     oneLiner: other?.one_liner ?? null,
-    answers: peekAnswers,
+    answers: [],
     tripVibe: arr(other?.trip_vibe),
-    travelStyle: arr(other?.travel_style),
+    travelStyle: [],
   };
 
   const groupMembers = Object.entries(chatMembers).map(([id, mem]) => ({
@@ -278,7 +248,7 @@ export default async function BuddyChatPage({
           dateRange={headerDateRange}
           score={score}
           sharedVibe={sharedVibe}
-          sharedTravelStyle={sharedTravelStyle}
+          sharedTravelStyle={[]}
           compatLine={compatLine}
           peek={peek}
           isGroup={!!flockTripId}

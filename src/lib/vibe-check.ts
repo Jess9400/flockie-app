@@ -437,6 +437,7 @@ export type Profile = VibeAnswers &
     photos: string[];
     video_url: string | null;
     notifications_enabled: boolean;
+    social_visibility: "members" | "connections" | "private";
     vouch_token: string | null;
     onboarding_complete: boolean;
   };

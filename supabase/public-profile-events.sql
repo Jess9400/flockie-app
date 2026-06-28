@@ -1,5 +1,5 @@
--- Public-profile event lists: the vibes & flocks a person hosts/joins (public),
--- plus their activities & private trips when they view their own profile.
+-- Public-profile event lists: visitors receive completed public history only.
+-- Owners also receive upcoming public plans, activities, and private trips.
 -- Run in the Supabase SQL editor. Safe to re-run.
 
 create or replace function public.public_profile_events(p_user uuid)
@@ -16,17 +16,19 @@ begin
                false as reviewed
         from public.vibes v
         where v.host_id = p_user and v.status <> 'cancelled'
+          and (v_owner or coalesce(v.ends_at, v.starts_at) <= now())
         union all
         select v.id, v.title, (v.photos)[1] as photo, v.starts_at,
                'going'::text as role, (coalesce(v.ends_at, v.starts_at) <= now()) as past,
-               exists(
+               case when v_owner then exists(
                  select 1 from public.vibe_reviews r
                  where r.reviewer_id = p_user and r.vibe_id = v.id
-               ) as reviewed
+               ) else false end as reviewed
         from public.vibe_interests vi
         join public.vibes v on v.id = vi.vibe_id
         where vi.user_id = p_user and vi.status = 'confirmed'
           and v.host_id <> p_user and v.status <> 'cancelled'
+          and (v_owner or coalesce(v.ends_at, v.starts_at) <= now())
       ) x
     ),
     'flocks', (
@@ -35,12 +37,15 @@ begin
                t.start_date, t.end_date, 'host'::text as role, (t.end_date < current_date) as past
         from public.trips t
         where t.user_id = p_user and t.kind = 'trip' and t.visibility = 'public' and t.status <> 'cancelled'
+          and (v_owner or t.end_date < current_date)
         union all
         select t.id, coalesce(t.destination, (t.destinations)[1]) as destination, t.cover_photo as photo,
                t.start_date, t.end_date, 'going'::text as role, (t.end_date < current_date) as past
         from public.trip_join_requests jr
         join public.trips t on t.id = jr.trip_id
         where jr.user_id = p_user and jr.status = 'accepted' and t.visibility = 'public'
+          and t.status <> 'cancelled'
+          and (v_owner or t.end_date < current_date)
       ) x
     )
   );

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import NotificationsToggle from "@/components/NotificationsToggle";
 import LocationToggle from "@/components/LocationToggle";
 import DiscoveryToggle from "@/components/DiscoveryToggle";
+import SocialVisibilityControl from "@/components/SocialVisibilityControl";
 import SignOutButton from "@/components/SignOutButton";
 import DeleteAccountButton from "@/components/DeleteAccountButton";
 
@@ -30,6 +31,11 @@ export default async function SettingsPage() {
     .select("open_to_discovery")
     .eq("id", user!.id)
     .maybeSingle();
+  const { data: socialPrivacy } = await supabase
+    .from("profiles")
+    .select("social_visibility")
+    .eq("id", user!.id)
+    .maybeSingle();
 
   return (
     <main className="mx-auto w-full max-w-[720px] px-6 pb-24 pt-6 font-nunito">
@@ -43,6 +49,15 @@ export default async function SettingsPage() {
       <h1 className="font-fredoka text-3xl font-bold text-navy">Settings</h1>
 
       <section className="mt-8 space-y-3">
+        <SocialVisibilityControl
+          userId={user!.id}
+          initial={
+            socialPrivacy?.social_visibility === "members" ||
+            socialPrivacy?.social_visibility === "private"
+              ? socialPrivacy.social_visibility
+              : "connections"
+          }
+        />
         <NotificationsToggle
           userId={user!.id}
           initial={profile?.notifications_enabled ?? true}

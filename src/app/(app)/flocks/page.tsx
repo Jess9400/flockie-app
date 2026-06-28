@@ -90,7 +90,7 @@ export default async function FlocksPage({
   const profiles: Record<string, { display_name: string | null; photos: string[] | null }> = {};
   if (hostIds.length) {
     const { data: pp } = await supabase
-      .from("profiles")
+      .from("public_profiles")
       .select("id, display_name, photos")
       .in("id", hostIds);
     pp?.forEach((p) => (profiles[p.id] = { display_name: p.display_name, photos: p.photos }));

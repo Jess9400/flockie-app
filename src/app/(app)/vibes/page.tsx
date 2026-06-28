@@ -105,7 +105,7 @@ export default async function VibesPage({
     { data: myInterests },
   ] = await Promise.all([
     hostIds.length
-      ? supabase.from("profiles").select("id, display_name, photos").in("id", hostIds)
+      ? supabase.from("public_profiles").select("id, display_name, photos").in("id", hostIds)
       : Promise.resolve({ data: [] }),
     isPast ? Promise.resolve({} as Record<string, number>) : loadVibeMatch(supabase, ids),
     isPast && ids.length

@@ -37,7 +37,7 @@ export default async function VibeDetailPage({
 
   // host (plain query, no embed)
   const { data: host } = await supabase
-    .from("profiles")
+    .from("public_profiles")
     .select("id, display_name, photos, one_liner")
     .eq("id", vibe.host_id)
     .maybeSingle();
@@ -88,7 +88,7 @@ export default async function VibeDetailPage({
   const attendeeIds = (confirmedRows ?? []).map((r) => r.user_id);
   if (attendeeIds.length) {
     const { data: ap } = await supabase
-      .from("profiles")
+      .from("public_profiles")
       .select("id, display_name, photos")
       .in("id", attendeeIds);
     attendees = ap ?? [];
@@ -135,7 +135,7 @@ export default async function VibeDetailPage({
       const slIds = (slRows ?? []).map((r) => r.user_id);
       if (slIds.length) {
         const { data: slProfiles } = await supabase
-          .from("profiles")
+          .from("public_profiles")
           .select("id, display_name, photos")
           .in("id", slIds);
         const byId = new Map((slProfiles ?? []).map((p) => [p.id, p]));
@@ -158,7 +158,7 @@ export default async function VibeDetailPage({
       hostFilled = (prRows ?? []).filter((r) => r.status === "invited" || r.status === "confirmed").length;
       if (reqIds.length) {
         const { data: pp } = await supabase
-          .from("profiles")
+          .from("public_profiles")
           .select("id, display_name, photos")
           .in("id", reqIds);
         const byId = new Map((pp ?? []).map((p) => [p.id, p]));
@@ -178,7 +178,7 @@ export default async function VibeDetailPage({
     const memberIds = (memberRows ?? []).map((r) => r.user_id);
     if (memberIds.length) {
       const { data: profiles } = await supabase
-        .from("profiles")
+        .from("public_profiles")
         .select("id, display_name, photos")
         .in("id", memberIds);
       const statusByUser = new Map(

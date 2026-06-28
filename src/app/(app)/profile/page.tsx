@@ -34,6 +34,11 @@ export default async function ProfilePage({
     .select("bio")
     .eq("id", user!.id)
     .maybeSingle();
+  const { data: socialPrivacy } = await supabase
+    .from("profiles")
+    .select("social_visibility")
+    .eq("id", user!.id)
+    .maybeSingle();
 
   // Reviews about me — shown on my own profile too.
   const { data: reviewRows } = await supabase
@@ -46,7 +51,7 @@ export default async function ProfilePage({
   const reviewers: Record<string, { display_name: string | null; photos: string[] | null }> = {};
   if (reviewerIds.length) {
     const { data: rp } = await supabase
-      .from("profiles")
+      .from("public_profiles")
       .select("id, display_name, photos")
       .in("id", reviewerIds);
     rp?.forEach((p) => (reviewers[p.id] = { display_name: p.display_name, photos: p.photos }));
@@ -69,7 +74,13 @@ export default async function ProfilePage({
     <main className="mx-auto w-full max-w-[1180px] px-4 pb-28 pt-6 font-nunito sm:px-6 sm:pb-12">
       <ProfileEditor
         userId={user!.id}
-        profile={{ ...(profile ?? {}), bio: bioRow?.bio ?? null } as Partial<Profile>}
+        profile={
+          {
+            ...(profile ?? {}),
+            bio: bioRow?.bio ?? null,
+            social_visibility: socialPrivacy?.social_visibility ?? "connections",
+          } as Partial<Profile>
+        }
         complete={complete}
         reviewCount={reviewCount}
         reviewItems={reviewItems}
