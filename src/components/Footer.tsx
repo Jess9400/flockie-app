@@ -10,8 +10,8 @@ export default function Footer() {
           <div>
             <Image src="/logo-mark.svg" alt="Flockie" width={48} height={43} className="h-10 w-auto" />
             <p className="mt-3 text-2xl font-extrabold">Find your flock.</p>
-            <span className="mt-3 inline-block rounded-full border border-white/20 px-3 py-1 text-xs font-bold text-white/70">
-              Beta — not yet a registered company
+            <span className="mt-3 inline-block rounded-full bg-flockie-coral px-3 py-1.5 text-xs font-extrabold uppercase tracking-wider text-white shadow-[0_2px_0_0_rgba(0,0,0,0.2)]">
+              Beta
             </span>
           </div>
           <div className="flex flex-col gap-4 sm:items-end">
