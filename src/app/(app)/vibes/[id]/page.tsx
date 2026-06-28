@@ -514,6 +514,8 @@ export default async function VibeDetailPage({
           requests={privateRequests}
           hostSpots={hostSpots}
           hostFilled={hostFilled}
+          capacity={vibe.capacity}
+          filled={(tally.confirmed ?? 0) + (tally.invited ?? 0)}
         />
       )}
 

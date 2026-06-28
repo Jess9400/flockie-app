@@ -17,19 +17,25 @@ export default function HostVibePrivateRequests({
   requests,
   hostSpots,
   hostFilled,
+  capacity,
+  filled,
 }: {
   vibeId: string;
   code: string | null;
   requests: PrivateRequest[];
   hostSpots: number;
   hostFilled: number;
+  capacity: number;
+  filled: number;
 }) {
   const router = useRouter();
   const supabase = createClient();
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const left = Math.max(0, hostSpots - hostFilled);
+  // Accepting a direct invite is a host override: allowed whenever the VIBE has an
+  // open seat, not just the host's reserved share (matches host_accept_private).
+  const left = Math.max(0, capacity - filled);
 
   async function copyLink() {
     const url = code
@@ -61,15 +67,15 @@ export default function HostVibePrivateRequests({
   return (
     <div className="mt-6 rounded-2xl border-2 border-ink bg-white p-4">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-extrabold">Your direct spots</p>
+        <p className="text-sm font-extrabold">Private invites</p>
         <span className="rounded-full bg-cream px-2.5 py-1 text-[11px] font-bold text-muted">
-          {hostFilled}/{hostSpots} filled
+          {filled}/{capacity} filled
         </span>
       </div>
       <p className="mt-0.5 text-xs font-medium text-muted">
-        Share your link or code (e.g. on Twitter). Anyone who uses it is{" "}
-        <span className="font-bold">instantly confirmed</span> into your {hostSpots} spots — no approval
-        needed. ({left} left)
+        Share your link or code (e.g. on Twitter). Anyone who uses your code is{" "}
+        <span className="font-bold">instantly confirmed</span>; link requests you approve below — as
+        long as the Vibe has room. ({left} {left === 1 ? "seat" : "seats"} left)
       </p>
 
       {code && (
