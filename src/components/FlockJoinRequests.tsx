@@ -39,27 +39,30 @@ export default function FlockJoinRequests({
   const supabase = createClient();
   const [items, setItems] = useState(requests);
   const [busy, setBusy] = useState<string | null>(null);
+  const [err, setErr] = useState(false);
 
   async function act(userId: string, approve: boolean) {
     setBusy(userId);
+    setErr(false);
     const { error } = await supabase.rpc("respond_join_request", {
       p_trip: tripId,
       p_user: userId,
       p_approve: approve,
     });
     setBusy(null);
-    if (!error) {
-      const next = approve ? (dualApproval ? "waiting" : "accepted") : "declined";
-      setItems((cur) => cur.map((r) => (r.userId === userId ? { ...r, status: next } : r)));
-    }
+    if (error) return setErr(true);
+    const next = approve ? (dualApproval ? "waiting" : "accepted") : "declined";
+    setItems((cur) => cur.map((r) => (r.userId === userId ? { ...r, status: next } : r)));
   }
 
   async function remove(userId: string) {
     if (!window.confirm("Remove this member? Their spot opens up for someone else.")) return;
     setBusy(userId);
+    setErr(false);
     const { error } = await supabase.rpc("remove_flock_member", { p_trip: tripId, p_user: userId });
     setBusy(null);
-    if (!error) setItems((cur) => cur.filter((r) => r.userId !== userId));
+    if (error) return setErr(true);
+    setItems((cur) => cur.filter((r) => r.userId !== userId));
   }
 
   const pending = items.filter((r) => r.status === "pending");
@@ -73,6 +76,9 @@ export default function FlockJoinRequests({
       <p className="text-xs font-extrabold uppercase tracking-wide text-muted">
         Join requests {pending.length > 0 && `· ${pending.length} pending`}
       </p>
+      {err && (
+        <p className="mt-1 text-xs font-bold text-red-700">Something went wrong — try again.</p>
+      )}
 
       {pending.length > 0 && (
         <ul className="mt-2 space-y-2">

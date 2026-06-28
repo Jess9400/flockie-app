@@ -30,12 +30,14 @@ function LoginForm() {
     setLoading(true);
     const callbackParams = new URLSearchParams({ next: redirect });
     if (referral) callbackParams.set("ref", referral);
-    await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth/callback?${callbackParams.toString()}`,
       },
     });
+    // On success the browser redirects away; if it errors, re-enable the button.
+    if (error) setLoading(false);
   }
 
   return (
