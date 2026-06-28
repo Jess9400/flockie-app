@@ -10,6 +10,10 @@ alter table public.vibes
   add column if not exists shortlisted_at timestamptz,
   add column if not exists preview_rejects_used int not null default 0;
 
+-- SUPERSEDED: canonical _rank_vibe_core is in supabase/vibe-v2-private-link.sql
+-- (the live version; this copy lacks the source<>'private' filter). Wrapped out
+-- 2026-06-28 — repo-only, no DB change.
+/*
 -- ── Matching now produces a SHORTLIST for host review (no invites yet) ───────
 create or replace function public._rank_vibe_core(p_vibe uuid)
 returns jsonb language plpgsql security definer set search_path = public as $$
@@ -66,6 +70,7 @@ begin
   return jsonb_build_object('shortlisted', v_shortlisted, 'standby', v_standby);
 end $$;
 grant execute on function public._rank_vibe_core(uuid) to authenticated;
+*/
 
 -- ── Host rejects someone from the shortlist (≤25% of capacity), re-ranks ────
 create or replace function public.host_reject_shortlisted(p_vibe uuid, p_user uuid)

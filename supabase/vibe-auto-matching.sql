@@ -27,6 +27,9 @@ returns timestamptz language sql immutable set search_path = public as $$
   );
 $$;
 
+-- SUPERSEDED: canonical backfill_vibe is in supabase/vibe-v2-private-link.sql
+-- (live; uses _vibe_algo_remaining). Wrapped out 2026-06-28 — repo-only.
+/*
 -- ── Backfill open spots from standby (uses the dynamic confirm window) ───────
 create or replace function public.backfill_vibe(p_vibe uuid)
 returns int language plpgsql security definer set search_path = public as $$
@@ -53,6 +56,7 @@ begin
   return v_added;
 end $$;
 grant execute on function public.backfill_vibe(uuid) to authenticated;
+*/
 
 -- ── Same-city fallback: when interest can't fill the room, invite matched
 --    same-city flockies (like find-a-buddy). Only fires when the funnel is
@@ -105,6 +109,10 @@ begin
 end $$;
 grant execute on function public.invite_city_fallback(uuid) to authenticated;
 
+-- SUPERSEDED: canonical _rank_vibe_core is in supabase/vibe-v2-private-link.sql
+-- (live shortlist→host-review flow). This older copy auto-invited. Wrapped out
+-- 2026-06-28 — repo-only. (The rank_vibe wrapper below stays active.)
+/*
 -- ── Core ranking (NO auth gate — callable by host RPC and by the scheduler) ─
 create or replace function public._rank_vibe_core(p_vibe uuid)
 returns jsonb language plpgsql security definer set search_path = public as $$
@@ -163,6 +171,7 @@ begin
   return jsonb_build_object('invited', v_invited, 'standby', v_standby);
 end $$;
 grant execute on function public._rank_vibe_core(uuid) to authenticated;
+*/
 
 -- ── Host-facing rank_vibe: auth-gated wrapper around the core ───────────────
 create or replace function public.rank_vibe(p_vibe uuid)

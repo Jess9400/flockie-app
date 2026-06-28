@@ -51,6 +51,11 @@ begin
 end $$;
 grant execute on function public.update_vibe_when(uuid, timestamptz, timestamptz, timestamptz) to authenticated;
 
+-- SUPERSEDED: canonical backfill_vibe is in supabase/vibe-v2-private-link.sql and
+-- the live rank_vibe is the thin wrapper in supabase/vibe-auto-matching.sql.
+-- These older copies are wrapped out 2026-06-28 — repo-only, no DB change.
+-- (notify / cancel_vibe / update_vibe_when above and host RPCs below stay active.)
+/*
 -- 4) Backfill from standby (now via notify) — keeps filling open spots by score
 create or replace function public.backfill_vibe(p_vibe uuid)
 returns int language plpgsql security definer set search_path = public as $$
@@ -135,6 +140,7 @@ begin
   return jsonb_build_object('invited', v_invited, 'standby', v_standby);
 end $$;
 grant execute on function public.rank_vibe(uuid) to authenticated;
+*/
 
 -- 6) Host manually approves/denies pending interest
 create or replace function public.host_invite_interest(p_vibe uuid, p_user uuid)

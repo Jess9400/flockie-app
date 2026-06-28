@@ -1,5 +1,9 @@
 -- 24h invitation expiry + rolling backfill. Run in Supabase SQL Editor.
 
+-- SUPERSEDED: canonical backfill_vibe is in supabase/vibe-v2-private-link.sql
+-- (live; uses _vibe_algo_remaining). Wrapped out 2026-06-28 — repo-only, no DB
+-- change. (expire_invitations / decline_vibe below stay active.)
+/*
 -- Fill open slots (capacity - confirmed - active invites) from the top of standby
 create or replace function public.backfill_vibe(p_vibe uuid)
 returns int language plpgsql security definer set search_path = public as $$
@@ -38,6 +42,7 @@ begin
   return v_added;
 end $$;
 grant execute on function public.backfill_vibe(uuid) to authenticated;
+*/
 
 -- Sweep expired invitations -> ghosted + soft penalty, then backfill those vibes
 create or replace function public.expire_invitations()
