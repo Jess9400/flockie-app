@@ -21,6 +21,19 @@ export async function POST(req: Request) {
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  // Rate limit: paid image generation — cap per user/day to prevent cost blowups.
+  const { data: allowed } = await supabase.rpc("rate_limit_hit", {
+    p_bucket: "cover_gen",
+    p_max: 20,
+    p_window_seconds: 86400,
+  });
+  if (allowed === false) {
+    return NextResponse.json(
+      { error: "Daily image limit reached — try again tomorrow." },
+      { status: 429 }
+    );
+  }
+
   let prompt = "";
   try {
     ({ prompt } = await req.json());
