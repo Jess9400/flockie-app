@@ -9,7 +9,7 @@ create policy "vibes host update" on public.vibes for update to authenticated
 
 drop policy if exists "interests self update" on public.vibe_interests;
 create policy "interests self update" on public.vibe_interests for update to authenticated
-  using (user_id = auth.uid()) with check (user_id = auth.uid());
+  using (user_id = auth.uid()) with check (user_id = auth.uid() and status = 'interested');
 
 drop policy if exists "notifications own update" on public.notifications;
 create policy "notifications own update" on public.notifications for update to authenticated
