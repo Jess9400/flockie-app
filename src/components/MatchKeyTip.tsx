@@ -31,7 +31,7 @@ export default function MatchKeyTip() {
 
   return (
     <div className="mx-4 mt-4 flex items-center gap-2 rounded-2xl border-2 border-ink bg-white px-3 py-2 text-left shadow-[0_3px_0_0_rgba(10,37,69,1)]">
-      <span className="shrink-0 rounded-full border-2 border-ink bg-flockie-blue px-1.5 text-[10px] font-extrabold leading-tight text-white">
+      <span className="shrink-0 rounded-full border-2 border-ink bg-flockie-coral px-1.5 text-[10px] font-extrabold leading-tight text-white">
         72%
       </span>
       <p className="flex-1 text-xs font-bold text-ink/80">

@@ -258,7 +258,7 @@ export default async function HomePage({
                         )}
                       </div>
                       {typeof p.score === "number" && (
-                        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full border-2 border-ink bg-flockie-blue px-1.5 text-[10px] font-extrabold leading-tight text-white">
+                        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full border-2 border-ink bg-flockie-coral px-1.5 text-[10px] font-extrabold leading-tight text-white">
                           {Math.round(p.score)}%
                         </span>
                       )}
