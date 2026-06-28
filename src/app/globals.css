@@ -68,6 +68,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .animate-wave,
-  .animate-floaty { animation: none !important; }
+  .animate-floaty,
+  .animate-ping { animation: none !important; }
   .home-stagger > * { animation: none !important; }
 }
