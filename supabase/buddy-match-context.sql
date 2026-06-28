@@ -8,36 +8,11 @@ alter table public.buddy_matches
   add column if not exists trip_b uuid references public.trips(id) on delete set null,
   add column if not exists score numeric;
 
--- Compatibility score (0-100): 0.6 * slider closeness + 0.4 * trip-vibe Jaccard.
--- Matches the on-the-fly formula the app used, so persisted == displayed.
-create or replace function public.buddy_pair_score(p_a uuid, p_b uuid)
-returns numeric language plpgsql security definer set search_path = public stable as $$
-declare
-  ra public.profiles%rowtype;
-  rb public.profiles%rowtype;
-  s numeric := 0; n int := 0; slider numeric; tagj numeric; inter int; uni int;
-begin
-  select * into ra from public.profiles where id = p_a;
-  select * into rb from public.profiles where id = p_b;
-  if ra.planning is not null and rb.planning is not null then s := s + (1 - abs(ra.planning - rb.planning) / 4.0); n := n + 1; end if;
-  if ra.pace is not null and rb.pace is not null then s := s + (1 - abs(ra.pace - rb.pace) / 4.0); n := n + 1; end if;
-  if ra.social_energy is not null and rb.social_energy is not null then s := s + (1 - abs(ra.social_energy - rb.social_energy) / 4.0); n := n + 1; end if;
-  if ra.budget is not null and rb.budget is not null then s := s + (1 - abs(ra.budget - rb.budget) / 4.0); n := n + 1; end if;
-  if ra.nightlife is not null and rb.nightlife is not null then s := s + (1 - abs(ra.nightlife - rb.nightlife) / 4.0); n := n + 1; end if;
-  if ra.adventurousness is not null and rb.adventurousness is not null then s := s + (1 - abs(ra.adventurousness - rb.adventurousness) / 4.0); n := n + 1; end if;
-  slider := case when n > 0 then s / n else 0.5 end;
-
-  select count(*) into inter
-  from unnest(coalesce(ra.trip_vibe, '{}')) t
-  where t = any (coalesce(rb.trip_vibe, '{}'));
-  select cardinality(array(
-    select distinct unnest(coalesce(ra.trip_vibe, '{}') || coalesce(rb.trip_vibe, '{}'))
-  )) into uni;
-  tagj := case when uni > 0 then inter::numeric / uni else 0.5 end;
-
-  return round(100 * (0.6 * slider + 0.4 * tagj));
-end $$;
-grant execute on function public.buddy_pair_score(uuid, uuid) to authenticated;
+-- buddy_pair_score: SUPERSEDED here (was the old trip-only 0.6/0.4 formula).
+-- Canonical, production-verified version lives in supabase/vibe-traits.sql
+-- (priority weighting + personality cosine + activity traits). Definition
+-- removed 2026-06-28 so re-running this file can't downgrade the live engine.
+-- The score backfill below uses whatever buddy_pair_score is currently live.
 
 -- Backfill existing matches once.
 update public.buddy_matches m

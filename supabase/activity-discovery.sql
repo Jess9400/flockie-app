@@ -32,6 +32,11 @@ create policy "manage own activity candidate decisions"
     )
   );
 
+-- SUPERSEDED: this activity_candidates lacked the buddy_hard_block dealbreaker
+-- filter. Canonical version is in supabase/activity-candidate-decisions.sql.
+-- Wrapped out 2026-06-28 so re-running this file can't downgrade the live engine.
+-- (The open_to_discovery column add above and buddy_swipe below remain active.)
+/*
 -- People in the activity's city, open to discovery, with an activity check done.
 drop function if exists public.activity_candidates(uuid, int);
 create or replace function public.activity_candidates(p_trip uuid, p_limit int default 30)
@@ -80,6 +85,7 @@ language sql security definer set search_path = public stable as $$
   limit p_limit;
 $$;
 grant execute on function public.activity_candidates(uuid, int) to authenticated;
+*/
 
 -- buddy_swipe + a one-way "likes you" notification for activity discovery.
 drop function if exists public.buddy_swipe(uuid, boolean);
