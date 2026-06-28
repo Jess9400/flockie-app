@@ -20,11 +20,13 @@ function LoginForm() {
   const redirect = safeRedirectPath(searchParams.get("redirect"), "/home");
   const referral = searchParams.get("ref");
   const [loading, setLoading] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
   async function handleGoogle() {
-    // Terms consent is persisted server-side in the OAuth callback (accept_terms),
-    // gated on the null terms_accepted_at column. The clickwrap text below is the
-    // point of consent.
+    // Consent is the required checkbox below; the acceptance timestamp is then
+    // persisted server-side in the OAuth callback (accept_terms), gated on the
+    // null terms_accepted_at column.
+    if (!agreed) return;
     setLoading(true);
     const callbackParams = new URLSearchParams({ next: redirect });
     if (referral) callbackParams.set("ref", referral);
@@ -55,25 +57,40 @@ function LoginForm() {
           questions and we&rsquo;ll find your people.
         </p>
 
+        <div className="mt-8 rounded-2xl border border-white/15 bg-white/5 p-4 text-left text-xs font-medium leading-relaxed text-white/70">
+          🛠️ <span className="font-bold text-white/90">Flockie is in beta.</span> We&rsquo;re a new
+          product still being built, operated directly by the founders — not yet a registered
+          company. Features may change and bugs may happen. By signing up you understand and accept
+          this.
+        </div>
+
+        <label className="mt-4 flex cursor-pointer items-start gap-3 text-left text-xs font-medium leading-relaxed text-white/70">
+          <input
+            type="checkbox"
+            checked={agreed}
+            onChange={(e) => setAgreed(e.target.checked)}
+            className="mt-0.5 h-4 w-4 shrink-0 accent-flockie-coral"
+          />
+          <span>
+            I&rsquo;m 18 or older and I agree to Flockie&rsquo;s{" "}
+            <a href="/terms" target="_blank" rel="noopener noreferrer" className="font-bold text-flockie-coral underline">
+              Terms
+            </a>{" "}
+            and{" "}
+            <a href="/privacy" target="_blank" rel="noopener noreferrer" className="font-bold text-flockie-coral underline">
+              Privacy Policy
+            </a>
+            .
+          </span>
+        </label>
+
         <button
           onClick={handleGoogle}
-          disabled={loading}
-          className="mt-9 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-3.5 font-bold disabled:opacity-50"
+          disabled={loading || !agreed}
+          className="mt-5 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-3.5 font-bold disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? "Connecting…" : "Continue with Google"}
         </button>
-
-        <p className="mt-4 text-center text-xs font-medium leading-relaxed text-white/60">
-          By continuing, you agree to Flockie&rsquo;s{" "}
-          <a href="/terms" target="_blank" rel="noopener noreferrer" className="font-bold text-flockie-coral underline">
-            Terms
-          </a>{" "}
-          and{" "}
-          <a href="/privacy" target="_blank" rel="noopener noreferrer" className="font-bold text-flockie-coral underline">
-            Privacy Policy
-          </a>
-          .
-        </p>
       </div>
     </main>
   );
