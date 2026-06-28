@@ -19,22 +19,15 @@ export default function TermsPage() {
       <div className="rounded-2xl border-2 border-flockie-orange/30 bg-flockie-orange/10 p-4 text-sm">
         <p className="font-bold text-ink">⚠️ Beta notice</p>
         <p className="mt-1">
-          Flockie is currently in beta testing, operated by individual founders. We are not yet a
-          registered company. By using Flockie now, you understand you are joining an early-stage
-          product, and you accept some additional risks that come with that.
+          Flockie is currently in beta. By using Flockie now, you understand you are joining an
+          early-stage product, and you accept some additional risks that come with that.
         </p>
       </div>
 
       <p>
         These terms are an agreement between you and the operators of Flockie
         (&ldquo;we,&rdquo; &ldquo;us&rdquo;). By using Flockie, you agree to them. If you
-        don&rsquo;t agree, please don&rsquo;t use the platform.
-      </p>
-      <p>
-        The operators of Flockie are currently <strong>Jessica Nascimento and her co-founder</strong>,
-        acting in their individual capacities as founders of a beta-stage project. Within 6 months,
-        Flockie will become a registered company; we&rsquo;ll notify you when that happens. Contact:{" "}
-        {email}.
+        don&rsquo;t agree, please don&rsquo;t use the platform. Contact: {email}.
       </p>
 
       <Section heading="⚠️ The most important thing to read">
@@ -90,9 +83,9 @@ export default function TermsPage() {
             lose elsewhere.
           </li>
           <li>
-            <strong>The platform may shut down.</strong> As founders running a beta, we may decide
-            to discontinue Flockie at any time. If that happens, you will be notified at least 30
-            days in advance and given the option to export your data.
+            <strong>The platform may shut down.</strong> We may decide to discontinue Flockie at
+            any time. If that happens, you will be notified at least 30 days in advance and given
+            the option to export your data.
           </li>
           <li>
             <strong>Safety tools are still being built.</strong> Identity verification, automated
@@ -100,7 +93,7 @@ export default function TermsPage() {
             partial. Adjust your own caution accordingly.
           </li>
           <li>
-            <strong>There is no formal customer support team.</strong> Founders respond to support
+            <strong>There is no formal customer support team.</strong> We respond to support
             requests directly when possible. Response times may vary.
           </li>
           <li>
@@ -136,21 +129,6 @@ export default function TermsPage() {
         </p>
       </Section>
 
-      <Section heading="About verification [future feature]">
-        <p>
-          In the current beta, Flockie does <strong>not</strong> run identity verification or
-          background checks on members. Once the platform reaches sufficient scale, we will
-          introduce optional ID verification.
-        </p>
-        <p>
-          <strong>Important:</strong> ID verification, when it launches, will confirm that a user
-          is a real person matching their submitted ID. It will not be a criminal background check.
-          A &ldquo;verified&rdquo; badge will not mean we have vetted any member&rsquo;s safety as a
-          travel companion. We do not screen members against sex offender registries, criminal
-          databases, or any other safety database.
-        </p>
-      </Section>
-
       <Section heading="Friend-vouch consent">
         <p>
           If you invite a friend to fill out a vibe check about you, you&rsquo;re responsible for
@@ -172,8 +150,7 @@ export default function TermsPage() {
         </p>
         <p>
           When Flockie incorporates as a company, this license transfers to that company
-          automatically. You&rsquo;re not granting personal rights to the founders — only
-          platform-operational rights to Flockie itself.
+          automatically. These rights are granted to Flockie as a platform, not to any individual.
         </p>
       </Section>
 
@@ -230,9 +207,8 @@ export default function TermsPage() {
           </li>
         </ul>
         <p>
-          You agree not to hold Flockie, its founders, or any future Flockie entity responsible for
-          injury, loss, or harm during any Vibe, trip, or meeting, or for the actions of other
-          members.
+          You agree not to hold Flockie or any future Flockie entity responsible for injury, loss,
+          or harm during any Vibe, trip, or meeting, or for the actions of other members.
         </p>
       </Section>
 
@@ -242,14 +218,6 @@ export default function TermsPage() {
           by third parties. Their terms, cancellation policies, and refund rules apply — not ours.
           Flockie may earn a commission when you book through an affiliate link; this never affects
           the price you pay.
-        </p>
-      </Section>
-
-      <Section heading="Future paid features [not active]">
-        <p>
-          Flockie currently has no paid features. If we introduce a paid subscription or paid Vibe
-          bookings, we&rsquo;ll publish updated terms covering billing, refunds, and cancellations
-          at least 30 days before launch. You will never be charged without explicit opt-in.
         </p>
       </Section>
 
@@ -291,9 +259,9 @@ export default function TermsPage() {
 
       <Section heading="Intellectual property">
         <p>
-          The Flockie name, logo, app design, algorithm, and our content belong to us (currently
-          the founders, eventually the registered Flockie entity). You may not copy, modify, or
-          distribute them without permission.
+          The Flockie name, logo, app design, algorithm, and our content belong to us (and, once
+          incorporated, to the registered Flockie entity). You may not copy, modify, or distribute
+          them without permission.
         </p>
         <p>
           If you believe content on Flockie infringes your copyright, email {email} with the
@@ -320,53 +288,11 @@ export default function TermsPage() {
         </p>
       </Section>
 
-      <Section heading="Limitation of liability">
-        <p>
-          To the maximum extent allowed by law, our total liability to you for any claim related to
-          your use of the platform is limited to <strong>USD 100</strong>, or any amount you&rsquo;ve
-          paid Flockie in the past 12 months, whichever is greater. Currently, since Flockie is
-          free, this limit defaults to USD 100.
-        </p>
-        <p>We are not liable for:</p>
-        <ul className="list-disc space-y-1 pl-5">
-          <li>Indirect, incidental, consequential, or punitive damages</li>
-          <li>The actions of other members</li>
-          <li>Damages from third-party services (Travelpayouts, partners, etc.)</li>
-          <li>Damages from any Vibe, trip, or activity</li>
-          <li>Damages arising from beta-specific issues (bugs, downtime, data loss)</li>
-        </ul>
-        <p>Nothing in this section limits liability that can&rsquo;t be excluded by law.</p>
-      </Section>
-
-      <Section heading="Personal liability of founders during beta">
-        <p>
-          The current operators (Jessica Nascimento and her co-founder) act in their capacity as
-          founders of a beta project, not in their personal capacities. To the maximum extent
-          allowed by law, the founders are not personally liable for claims related to the use of
-          the platform during this beta phase. Such claims should be directed to the operators of
-          the platform via {email}, and will be addressed by the founders in their operating
-          capacity or by the future Flockie entity when incorporated.
-        </p>
-      </Section>
-
       <Section heading="You agree to indemnify us">
         <p>
-          If a third party makes a claim against Flockie, the founders, or any future Flockie entity
-          because of your use of the platform, your content, your conduct, or your participation in
-          a Vibe or trip, you agree to cover any costs and damages.
-        </p>
-      </Section>
-
-      <Section heading="Governing law and disputes">
-        <p>
-          These terms are governed by the laws of England and Wales. Any dispute will be handled in
-          the courts of England and Wales. If you live in the EU or UK, you also have any rights to
-          local courts that consumer protection laws give you — these aren&rsquo;t taken away.
-        </p>
-        <p className="text-sm italic">
-          When Flockie incorporates, the governing law clause will be updated to reflect the
-          entity&rsquo;s jurisdiction. Existing users will be notified at least 30 days before any
-          change takes effect.
+          If a third party makes a claim against Flockie or any future Flockie entity because of
+          your use of the platform, your content, your conduct, or your participation in a Vibe or
+          trip, you agree to cover any costs and damages.
         </p>
       </Section>
 
