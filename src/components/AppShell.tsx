@@ -104,6 +104,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <Link href="/home" aria-label="Flockie home">
             <Image src="/logo.svg" alt="Flockie" width={130} height={44} className="h-9 w-auto" priority />
           </Link>
+          <span className="rounded-full bg-flockie-coral px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-white">
+            Beta
+          </span>
         </div>
 
         <div className="flex items-center gap-2">
