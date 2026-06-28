@@ -16,7 +16,7 @@ export default async function CompatPage({ params }: { params: { id: string } })
   // flow still works.
   const { data: t } = await supabase.rpc("compat_target", { p_id: params.id });
   const target = (t?.[0] as Target) ?? null;
-  const name = (target?.name || "a friend").split(" ")[0];
+  const name = target?.name ? target.name.split(" ")[0] : "your friend";
 
   let inner: React.ReactNode;
 
