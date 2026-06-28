@@ -59,14 +59,7 @@ function LoginForm() {
           questions and we&rsquo;ll find your people.
         </p>
 
-        <div className="mt-8 rounded-2xl border border-white/15 bg-white/5 p-4 text-left text-xs font-medium leading-relaxed text-white/70">
-          🛠️ <span className="font-bold text-white/90">Flockie is in beta.</span> We&rsquo;re a new
-          product still being built, operated directly by the founders — not yet a registered
-          company. Features may change and bugs may happen. By signing up you understand and accept
-          this.
-        </div>
-
-        <label className="mt-4 flex cursor-pointer items-start gap-3 text-left text-xs font-medium leading-relaxed text-white/70">
+        <label className="mt-8 flex cursor-pointer items-start gap-3 text-left text-xs font-medium leading-relaxed text-white/70">
           <input
             type="checkbox"
             checked={agreed}
