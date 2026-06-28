@@ -250,8 +250,10 @@ export default function CreateVibeForm({
     applyEndTime(startsAt, activeDurationMinutes(value));
   }
 
-  function changeCustomDuration(value: string) {
-    const next = Math.max(15, Number(value || 15));
+  function changeCustomDuration(hoursValue: string) {
+    // Entered in hours (1–24); stored internally as minutes.
+    const hours = Math.min(24, Math.max(1, Number(hoursValue) || 1));
+    const next = Math.round(hours * 60);
     setCustomDurationMinutes(next);
     if (durationOption === "custom") applyEndTime(startsAt, next);
   }
@@ -550,15 +552,19 @@ export default function CreateVibeForm({
             </button>
           </div>
           {durationOption === "custom" && (
-            <input
-              type="number"
-              min={15}
-              step={15}
-              className={`${inputCls} mt-2`}
-              value={customDurationMinutes}
-              onChange={(e) => changeCustomDuration(e.target.value)}
-              aria-label="Custom duration in minutes"
-            />
+            <div className="mt-2">
+              <input
+                type="number"
+                min={1}
+                max={24}
+                step={0.5}
+                className={inputCls}
+                value={customDurationMinutes / 60}
+                onChange={(e) => changeCustomDuration(e.target.value)}
+                aria-label="Custom duration in hours (1 to 24)"
+              />
+              <p className="mt-1 text-xs font-medium text-muted">How many hours the Vibe runs (1–24).</p>
+            </div>
           )}
           <div className="mt-3 rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-bold">
             <p className="text-xs font-extrabold uppercase tracking-wide text-muted">

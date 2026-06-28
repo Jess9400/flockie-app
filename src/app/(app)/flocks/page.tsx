@@ -29,6 +29,15 @@ export default async function FlocksPage({
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Joining a Flock needs the Trip form. Guarded (migration-safe): if the column
+  // doesn't exist yet, degrade open so we don't block.
+  const { data: prefRow, error: prefErr } = await supabase
+    .from("profiles")
+    .select("trip_prefs_complete")
+    .eq("id", user!.id)
+    .maybeSingle();
+  const tripPrefsDone = prefErr ? true : !!prefRow?.trip_prefs_complete;
+
   const page = Math.max(1, Number(searchParams.page) || 1);
   const from = (page - 1) * PAGE_SIZE;
   const continents = toArray(searchParams.continent);
@@ -204,7 +213,7 @@ export default async function FlocksPage({
                     </div>
 
                     <div className="mt-2.5">
-                      <FlockRequestButton tripId={t.id} requested={requested.has(t.id)} />
+                      <FlockRequestButton tripId={t.id} requested={requested.has(t.id)} tripPrefsDone={tripPrefsDone} />
                     </div>
                   </div>
                 </div>

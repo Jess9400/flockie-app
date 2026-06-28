@@ -87,7 +87,15 @@ export default async function MatchPage({
     return (
       <main className="px-5 pb-10 pt-6">
         {header}
-        <Gate text="Complete your vibe check to start matching." cta="Complete my vibe check" href="/profile" />
+        <Gate
+          text={
+            isActivity
+              ? "Complete your vibe check to start matching."
+              : "Complete your travel preferences to start matching."
+          }
+          cta={isActivity ? "Complete my vibe check" : "Complete Travel Preferences"}
+          href={`/match/trip?kind=${mode}`}
+        />
       </main>
     );
   }

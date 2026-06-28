@@ -9,7 +9,7 @@ export type Notif = {
   type: string;
   title: string;
   body: string | null;
-  data: { vibe_id?: string; like_from?: string; chat_id?: string; href?: string } | null;
+  data: { vibe_id?: string; trip_id?: string; like_from?: string; chat_id?: string; href?: string } | null;
   read_at: string | null;
   dismissed_at: string | null;
   created_at: string;
@@ -70,15 +70,28 @@ export default function InboxList({ notifications }: { notifications: Notif[] })
     <div className="space-y-3">
       {visibleNotifications.map((n) => {
         const vibeId = n.data?.vibe_id;
+        const tripId = n.data?.trip_id;
         const href = n.data?.href
           ? n.data.href
-          : vibeId
-            ? `/vibes/${vibeId}`
-            : n.data?.chat_id
-              ? `/buddies/${n.data.chat_id}`
-              : n.data?.like_from
-                ? `/people/${n.data.like_from}`
-                : null;
+          : n.type === "vibe_confirmed" && vibeId
+            ? `/vibes/${vibeId}/chat` // confirmed → straight into the group chat
+            : vibeId
+              ? `/vibes/${vibeId}`
+              : tripId
+                ? `/my-trips#trip-${tripId}` // flock join request → the trip to accept/reject
+                : n.data?.chat_id
+                  ? `/buddies/${n.data.chat_id}`
+                  : n.data?.like_from
+                    ? `/people/${n.data.like_from}`
+                    : null;
+        const linkLabel =
+          n.type === "vibe_invitation"
+            ? "View & confirm →"
+            : n.type === "vibe_confirmed"
+              ? "Say hi in the group chat →"
+              : tripId
+                ? "Open My Trips →"
+                : "Open →";
         const card = (
           <div
             className={`rounded-2xl border-2 p-4 ${STYLE[n.type] ?? "border-ink/15 bg-white"} ${
@@ -105,7 +118,7 @@ export default function InboxList({ notifications }: { notifications: Notif[] })
             </div>
             {href && (
               <Link href={href} className="mt-2 inline-block text-sm font-bold text-flockie-orange">
-                {n.type === "vibe_invitation" ? "View & confirm →" : "Open →"}
+                {linkLabel}
               </Link>
             )}
           </div>

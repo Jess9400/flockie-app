@@ -133,7 +133,8 @@ export default async function MyTripsPage({
   function TripCard({ t, faded }: { t: TripRow; faded?: boolean }) {
     return (
       <div
-        className={`rounded-2xl border-2 border-ink bg-white p-4 shadow-[0_3px_0_0_rgba(26,26,26,1)] ${faded ? "opacity-60" : ""}`}
+        id={`trip-${t.id}`}
+        className={`scroll-mt-20 rounded-2xl border-2 border-ink bg-white p-4 shadow-[0_3px_0_0_rgba(26,26,26,1)] ${faded ? "opacity-60" : ""}`}
       >
         <div className="flex items-start justify-between gap-3">
           {t.cover_photo && (
