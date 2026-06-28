@@ -42,7 +42,7 @@ export default function MatchKeyTip() {
         type="button"
         onClick={dismiss}
         aria-label="Got it"
-        className="shrink-0 rounded-full p-1 text-muted transition-colors hover:bg-cream hover:text-ink"
+        className="shrink-0 rounded-full p-2 text-muted transition-colors hover:bg-cream hover:text-ink"
       >
         <X size={16} />
       </button>

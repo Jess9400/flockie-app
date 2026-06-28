@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useEsc } from "@/lib/use-esc";
 import ActivityVibeForm from "@/components/ActivityVibeForm";
 import type { InterestStatus } from "@/lib/vibes";
 
@@ -53,6 +54,7 @@ export default function InterestButton({
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
+  useEsc(() => setPopup(null), !!popup);
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 30000);
@@ -369,7 +371,12 @@ export default function InterestButton({
       {popup && mounted &&
         createPortal(
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-sm rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_6px_0_0_rgba(10,37,69,1)]">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={popup === "confirmed" ? "You're confirmed" : "You're in the running"}
+            className="w-full max-w-sm rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_6px_0_0_rgba(10,37,69,1)]"
+          >
             <p className="text-4xl">{popup === "confirmed" ? "🎉" : "✨"}</p>
             <h2 className="mt-2 font-fredoka text-2xl font-bold text-ink">
               {popup === "confirmed" ? "You're in!" : "You're in the running!"}

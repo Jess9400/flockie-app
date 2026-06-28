@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useEsc } from "@/lib/use-esc";
 import ActivityQuestions from "@/components/ActivityQuestions";
 import { EMPTY_ACTIVITY, type ActivityAnswers } from "@/lib/vibe-check";
 
@@ -31,6 +32,7 @@ export default function ActivityVibePopup({
   const photoInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => setMounted(true), []);
+  useEsc(onClose);
 
   // Prefill from any existing profile data (e.g. Google name).
   useEffect(() => {
@@ -99,7 +101,12 @@ export default function ActivityVibePopup({
   if (!mounted) return null;
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-navy/50 sm:items-center">
-      <div className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-3xl border-2 border-navy bg-cream p-5 font-nunito sm:rounded-3xl">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Quick vibe check"
+        className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-3xl border-2 border-navy bg-cream p-5 font-nunito sm:rounded-3xl"
+      >
         <div className="flex items-start justify-between">
           <div>
             <h2 className="font-fredoka text-2xl font-bold text-navy">Quick vibe check</h2>

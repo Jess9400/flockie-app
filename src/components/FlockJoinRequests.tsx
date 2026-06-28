@@ -147,7 +147,7 @@ export default function FlockJoinRequests({
                     onClick={() => remove(r.userId)}
                     disabled={busy === r.userId}
                     aria-label={`Remove ${r.name}`}
-                    className="flex h-5 w-5 items-center justify-center rounded-full text-muted hover:bg-ink/5 hover:text-ink"
+                    className="flex h-7 w-7 items-center justify-center rounded-full text-muted hover:bg-ink/5 hover:text-ink"
                   >
                     <X size={13} />
                   </button>

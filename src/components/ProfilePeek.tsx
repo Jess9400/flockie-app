@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { useEsc } from "@/lib/use-esc";
 
 export type PeekData = {
   id: string;
@@ -25,11 +26,17 @@ export default function ProfilePeek({
 }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+  useEsc(onClose);
   if (!mounted) return null;
   return createPortal(
     <>
       <div className="fixed inset-0 z-50 bg-navy/40" onClick={onClose} />
-      <div className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-3xl border-t-2 border-navy bg-cream p-5 font-nunito">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${data.name}'s profile`}
+        className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-3xl border-t-2 border-navy bg-cream p-5 font-nunito"
+      >
         <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-navy/20" />
 
         {/* Photo carousel */}
