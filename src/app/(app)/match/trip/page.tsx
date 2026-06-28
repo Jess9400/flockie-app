@@ -88,8 +88,12 @@ export default async function TripPage({
   const needsTripVibe = isNew && !showReviewGate && !showCapGate && !isActivity && !tripPrefsDone;
   const needsActivityVibe = isNew && !showReviewGate && !showCapGate && isActivity && !activityPrefsDone;
 
-  if (needsTripVibe) return <TripVibeForm userId={user!.id} />;
-  if (needsActivityVibe) return <ActivityVibeForm userId={user!.id} />;
+  // After completing the prefs form, land back on the matching "create" view
+  // (this same route) so the trip/activity-creation form is shown next.
+  if (needsTripVibe)
+    return <TripVibeForm userId={user!.id} redirectAfter="/match/trip?kind=trip" />;
+  if (needsActivityVibe)
+    return <ActivityVibeForm userId={user!.id} redirectAfter="/match/trip?kind=activity" />;
 
   return (
     <main className="px-5 pb-10 pt-6">

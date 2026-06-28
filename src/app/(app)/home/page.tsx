@@ -80,6 +80,15 @@ export default async function HomePage({
     supabase.from("vibe_feedback").select("vibe_id").eq("user_id", user!.id).eq("signal", "not_for_me"),
   ]);
 
+  // Joining a Flock needs the Trip form (guarded separately so a missing column
+  // can't break the home query).
+  const { data: prefRow, error: prefErr } = await supabase
+    .from("profiles")
+    .select("trip_prefs_complete")
+    .eq("id", user!.id)
+    .maybeSingle();
+  const tripPrefsDone = prefErr ? true : !!prefRow?.trip_prefs_complete;
+
   const firstName = (profile?.display_name?.trim() || "there").split(" ")[0];
   const homeCity = profile?.home_city?.trim() || null;
   const vibeFormDone = !!profile?.vibe_completed_at;
@@ -422,7 +431,7 @@ export default async function HomePage({
                       <Users size={11} /> {f.going}/{f.group_size} · {hostName}
                     </p>
                     <div className="mt-2.5">
-                      <FlockRequestButton tripId={f.id} requested={f.requested} compact />
+                      <FlockRequestButton tripId={f.id} requested={f.requested} compact tripPrefsDone={tripPrefsDone} />
                     </div>
                   </div>
                 </div>

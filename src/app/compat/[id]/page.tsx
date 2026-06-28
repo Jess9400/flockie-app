@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import CompatShareButton from "@/components/CompatShareButton";
 
@@ -12,10 +11,12 @@ export default async function CompatPage({ params }: { params: { id: string } })
     data: { user },
   } = await supabase.auth.getUser();
 
+  // A shared link must NEVER hard-404: if compat_target can't resolve (profile
+  // gone, RPC unavailable), degrade to a generic invite so the sign-up / match
+  // flow still works.
   const { data: t } = await supabase.rpc("compat_target", { p_id: params.id });
   const target = (t?.[0] as Target) ?? null;
-  if (!target) notFound();
-  const name = (target.name || "A flockie").split(" ")[0];
+  const name = (target?.name || "a friend").split(" ")[0];
 
   let inner: React.ReactNode;
 
@@ -112,7 +113,7 @@ export default async function CompatPage({ params }: { params: { id: string } })
         </Link>
 
         <div className="mt-6 flex flex-col items-center">
-          {target.photo ? (
+          {target?.photo ? (
             <Image src={target.photo} alt="" width={88} height={88} className="h-22 w-22 rounded-full border-2 border-white object-cover" style={{ height: 88, width: 88 }} />
           ) : (
             <span className="flex h-22 w-22 items-center justify-center rounded-full border-2 border-white bg-flockie-blue text-2xl font-bold text-white" style={{ height: 88, width: 88 }}>

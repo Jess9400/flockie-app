@@ -1,16 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export default function FlockRequestButton({
   tripId,
   requested,
   compact = false,
+  tripPrefsDone,
 }: {
   tripId: string;
   requested: boolean;
   compact?: boolean;
+  // When explicitly false, joining is gated on the Trip form — show a link to it
+  // instead of the request button (request_join_trip would otherwise reject).
+  tripPrefsDone?: boolean;
 }) {
   const supabase = createClient();
   const [done, setDone] = useState(requested);
@@ -33,6 +38,19 @@ export default function FlockRequestButton({
       <span className={`rounded-full border-2 border-ink bg-cream font-bold text-muted ${sizing}`}>
         Requested
       </span>
+    );
+  }
+
+  // Trip form not done → can't join a Flock yet. Send them to complete it.
+  if (tripPrefsDone === false) {
+    return (
+      <Link
+        href="/match/trip?kind=trip"
+        title="Complete your travel preferences to request to join Flocks"
+        className={`inline-block rounded-full border-2 border-ink bg-flockie-blue font-bold text-white ${sizing}`}
+      >
+        {compact ? "Complete prefs" : "Complete Travel Preferences"}
+      </Link>
     );
   }
 
