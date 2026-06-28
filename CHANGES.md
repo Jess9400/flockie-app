@@ -143,3 +143,29 @@ Canonical files:
 ## Deferred (optional)
 - Brand **contrast** (white on `flockie-blue` fails WCAG) — pending the color decision.
 - `_all-pending.sql` monolith dedup (self-converges; low priority).
+
+## Security hardening (#100–#103)
+Driven by the "vibe-coded apps" security checklist + a Supabase Security Advisor scan.
+
+| PR | Summary | Needs SQL run? |
+|----|---------|----------------|
+| #100 | Trips RLS (`can_see_trip` helper, scoped `trips readable` — replaced `using(true)`); per-user rate limiting (`rate_limit_hit` RPC) + auth-gate on `geocode` / `reverse-geocode` | **Yes** — `trips-rls.sql`, `rate-limits.sql` |
+| #101 | Tombstone the stale `using(true)` join-requests policy (canonical scoped one is in `trip-requests-rls-enforce.sql` #90) | No (repo-only) |
+| #102 | `og` route SSRF hardening + auth + rate limit; generic `generate-cover` error; **WITH CHECK** on 3 UPDATE policies; DO-NOT-RUN header on `_all-pending.sql` | **Yes** — `security-hardening.sql` |
+| #103 | Advisor cleanup: pin `set_updated_at` search_path; revoke EXECUTE from all client roles on 9 internal cron/trigger/`notify` functions | **Yes** — `advisor-cleanup.sql` |
+
+### Supabase Security Advisor — triage (2026-06-28)
+Scan returned **0 errors, all WARN**. Outcome:
+- **Fixed** (`advisor-cleanup.sql`): `function_search_path_mutable` on `set_updated_at`;
+  the 9 internal-only functions (5 cron jobs, 3 triggers, `notify`) — revoked from
+  `public, anon, authenticated` (verified none are client-called) to clear them from
+  both the 0028 (anon) and 0029 (authenticated) lists.
+- **Dismiss — working as intended:** the ~95 `authenticated…executable` (0029) rows
+  are the app's RPC surface, each gated on `auth.uid()`. The leftover `anon…executable`
+  (0028) rows fail safe (`auth.uid()` is null inside); a blanket anon-revoke was rejected
+  because the public routes (`/vouch`, `/invite`, `/compat`, `/join`) legitimately need
+  `get_vouch_subject` / `submit_vouch` / `public_vibe` / `compat_*` / referral RPCs.
+- **Dismiss — managed:** `postgis` / `pg_trgm` `extension_in_public` + `st_estimatedextent`
+  (PostGIS-owned; moving breaks dependencies).
+- **No action — Pro-only:** `auth_leaked_password_protection` is a paid-plan toggle, and
+  signup is Google-only anyway. Revisit if email/password login is added.
