@@ -25,6 +25,9 @@ export default function Footer() {
         <div className="mt-8 flex flex-col gap-2 border-t border-white/10 pt-6 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 Flockie. Made for travelers and doers.</p>
           <div className="flex gap-4 font-bold">
+            <Link href="/safety" className="hover:text-white">
+              Safety
+            </Link>
             <Link href="/privacy" className="hover:text-white">
               Privacy Policy
             </Link>
