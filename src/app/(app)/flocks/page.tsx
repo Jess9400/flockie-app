@@ -71,18 +71,19 @@ export default async function FlocksPage({
     return qs ? `/flocks?${qs}` : "/flocks";
   };
 
-  // join requests (accepted = going; mine = requested)
+  // join requests: accepted count via definer RPC (no row-level exposure),
+  // "requested" from my own rows (visible under the scoped RLS policy).
   const acceptedCount: Record<string, number> = {};
   const requested = new Set<string>();
   if (ids.length) {
-    const { data: reqs } = await supabase
-      .from("trip_join_requests")
-      .select("trip_id, user_id, status")
-      .in("trip_id", ids);
-    reqs?.forEach((r) => {
-      if (r.status === "accepted") acceptedCount[r.trip_id] = (acceptedCount[r.trip_id] ?? 0) + 1;
-      if (r.user_id === user!.id) requested.add(r.trip_id);
+    const [{ data: counts }, { data: mine }] = await Promise.all([
+      supabase.rpc("flock_going_counts", { p_trip_ids: ids }),
+      supabase.from("trip_join_requests").select("trip_id").eq("user_id", user!.id).in("trip_id", ids),
+    ]);
+    (counts ?? []).forEach((c: { trip_id: string; accepted: number }) => {
+      acceptedCount[c.trip_id] = c.accepted;
     });
+    (mine ?? []).forEach((r) => requested.add(r.trip_id));
   }
 
   // host profiles
