@@ -1,5 +1,9 @@
 -- Flockie ranking + confirm + realtime. Run in Supabase SQL Editor. Safe to re-run.
 
+-- SUPERSEDED: the live rank_vibe is the thin auth wrapper in
+-- supabase/vibe-auto-matching.sql. This older direct-ranking copy is wrapped out
+-- 2026-06-28 — repo-only, no DB change. (confirm_vibe below stays active.)
+/*
 -- ── rank_vibe: score interested candidates, invite up to capacity, standby rest
 create or replace function public.rank_vibe(p_vibe uuid)
 returns jsonb
@@ -94,6 +98,7 @@ begin
 end $$;
 
 grant execute on function public.rank_vibe(uuid) to authenticated;
+*/
 
 -- ── confirm_vibe: an invited user accepts; opens chat + confirms
 create or replace function public.confirm_vibe(p_vibe uuid)

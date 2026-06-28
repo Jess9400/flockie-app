@@ -96,6 +96,10 @@ begin
 end $$;
 grant execute on function public.vibe_match(uuid, uuid) to authenticated;
 
+-- SUPERSEDED: canonical _rank_vibe_core is in supabase/vibe-v2-private-link.sql
+-- (live shortlist→host-review flow). This older copy auto-invited. Wrapped out
+-- 2026-06-28 — repo-only, no DB change. (vibe_review_fit above stays active.)
+/*
 -- ── _rank_vibe_core: fold review-fit into the host's ranking ────────────────
 create or replace function public._rank_vibe_core(p_vibe uuid)
 returns jsonb language plpgsql security definer set search_path = public as $$
@@ -154,6 +158,7 @@ begin
   return jsonb_build_object('invited', v_invited, 'standby', v_standby);
 end $$;
 grant execute on function public._rank_vibe_core(uuid) to authenticated;
+*/
 
 -- ── invite_city_fallback: rank by review-fit too, and respect the age range ─
 create or replace function public.invite_city_fallback(p_vibe uuid)

@@ -18,6 +18,10 @@ returns int language sql stable set search_path = public as $$
   end;
 $$;
 
+-- SUPERSEDED: canonical _rank_vibe_core + backfill_vibe are in
+-- supabase/vibe-v2-private-link.sql (live). These algo-share variants (using
+-- _vibe_algo_budget) are not live. Wrapped out 2026-06-28 — repo-only, no DB change.
+/*
 -- ── Shortlist sizing now respects the algo share ─────────────────────────────
 create or replace function public._rank_vibe_core(p_vibe uuid)
 returns jsonb language plpgsql security definer set search_path = public as $$
@@ -99,6 +103,7 @@ begin
   return v_added;
 end $$;
 grant execute on function public.backfill_vibe(uuid) to authenticated;
+*/
 
 -- ── Same-city fallback respects the algo budget ─────────────────────────────
 create or replace function public.invite_city_fallback(p_vibe uuid)
