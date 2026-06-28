@@ -187,12 +187,18 @@ create policy "interests read" on public.vibe_interests for select to authentica
     or status = 'confirmed'
     or auth.uid() = (select host_id from public.vibes v where v.id = vibe_id)
   );
+-- Users may only create their OWN row in the 'interested' state. Every privileged
+-- status (shortlisted/invited/confirmed/standby) is set exclusively by the
+-- SECURITY DEFINER RPCs (rank_vibe, host_commit_matching, confirm_vibe, …), which
+-- bypass RLS. Without the status check, a user could directly POST/PATCH their row
+-- to 'confirmed' and bypass the invite/matching/capacity flow — unlocking exact
+-- GPS (vibe_private_logistics) and the vibe chat with no host approval.
 drop policy if exists "interests self insert" on public.vibe_interests;
 create policy "interests self insert" on public.vibe_interests for insert to authenticated
-  with check (user_id = auth.uid());
+  with check (user_id = auth.uid() and status = 'interested');
 drop policy if exists "interests self update" on public.vibe_interests;
 create policy "interests self update" on public.vibe_interests for update to authenticated
-  using (user_id = auth.uid()) with check (user_id = auth.uid());
+  using (user_id = auth.uid()) with check (user_id = auth.uid() and status = 'interested');
 drop policy if exists "interests self delete" on public.vibe_interests;
 create policy "interests self delete" on public.vibe_interests for delete to authenticated
   using (user_id = auth.uid());
