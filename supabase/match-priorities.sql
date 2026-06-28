@@ -46,6 +46,11 @@ grant execute on function public.buddy_hard_block(uuid, uuid) to authenticated;
 -- Weights are taken from p_a (the viewer) — "what matters to ME when ranking
 -- you." A prioritized dimension counts 2x; everything else counts 1x, then the
 -- block is renormalized so the total still sums to 1.
+-- SUPERSEDED: canonical buddy_pair_score is in supabase/vibe-traits.sql (adds
+-- social_style / activity_motivation / initiator). Wrapped out 2026-06-28 so
+-- re-running this file can't downgrade the live engine. (buddy_hard_block and
+-- buddy_candidates_trip below remain active.)
+/*
 create or replace function public.buddy_pair_score(p_a uuid, p_b uuid)
 returns numeric language plpgsql security definer set search_path = public stable as $$
 declare
@@ -154,6 +159,7 @@ begin
   return round(100 * (total / wsum));
 end $$;
 grant execute on function public.buddy_pair_score(uuid, uuid) to authenticated;
+*/
 
 -- ── 4. Trip candidate deck: priority-weighted per-dimension score + filter ───
 drop function if exists public.buddy_candidates_trip(int);
@@ -236,6 +242,10 @@ $$;
 grant execute on function public.buddy_candidates_trip(int, text, uuid) to authenticated;
 
 -- ── 5. Activity discovery deck: add the same hard filter ─────────────────────
+-- SUPERSEDED: canonical activity_candidates is in
+-- supabase/activity-candidate-decisions.sql (adds the per-activity decision +
+-- swipe exclusions). Wrapped out 2026-06-28 to prevent re-run downgrade.
+/*
 drop function if exists public.activity_candidates(uuid, int);
 create or replace function public.activity_candidates(p_trip uuid, p_limit int default 30)
 returns table (
@@ -284,6 +294,7 @@ language sql security definer set search_path = public stable as $$
   limit p_limit;
 $$;
 grant execute on function public.activity_candidates(uuid, int) to authenticated;
+*/
 
 -- ── 6. Recompute persisted pair scores with the new formula ──────────────────
 update public.buddy_matches m
