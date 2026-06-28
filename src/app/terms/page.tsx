@@ -17,43 +17,40 @@ export default function TermsPage() {
   return (
     <LegalShell title="Terms & Conditions" updated="28 June 2026">
       <div className="rounded-2xl border-2 border-flockie-orange/30 bg-flockie-orange/10 p-4 text-sm">
-        <p className="font-bold text-ink">⚠️ Beta notice</p>
-        <p className="mt-1">
-          Flockie is currently in beta. By using Flockie now, you understand you are joining an
-          early-stage product, and you accept some additional risks that come with that.
+        <p>
+          Flockie is in beta. By using it now, you understand you are joining an early-stage product
+          being tested by a small team.
         </p>
       </div>
 
       <p>
-        These terms are an agreement between you and the operators of Flockie
-        (&ldquo;we,&rdquo; &ldquo;us&rdquo;). By using Flockie, you agree to them. If you
-        don&rsquo;t agree, please don&rsquo;t use the platform. Contact: {email}.
+        These terms are an agreement between you and the Flockie team (the operators of this beta
+        product). By using Flockie, you agree to them. If you don&rsquo;t agree, please don&rsquo;t
+        use the platform. Contact: {email}.
       </p>
 
-      <Section heading="⚠️ The most important thing to read">
+      <Section heading="⚠️ Read this carefully">
         <p>
           <strong>
             Flockie is a matching platform. We connect people. We do not organize trips, supervise
-            activities, vet members beyond basic checks, or guarantee any outcome.
+            activities, vet members, or guarantee any outcome.
           </strong>
         </p>
         <p>
           When you meet, travel with, or do activities with another Flockie member, you do so at
-          your own risk. We provide tools to help you make informed choices — vibe checks, reviews,
-          optional verifications later — but we cannot predict or prevent how another person
-          behaves. No platform can.
+          your own risk. We provide vibe-matching tools to help you make informed choices, but we
+          cannot predict how another person will behave.
         </p>
         <p>
-          During beta, this risk is higher than for established platforms. We are still building
-          the safety tools that will exist long-term (identity verification, reputation systems,
-          automated moderation). For now, your judgment is your most important safety tool.
+          During beta, even fewer safety guardrails exist than will in the future. Your judgment is
+          your most important safety tool.
         </p>
-        <p>If you meet someone through Flockie, please:</p>
+        <p>If you meet someone through Flockie:</p>
         <ul className="list-disc space-y-1 pl-5">
-          <li>Tell a trusted friend or family member where you&rsquo;re going and who with</li>
+          <li>Tell a trusted person where you&rsquo;re going</li>
           <li>Meet first in a public place</li>
-          <li>Trust your instincts — if something feels wrong, leave</li>
-          <li>Never share financial information, send money, or hand over identity documents</li>
+          <li>Trust your instincts — leave if something feels wrong</li>
+          <li>Never send money or share identity documents</li>
           <li>For any safety incident, contact local authorities first, then us at {email}</li>
         </ul>
         <p>
@@ -61,260 +58,213 @@ export default function TermsPage() {
           <Link href="/safety" className="font-bold text-flockie-orange underline underline-offset-2">
             Safety Guide
           </Link>{" "}
-          for detailed practical advice.
+          for more.
         </p>
       </Section>
 
-      <Section heading="You are joining a beta product — what that means">
-        <p>By using Flockie at this stage, you specifically acknowledge and accept:</p>
-        <ul className="list-decimal space-y-1 pl-5">
+      <Section heading="You are joining a beta product">
+        <p>By using Flockie now, you accept:</p>
+        <ul className="list-disc space-y-1 pl-5">
+          <li>Features may change without notice. We&rsquo;re still figuring out what works.</li>
+          <li>Bugs and downtime are possible. Beta software is not stable.</li>
+          <li>Data loss is possible. Save anything you don&rsquo;t want to lose elsewhere.</li>
           <li>
-            <strong>Features may change without notice.</strong> We will add, remove, or modify
-            functionality as we learn. We try to give advance notice for big changes but cannot
-            always.
+            The platform may shut down. We&rsquo;ll give 30 days&rsquo; notice and an option to
+            export your data.
           </li>
           <li>
-            <strong>Bugs and downtime are possible.</strong> You may experience errors, lost
-            messages, broken features, or temporary outages. We will fix them as quickly as we can.
+            Safety tools are still being built. Identity verification, automated moderation, and
+            other features may not yet exist.
           </li>
+          <li>No formal customer support team. The team responds when possible.</li>
           <li>
-            <strong>Data loss is possible.</strong> While we use industry-standard backup
-            practices, beta products carry higher data risks. Save anything you don&rsquo;t want to
-            lose elsewhere.
-          </li>
-          <li>
-            <strong>The platform may shut down.</strong> We may decide to discontinue Flockie at
-            any time. If that happens, you will be notified at least 30 days in advance and given
-            the option to export your data.
-          </li>
-          <li>
-            <strong>Safety tools are still being built.</strong> Identity verification, automated
-            content moderation, and sophisticated reporting workflows may not yet exist or may be
-            partial. Adjust your own caution accordingly.
-          </li>
-          <li>
-            <strong>There is no formal customer support team.</strong> We respond to support
-            requests directly when possible. Response times may vary.
-          </li>
-          <li>
-            <strong>Pricing and monetization may evolve.</strong> Currently Flockie is free. We
-            will give at least 30 days&rsquo; notice before introducing any paid feature, and
-            you&rsquo;ll never be charged without explicitly opting in.
+            Pricing may evolve. Currently Flockie is free. We&rsquo;ll give 30 days&rsquo; notice
+            before introducing any paid feature, and you will never be charged without opt-in.
           </li>
         </ul>
-        <p>
-          These are not bugs in the product — they are honest features of the beta stage. We
-          disclose them upfront so you can make an informed choice.
-        </p>
       </Section>
 
       <Section heading="Who can use Flockie">
         <ul className="list-disc space-y-1 pl-5">
-          <li>You&rsquo;re at least 18 years old</li>
-          <li>You provide accurate, truthful information</li>
-          <li>You&rsquo;re not legally barred from using the service in your country</li>
-          <li>You&rsquo;re not a registered sex offender</li>
+          <li>You must be at least 18</li>
+          <li>You must provide accurate information</li>
+          <li>You must not be legally barred from using the service in your country</li>
+          <li>You must not be a registered sex offender</li>
         </ul>
-        <p>
-          If you misrepresent your age or identity, we&rsquo;ll suspend your account and may report
-          the activity to authorities.
-        </p>
       </Section>
 
       <Section heading="Your account">
         <p>
-          You&rsquo;re responsible for everything that happens on your account. Keep your password
-          secure. If you suspect unauthorized access, email {email} immediately. Each person may
-          have only one Flockie account.
+          You&rsquo;re responsible for everything that happens on your account. Each person may have
+          only one account.
+        </p>
+      </Section>
+
+      <Section heading="Verification (future feature)">
+        <p>
+          Currently, Flockie does not run identity verification or background checks. When
+          verification launches, it will confirm identity only — not safety. We do not screen
+          members against criminal databases.
         </p>
       </Section>
 
       <Section heading="Friend-vouch consent">
         <p>
-          If you invite a friend to fill out a vibe check about you, you&rsquo;re responsible for
-          confirming they consent to having their answers linked to your profile. When your friend
-          opens the vouch link, they see a clear notice that their participation is voluntary and
-          their answers will be visible to other members through your matching results.
-        </p>
-        <p>
-          If a friend submits a vibe check about you without your knowledge, we&rsquo;ll remove it
-          on request.
+          If a friend fills out a vibe check about you, you&rsquo;re responsible for confirming they
+          consent. Your friend sees a consent notice when they open the vouch link.
         </p>
       </Section>
 
       <Section heading="What you can post">
         <p>
-          You can post photos, video, and text on your profile and in Vibing Chats. You keep
-          ownership of what you post; you grant Flockie a worldwide, non-exclusive license to
-          display, store, and distribute your content as needed to run the platform.
-        </p>
-        <p>
-          When Flockie incorporates as a company, this license transfers to that company
-          automatically. These rights are granted to Flockie as a platform, not to any individual.
+          You own what you post. You grant Flockie a worldwide, non-exclusive license to display
+          your content within the platform. When Flockie incorporates, this license transfers to the
+          new entity automatically.
         </p>
       </Section>
 
       <Section heading="What you can't post">
-        <p>The following will get content removed and may result in suspension or termination:</p>
-        <ul className="list-disc space-y-1 pl-5">
-          <li>Hate speech, discrimination, harassment, or threats</li>
-          <li>Sexual content, nudity, or solicitation</li>
-          <li>Content involving minors in any context</li>
-          <li>Photos of other people without their consent</li>
-          <li>Personal data of others (addresses, phone numbers, etc.)</li>
-          <li>Drugs, weapons, or illegal goods</li>
-          <li>Spam, scams, or fraud</li>
-          <li>Impersonation of real people or organizations</li>
-          <li>Misleading or false information about yourself</li>
-          <li>Anything illegal in your country</li>
-        </ul>
+        <p>
+          Hate speech, discrimination, harassment, threats, sexual content, content involving
+          minors, photos of others without consent, personal data of others, drugs, weapons,
+          illegal goods, spam, scams, impersonation, misleading information, anything illegal.
+        </p>
+        <p>Violations result in content removal and possible suspension or termination.</p>
       </Section>
 
-      <Section heading="Conduct on the platform">
+      <Section heading="Conduct">
         <p>These will get your account suspended or banned:</p>
         <ul className="list-disc space-y-1 pl-5">
-          <li>Harassment, stalking, or threats toward members</li>
+          <li>Harassment, stalking, or threats</li>
           <li>Showing up uninvited at someone&rsquo;s location</li>
-          <li>
-            Discrimination based on race, religion, gender, sexual orientation, disability, or
-            other protected characteristics
-          </li>
-          <li>Using Flockie to recruit for commercial schemes (MLM, paid promotions, etc.)</li>
+          <li>Discrimination</li>
+          <li>Recruiting for commercial schemes</li>
           <li>Coordinating illegal activity</li>
           <li>Offering or soliciting paid companionship</li>
-          <li>Repeatedly canceling on confirmed Vibes (ghosting hosts and groups)</li>
+          <li>Repeatedly ghosting Vibes you confirmed</li>
         </ul>
       </Section>
 
-      <Section heading="Activities, trips, and meetings — assumption of risk">
-        <p>When you participate in any Vibe, trip, or meeting arranged through Flockie:</p>
+      <Section heading="Activities, trips, and meetings — your responsibility">
+        <p>When you participate in any Vibe, trip, or meeting:</p>
         <ul className="list-disc space-y-1 pl-5">
           <li>Flockie does not organize, supervise, or attend</li>
-          <li>
-            Activities (surfing, hiking, climbing, drinking, etc.) carry inherent risks of injury
-            or illness — sometimes serious
-          </li>
-          <li>You are responsible for your own skill, fitness, equipment, and judgment</li>
-          <li>You&rsquo;re responsible for your own travel insurance, medical insurance, and emergency contacts</li>
-          <li>
-            Vibe hosts are other members like you — not licensed guides or professional instructors
-            (unless verifiably stated otherwise)
-          </li>
-          <li>Other members may misrepresent themselves despite our checks</li>
-          <li>
-            During beta, fewer safety guardrails exist than will in the future — your own judgment
-            carries more weight than ever
-          </li>
+          <li>Activities carry inherent risks (sometimes serious)</li>
+          <li>You are responsible for your skill, fitness, insurance, and judgment</li>
+          <li>Vibe hosts are members, not professional guides</li>
+          <li>Other members may misrepresent themselves</li>
+          <li>During beta, expect fewer safety guardrails</li>
         </ul>
         <p>
-          You agree not to hold Flockie or any future Flockie entity responsible for injury, loss,
-          or harm during any Vibe, trip, or meeting, or for the actions of other members.
+          You agree not to hold Flockie, its team, or any future Flockie entity responsible for any
+          injury, loss, or harm related to platform use.
         </p>
       </Section>
 
-      <Section heading="Bookings and third-party deals">
+      <Section heading="Third-party deals">
         <p>
-          Travel deals shown in the Deals tab (Klook, GetYourGuide, Booking.com, etc.) are provided
-          by third parties. Their terms, cancellation policies, and refund rules apply — not ours.
-          Flockie may earn a commission when you book through an affiliate link; this never affects
-          the price you pay.
+          Travel deals in the Deals tab are provided by third parties. Their terms apply, not ours.
+          Flockie may earn affiliate commission; this never affects your price.
         </p>
       </Section>
 
       <Section heading="Suspension and termination">
         <p>
-          We may suspend or terminate accounts that violate these terms or behave unsafely.
-          We&rsquo;ll give notice unless doing so would compromise an investigation or the safety of
-          others.
-        </p>
-        <p>
-          You can delete your account anytime from your profile settings. After deletion, your
-          profile is removed immediately and your personal data is permanently deleted right away,
-          subject to the retention details in our Privacy Policy.
-        </p>
-      </Section>
-
-      <Section heading="What happens when Flockie incorporates">
-        <ul className="list-disc space-y-1 pl-5">
-          <li>You will be notified by email and in-app at least 30 days before the transition</li>
-          <li>
-            These terms (with any agreed updates) will continue to apply, now between you and the
-            new entity
-          </li>
-          <li>
-            Your data, content, and account history transfer to the new entity automatically — no
-            action needed on your part
-          </li>
-          <li>
-            You can delete your account at any point, including specifically in response to the
-            transition, without penalty
-          </li>
-          <li>The new entity will inherit all our existing obligations to you</li>
-        </ul>
-        <p>
-          If you do not consent to the transition, delete your account before the transition date
-          and your data will be removed per our standard process.
+          We may suspend or terminate accounts that violate these terms. You can delete your account
+          anytime.
         </p>
       </Section>
 
       <Section heading="Intellectual property">
         <p>
-          The Flockie name, logo, app design, algorithm, and our content belong to us (and, once
-          incorporated, to the registered Flockie entity). You may not copy, modify, or distribute
-          them without permission.
-        </p>
-        <p>
-          If you believe content on Flockie infringes your copyright, email {email} with the
-          details — what work is being infringed, where it appears, your contact info, and a
-          statement of good faith. We respond to legitimate notices within 14 days.
+          Flockie&rsquo;s name, logo, design, and algorithm belong to the Flockie team (and will
+          transfer to the registered entity when it forms). Don&rsquo;t copy or distribute without
+          permission.
         </p>
       </Section>
 
       <Section heading="Service availability">
         <p>
-          We try to keep Flockie running smoothly, but as a beta product we explicitly do not
-          guarantee uninterrupted access. We may take the platform down for maintenance, updates,
-          fixes, or unexpected issues, and we don&rsquo;t owe compensation for downtime. We may
-          also change, add, or remove features at any time.
+          As a beta product, we don&rsquo;t guarantee uninterrupted access. We may take the platform
+          down anytime for any reason.
         </p>
       </Section>
 
       <Section heading="No warranty">
         <p>
-          Flockie is provided &ldquo;as is&rdquo; and &ldquo;as available,&rdquo; with all faults
-          inherent to a beta product. We don&rsquo;t guarantee you&rsquo;ll find a match, that any
-          match will be a good fit, or that any Vibe or trip will happen as planned. We make no
-          warranties beyond what the law requires.
+          Flockie is provided &ldquo;as is&rdquo; and &ldquo;as available,&rdquo; with all
+          beta-related faults. No guarantees of matches, quality of matches, or trip outcomes.
+        </p>
+      </Section>
+
+      <Section heading="Limitation of liability">
+        <p>
+          To the maximum extent allowed by law, our total liability to you for any platform-related
+          claim is limited to USD 100, or any amount you&rsquo;ve paid Flockie in the past 12
+          months, whichever is greater. Currently, Flockie is free, so this limit is USD 100.
+        </p>
+        <p>We are not liable for:</p>
+        <ul className="list-disc space-y-1 pl-5">
+          <li>Indirect, incidental, or consequential damages</li>
+          <li>Actions of other members</li>
+          <li>Third-party services</li>
+          <li>Damages from any Vibe, trip, or activity</li>
+          <li>Beta-specific issues (bugs, downtime, data loss)</li>
+        </ul>
+        <p>Nothing in this section limits liability that can&rsquo;t be excluded by law.</p>
+      </Section>
+
+      <Section heading="Team liability during beta">
+        <p>
+          The current operators of Flockie act in their capacity as the Flockie team, not in their
+          personal capacities. To the maximum extent allowed by law, individual team members are not
+          personally liable for claims related to platform use during beta.
         </p>
       </Section>
 
       <Section heading="You agree to indemnify us">
+        <p>If your use of Flockie causes a claim against us, you cover the costs.</p>
+      </Section>
+
+      <Section heading="Governing law">
         <p>
-          If a third party makes a claim against Flockie or any future Flockie entity because of
-          your use of the platform, your content, your conduct, or your participation in a Vibe or
-          trip, you agree to cover any costs and damages.
+          These terms are governed by the laws of your country of residence, except where law
+          requires otherwise. Disputes will first be discussed in good faith via {email}. Most
+          issues can be resolved this way.
+        </p>
+        <p className="text-sm italic">
+          When Flockie incorporates, a specific jurisdiction will be selected and these terms
+          updated. Existing users will be notified at least 30 days before any change.
+        </p>
+      </Section>
+
+      <Section heading="What happens when Flockie incorporates">
+        <p>When the Flockie team becomes a registered company:</p>
+        <ul className="list-disc space-y-1 pl-5">
+          <li>You will be notified by email at least 30 days in advance</li>
+          <li>These terms will continue to apply, now between you and the new entity</li>
+          <li>Your data and account transfer automatically</li>
+          <li>You can delete your account at any point</li>
+        </ul>
+        <p>
+          If you don&rsquo;t agree with the new entity, delete your account before transition and
+          your data is removed.
         </p>
       </Section>
 
       <Section heading="Changes">
         <p>
-          We may update these terms as the platform evolves. For material changes, we&rsquo;ll
-          notify you in-app and by email at least 30 days before they take effect. Continuing to use
-          Flockie after the effective date means you accept the new terms. If you don&rsquo;t, you
-          can delete your account.
+          We may update these terms. Material changes are announced by email at least 30 days in
+          advance.
         </p>
       </Section>
 
       <Section heading="If something doesn't hold up">
-        <p>
-          If any part of these terms is found unenforceable in your jurisdiction, the rest still
-          applies. These terms (along with our Privacy Policy) are the full agreement between you
-          and Flockie.
-        </p>
+        <p>If any part of these terms is found unenforceable, the rest still applies.</p>
       </Section>
 
       <Section heading="Contact">
-        <p>For any question, notice, or concern: {email}.</p>
+        <p>{email}</p>
       </Section>
     </LegalShell>
   );
