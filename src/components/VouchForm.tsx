@@ -87,6 +87,15 @@ export default function VouchForm({ token }: { token: string }) {
           Be honest — they&rsquo;ll thank you for it. Same questions, but about{" "}
           {who}.
         </p>
+        <p className="mt-3 rounded-2xl border border-ink/10 bg-ink/5 p-3 text-xs font-medium leading-relaxed text-muted">
+          Taking part is voluntary. Your answers about {who} help with their matching
+          and will be visible to other members through {who}&rsquo;s matching results.
+          You can ask us to remove your response anytime at{" "}
+          <a href="mailto:hello@findflockie.com" className="font-bold underline underline-offset-2">
+            hello@findflockie.com
+          </a>
+          .
+        </p>
       </header>
 
       <label className="block">
