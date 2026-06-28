@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 // Reverse-geocode lat/lng → city. Uses Google Geocoding if GEOCODING_KEY is set
 // (server-side, unrestricted/IP-restricted key — NOT the referrer-restricted
@@ -10,6 +11,19 @@ export async function GET(req: Request) {
   if (!lat || !lng || isNaN(+lat) || isNaN(+lng)) {
     return NextResponse.json({ error: "bad coords" }, { status: 400 });
   }
+
+  // Auth-gate + rate limit (this can hit the paid Google Geocoding API).
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { data: allowed } = await supabase.rpc("rate_limit_hit", {
+    p_bucket: "geocode",
+    p_max: 60,
+    p_window_seconds: 3600,
+  });
+  if (allowed === false) return NextResponse.json({ error: "Too many requests — slow down." }, { status: 429 });
 
   const key = process.env.GEOCODING_KEY;
   try {
