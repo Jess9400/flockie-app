@@ -1,4 +1,12 @@
--- Flockie — all pending migrations, ordered. Paste & run once. Safe to re-run.
+-- ⚠️⚠️ DO NOT RUN — SUPERSEDED HISTORICAL SNAPSHOT (pre-2026-06-27 hardening). ⚠️⚠️
+-- This bundle predates ALL the security hardening (profile/vibe/trips/join-request
+-- RLS lockdowns, the public_profiles/vibe_directory views, rate limiting, the
+-- matching source-of-truth cleanup). Re-running it would REVERT those fixes —
+-- e.g. it still sets `trip_join_requests` SELECT to `using (true)`.
+-- For a fresh database, run the individual current files, not this one.
+-- Kept only as history.
+--
+-- Flockie — all pending migrations, ordered. (Historical — do not run.)
 
 
 -- ============================================================

@@ -61,6 +61,6 @@ export async function POST(req: Request) {
     const err = e as { statusCode?: number; message?: string };
     const status =
       err?.statusCode === 402 ? 402 : err?.statusCode === 429 ? 429 : 500;
-    return NextResponse.json({ error: err?.message ?? "Generation failed" }, { status });
+    return NextResponse.json({ error: "Generation failed" }, { status });
   }
 }
