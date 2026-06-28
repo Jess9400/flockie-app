@@ -11,10 +11,17 @@ export default async function CompatPage({ params }: { params: { id: string } })
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Messaging apps sometimes linkify the share TEXT into the URL path, so params.id
+  // can arrive as "<uuid> See how compatible we'd be…". Pull the real UUID out so
+  // the lookup still works (and the page doesn't degrade on a mangled shared link).
+  const id =
+    params.id.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i)?.[0] ??
+    params.id;
+
   // A shared link must NEVER hard-404: if compat_target can't resolve (profile
   // gone, RPC unavailable), degrade to a generic invite so the sign-up / match
   // flow still works.
-  const { data: t } = await supabase.rpc("compat_target", { p_id: params.id });
+  const { data: t } = await supabase.rpc("compat_target", { p_id: id });
   const target = (t?.[0] as Target) ?? null;
   const name = target?.name ? target.name.split(" ")[0] : "your friend";
 
@@ -24,7 +31,7 @@ export default async function CompatPage({ params }: { params: { id: string } })
     inner = (
       <>
         <Link
-          href={`/login?redirect=${encodeURIComponent(`/compat/${params.id}`)}`}
+          href={`/login?redirect=${encodeURIComponent(`/compat/${id}`)}`}
           className="mt-6 block rounded-full border-2 border-ink bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
         >
           Take the 60-sec vibe check
@@ -34,7 +41,7 @@ export default async function CompatPage({ params }: { params: { id: string } })
         </p>
       </>
     );
-  } else if (user.id === params.id) {
+  } else if (user.id === id) {
     inner = (
       <div className="mt-6 text-center">
         <p className="font-nunito text-sm font-medium text-white/80">
@@ -55,14 +62,14 @@ export default async function CompatPage({ params }: { params: { id: string } })
     if (!me?.onboarding_complete) {
       inner = (
         <Link
-          href={`/onboarding/profile?returnTo=${encodeURIComponent(`/compat/${params.id}`)}`}
+          href={`/onboarding/profile?returnTo=${encodeURIComponent(`/compat/${id}`)}`}
           className="mt-6 block rounded-full border-2 border-ink bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
         >
           Take the 60-sec vibe check to reveal your score
         </Link>
       );
     } else {
-      const { data: s } = await supabase.rpc("compat_score", { p_other: params.id });
+      const { data: s } = await supabase.rpc("compat_score", { p_other: id });
       const score = (s?.[0]?.score as number | undefined) ?? null;
       const highlights = (s?.[0]?.highlights as string[] | undefined) ?? [];
       inner = (
