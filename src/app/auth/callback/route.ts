@@ -24,9 +24,17 @@ export async function GET(request: Request) {
 
         const { data: profile } = await supabase
           .from("profiles")
-          .select("onboarding_complete, vibe_completed_at, activity_prefs_complete")
+          .select("onboarding_complete, vibe_completed_at, activity_prefs_complete, terms_accepted_at")
           .eq("id", user.id)
           .maybeSingle();
+
+        // Persist terms consent on first login. The /login screen is the clickwrap
+        // ("By continuing you agree to Flockie's Terms and Privacy Policy"), so an
+        // authenticated user has consented. Guarded on the null column so the stored
+        // timestamp stays the FIRST acceptance even if accept_terms() re-stamps.
+        if (profile && !profile.terms_accepted_at) {
+          await supabase.rpc("accept_terms");
+        }
 
         // Lower friction for Vibe invites: a user who's done the activity form
         // (Tier 1) is let straight in; brand-new users heading to a Vibe get the

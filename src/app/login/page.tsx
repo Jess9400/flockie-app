@@ -22,10 +22,9 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
 
   async function handleGoogle() {
-    // Record terms acceptance for brand-new accounts (consumed after callback).
-    try {
-      localStorage.setItem("flockie-pending-terms", "1");
-    } catch {}
+    // Terms consent is persisted server-side in the OAuth callback (accept_terms),
+    // gated on the null terms_accepted_at column. The clickwrap text below is the
+    // point of consent.
     setLoading(true);
     const callbackParams = new URLSearchParams({ next: redirect });
     if (referral) callbackParams.set("ref", referral);
