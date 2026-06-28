@@ -103,6 +103,12 @@ begin
 end $$;
 grant execute on function public.vibe_negative_fit(uuid, uuid) to authenticated;
 
+-- SUPERSEDED 2026-06-28: stale vibe_match copy — raw `::int` cast (no #98 regex
+-- guard, line below) and a different scoring formula. Canonical guarded vibe_match
+-- is in recommended-vibes.sql (verified live on prod). Wrapped so re-running this
+-- file (it owns the live vibe_negative_fit above) can't downgrade the score.
+-- (vibe_negative_fit / mark_/undo_vibe_not_for_me above remain ACTIVE.)
+/*
 create or replace function public.vibe_match(p_user uuid, p_vibe uuid)
 returns int language plpgsql security definer set search_path = public stable as $$
 declare
@@ -168,3 +174,4 @@ begin
   return greatest(0, least(100, round(positive_score - 30 * negative_fit)));
 end $$;
 grant execute on function public.vibe_match(uuid, uuid) to authenticated;
+*/

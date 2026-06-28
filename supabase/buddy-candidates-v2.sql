@@ -26,6 +26,13 @@ returns int language sql security definer set search_path = public stable as $$
 $$;
 grant execute on function public.buddy_dest_count(text, uuid) to authenticated;
 
+-- SUPERSEDED 2026-06-28: older buddy_candidates_trip — flat weights and NO
+-- buddy_hard_block dealbreaker/block filter (could surface hard-blocked users).
+-- Canonical version (priority-weighted + buddy_hard_block) is in
+-- match-priorities.sql, which has its own drops+create. Wrapped (drops INCLUDED)
+-- so re-running this file can't drop the live function or downgrade the deck.
+-- (buddy_dest_count above remains ACTIVE.)
+/*
 drop function if exists public.buddy_candidates_trip(int);
 drop function if exists public.buddy_candidates_trip(int, text);
 drop function if exists public.buddy_candidates_trip(int, text, uuid);
@@ -84,3 +91,4 @@ language sql security definer set search_path = public stable as $$
   limit p_limit;
 $$;
 grant execute on function public.buddy_candidates_trip(int, text, uuid) to authenticated;
+*/
