@@ -9,10 +9,13 @@ create table if not exists public.vibes (
   description text not null,
   category text not null,
   photos text[] default '{}',
+  country text,
   city text not null,
+  area text,
   location_name text,
   location_lat float8,
   location_lng float8,
+  activity_url text,
   starts_at timestamptz not null,
   ends_at timestamptz,
   signup_deadline timestamptz not null,
@@ -21,6 +24,7 @@ create table if not exists public.vibes (
   required_skill_level int,
   dealbreaker_rules jsonb default '{}'::jsonb,
   diversity_floor_enabled boolean default false,
+  gender_pref text default 'any',
   status text not null default 'open',
   created_at timestamptz default now()
 );
@@ -127,9 +131,38 @@ returns boolean language sql security definer set search_path = public stable as
       );
 $$;
 
--- vibes: anyone signed in can browse; host manages own
+-- Exact venue and private logistics are available only to the host or a
+-- confirmed attendee. Public browsing uses vibe_directory instead.
+create or replace function public.vibe_private_logistics(p_vibe uuid)
+returns table (
+  location_name text,
+  location_lat float8,
+  location_lng float8,
+  activity_url text
+)
+language sql security definer set search_path = public stable as $$
+  select v.location_name, v.location_lat, v.location_lng, v.activity_url
+  from public.vibes v
+  where v.id = p_vibe
+    and (
+      v.host_id = auth.uid()
+      or exists (
+        select 1
+        from public.vibe_interests i
+        where i.vibe_id = v.id
+          and i.user_id = auth.uid()
+          and i.status = 'confirmed'
+      )
+    );
+$$;
+revoke all on function public.vibe_private_logistics(uuid) from public, anon;
+grant execute on function public.vibe_private_logistics(uuid) to authenticated;
+
+-- The host may read the complete row; everyone else browses the safe directory.
 drop policy if exists "vibes readable" on public.vibes;
-create policy "vibes readable" on public.vibes for select to authenticated using (true);
+drop policy if exists "vibes host read" on public.vibes;
+create policy "vibes host read" on public.vibes for select to authenticated
+  using (host_id = auth.uid());
 drop policy if exists "vibes host insert" on public.vibes;
 create policy "vibes host insert" on public.vibes for insert to authenticated with check (auth.uid() = host_id);
 drop policy if exists "vibes host update" on public.vibes;

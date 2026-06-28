@@ -99,7 +99,8 @@ returns table (
   category text,
   photos text[],
   city text,
-  location_name text,
+  area text,
+  country text,
   starts_at timestamptz,
   capacity int,
   event_vibe_tags text[],
@@ -108,7 +109,7 @@ returns table (
 language sql security definer set search_path = public stable as $$
   with me as (select id, home_city from public.profiles where id = auth.uid())
   select
-    v.id, v.host_id, v.title, v.category, v.photos, v.city, v.location_name,
+    v.id, v.host_id, v.title, v.category, v.photos, v.city, v.area, v.country,
     v.starts_at, v.capacity, v.event_vibe_tags,
     public.vibe_match(auth.uid(), v.id) as match_score
   from public.vibes v
@@ -775,6 +776,7 @@ create trigger trips_creation_gate_trg
 -- Public (anon-readable) view of a single Vibe, for shareable invite links.
 -- Run in the Supabase SQL editor. Safe to re-run.
 
+drop function if exists public.public_vibe(uuid);
 create or replace function public.public_vibe(p_id uuid)
 returns table (
   id uuid,
@@ -783,7 +785,8 @@ returns table (
   category text,
   photos text[],
   city text,
-  location_name text,
+  area text,
+  country text,
   starts_at timestamptz,
   capacity int,
   event_vibe_tags text[],
@@ -794,7 +797,7 @@ returns table (
 )
 language sql security definer set search_path = public stable as $$
   select
-    v.id, v.title, v.description, v.category, v.photos, v.city, v.location_name,
+    v.id, v.title, v.description, v.category, v.photos, v.city, v.area, v.country,
     v.starts_at, v.capacity, v.event_vibe_tags, v.status,
     h.display_name as host_name,
     h.photos[1] as host_photo,

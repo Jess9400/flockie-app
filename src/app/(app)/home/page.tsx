@@ -39,7 +39,7 @@ type HomeFlock = {
 type VibeRow = VibeCardData & { host_id: string };
 
 const VIBE_COLS =
-  "id, host_id, title, category, photos, city, location_name, starts_at, capacity, event_vibe_tags";
+  "id, host_id, title, category, photos, city, area, country, starts_at, capacity, event_vibe_tags";
 
 async function loadHostsAndCounts(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -91,7 +91,7 @@ export default async function HomePage({
 
   // ── Vibes: "near you" (same city + timing filter) and "all cities" ─────
   let nearQuery = supabase
-    .from("vibes")
+    .from("vibe_directory")
     .select(VIBE_COLS)
     .in("status", ["open", "ranking", "finalized"])
     .gte("starts_at", nowIso)
@@ -107,7 +107,7 @@ export default async function HomePage({
   if (hiddenVibeIds.length) nearQuery = nearQuery.not("id", "in", `(${hiddenVibeIds.join(",")})`);
 
   let allQuery = supabase
-    .from("vibes")
+    .from("vibe_directory")
     .select(VIBE_COLS)
     .in("status", ["open", "ranking", "finalized"])
     .gte("starts_at", nowIso)
@@ -118,7 +118,7 @@ export default async function HomePage({
   // Count of vibes in the user's city over the next week — for the hero line.
   const weekIso = new Date(Date.now() + 7 * 864e5).toISOString();
   let cityWeekQuery = supabase
-    .from("vibes")
+    .from("vibe_directory")
     .select("id", { count: "exact", head: true })
     .in("status", ["open", "ranking", "finalized"])
     .gte("starts_at", nowIso)

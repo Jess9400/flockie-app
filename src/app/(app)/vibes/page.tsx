@@ -45,9 +45,9 @@ export default async function VibesPage({
 
   const nowIso = new Date().toISOString();
   let query = supabase
-    .from("vibes")
+    .from("vibe_directory")
     .select(
-      "id, host_id, title, category, photos, city, location_name, starts_at, capacity, event_vibe_tags",
+      "id, host_id, title, category, photos, city, area, country, starts_at, capacity, event_vibe_tags",
       { count: "exact" }
     );
 

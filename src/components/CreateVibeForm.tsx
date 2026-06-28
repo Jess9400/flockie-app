@@ -26,6 +26,8 @@ type ResolvedLocation = {
   lat: number;
   lng: number;
   city: string | null;
+  area: string | null;
+  country: string | null;
 };
 
 export type VibeClone = {
@@ -34,7 +36,9 @@ export type VibeClone = {
   category?: string;
   activityUrl?: string;
   photos?: string[];
+  country?: string;
   city?: string;
+  area?: string;
   locationName?: string;
   capacity?: number;
   genderPref?: string;
@@ -95,7 +99,9 @@ export default function CreateVibeForm({
   const [durationOption, setDurationOption] = useState<number | "custom">(120);
   const [customDurationMinutes, setCustomDurationMinutes] = useState(90);
   const [deadline, setDeadline] = useState("");
+  const [country, setCountry] = useState(clone?.country ?? "");
   const [city, setCity] = useState(clone?.city ?? defaultCity ?? "");
+  const [area, setArea] = useState(clone?.area ?? "");
   const [locationName, setLocationName] = useState(clone?.locationName ?? "");
   const [locationLat, setLocationLat] = useState<number | null>(null);
   const [locationLng, setLocationLng] = useState<number | null>(null);
@@ -210,6 +216,8 @@ export default function CreateVibeForm({
     setLocationLat(resolvedLocation.lat);
     setLocationLng(resolvedLocation.lng);
     if (resolvedLocation.city) setCity(resolvedLocation.city);
+    if (resolvedLocation.area) setArea(resolvedLocation.area);
+    if (resolvedLocation.country) setCountry(resolvedLocation.country);
     setLocationMsg("Exact address added to the location line.");
   }
 
@@ -258,7 +266,7 @@ export default function CreateVibeForm({
     e.preventDefault();
     setErr(null);
 
-    if (!title || !description || !category || !startsAt || !endsAt || !deadline || !city) {
+    if (!title || !description || !category || !startsAt || !endsAt || !deadline || !city || !country) {
       return setErr("Please fill in all required fields.");
     }
     if (!locationName.trim()) {
@@ -297,7 +305,9 @@ export default function CreateVibeForm({
         description,
         category,
         photos,
+        country,
         city,
+        area: area.trim() || null,
         location_name: locationName || null,
         location_lat: locationLat,
         location_lng: locationLng,
@@ -597,15 +607,38 @@ export default function CreateVibeForm({
             Interest stays open until this time, then the algorithm ranks everyone and builds your list.
           </p>
         </Field>
-        <Field label="City">
-          <input
-            className={inputCls}
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            placeholder="Lisbon"
-          />
-        </Field>
-        <Field label="Location (sent to attendees + pinned in chat)">
+        <div className="grid gap-3 sm:grid-cols-3">
+          <Field label="Country (public)">
+            <input
+              className={inputCls}
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              placeholder="Portugal"
+              required
+            />
+          </Field>
+          <Field label="City (public)">
+            <input
+              className={inputCls}
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder="Lisbon"
+              required
+            />
+          </Field>
+          <Field label="Area (public · optional)">
+            <input
+              className={inputCls}
+              value={area}
+              onChange={(e) => setArea(e.target.value)}
+              placeholder="Alfama"
+            />
+          </Field>
+        </div>
+        <p className="-mt-1 text-xs font-medium text-muted">
+          Everyone sees only this approximate location until they confirm.
+        </p>
+        <Field label="Exact venue or address (confirmed attendees only)">
           <input
             className={inputCls}
             value={locationName}
@@ -651,7 +684,7 @@ export default function CreateVibeForm({
             <p className="mt-1 text-xs font-bold text-flockie-orange">{locationMsg}</p>
           )}
           <p className="mt-1 text-xs font-medium text-muted">
-            Check the pin is right. If the suggested address is correct, add it to the line so attendees see the exact place.
+            Check the pin is right. The host always sees it; attendees unlock it only after confirming.
           </p>
         </Field>
       </section>

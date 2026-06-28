@@ -139,7 +139,7 @@ export default async function ChatsPage({
   const cities: Record<string, string> = {};
   if (vibeList.length) {
     const { data: vc } = await supabase
-      .from("vibes")
+      .from("vibe_directory")
       .select("id, city")
       .in("id", vibeList.map((v) => v.vibe_id));
     vc?.forEach((r) => (cities[r.id] = r.city));

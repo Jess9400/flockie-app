@@ -5,19 +5,42 @@ type GeocodeResult = {
   lat: number;
   lng: number;
   city: string | null;
+  area: string | null;
+  country: string | null;
 };
+
+type GoogleAddressComponent = { long_name?: string; types?: string[] };
+
+function pickGoogleComponent(
+  comps: GoogleAddressComponent[] | undefined,
+  types: string[]
+): string | null {
+  if (!comps) return null;
+  for (const type of types) {
+    const match = comps.find((component) => component.types?.includes(type))?.long_name;
+    if (match) return match;
+  }
+  return null;
+}
 
 function pickGoogleCity(
   comps: { long_name?: string; types?: string[] }[] | undefined
 ): string | null {
-  if (!comps) return null;
-  return (
-    comps.find((c) => c.types?.includes("locality"))?.long_name ??
-    comps.find((c) => c.types?.includes("postal_town"))?.long_name ??
-    comps.find((c) => c.types?.includes("administrative_area_level_2"))?.long_name ??
-    comps.find((c) => c.types?.includes("administrative_area_level_1"))?.long_name ??
-    null
-  );
+  return pickGoogleComponent(comps, [
+    "locality",
+    "postal_town",
+    "administrative_area_level_2",
+    "administrative_area_level_1",
+  ]);
+}
+
+function pickGoogleArea(comps: GoogleAddressComponent[] | undefined): string | null {
+  return pickGoogleComponent(comps, [
+    "neighborhood",
+    "sublocality_level_1",
+    "sublocality",
+    "administrative_area_level_3",
+  ]);
 }
 
 function pickNominatimCity(address: Record<string, string> | undefined): string | null {
@@ -29,6 +52,19 @@ function pickNominatimCity(address: Record<string, string> | undefined): string 
     address.municipality ??
     address.county ??
     address.state ??
+    null
+  );
+}
+
+function pickNominatimArea(address: Record<string, string> | undefined): string | null {
+  if (!address) return null;
+  return (
+    address.neighbourhood ??
+    address.suburb ??
+    address.quarter ??
+    address.city_district ??
+    address.borough ??
+    address.district ??
     null
   );
 }
@@ -56,6 +92,8 @@ export async function GET(req: Request) {
           lat: loc.lat,
           lng: loc.lng,
           city: pickGoogleCity(first.address_components),
+          area: pickGoogleArea(first.address_components),
+          country: pickGoogleComponent(first.address_components, ["country"]),
         };
       }
     } else {
@@ -71,6 +109,8 @@ export async function GET(req: Request) {
           lat: Number(first.lat),
           lng: Number(first.lon),
           city: pickNominatimCity(first.address),
+          area: pickNominatimArea(first.address),
+          country: first.address?.country ?? null,
         };
       }
     }

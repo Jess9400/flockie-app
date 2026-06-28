@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { MapPin, Users, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatVibeWhen, type InterestStatus } from "@/lib/vibes";
+import { formatApproximateVibeLocation } from "@/lib/vibe-location";
 
 export type VibeCardData = {
   id: string;
@@ -13,7 +14,8 @@ export type VibeCardData = {
   category: string;
   photos: string[] | null;
   city: string;
-  location_name: string | null;
+  area: string | null;
+  country: string | null;
   starts_at: string;
   capacity: number;
   event_vibe_tags: string[] | null;
@@ -54,6 +56,8 @@ export default function VibeCard({
   const cover = vibe.photos?.[0];
   const hostName = vibe.host?.display_name || "A flockie";
   const hostAvatar = vibe.host?.photos?.[0];
+  const approximateLocation =
+    formatApproximateVibeLocation(vibe) || "Location shared after confirmation";
 
   useEffect(() => {
     if (!hidden) return;
@@ -157,7 +161,7 @@ export default function VibeCard({
           </p>
           <p className="mt-0.5 flex items-center gap-1 text-[11px] font-medium text-muted">
             <MapPin size={11} className="shrink-0" />
-            <span className="truncate">{vibe.location_name || vibe.city}</span>
+            <span className="truncate">{approximateLocation}</span>
           </p>
 
           <div className="mt-2 flex items-center justify-between gap-1 pt-0.5">

@@ -1,7 +1,8 @@
 -- Public (anon-readable) view of a single Vibe, for shareable invite links.
 -- Run in the Supabase SQL editor. Safe to re-run.
 
-create or replace function public.public_vibe(p_id uuid)
+drop function if exists public.public_vibe(uuid);
+create function public.public_vibe(p_id uuid)
 returns table (
   id uuid,
   title text,
@@ -9,7 +10,8 @@ returns table (
   category text,
   photos text[],
   city text,
-  location_name text,
+  area text,
+  country text,
   starts_at timestamptz,
   capacity int,
   event_vibe_tags text[],
@@ -20,7 +22,7 @@ returns table (
 )
 language sql security definer set search_path = public stable as $$
   select
-    v.id, v.title, v.description, v.category, v.photos, v.city, v.location_name,
+    v.id, v.title, v.description, v.category, v.photos, v.city, v.area, v.country,
     v.starts_at, v.capacity, v.event_vibe_tags, v.status,
     h.display_name as host_name,
     h.photos[1] as host_photo,

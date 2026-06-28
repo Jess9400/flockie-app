@@ -15,7 +15,7 @@ export default async function VibeReviewPage({
   } = await supabase.auth.getUser();
 
   const { data: vibe } = await supabase
-    .from("vibes")
+    .from("vibe_directory")
     .select("title, starts_at")
     .eq("id", params.id)
     .maybeSingle();
