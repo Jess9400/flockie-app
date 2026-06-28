@@ -169,3 +169,44 @@ Scan returned **0 errors, all WARN**. Outcome:
   (PostGIS-owned; moving breaks dependencies).
 - **No action — Pro-only:** `auth_leaked_password_protection` is a paid-plan toggle, and
   signup is Google-only anyway. Revisit if email/password login is added.
+
+## Full audit + P0 fix (2026-06-28)
+Ran a 4-track audit (auth/signup, matching algo, core flows, build/breakage).
+
+| PR | Summary | Needs SQL run? |
+|----|---------|----------------|
+| #105 | **P0** — lock `vibe_interests` self-write to `status='interested'` | **Yes** — `vibe-interests-status-lock.sql` ✅ run on prod 2026-06-28 |
+
+- **P0 (fixed, #105):** the `vibe_interests` INSERT/UPDATE RLS only checked `user_id =
+  auth.uid()` — status unconstrained. Any authed user could directly set their row to
+  `status='confirmed'` for any vibe, bypassing invite/matching/capacity and unlocking
+  exact GPS (`vibe_private_logistics`) + vibe chat (`is_vibe_member`). Audit query
+  confirmed **no exploitation** (only confirmed/null-invitation rows were legit
+  `redeem_host_code` joins, `source='private'`). Code/link invites unaffected (SECURITY
+  DEFINER RPCs bypass RLS).
+- **Verified clean:** build (`tsc` + `next build` pass), Google OAuth/session/callback,
+  middleware PUBLIC_PATHS, #103 `handle_new_user` revoke does NOT break signup, the
+  "flock chat = 1 person" + trip-request-enumeration fixes held.
+- **Verified LIVE on prod** (via `pg_get_functiondef`): `autofill_open_vibes` /
+  `auto_rank_due_vibes` / `invite_city_fallback` carry the #77 time guards;
+  `vibe_match` carries the #98 `::int` guard. (Resolves the earlier "vibe-auto-matching
+  not run?" uncertainty — the guarded versions are deployed.)
+
+### Audit follow-ups still open (no prod impact)
+- **Matching re-run downgrade hazards (repo-only):** non-canonical *active* copies still
+  exist that would downgrade the engine if those files are re-run — `autofill_open_vibes`
+  (`host-controls.sql` body + its `cron.schedule`, `vibe-v2-preview-reject.sql`),
+  `vibe_match` (`vibe-not-for-me.sql`, `vibe-review-preferences.sql`), `buddy_candidates_trip`
+  (`buddy-candidates-v2.sql`), `recommended_vibes` (`vibe-location-privacy-prepare.sql`).
+  Fix = comment-wrap them (same pattern as #94–#98). Prod is correct; this only matters
+  on re-run.
+- **Onboarding soft-gated:** hard redirect runs only at login callback; a user who abandons
+  onboarding can navigate directly to `/home`. If hard enforcement is wanted, gate in
+  `(app)/layout.tsx`. (Product decision.)
+- **Terms not persisted:** no `accept_terms` RPC; login writes a dead `flockie-pending-terms`
+  localStorage flag that's never read. Consent is clickwrap-only. (Product decision.)
+- **Repo can't rebuild DB from scratch:** `schema.sql` only creates `profiles`; base tables
+  + several core functions live in an uncommitted migration. Prod works; repo isn't a DB
+  source of truth.
+- **Minor:** no ESLint config (`next lint` can't run in CI); unauth API hits 307→/login
+  instead of 401; Supabase env vars use `!` assertions.
