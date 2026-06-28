@@ -44,7 +44,7 @@ begin
   if v.required_skill_level is null then
     skill_fit := 1.0;
   else
-    select (pr.activity_skills->>a)::int into matched_skill
+    select case when (pr.activity_skills->>a) ~ '^[0-9]+$' then (pr.activity_skills->>a)::int end into matched_skill
     from unnest(pr.activities) a
     where lower(a) like '%' || lower(v.category) || '%' and pr.activity_skills ? a
     limit 1;

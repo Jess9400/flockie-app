@@ -49,7 +49,7 @@ begin
   for c in
     select vi.user_id,
       ( 0.35 * (case when v.required_skill_level is null then 0.7 else coalesce((
-            select 1 - abs(((p.activity_skills ->> k)::int) - v.required_skill_level)::float / 4
+            select 1 - abs(((case when (p.activity_skills ->> k) ~ '^[0-9]+$' then (p.activity_skills ->> k)::int end)) - v.required_skill_level)::float / 4
             from jsonb_object_keys(coalesce(p.activity_skills,'{}'::jsonb)) k
             where lower(k) like '%'||lower(v.category)||'%' limit 1), 0.3) end)
       + 0.30 * (case when array_length(v.event_vibe_tags,1) is null then 0.5 else coalesce((
@@ -107,6 +107,10 @@ begin
 end $$;
 grant execute on function public.backfill_vibe(uuid) to authenticated;
 
+-- SUPERSEDED: canonical invite_city_fallback is in supabase/vibe-auto-matching.sql
+-- (live; has the #77 starts_at>now guard). Wrapped out 2026-06-28 — repo-only.
+-- (The _rank_vibe_core + backfill_vibe above remain the canonical/live versions.)
+/*
 create or replace function public.invite_city_fallback(p_vibe uuid)
 returns int language plpgsql security definer set search_path = public as $$
 declare v public.vibes; v_remaining int; v_added int := 0; c record;
@@ -146,6 +150,7 @@ begin
   return v_added;
 end $$;
 grant execute on function public.invite_city_fallback(uuid) to authenticated;
+*/
 
 -- ── Private requests: join via the host's link → pending host accept ────────
 create or replace function public.request_private_vibe(p_vibe uuid)

@@ -105,6 +105,9 @@ end $$;
 grant execute on function public.backfill_vibe(uuid) to authenticated;
 */
 
+-- SUPERSEDED: canonical invite_city_fallback is in supabase/vibe-auto-matching.sql
+-- (live; has the #77 starts_at>now guard). Wrapped out 2026-06-28 — repo-only.
+/*
 -- ── Same-city fallback respects the algo budget ─────────────────────────────
 create or replace function public.invite_city_fallback(p_vibe uuid)
 returns int language plpgsql security definer set search_path = public as $$
@@ -153,3 +156,4 @@ begin
   return v_added;
 end $$;
 grant execute on function public.invite_city_fallback(uuid) to authenticated;
+*/
