@@ -79,3 +79,67 @@ commits; `stayavl-collab` only contributed the "Not for me" signal there.
 
 Highest overlap with her work: the **home page redesign** and **matching/gate
 changes (#76, #77)** — worth a sync with her since those are shared surfaces.
+
+---
+
+# Session 2 (2026-06-27 / 06-28) — audit follow-up: security, matching cleanup, P1
+
+Drove the audit findings to resolution. All PRs merged to `main`.
+
+## P0 security — ALL CLOSED
+- **#87** (cofounder) — Profile privacy/RLS. `profiles` base table locked to owner-only;
+  cross-user reads go through a `security_barrier` definer view `public_profiles`
+  (safe fields only — no GPS/`location`, no raw sliders/dealbreakers); socials gated
+  by `social_visibility`. Two-phase rollout (prepare → deploy → enforce).
+- **#88** (cofounder) — Vibe location privacy. Exact venue/coords private; public
+  browsing via `vibe_directory` (country/city/area); exact logistics only for host +
+  confirmed attendees. Two-phase rollout.
+- **#89** — `buddy_swipe` notifies once (gated to newly-created chat / fresh like).
+- **#90** — `trip_join_requests` SELECT scoped (requester / host / co-host / accepted
+  member); flocks "going" count moved to a definer RPC `flock_going_counts`.
+
+## Option B profiles (cofounder #84/#85)
+- New owner profile dashboard + identity card (#84); public `/people/[id]` rebuilt and
+  stops querying raw matching fields (#85).
+
+## Activity-candidate fixes (cofounder #86)
+- `activity_candidate_decisions` (contextual pass/like); excludes handled people from
+  `city_people` + `activity_candidates`; SwipeDeck error handling; honest empty states.
+
+## Matching engine — single source of truth (#94–#98, repo-only unless noted)
+The live functions were dumped from prod (the canonical) and all non-live duplicate
+definitions were neutralized so re-running any file can't downgrade the engine.
+Canonical files:
+- `buddy_pair_score` → `vibe-traits.sql`
+- `activity_candidates` → `activity-candidate-decisions.sql`
+- `_rank_vibe_core` + `backfill_vibe` → `vibe-v2-private-link.sql`
+- `rank_vibe` (thin wrapper) → `vibe-auto-matching.sql`
+- `invite_city_fallback` → `vibe-auto-matching.sql` (the #77 `starts_at` version)
+- `buddy_swipe` → `buddy-swipe-notify-once.sql` (#89)
+- `match-weights.sql` emptied (was the dangerous downgrade: dumb buddy_pair_score +
+  mute-bypassing rank_vibe).
+- **#98** also added a regex guard to the `activity_skills::int` cast in `_rank_vibe_core`
+  and `vibe_match` (skips non-numeric values instead of aborting scoring) — the one
+  prod-touching change; applied + verified against the live dump.
+- Note: the audit's "standby double-notify" was a non-issue (live ranking uses a
+  shortlist→host-review flow). `_all-pending.sql` still has stale copies but
+  self-converges (last-write-wins) — harmless, optional cleanup.
+
+## P1 / UX (#91–#93)
+- Portaled the remaining modals (InterestButton / ProfilePeek / ActivityVibePopup) —
+  same flicker-trap class as the SayHi fix (#91).
+- Match-% standardized to coral; `prefers-reduced-motion` disables the ping dots;
+  `backfill-prefs-flags.sql` fixes the legacy-user matching dead end (#92).
+- Modal a11y (role/aria-modal + Esc-to-close via `useEsc`) + larger tap targets (#93).
+
+## Run-on-Supabase checklist (SQL not auto-applied by deploys)
+- ✅ #87 prepare + enforce, #88 prepare + enforce, #89, #90 prepare + enforce — run.
+- ✅ #98 `::int` guard (`vibe-v2-private-link.sql` + `recommended-vibes.sql`) — run + verified.
+- Verify the rest with: `city_people`/`home_flocks` exist (home-carousels.sql);
+  `public_profile_events` contains `reviewed` (public-profile-events.sql);
+  `select count(*) from profiles where coalesce(trip_prefs_complete,false)=false and planning is not null` = 0 (backfill-prefs-flags.sql).
+- Matching cleanup PRs #94–#97 are **repo-only — no SQL to run.**
+
+## Deferred (optional)
+- Brand **contrast** (white on `flockie-blue` fails WCAG) — pending the color decision.
+- `_all-pending.sql` monolith dedup (self-converges; low priority).
