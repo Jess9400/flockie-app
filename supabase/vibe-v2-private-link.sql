@@ -181,12 +181,13 @@ begin
   select status into v_status from public.vibe_interests where vibe_id=p_vibe and user_id=p_user;
   if v_status is null or v_status <> 'requested' then raise exception 'no pending request from this person'; end if;
 
-  v_algo_base := greatest(1, ceil(v.capacity * coalesce(v.algo_share,100) / 100.0)::int);
-  v_host_spots := greatest(v.capacity - v_algo_base, 0);
+  -- Gate on overall capacity (confirmed + live invites), not the host-share
+  -- sub-cap — accepting a request is an explicit host decision, so it should
+  -- succeed whenever the room genuinely has an open seat.
   select count(*) into v_private_held from public.vibe_interests
-    where vibe_id=p_vibe and source='private'
+    where vibe_id=p_vibe
       and (status='confirmed' or (status='invited' and (invitation_expires_at is null or invitation_expires_at>now())));
-  if v_private_held >= v_host_spots then raise exception 'your direct-invite spots are full'; end if;
+  if v_private_held >= v.capacity then raise exception 'this vibe is full'; end if;
 
   update public.vibe_interests set status='invited', source='private',
     invitation_sent_at=now(), invitation_expires_at=public._vibe_confirm_deadline(v.starts_at)

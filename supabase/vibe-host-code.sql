@@ -28,17 +28,18 @@ begin
   select status into v_status from public.vibe_interests where vibe_id = p_vibe and user_id = auth.uid();
   if v_status = 'confirmed' then return; end if;  -- already in
 
-  select count(*) into v_confirmed from public.vibe_interests where vibe_id = p_vibe and status = 'confirmed';
-  if v_confirmed >= v.capacity then raise exception 'vibe is full'; end if;
-
-  v_algo_base := greatest(1, ceil(v.capacity * coalesce(v.algo_share, 100) / 100.0)::int);
-  v_host_spots := greatest(v.capacity - v_algo_base, 0);
-  if v_host_spots <= 0 then raise exception 'this vibe has no host spots'; end if;
-  select count(*) into v_private_held from public.vibe_interests
-    where vibe_id = p_vibe and source = 'private'
-      and (status = 'confirmed' or (status = 'invited' and (invitation_expires_at is null or invitation_expires_at > now())));
-  if v_private_held >= v_host_spots and v_status is distinct from 'invited' then
-    raise exception 'the host''s spots are full';
+  -- A host invite code is an explicit host override: the only real ceiling is the
+  -- vibe's total capacity (counting confirmed + live invites). It is NOT limited
+  -- by the algo/host-share split, so a code never fails while seats are open
+  -- (the old static host-spots cap rejected joiners — and with algo_share=100 it
+  -- meant zero host spots, killing the code entirely).
+  select count(*) into v_confirmed from public.vibe_interests
+    where vibe_id = p_vibe
+      and (status = 'confirmed'
+           or (status = 'invited' and (invitation_expires_at is null or invitation_expires_at > now())));
+  -- a returning 'invited' redeemer already holds a seat, so don't double-count them
+  if v_confirmed >= v.capacity and v_status is distinct from 'invited' then
+    raise exception 'vibe is full';
   end if;
 
   insert into public.vibe_interests (vibe_id, user_id, status, source, confirmed_at)

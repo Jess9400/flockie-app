@@ -87,7 +87,7 @@ returns table (chat_id uuid, name text, photo text)
 language sql security definer set search_path = public stable as $$
   select bc.id,
          coalesce(t.destination, 'Flock') as name,
-         hp.photos[1] as photo
+         coalesce(t.cover_photo, hp.photos[1]) as photo  -- trip banner, not host face
   from public.trip_join_requests j
   join public.trips t on t.id = j.trip_id and t.visibility = 'public'
   join public.buddy_matches m on (m.trip_a = t.id or m.trip_b = t.id)
