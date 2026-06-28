@@ -9,14 +9,21 @@ export default function MatchBackButton({ personId, name }: { personId: string; 
   const router = useRouter();
   const supabase = createClient();
   const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState(false);
 
   async function matchBack() {
     setBusy(true);
-    const { data } = await supabase.rpc("buddy_swipe", {
+    setErr(false);
+    const { data, error } = await supabase.rpc("buddy_swipe", {
       p_target: personId,
       p_liked: true,
       p_activity_title: null,
     });
+    if (error) {
+      setBusy(false);
+      setErr(true);
+      return;
+    }
     const res = data as { matched: boolean; chat_id?: string } | null;
     if (res?.matched && res.chat_id) {
       router.push(`/buddies/${res.chat_id}`);
@@ -39,6 +46,11 @@ export default function MatchBackButton({ personId, name }: { personId: string; 
       >
         <Heart size={16} fill="currentColor" /> {busy ? "…" : `Match back & chat`}
       </button>
+      {err && (
+        <p className="mt-2 text-xs font-bold text-red-700">
+          Couldn&rsquo;t match back — try again.
+        </p>
+      )}
     </div>
   );
 }

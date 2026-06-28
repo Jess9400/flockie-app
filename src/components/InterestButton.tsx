@@ -72,17 +72,17 @@ export default function InterestButton({
 
   async function doInsert() {
     setBusy(true);
+    setMessage(null);
     await supabase.rpc("undo_vibe_not_for_me", { p_vibe: vibeId });
     const { error } = await supabase
       .from("vibe_interests")
       .insert({ vibe_id: vibeId, user_id: userId, status: "interested" });
     setBusy(false);
-    if (!error) {
-      setNotForMe(false);
-      setStatus("interested");
-      setPopup("interested");
-      router.refresh();
-    }
+    if (error) return setMessage(error.message);
+    setNotForMe(false);
+    setStatus("interested");
+    setPopup("interested");
+    router.refresh();
   }
 
   async function express() {
@@ -146,8 +146,14 @@ export default function InterestButton({
 
   async function untap() {
     setBusy(true);
-    await supabase.from("vibe_interests").delete().eq("vibe_id", vibeId).eq("user_id", userId);
+    setMessage(null);
+    const { error } = await supabase
+      .from("vibe_interests")
+      .delete()
+      .eq("vibe_id", vibeId)
+      .eq("user_id", userId);
     setBusy(false);
+    if (error) return setMessage(error.message);
     setStatus(null);
     router.refresh();
   }
