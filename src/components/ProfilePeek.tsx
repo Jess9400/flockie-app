@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 
 export type PeekData = {
@@ -21,7 +23,10 @@ export default function ProfilePeek({
   data: PeekData;
   onClose: () => void;
 }) {
-  return (
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return createPortal(
     <>
       <div className="fixed inset-0 z-50 bg-navy/40" onClick={onClose} />
       <div className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-3xl border-t-2 border-navy bg-cream p-5 font-nunito">
@@ -94,6 +99,7 @@ export default function ProfilePeek({
           </button>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }

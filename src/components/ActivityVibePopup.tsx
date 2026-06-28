@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import ActivityQuestions from "@/components/ActivityQuestions";
@@ -26,7 +27,10 @@ export default function ActivityVibePopup({
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
   const photoInput = useRef<HTMLInputElement>(null);
+
+  useEffect(() => setMounted(true), []);
 
   // Prefill from any existing profile data (e.g. Google name).
   useEffect(() => {
@@ -92,7 +96,8 @@ export default function ActivityVibePopup({
     onDone();
   }
 
-  return (
+  if (!mounted) return null;
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-navy/50 sm:items-center">
       <div className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-3xl border-2 border-navy bg-cream p-5 font-nunito sm:rounded-3xl">
         <div className="flex items-start justify-between">
@@ -164,6 +169,7 @@ export default function ActivityVibePopup({
           </button>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

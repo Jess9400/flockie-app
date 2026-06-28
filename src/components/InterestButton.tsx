@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -49,6 +50,9 @@ export default function InterestButton({
   const [now, setNow] = useState(() => Date.now());
   const [message, setMessage] = useState<string | null>(null);
   const [notForMe, setNotForMe] = useState(initialNotForMe);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 30000);
@@ -362,8 +366,9 @@ export default function InterestButton({
         />
       )}
 
-      {popup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      {popup && mounted &&
+        createPortal(
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-sm rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_6px_0_0_rgba(10,37,69,1)]">
             <p className="text-4xl">{popup === "confirmed" ? "🎉" : "✨"}</p>
             <h2 className="mt-2 font-fredoka text-2xl font-bold text-ink">
@@ -408,8 +413,9 @@ export default function InterestButton({
               </button>
             </div>
           </div>
-        </div>
-      )}
+        </div>,
+          document.body
+        )}
     </>
   );
 }
