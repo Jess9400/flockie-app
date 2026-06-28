@@ -166,7 +166,7 @@ create policy "vibes host read" on public.vibes for select to authenticated
 drop policy if exists "vibes host insert" on public.vibes;
 create policy "vibes host insert" on public.vibes for insert to authenticated with check (auth.uid() = host_id);
 drop policy if exists "vibes host update" on public.vibes;
-create policy "vibes host update" on public.vibes for update to authenticated using (auth.uid() = host_id);
+create policy "vibes host update" on public.vibes for update to authenticated using (auth.uid() = host_id) with check (auth.uid() = host_id);
 drop policy if exists "vibes host delete" on public.vibes;
 create policy "vibes host delete" on public.vibes for delete to authenticated using (auth.uid() = host_id);
 
@@ -192,7 +192,7 @@ create policy "interests self insert" on public.vibe_interests for insert to aut
   with check (user_id = auth.uid());
 drop policy if exists "interests self update" on public.vibe_interests;
 create policy "interests self update" on public.vibe_interests for update to authenticated
-  using (user_id = auth.uid());
+  using (user_id = auth.uid()) with check (user_id = auth.uid());
 drop policy if exists "interests self delete" on public.vibe_interests;
 create policy "interests self delete" on public.vibe_interests for delete to authenticated
   using (user_id = auth.uid());
@@ -256,6 +256,6 @@ create policy "notifications own" on public.notifications for select to authenti
   using (user_id = auth.uid());
 drop policy if exists "notifications own update" on public.notifications;
 create policy "notifications own update" on public.notifications for update to authenticated
-  using (user_id = auth.uid());
+  using (user_id = auth.uid()) with check (user_id = auth.uid());
 
 -- Vibe cover photos reuse the existing 'avatars' bucket (owner-scoped path).

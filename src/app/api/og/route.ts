@@ -1,9 +1,24 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 // Lightweight Open Graph scraper for chat link previews.
 export async function GET(req: Request) {
   const target = new URL(req.url).searchParams.get("url");
   if (!target) return NextResponse.json({ error: "missing url" }, { status: 400 });
+
+  // Auth-gate + rate limit: this is a server-side URL fetcher (SSRF surface),
+  // only used by signed-in users for chat link previews.
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { data: allowed } = await supabase.rpc("rate_limit_hit", {
+    p_bucket: "og",
+    p_max: 120,
+    p_window_seconds: 3600,
+  });
+  if (allowed === false) return NextResponse.json({ error: "Too many requests." }, { status: 429 });
 
   let parsed: URL;
   try {
@@ -11,8 +26,20 @@ export async function GET(req: Request) {
   } catch {
     return NextResponse.json({ error: "bad url" }, { status: 400 });
   }
-  // Basic SSRF guard: only public http(s).
-  if (!["http:", "https:"].includes(parsed.protocol) || /^(localhost|127\.|0\.|10\.|192\.168\.|169\.254\.)/.test(parsed.hostname)) {
+  // SSRF guard: only public http(s). Block loopback/private/link-local/IPv6/metadata.
+  // (Not DNS-rebinding-proof; full protection needs resolving the host to an IP.)
+  const host = parsed.hostname.toLowerCase().replace(/^\[|\]$/g, "");
+  const blocked =
+    !["http:", "https:"].includes(parsed.protocol) ||
+    host === "localhost" ||
+    host.endsWith(".local") ||
+    host.endsWith(".internal") ||
+    host === "metadata.google.internal" ||
+    /^(127\.|0\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.)/.test(host) ||
+    host === "::1" ||
+    /^(fc|fd|fe80)/i.test(host) ||
+    /^\d+$/.test(host); // decimal-encoded IP
+  if (blocked) {
     return NextResponse.json({ error: "blocked" }, { status: 400 });
   }
 
