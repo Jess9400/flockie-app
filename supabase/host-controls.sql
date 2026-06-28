@@ -389,6 +389,11 @@ end $$;
 grant execute on function public.confirm_vibe(uuid) to authenticated;
 
 -- 8) Keep filling open vibes from standby automatically (every 10 min)
+-- SUPERSEDED 2026-06-28: this copy has NO `starts_at > now()` guard (it would
+-- re-fill already-started vibes) and re-points the cron at itself. Canonical
+-- guarded version + the live `flockie-autofill` cron are in vibe-auto-matching.sql
+-- (#77). Wrapped so re-running host-controls.sql can't downgrade the matcher.
+/*
 create or replace function public.autofill_open_vibes()
 returns void language plpgsql security definer set search_path = public as $$
 declare r record;
@@ -397,5 +402,9 @@ begin
     perform public.backfill_vibe(r.id);
   end loop;
 end $$;
-do $$ begin perform cron.unschedule('flockie-autofill'); exception when others then null; end $$;
-select cron.schedule('flockie-autofill', '*/10 * * * *', $$ select public.autofill_open_vibes(); $$);
+*/
+-- cron also superseded — the live flockie-autofill is scheduled in
+-- vibe-auto-matching.sql. (Line-commented, NOT block-commented: the cron
+-- expression contains a slash-star sequence that would close a /* */ block.)
+-- do $$ begin perform cron.unschedule('flockie-autofill'); exception when others then null; end $$;
+-- select cron.schedule('flockie-autofill', every-10-min, $$ select public.autofill_open_vibes(); $$);

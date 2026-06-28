@@ -41,6 +41,12 @@ end $$;
 grant execute on function public.vibe_review_fit(uuid, uuid) to authenticated;
 
 -- ── vibe_match: add a 0.15 review-fit term (re-weights the others) ──────────
+-- SUPERSEDED 2026-06-28: stale vibe_match copy — raw `::int` cast (no #98 regex
+-- guard) and a different scoring formula. Canonical guarded vibe_match is in
+-- recommended-vibes.sql (verified live on prod). Wrapped so re-running this file
+-- (it owns the live vibe_review_fit above) can't downgrade the score.
+-- (vibe_review_fit above remains ACTIVE.)
+/*
 create or replace function public.vibe_match(p_user uuid, p_vibe uuid)
 returns int language plpgsql security definer set search_path = public stable as $$
 declare
@@ -95,6 +101,7 @@ begin
   return round(100 * (0.35 * cat_fit + 0.25 * tag_fit + 0.12 * skill_fit + 0.13 * social_fit + 0.15 * review_fit));
 end $$;
 grant execute on function public.vibe_match(uuid, uuid) to authenticated;
+*/
 
 -- SUPERSEDED: canonical _rank_vibe_core is in supabase/vibe-v2-private-link.sql
 -- (live shortlist→host-review flow). This older copy auto-invited. Wrapped out

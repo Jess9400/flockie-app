@@ -155,6 +155,9 @@ do $$ begin perform cron.unschedule('flockie-auto-commit'); exception when other
 select cron.schedule('flockie-auto-commit', '*/5 * * * *', $$ select public.auto_commit_due_reviews(); $$);
 
 -- ── Upkeep: only fill committed (ranking) vibes; reviewing waits for commit ──
+-- SUPERSEDED 2026-06-28: no `starts_at > now()` guard. Canonical guarded version
+-- is in vibe-auto-matching.sql (#77). Wrapped so re-running can't downgrade.
+/*
 create or replace function public.autofill_open_vibes()
 returns void language plpgsql security definer set search_path = public as $$
 declare r record;
@@ -164,3 +167,4 @@ begin
     perform public.invite_city_fallback(r.id);
   end loop;
 end $$;
+*/

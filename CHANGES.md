@@ -192,14 +192,17 @@ Ran a 4-track audit (auth/signup, matching algo, core flows, build/breakage).
   `vibe_match` carries the #98 `::int` guard. (Resolves the earlier "vibe-auto-matching
   not run?" uncertainty — the guarded versions are deployed.)
 
-### Audit follow-ups still open (no prod impact)
-- **Matching re-run downgrade hazards (repo-only):** non-canonical *active* copies still
-  exist that would downgrade the engine if those files are re-run — `autofill_open_vibes`
-  (`host-controls.sql` body + its `cron.schedule`, `vibe-v2-preview-reject.sql`),
-  `vibe_match` (`vibe-not-for-me.sql`, `vibe-review-preferences.sql`), `buddy_candidates_trip`
-  (`buddy-candidates-v2.sql`), `recommended_vibes` (`vibe-location-privacy-prepare.sql`).
-  Fix = comment-wrap them (same pattern as #94–#98). Prod is correct; this only matters
-  on re-run.
+### Audit follow-ups
+- **✅ Matching re-run downgrade hazards (repo-only) — DONE.** Comment-wrapped the
+  non-canonical *active* duplicate defs so re-running these files can't downgrade the
+  live engine: `autofill_open_vibes` (`host-controls.sql` — function block-wrapped, its
+  cron line-commented because the `*/10` cron expr would close a `/* */` block; and
+  `vibe-v2-preview-reject.sql`), `vibe_match` (`vibe-not-for-me.sql`,
+  `vibe-review-preferences.sql` — leaving their canonical `vibe_negative_fit` /
+  `vibe_review_fit` active), `buddy_candidates_trip` (`buddy-candidates-v2.sql` — drops
+  included in the wrap; canonical is `match-priorities.sql`), `recommended_vibes`
+  (`vibe-location-privacy-prepare.sql`). Canonical copies untouched; verified balanced
+  via a comment-lexer pass. No prod SQL — repo-only.
 - **Onboarding soft-gated:** hard redirect runs only at login callback; a user who abandons
   onboarding can navigate directly to `/home`. If hard enforcement is wanted, gate in
   `(app)/layout.tsx`. (Product decision.)

@@ -106,6 +106,11 @@ $$;
 revoke all on function public.public_vibe(uuid) from public;
 grant execute on function public.public_vibe(uuid) to anon, authenticated;
 
+-- SUPERSEDED 2026-06-28: duplicate recommended_vibes (functionally identical to
+-- the canonical copy in recommended-vibes.sql). Wrapped (drop INCLUDED) so this
+-- privacy-prepare migration is re-runnable without touching the live function.
+-- (vibe_directory / vibe_private_logistics / public_vibe above remain ACTIVE.)
+/*
 drop function if exists public.recommended_vibes(int);
 create function public.recommended_vibes(p_limit int default 6)
 returns table (
@@ -156,5 +161,6 @@ language sql security definer set search_path = public stable as $$
 $$;
 revoke all on function public.recommended_vibes(int) from public, anon;
 grant execute on function public.recommended_vibes(int) to authenticated;
+*/
 
 commit;
