@@ -116,7 +116,7 @@ export default function VibeCard({
           onClick={markNotForMe}
           disabled={busy}
           aria-label="Not for me"
-          className="absolute right-1.5 top-1.5 z-10 flex h-7 w-7 items-center justify-center rounded-full border-2 border-ink bg-white text-lg font-black leading-none text-ink shadow-[0_2px_0_0_rgba(26,26,26,1)] hover:bg-cream disabled:opacity-50"
+          className="absolute right-1.5 top-1.5 z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-ink bg-white text-lg font-black leading-none text-ink shadow-[0_2px_0_0_rgba(26,26,26,1)] hover:bg-cream disabled:opacity-50"
         >
           ×
         </button>

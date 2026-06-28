@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { createClient } from "@/lib/supabase/client";
+import { useEsc } from "@/lib/use-esc";
 
 const ACTIVITIES = [
   { emoji: "☕", label: "Coffee" },
@@ -56,6 +57,8 @@ export default function SayHiButton({
     setError(null);
   }
 
+  useEsc(() => !busy && close(), open);
+
   return (
     <>
       <button
@@ -74,6 +77,9 @@ export default function SayHiButton({
             onClick={() => !busy && close()}
           >
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Invite ${personName} to an activity`}
             className="w-full max-w-sm rounded-3xl border-[3px] border-ink bg-white p-6 text-center shadow-[0_6px_0_0_rgba(10,37,69,1)]"
             onClick={(e) => e.stopPropagation()}
           >
