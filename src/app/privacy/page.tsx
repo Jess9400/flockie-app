@@ -52,7 +52,11 @@ export default function PrivacyPage() {
         <p className="font-bold text-ink">Information collected automatically:</p>
         <ul className="list-disc space-y-1 pl-5">
           <li>App usage data, device type, browser, IP address</li>
-          <li>City-level approximate location</li>
+          <li>
+            Your location, including precise coordinates from your device when you grant
+            permission, used to surface nearby people and Vibes. Other members never see your exact
+            location.
+          </li>
         </ul>
       </Section>
 
@@ -86,8 +90,9 @@ export default function PrivacyPage() {
 
       <Section heading="How long we keep it">
         <p>
-          While your account is active. Within 30 days of deletion, your data is removed. Some
-          safety-related records may be retained longer to prevent re-registration after a ban.
+          While your account is active. When you delete your account, your data is removed
+          immediately and permanently; any copies in routine system backups are rotated out shortly
+          afterward and cannot be restored.
         </p>
       </Section>
 
