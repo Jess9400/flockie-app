@@ -24,7 +24,10 @@ export default function VibeCompletePopup({
 
   useEffect(() => {
     if (!allComplete || typeof window === "undefined") return;
-    if (!force && localStorage.getItem("flockie_vibe_celebrated")) return;
+    // Celebrate exactly once, ever. `force` (?vibe_done=1) must NOT bypass this
+    // guard — otherwise the popup re-fires on every profile edit/refresh that
+    // keeps the query param in the URL.
+    if (localStorage.getItem("flockie_vibe_celebrated")) return;
     localStorage.setItem("flockie_vibe_celebrated", "1");
     setShow(true);
   }, [allComplete, force]);
