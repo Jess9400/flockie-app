@@ -27,6 +27,7 @@ export default function BuddyChatHeader({
   groupTitle,
   groupMembers = [],
   canFlock = true,
+  flockTripId,
 }: {
   matchId: string;
   chatId: string;
@@ -47,6 +48,8 @@ export default function BuddyChatHeader({
   groupMembers?: { id: string; name: string; photo: string | null; isHost: boolean }[];
   // "Turn into a Flock" only applies to 1:1 TRIP matches — never activities.
   canFlock?: boolean;
+  // The Flock's trip id (group chats only) — enables "Leave Flock".
+  flockTripId?: string | null;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -69,6 +72,21 @@ export default function BuddyChatHeader({
     setMenu(false);
     const { data } = await supabase.rpc("toggle_chat_mute", { p_chat: chatId });
     setMuted(!!data);
+  }
+
+  async function leaveFlock() {
+    setMenu(false);
+    if (!flockTripId) return;
+    if (!window.confirm("Leave this Flock? You'll lose your spot and the group chat."))
+      return;
+    setLeaving(true);
+    const { error } = await supabase.rpc("leave_flock", { p_trip: flockTripId });
+    if (error) {
+      setLeaving(false);
+      return window.alert(error.message);
+    }
+    router.push("/chats");
+    router.refresh();
   }
 
   async function report() {
@@ -132,6 +150,16 @@ export default function BuddyChatHeader({
                     >
                       {muted ? "Unmute notifications" : "Mute notifications"}
                     </button>
+                    {flockTripId && (
+                      <button
+                        type="button"
+                        onClick={leaveFlock}
+                        disabled={leaving}
+                        className="block w-full rounded-xl px-3 py-2 text-left text-flockie-coral hover:bg-navy/5"
+                      >
+                        Leave Flock
+                      </button>
+                    )}
                   </div>
                 </>
               )}

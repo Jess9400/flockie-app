@@ -80,6 +80,23 @@ begin
 end $$;
 grant execute on function public.remove_flock_member(uuid, uuid) to authenticated;
 
+-- A member removes themselves from a Flock they joined (hosts can't leave this way).
+create or replace function public.leave_flock(p_trip uuid)
+returns void language plpgsql security definer set search_path = public as $$
+declare v_host uuid; v_cohost uuid;
+begin
+  select user_id, co_host_id into v_host, v_cohost from public.trips where id = p_trip;
+  if v_host is null then raise exception 'trip not found'; end if;
+  if auth.uid() = v_host or auth.uid() is not distinct from v_cohost then
+    raise exception 'a host cannot leave their own Flock';
+  end if;
+  update public.trip_join_requests set status = 'declined'
+    where trip_id = p_trip and user_id = auth.uid();
+  perform public.notify(v_host, 'flock_left', 'Someone left your Flock',
+    'A member left the group trip.', jsonb_build_object('trip_id', p_trip));
+end $$;
+grant execute on function public.leave_flock(uuid) to authenticated;
+
 -- Flock chats I've joined (as an approved member, not an original buddy) — so
 -- they show in my Chats list.
 create or replace function public.my_flock_chats()
