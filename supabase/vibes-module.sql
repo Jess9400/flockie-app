@@ -100,7 +100,8 @@ create table if not exists public.vibing_messages (
   created_at timestamptz default now()
 );
 
--- in-app notifications (never email)
+-- in-app notifications (Tier-1 types are also emailed via the email pipeline:
+-- a trigger posts each insert to /api/email/notify -> Resend)
 create table if not exists public.notifications (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references public.profiles (id) on delete cascade,

@@ -14,7 +14,7 @@ const email = (
 
 export default function PrivacyPage() {
   return (
-    <LegalShell title="Privacy Policy" updated="28 June 2026">
+    <LegalShell title="Privacy Policy" updated="29 June 2026">
       <div className="rounded-2xl border-2 border-flockie-orange/30 bg-flockie-orange/10 p-4 text-sm">
         <p>
           Flockie is in beta. This means the platform is still being built and tested with a small
@@ -66,8 +66,16 @@ export default function PrivacyPage() {
           <li>To run the app: authentication, notifications, chat</li>
           <li>To improve our matching algorithm</li>
           <li>To keep the platform safe</li>
-          <li>To contact you about your account</li>
+          <li>
+            To email you about your account and your Flockie activity — invitations, matches,
+            confirmations, and reminders
+          </li>
         </ul>
+        <p>
+          We send these emails (and in-app notifications) about activity on your account. You can
+          opt out of non-essential emails anytime via the unsubscribe link at the bottom of any
+          email, or in your settings — we&rsquo;ll still send essential account and safety messages.
+        </p>
         <p>
           <strong>
             We never sell your personal information. We never use your messages to train external
