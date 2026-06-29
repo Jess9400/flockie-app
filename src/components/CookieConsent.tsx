@@ -30,6 +30,24 @@ function loadGoogleAnalytics() {
   gtag("config", GA_ID);
 }
 
+// Travelpayouts universal/deep-linking script (marker 541157). Powers affiliate
+// link tracking + deep-linking for the Deals tab. Only ever called after consent.
+function loadTravelpayouts() {
+  const w = window as unknown as { __tpLoaded?: boolean };
+  if (w.__tpLoaded) return;
+  w.__tpLoaded = true;
+  const s = document.createElement("script");
+  s.async = true;
+  s.src = "https://emrldtp.com/NTQxMTU3.js?t=541157";
+  document.head.appendChild(s);
+}
+
+// Everything we load on consent (analytics + affiliate).
+function loadConsented() {
+  loadGoogleAnalytics();
+  loadTravelpayouts();
+}
+
 export default function CookieConsent() {
   const [show, setShow] = useState(false);
 
@@ -42,7 +60,7 @@ export default function CookieConsent() {
       // localStorage unavailable (private mode / blocked) — show the banner.
     }
     if (choice === "granted") {
-      loadGoogleAnalytics();
+      loadConsented();
     } else if (choice !== "denied") {
       setShow(true);
     }
@@ -52,7 +70,7 @@ export default function CookieConsent() {
     try {
       localStorage.setItem(STORAGE_KEY, "granted");
     } catch {}
-    loadGoogleAnalytics();
+    loadConsented();
     setShow(false);
   }
 
@@ -73,7 +91,7 @@ export default function CookieConsent() {
       className="fixed inset-x-3 bottom-3 z-[60] mx-auto max-w-lg rounded-3xl border-2 border-navy bg-white p-5 font-nunito shadow-[0_8px_0_0_rgba(10,37,69,1)] sm:inset-x-0 sm:bottom-5"
     >
       <p className="text-sm font-medium text-navy/80">
-        We use cookies to understand how people use Flockie — analytics only. Your call.{" "}
+        We use cookies for analytics and to power travel-deal partner links. Your call.{" "}
         <a
           href="https://www.findflockie.com/privacy"
           target="_blank"

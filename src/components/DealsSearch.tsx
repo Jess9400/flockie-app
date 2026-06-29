@@ -2,52 +2,119 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Hotel, Plane, Ticket, Search, Users } from "lucide-react";
+import { Hotel, Plane, Ticket, Search, Users, MapPin } from "lucide-react";
 
 // Travelpayouts affiliate marker (tracks commission on Hotellook / Aviasales).
-const MARKER = "540997";
+const MARKER = "541157";
 // Tracked Klook affiliate link (Travelpayouts) for activities/experiences.
 const KLOOK_LINK = "https://klook.tpo.li/vhFuivdk";
 
-export default function DealsSearch({ defaultCity }: { defaultCity: string }) {
+const TRENDING = ["Lisbon", "Bali", "Dubai", "Bangkok", "Mexico City", "Tokyo"];
+
+export type Plan = {
+  id: string;
+  label: string;
+  city: string;
+  checkIn: string;
+  checkOut: string;
+  guests: number;
+};
+
+function hotelsUrl(city: string, checkIn: string, checkOut: string, guests: number) {
+  const params = new URLSearchParams({
+    marker: MARKER,
+    destination: city,
+    adults: String(Math.max(1, guests)),
+    locale: "en",
+    currency: "usd",
+  });
+  if (checkIn) params.set("checkIn", checkIn);
+  if (checkOut) params.set("checkOut", checkOut);
+  return `https://search.hotellook.com/?${params.toString()}`;
+}
+
+function open(url: string) {
+  window.open(url, "_blank", "noopener");
+}
+
+export default function DealsSearch({
+  defaultCity,
+  plans = [],
+}: {
+  defaultCity: string;
+  plans?: Plan[];
+}) {
   const [city, setCity] = useState(defaultCity ?? "");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(2);
 
-  function openHotels() {
-    if (!city.trim()) return;
-    const params = new URLSearchParams({
-      marker: MARKER,
-      destination: city.trim(),
-      adults: String(guests),
-      locale: "en",
-      currency: "usd",
-    });
-    if (checkIn) params.set("checkIn", checkIn);
-    if (checkOut) params.set("checkOut", checkOut);
-    window.open(`https://search.hotellook.com/?${params.toString()}`, "_blank", "noopener");
-  }
-
-  function openFlights() {
-    const params = new URLSearchParams({ marker: MARKER, locale: "en" });
-    window.open(`https://www.aviasales.com/?${params.toString()}`, "_blank", "noopener");
-  }
-
-  function openActivities() {
-    window.open(KLOOK_LINK, "_blank", "noopener");
+  function fmtDates(a: string, b: string) {
+    if (!a) return "";
+    const f = (d: string) =>
+      new Date(d).toLocaleDateString("en", { day: "numeric", month: "short" });
+    return b ? `${f(a)} – ${f(b)}` : f(a);
   }
 
   return (
     <div className="space-y-6">
-      {/* Hotel search */}
+      {/* ── Deals for your upcoming trips (context-aware) ───────────────── */}
+      {plans.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-sm font-extrabold uppercase tracking-wide text-muted">
+            For your upcoming trips
+          </h2>
+          {plans.map((p) => (
+            <div
+              key={p.id}
+              className="rounded-3xl border-2 border-ink bg-white p-4 shadow-[0_4px_0_0_rgba(26,26,26,1)]"
+            >
+              <p className="flex items-center gap-1.5 font-extrabold">
+                <MapPin size={15} className="shrink-0 text-flockie-orange" /> {p.label}
+              </p>
+              <p className="mt-0.5 text-xs font-medium text-muted">
+                {[fmtDates(p.checkIn, p.checkOut), `${p.guests} ${p.guests === 1 ? "traveler" : "travelers"}`]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </p>
+              <div className="mt-3 grid grid-cols-3 gap-2">
+                <button
+                  onClick={() => open(hotelsUrl(p.city, p.checkIn, p.checkOut, p.guests))}
+                  className="flex flex-col items-center gap-1 rounded-2xl border-2 border-ink bg-flockie-orange py-2.5 text-xs font-bold text-white shadow-[0_3px_0_0_#E0512C]"
+                >
+                  <Hotel size={16} /> Stays
+                </button>
+                <a
+                  href={KLOOK_LINK}
+                  target="_blank"
+                  rel="noopener"
+                  className="flex flex-col items-center gap-1 rounded-2xl border-2 border-ink bg-white py-2.5 text-xs font-bold text-ink"
+                >
+                  <Ticket size={16} /> Activities
+                </a>
+                <button
+                  onClick={() => open(`https://www.aviasales.com/?marker=${MARKER}&locale=en`)}
+                  className="flex flex-col items-center gap-1 rounded-2xl border-2 border-ink bg-white py-2.5 text-xs font-bold text-ink"
+                >
+                  <Plane size={16} /> Flights
+                </button>
+              </div>
+              <p className="mt-2 text-center text-[11px] font-medium text-muted">
+                Split a stay with your flock — pre-filled for {p.guests} travelers.
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── Search anywhere ─────────────────────────────────────────────── */}
       <div className="rounded-3xl border-2 border-ink bg-white p-5 shadow-[0_5px_0_0_rgba(26,26,26,1)]">
         <div className="flex items-center gap-2">
           <Hotel size={20} className="text-flockie-orange" />
-          <h2 className="text-lg font-extrabold">Stays</h2>
+          <h2 className="text-lg font-extrabold">{plans.length > 0 ? "Search anywhere" : "Stays"}</h2>
         </div>
         <p className="mt-1 text-sm font-medium text-muted">
-          Hand-picked hotel deals for flockies, booked through Flockie.
+          Hotel deals booked through Flockie.
         </p>
 
         <label className="mt-4 block">
@@ -59,6 +126,21 @@ export default function DealsSearch({ defaultCity }: { defaultCity: string }) {
             className="w-full rounded-2xl border-2 border-ink bg-white px-4 py-2.5 font-medium outline-none"
           />
         </label>
+
+        {!city.trim() && (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {TRENDING.map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setCity(t)}
+                className="rounded-full border-2 border-ink bg-cream px-3 py-1 text-xs font-bold text-ink"
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <label className="block">
@@ -94,7 +176,7 @@ export default function DealsSearch({ defaultCity }: { defaultCity: string }) {
         </label>
 
         <button
-          onClick={openHotels}
+          onClick={() => open(hotelsUrl(city.trim(), checkIn, checkOut, guests))}
           disabled={!city.trim()}
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3.5 font-bold text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50"
         >
@@ -102,18 +184,17 @@ export default function DealsSearch({ defaultCity }: { defaultCity: string }) {
         </button>
       </div>
 
-      {/* Activities */}
+      {/* ── Activities ──────────────────────────────────────────────────── */}
       <div className="rounded-3xl border-2 border-ink bg-white p-5 shadow-[0_5px_0_0_rgba(26,26,26,1)]">
         <div className="flex items-center gap-2">
           <Ticket size={20} className="text-flockie-orange" />
           <h2 className="text-lg font-extrabold">Activities</h2>
         </div>
         <p className="mt-1 text-sm font-medium text-muted">
-          Tours and experiences via Klook. Find one, then match with someone to
-          do it together.
+          Tours and experiences via Klook. Find one, then match with someone to do it together.
         </p>
         <button
-          onClick={openActivities}
+          onClick={() => open(KLOOK_LINK)}
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
         >
           <Search size={18} /> Browse activities on Klook
@@ -124,12 +205,9 @@ export default function DealsSearch({ defaultCity }: { defaultCity: string }) {
         >
           <Users size={18} /> Find a buddy for an activity
         </Link>
-        <p className="mt-2 text-center text-xs font-medium text-muted">
-          Paste the activity link when you post — whoever joins gets it.
-        </p>
       </div>
 
-      {/* Flights */}
+      {/* ── Flights ─────────────────────────────────────────────────────── */}
       <div className="rounded-3xl border-2 border-ink bg-flockie-blue p-5 text-white shadow-[0_5px_0_0_rgba(26,26,26,1)]">
         <div className="flex items-center gap-2">
           <Plane size={20} />
@@ -139,7 +217,7 @@ export default function DealsSearch({ defaultCity }: { defaultCity: string }) {
           Compare flight deals across hundreds of airlines.
         </p>
         <button
-          onClick={openFlights}
+          onClick={() => open(`https://www.aviasales.com/?marker=${MARKER}&locale=en`)}
           className="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-white px-5 py-2.5 font-bold text-ink"
         >
           <Search size={16} /> Search flights
@@ -147,8 +225,7 @@ export default function DealsSearch({ defaultCity }: { defaultCity: string }) {
       </div>
 
       <p className="text-center text-xs font-medium text-muted">
-        Deals powered by Travelpayouts. Booking through Flockie helps support the
-        flock.
+        Deals powered by Travelpayouts. Booking through Flockie helps support the flock.
       </p>
     </div>
   );
