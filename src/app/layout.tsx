@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import CookieConsent from "@/components/CookieConsent";
 
@@ -45,6 +46,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={nunito.variable}>
       <body className="font-nunito">
+        {/* Travelpayouts deep-linking / affiliate-attribution script (project
+            544482, app.findflockie.com). Loaded site-wide (functional affiliate)
+            so Travelpayouts can verify it + attribution works for all users. */}
+        <Script
+          id="travelpayouts"
+          src="https://emrldtp.com/NTQ0NDgy.js?t=544482"
+          strategy="beforeInteractive"
+        />
         {children}
         <CookieConsent />
       </body>
