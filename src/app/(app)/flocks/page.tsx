@@ -48,7 +48,7 @@ export default async function FlocksPage({
   let query = supabase
     .from("trips")
     .select(
-      "id, user_id, destination, destinations, start_date, end_date, group_size, trip_type, cover_photo, continent, group_gender, language",
+      "id, user_id, destination, destinations, start_date, end_date, group_size, trip_type, cover_photo, continent, group_gender, language, budget, description",
       { count: "exact" }
     )
     .eq("visibility", "public")
@@ -189,6 +189,36 @@ export default async function FlocksPage({
                         {days > 0 && ` · ${days}d`}
                       </span>
                     </p>
+
+                    {/* Quick facts to help decide before requesting */}
+                    <div className="mt-1.5 flex flex-wrap gap-1">
+                      {t.group_gender === "women" && (
+                        <span className="rounded-full bg-flockie-coral/15 px-1.5 py-0.5 text-[9px] font-bold text-flockie-coral">
+                          Women only
+                        </span>
+                      )}
+                      {t.language && (
+                        <span className="rounded-full bg-cream px-1.5 py-0.5 text-[9px] font-bold text-ink/70">
+                          🗣 {t.language}
+                        </span>
+                      )}
+                      {typeof t.budget === "number" && (
+                        <span className="rounded-full bg-cream px-1.5 py-0.5 text-[9px] font-bold text-ink/70">
+                          {t.budget <= 2 ? "Budget-friendly" : t.budget === 3 ? "Mid-range" : "Comfort"}
+                        </span>
+                      )}
+                      {t.trip_type?.[0] && (
+                        <span className="rounded-full bg-cream px-1.5 py-0.5 text-[9px] font-bold text-ink/70">
+                          {t.trip_type[0]}
+                        </span>
+                      )}
+                    </div>
+
+                    {t.description && (
+                      <p className="mt-1.5 line-clamp-2 text-[11px] font-medium leading-snug text-muted">
+                        {t.description}
+                      </p>
+                    )}
 
                     <div className="mt-2 flex items-center justify-between gap-1 pt-0.5">
                       <span className="flex min-w-0 items-center gap-1 text-[11px] font-medium text-ink">
