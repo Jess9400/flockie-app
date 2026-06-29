@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { ChevronLeft, MapPin, Users, CalendarClock, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import InterestButton from "@/components/InterestButton";
@@ -34,7 +33,21 @@ export default async function VibeDetailPage({
     .eq("id", params.id)
     .maybeSingle();
 
-  if (!vibe) notFound();
+  if (!vibe) {
+    return (
+      <main className="mx-auto w-full max-w-md px-5 pt-16 text-center font-nunito">
+        <p className="text-4xl">🤔</p>
+        <h1 className="mt-3 text-xl font-black">This Vibe isn&rsquo;t available</h1>
+        <p className="mt-1 font-medium text-muted">It may have been cancelled or removed.</p>
+        <Link
+          href="/vibes"
+          className="mt-6 inline-block rounded-full border-2 border-ink bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
+        >
+          Explore Vibes
+        </Link>
+      </main>
+    );
+  }
   const isHost = vibe.host_id === user!.id;
 
   // host (plain query, no embed)
