@@ -30,6 +30,10 @@ create table if not exists public.vibes (
 );
 create index if not exists vibes_city_starts_idx on public.vibes (city, starts_at);
 
+-- "What are you doing?" supports multiple activities. `category` stays the single
+-- primary (matching/back-compat); `categories` holds the full multi-select.
+alter table public.vibes add column if not exists categories text[] default '{}';
+
 -- host's must-invite picks (max 5 enforced in app)
 create table if not exists public.vibe_pins (
   vibe_id uuid references public.vibes (id) on delete cascade,
