@@ -137,12 +137,17 @@ export default async function ChatsPage({
 
   // Cities for the no-message context line on Vibe rows.
   const cities: Record<string, string> = {};
+  const vibeBanner: Record<string, string | null> = {};
   if (vibeList.length) {
     const { data: vc } = await supabase
       .from("vibe_directory")
-      .select("id, city")
+      .select("id, city, photos")
       .in("id", vibeList.map((v) => v.vibe_id));
-    vc?.forEach((r) => (cities[r.id] = r.city));
+    vc?.forEach((r) => {
+      cities[r.id] = r.city;
+      // Group (Vibe) chats show the Vibe's banner, not a person's photo.
+      vibeBanner[r.id] = (r.photos as string[] | null)?.[0] ?? null;
+    });
   }
 
   const buddyRows: Row[] = buddyList.map((b) => {
@@ -169,7 +174,7 @@ export default async function ChatsPage({
     return {
       id: v.chat_id,
       href: `/vibes/${v.vibe_id}/chat`,
-      photo: v.photo,
+      photo: vibeBanner[v.vibe_id] ?? v.photo,
       title: v.title,
       subtitle: preview(last, meId, ctx),
       time: last ? formatChatTime(last.created_at) : "",
