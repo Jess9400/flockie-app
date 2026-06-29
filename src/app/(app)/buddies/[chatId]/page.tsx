@@ -119,7 +119,7 @@ export default async function BuddyChatPage({
       supabase.from("profiles").select("id, trip_vibe").eq("id", user!.id).maybeSingle(),
       supabase
         .from("trips")
-        .select("id, destination, destinations, start_date, end_date")
+        .select("id, kind, destination, destinations, start_date, end_date")
         .eq("user_id", otherId)
         .eq("status", "active")
         .order("start_date", { ascending: true }),
@@ -144,6 +144,7 @@ export default async function BuddyChatPage({
   const tripList = trips ?? [];
   type TripRow = {
     id?: string;
+    kind?: string | null;
     destination?: string | null;
     destinations?: string[] | null;
     start_date?: string | null;
@@ -155,7 +156,7 @@ export default async function BuddyChatPage({
     if (!trip) {
       const { data } = await supabase
         .from("trips")
-        .select("id, destination, destinations, start_date, end_date")
+        .select("id, kind, destination, destinations, start_date, end_date")
         .eq("id", otherTripId)
         .maybeSingle();
       trip = data;
@@ -239,6 +240,7 @@ export default async function BuddyChatPage({
         <BuddyChatHeader
           matchId={chat.match_id}
           chatId={params.chatId}
+          canFlock={!flockTripId && (trip?.kind ?? "trip") !== "activity"}
           initialMuted={!!muteRow}
           name={otherName}
           age={other?.age ?? null}

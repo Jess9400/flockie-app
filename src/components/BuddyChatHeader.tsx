@@ -26,6 +26,7 @@ export default function BuddyChatHeader({
   isGroup,
   groupTitle,
   groupMembers = [],
+  canFlock = true,
 }: {
   matchId: string;
   chatId: string;
@@ -44,6 +45,8 @@ export default function BuddyChatHeader({
   isGroup?: boolean;
   groupTitle?: string;
   groupMembers?: { id: string; name: string; photo: string | null; isHost: boolean }[];
+  // "Turn into a Flock" only applies to 1:1 TRIP matches — never activities.
+  canFlock?: boolean;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -98,9 +101,42 @@ export default function BuddyChatHeader({
           <Link href="/chats" className="flex items-center gap-1 font-nunito text-sm font-bold text-navy/60">
             <ChevronLeft size={16} /> Chats
           </Link>
-          <span className="rounded-full bg-flockie-orange px-2.5 py-0.5 font-nunito text-[11px] font-extrabold uppercase text-white">
-            Flock
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="rounded-full bg-flockie-orange px-2.5 py-0.5 font-nunito text-[11px] font-extrabold uppercase text-white">
+              Flock
+            </span>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setMenu((v) => !v)}
+                aria-label="Menu"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-navy hover:bg-navy/5"
+              >
+                <MoreVertical size={18} />
+              </button>
+              {menu && (
+                <>
+                  <div className="fixed inset-0 z-30" onClick={() => setMenu(false)} />
+                  <div className="absolute right-0 z-40 mt-1 w-52 rounded-2xl border-2 border-navy bg-white p-1.5 font-nunito text-sm font-semibold text-navy shadow-[0_4px_0_rgba(10,37,69,0.15)]">
+                    <button
+                      type="button"
+                      onClick={() => { setMenu(false); setExpanded(true); }}
+                      className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5"
+                    >
+                      View trip details
+                    </button>
+                    <button
+                      type="button"
+                      onClick={toggleMute}
+                      className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5"
+                    >
+                      {muted ? "Unmute notifications" : "Mute notifications"}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         </div>
 
         <button
@@ -190,11 +226,13 @@ export default function BuddyChatHeader({
                   View {name}&rsquo;s profile
                 </Link>
                 <button type="button" onClick={() => { setMenu(false); setExpanded(true); }} className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5">
-                  View trip details
+                  View details
                 </button>
-                <button type="button" onClick={makeFlock} className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5">
-                  Turn this into a Flock
-                </button>
+                {canFlock && (
+                  <button type="button" onClick={makeFlock} className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5">
+                    Turn this into a Flock
+                  </button>
+                )}
                 <button type="button" onClick={toggleMute} className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5">
                   {muted ? "Unmute notifications" : "Mute notifications"}
                 </button>
