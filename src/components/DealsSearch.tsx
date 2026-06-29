@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Hotel, Plane, Ticket, Search, Users, MapPin } from "lucide-react";
+import { Hotel, Plane, Ticket, Search, Users, MapPin, Car, LifeBuoy } from "lucide-react";
 
 // Travelpayouts affiliate marker (tracks commission on Hotellook / Aviasales).
 const MARKER = "544482";
@@ -13,6 +13,11 @@ function klookUrl(city: string) {
   const c = city.trim();
   return c ? `https://www.klook.com/search/?query=${encodeURIComponent(c)}` : "https://www.klook.com/";
 }
+
+// Live Travelpayouts programs (project 544482) — tracked smartlinks.
+const KKDAY = "https://kkday.tpo.li/iJK8IZev"; // tours, activities + hotels
+const ECONOMYBOOKINGS = "https://economybookings.tpo.li/JdOiCIeg"; // car rentals
+const AIRHELP = "https://airhelp.tpo.li/2jSsfFpn"; // flight-delay compensation
 
 const TRENDING = ["Lisbon", "Bali", "Dubai", "Bangkok", "Mexico City", "Tokyo"];
 
@@ -187,6 +192,14 @@ export default function DealsSearch({
         >
           <Search size={18} /> Search stays{city.trim() ? ` in ${city.trim()}` : ""}
         </button>
+        <a
+          href={KKDAY}
+          target="_blank"
+          rel="noopener"
+          className="mt-2 block text-center text-xs font-bold text-flockie-blue underline underline-offset-2"
+        >
+          Or browse stays &amp; tours on KKday →
+        </a>
       </div>
 
       {/* ── Activities ──────────────────────────────────────────────────── */}
@@ -205,6 +218,14 @@ export default function DealsSearch({
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
         >
           <Search size={18} /> Browse activities{city.trim() ? ` in ${city.trim()}` : " on Klook"}
+        </a>
+        <a
+          href={KKDAY}
+          target="_blank"
+          rel="noopener"
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-3 font-bold text-ink"
+        >
+          <Ticket size={18} /> Tours &amp; experiences on KKday
         </a>
         <Link
           href={`/vibes/new?city=${encodeURIComponent(city.trim())}`}
@@ -225,10 +246,37 @@ export default function DealsSearch({
         </p>
         <button
           onClick={() => open(`https://www.aviasales.com/?marker=${MARKER}&locale=en`)}
-          className="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-white px-5 py-2.5 font-bold text-ink"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-2.5 font-bold text-ink"
         >
           <Search size={16} /> Search flights
         </button>
+        <a
+          href={AIRHELP}
+          target="_blank"
+          rel="noopener"
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-2.5 font-bold text-ink"
+        >
+          <LifeBuoy size={16} /> Flights &amp; delay compensation — AirHelp
+        </a>
+      </div>
+
+      {/* ── Car rentals ─────────────────────────────────────────────────── */}
+      <div className="rounded-3xl border-2 border-ink bg-white p-5 shadow-[0_5px_0_0_rgba(26,26,26,1)]">
+        <div className="flex items-center gap-2">
+          <Car size={20} className="text-flockie-orange" />
+          <h2 className="text-lg font-extrabold">Car rentals</h2>
+        </div>
+        <p className="mt-1 text-sm font-medium text-muted">
+          Rent a car for your trip — compare deals worldwide.
+        </p>
+        <a
+          href={ECONOMYBOOKINGS}
+          target="_blank"
+          rel="noopener"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
+        >
+          <Car size={18} /> Find a rental car
+        </a>
       </div>
 
       <p className="text-center text-xs font-medium text-muted">
