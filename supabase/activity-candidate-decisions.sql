@@ -200,6 +200,10 @@ $$;
 grant execute on function public.activity_candidates(uuid, int)
   to authenticated;
 
+-- SUPERSEDED 2026-06-29: the canonical city_people lives in home-carousels.sql.
+-- This was a behaviorally-identical duplicate (whitespace-only diff). Wrapped so
+-- re-running this file can't install a second live copy. Do not un-wrap.
+/*
 create or replace function public.city_people(p_limit int default 12)
 returns table (
   id uuid,
@@ -251,3 +255,4 @@ as $$
   limit p_limit;
 $$;
 grant execute on function public.city_people(int) to authenticated;
+*/

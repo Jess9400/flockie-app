@@ -142,6 +142,10 @@ end $$;
 grant execute on function public.buddy_swipe(uuid, boolean, text) to authenticated;
 */
 
+-- SUPERSEDED 2026-06-29: the canonical activity_candidate_decide lives in
+-- activity-candidate-decisions.sql (identical logic). Wrapped so re-running this
+-- file can't install a second live copy. Do not un-wrap.
+/*
 drop function if exists public.activity_candidate_decide(uuid, uuid, boolean);
 create or replace function public.activity_candidate_decide(
   p_activity uuid,
@@ -189,3 +193,4 @@ begin
 end $$;
 grant execute on function public.activity_candidate_decide(uuid, uuid, boolean)
   to authenticated;
+*/
