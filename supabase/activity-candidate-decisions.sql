@@ -174,9 +174,12 @@ as $$
   where cp.id <> auth.uid()
     and cp.open_to_discovery
     and cp.onboarding_complete
-    and coalesce(array_length(cp.activities, 1), 0) > 0
-    and lower(coalesce(cp.home_city, '')) =
-      lower(coalesce(me_t.destination, ''))
+    -- Discovery pool = people in YOUR city who are open to discovery, ranked by
+    -- vibe similarity. We match on the swiper's own home_city (me_p) — NOT the
+    -- activity's destination — and we do NOT require the candidate to have posted
+    -- their own activity. You swipe in-city people and invite them to your activity.
+    and coalesce(me_p.home_city, '') <> ''
+    and lower(coalesce(cp.home_city, '')) = lower(me_p.home_city)
     and not public.buddy_hard_block(auth.uid(), cp.id)
     and not exists (
       select 1
@@ -197,6 +200,10 @@ $$;
 grant execute on function public.activity_candidates(uuid, int)
   to authenticated;
 
+-- SUPERSEDED 2026-06-29: the canonical city_people lives in home-carousels.sql.
+-- This was a behaviorally-identical duplicate (whitespace-only diff). Wrapped so
+-- re-running this file can't install a second live copy. Do not un-wrap.
+/*
 create or replace function public.city_people(p_limit int default 12)
 returns table (
   id uuid,
@@ -248,3 +255,4 @@ as $$
   limit p_limit;
 $$;
 grant execute on function public.city_people(int) to authenticated;
+*/
