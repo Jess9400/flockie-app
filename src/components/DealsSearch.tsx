@@ -6,8 +6,13 @@ import { Hotel, Plane, Ticket, Search, Users, MapPin } from "lucide-react";
 
 // Travelpayouts affiliate marker (tracks commission on Hotellook / Aviasales).
 const MARKER = "544482";
-// Tracked Klook affiliate link (Travelpayouts) for activities/experiences.
-const KLOOK_LINK = "https://klook.tpo.li/vhFuivdk";
+// Klook activity search by city. With Travelpayouts "Drive" active, outbound Klook
+// links are auto-attributed — so we link to the real (city-relevant) Klook search
+// as an <a> (Drive intercepts anchor clicks, not window.open).
+function klookUrl(city: string) {
+  const c = city.trim();
+  return c ? `https://www.klook.com/search/?query=${encodeURIComponent(c)}` : "https://www.klook.com/";
+}
 
 const TRENDING = ["Lisbon", "Bali", "Dubai", "Bangkok", "Mexico City", "Tokyo"];
 
@@ -85,7 +90,7 @@ export default function DealsSearch({
                   <Hotel size={16} /> Stays
                 </button>
                 <a
-                  href={KLOOK_LINK}
+                  href={klookUrl(p.city)}
                   target="_blank"
                   rel="noopener"
                   className="flex flex-col items-center gap-1 rounded-2xl border-2 border-ink bg-white py-2.5 text-xs font-bold text-ink"
@@ -193,12 +198,14 @@ export default function DealsSearch({
         <p className="mt-1 text-sm font-medium text-muted">
           Tours and experiences via Klook. Find one, then match with someone to do it together.
         </p>
-        <button
-          onClick={() => open(KLOOK_LINK)}
+        <a
+          href={klookUrl(city)}
+          target="_blank"
+          rel="noopener"
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
         >
-          <Search size={18} /> Browse activities on Klook
-        </button>
+          <Search size={18} /> Browse activities{city.trim() ? ` in ${city.trim()}` : " on Klook"}
+        </a>
         <Link
           href={`/vibes/new?city=${encodeURIComponent(city.trim())}`}
           className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-3 font-bold text-ink"
