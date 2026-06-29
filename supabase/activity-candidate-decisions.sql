@@ -174,9 +174,12 @@ as $$
   where cp.id <> auth.uid()
     and cp.open_to_discovery
     and cp.onboarding_complete
-    and coalesce(array_length(cp.activities, 1), 0) > 0
-    and lower(coalesce(cp.home_city, '')) =
-      lower(coalesce(me_t.destination, ''))
+    -- Discovery pool = people in YOUR city who are open to discovery, ranked by
+    -- vibe similarity. We match on the swiper's own home_city (me_p) — NOT the
+    -- activity's destination — and we do NOT require the candidate to have posted
+    -- their own activity. You swipe in-city people and invite them to your activity.
+    and coalesce(me_p.home_city, '') <> ''
+    and lower(coalesce(cp.home_city, '')) = lower(me_p.home_city)
     and not public.buddy_hard_block(auth.uid(), cp.id)
     and not exists (
       select 1
