@@ -241,6 +241,7 @@ export default async function BuddyChatPage({
           matchId={chat.match_id}
           chatId={params.chatId}
           canFlock={!flockTripId && (trip?.kind ?? "trip") !== "activity"}
+          flockTripId={flockTripId}
           initialMuted={!!muteRow}
           name={otherName}
           age={other?.age ?? null}

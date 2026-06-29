@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronDown, MapPin, CalendarClock, Users, X } from "lucide-react";
+import { ChevronDown, MapPin, CalendarClock, Users, X, MoreVertical } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import BrandedMap from "@/components/BrandedMap";
 import { formatVibeWhen } from "@/lib/vibes";
@@ -30,6 +30,8 @@ export default function VibeChatHeader({
   description,
   bookingUrl,
   members,
+  chatId,
+  initialMuted = false,
 }: {
   vibeId: string;
   title: string;
@@ -40,12 +42,22 @@ export default function VibeChatHeader({
   description: string | null;
   bookingUrl: string | null;
   members: ChatMember[];
+  chatId: string;
+  initialMuted?: boolean;
 }) {
   const router = useRouter();
   const supabase = createClient();
   const [expanded, setExpanded] = useState(false);
   const [panel, setPanel] = useState(false);
   const [leaving, setLeaving] = useState(false);
+  const [menu, setMenu] = useState(false);
+  const [muted, setMuted] = useState(initialMuted);
+
+  async function toggleMute() {
+    setMenu(false);
+    const { data } = await supabase.rpc("toggle_chat_mute", { p_chat: chatId });
+    setMuted(!!data);
+  }
 
   const shown = members.slice(0, 5);
   const extra = members.length - shown.length;
@@ -132,6 +144,45 @@ export default function VibeChatHeader({
               className={`transition-transform ${expanded ? "rotate-180" : ""}`}
             />
           </button>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setMenu((v) => !v)}
+              aria-label="Menu"
+              className="flex h-9 w-9 items-center justify-center rounded-full text-navy hover:bg-navy/5"
+            >
+              <MoreVertical size={18} />
+            </button>
+            {menu && (
+              <>
+                <div className="fixed inset-0 z-30" onClick={() => setMenu(false)} />
+                <div className="absolute right-0 z-40 mt-1 w-52 rounded-2xl border-2 border-navy bg-white p-1.5 font-nunito text-sm font-semibold text-navy shadow-[0_4px_0_rgba(10,37,69,0.15)]">
+                  <button
+                    type="button"
+                    onClick={() => { setMenu(false); setExpanded(true); }}
+                    className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5"
+                  >
+                    View details
+                  </button>
+                  <button
+                    type="button"
+                    onClick={toggleMute}
+                    className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5"
+                  >
+                    {muted ? "Unmute notifications" : "Mute notifications"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setMenu(false); leave(); }}
+                    disabled={leaving}
+                    className="block w-full rounded-xl px-3 py-2 text-left text-flockie-coral hover:bg-navy/5"
+                  >
+                    Leave Vibe
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 

@@ -45,6 +45,13 @@ export default async function VibeChatPage({
 
   const vibeEnded = vibe ? new Date(vibe.ends_at ?? vibe.starts_at) <= new Date() : false;
 
+  const { data: muteRow } = await supabase
+    .from("chat_mutes")
+    .select("chat_id")
+    .eq("user_id", user!.id)
+    .eq("chat_id", chatId as string)
+    .maybeSingle();
+
   const { data: messages } = await supabase
     .from("vibing_messages")
     .select("id, sender_id, content, created_at")
@@ -113,6 +120,8 @@ export default async function VibeChatPage({
           description={vibe?.description ?? null}
           bookingUrl={logistics?.activity_url ?? null}
           members={headerMembers}
+          chatId={chatId as string}
+          initialMuted={!!muteRow}
         />
 
         {vibe?.status === "cancelled" && (
