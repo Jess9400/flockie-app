@@ -30,15 +30,16 @@ function loadGoogleAnalytics() {
   gtag("config", GA_ID);
 }
 
-// Travelpayouts universal/deep-linking script (marker 541157). Powers affiliate
-// link tracking + deep-linking for the Deals tab. Only ever called after consent.
+// Travelpayouts universal/deep-linking script (project 544482, app.findflockie.com).
+// Powers affiliate link tracking + deep-linking for the Deals tab. Only ever
+// called after consent.
 function loadTravelpayouts() {
   const w = window as unknown as { __tpLoaded?: boolean };
   if (w.__tpLoaded) return;
   w.__tpLoaded = true;
   const s = document.createElement("script");
   s.async = true;
-  s.src = "https://emrldtp.com/NTQxMTU3.js?t=541157";
+  s.src = "https://emrldtp.com/NTQ0NDgy.js?t=544482";
   document.head.appendChild(s);
 }
 
