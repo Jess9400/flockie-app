@@ -30,24 +30,6 @@ function loadGoogleAnalytics() {
   gtag("config", GA_ID);
 }
 
-// Travelpayouts universal/deep-linking script (project 544482, app.findflockie.com).
-// Powers affiliate link tracking + deep-linking for the Deals tab. Only ever
-// called after consent.
-function loadTravelpayouts() {
-  const w = window as unknown as { __tpLoaded?: boolean };
-  if (w.__tpLoaded) return;
-  w.__tpLoaded = true;
-  const s = document.createElement("script");
-  s.async = true;
-  s.src = "https://emrldtp.com/NTQ0NDgy.js?t=544482";
-  document.head.appendChild(s);
-}
-
-// Everything we load on consent (analytics + affiliate).
-function loadConsented() {
-  loadGoogleAnalytics();
-  loadTravelpayouts();
-}
 
 export default function CookieConsent() {
   const [show, setShow] = useState(false);
@@ -61,7 +43,7 @@ export default function CookieConsent() {
       // localStorage unavailable (private mode / blocked) — show the banner.
     }
     if (choice === "granted") {
-      loadConsented();
+      loadGoogleAnalytics();
     } else if (choice !== "denied") {
       setShow(true);
     }
@@ -71,7 +53,7 @@ export default function CookieConsent() {
     try {
       localStorage.setItem(STORAGE_KEY, "granted");
     } catch {}
-    loadConsented();
+    loadGoogleAnalytics();
     setShow(false);
   }
 
