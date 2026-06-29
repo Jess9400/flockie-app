@@ -214,7 +214,7 @@ export default function BuddyChatRoom({
                       ))}
                   </div>
                 )}
-                <div className={`flex max-w-[70%] flex-col ${mine ? "items-end" : "items-start"}`}>
+                <div className={`flex max-w-[78%] flex-col lg:max-w-[620px] ${mine ? "items-end" : "items-start"}`}>
                   {!mine && isGroup && firstInSeq && (
                     <p className="mb-0.5 ml-1 font-nunito text-xs font-medium text-navy/60">
                       {mem?.name ?? "Flockie"}
