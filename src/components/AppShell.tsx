@@ -171,7 +171,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           isChatRoom ? "h-[100dvh] overflow-hidden" : "min-h-screen"
         }`}
       >
-        <div className={`mx-auto w-full max-w-4xl flex-1 ${isChatRoom ? "min-h-0" : ""}`}>
+        <div className={`w-full flex-1 ${isChatRoom ? "min-h-0" : "mx-auto max-w-4xl"}`}>
           {children}
         </div>
         {!isChatRoom && <Footer />}

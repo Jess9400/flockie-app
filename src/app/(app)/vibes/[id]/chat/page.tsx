@@ -109,7 +109,7 @@ export default async function VibeChatPage({
 
   return (
     <main className="h-full">
-      <div className="mx-auto flex h-full w-full max-w-2xl flex-col px-5 font-nunito">
+      <div className="flex h-full w-full flex-col px-5 font-nunito lg:px-8">
         <VibeChatHeader
           vibeId={params.id}
           title={vibe?.title ?? "Vibe"}
