@@ -34,6 +34,7 @@ export type VibeClone = {
   title?: string;
   description?: string;
   category?: string;
+  categories?: string[];
   activityUrl?: string;
   photos?: string[];
   country?: string;
@@ -90,7 +91,13 @@ export default function CreateVibeForm({
   const [createdId, setCreatedId] = useState<string | null>(null);
   const [title, setTitle] = useState(clone?.title ?? defaultTitle);
   const [description, setDescription] = useState(clone?.description ?? "");
-  const [category, setCategory] = useState(clone?.category ?? "");
+  // "What are you doing?" supports multiple activities. `category` (the first
+  // pick) stays the single, NOT-NULL value the matching algo + display use; the
+  // full set is stored in `categories`.
+  const [categories, setCategories] = useState<string[]>(
+    clone?.categories?.length ? clone.categories : clone?.category ? [clone.category] : []
+  );
+  const category = categories[0] ?? "";
   const [customActivity, setCustomActivity] = useState("");
   const [activityUrl, setActivityUrl] = useState(clone?.activityUrl ?? defaultActivityUrl);
   const [photos, setPhotos] = useState<string[]>(clone?.photos ?? []);
@@ -163,10 +170,13 @@ export default function CreateVibeForm({
   }
 
   function seedActivity(nextCategory: string) {
-    setCategory(nextCategory);
-    const suggested = suggestedTagsForActivity(nextCategory);
-    if (suggested.length > 0) {
-      setTags(suggested.slice(0, EVENT_VIBE_TAGS_MAX));
+    const has = categories.includes(nextCategory);
+    // Toggle: tap to add (unlimited), tap again to remove.
+    setCategories(has ? categories.filter((c) => c !== nextCategory) : [...categories, nextCategory]);
+    // Seed vibe tags from the first activity chosen (don't clobber later edits).
+    if (!has && categories.length === 0) {
+      const suggested = suggestedTagsForActivity(nextCategory);
+      if (suggested.length > 0) setTags(suggested.slice(0, EVENT_VIBE_TAGS_MAX));
     }
   }
 
@@ -306,6 +316,7 @@ export default function CreateVibeForm({
         title,
         description,
         category,
+        categories,
         photos,
         country,
         city,
@@ -455,7 +466,7 @@ export default function CreateVibeForm({
                 type="button"
                 onClick={() => seedActivity(c)}
                 className={`rounded-2xl border-2 border-ink px-3 py-2 text-left text-sm font-bold ${
-                  category === c ? "bg-flockie-blue text-white" : "bg-white"
+                  categories.includes(c) ? "bg-flockie-blue text-white" : "bg-white"
                 }`}
               >
                 {formatActivityLabel(c)}
@@ -484,13 +495,23 @@ export default function CreateVibeForm({
               Use
             </button>
           </div>
-          {category && !VIBE_CATEGORIES.includes(category as (typeof VIBE_CATEGORIES)[number]) && (
-            <p className="mt-2 rounded-2xl border-2 border-[#49a56c] bg-[#49a56c]/10 px-3 py-2 text-xs font-bold text-ink">
-              Custom activity selected: {category}
-            </p>
+          {categories.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {categories.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => seedActivity(c)}
+                  className="flex items-center gap-1 rounded-full border-2 border-ink bg-flockie-blue px-2.5 py-1 text-xs font-bold text-white"
+                >
+                  {formatActivityLabel(c)} <span aria-hidden>×</span>
+                </button>
+              ))}
+            </div>
           )}
           <p className="mt-1 text-xs font-medium text-muted">
-            Pick the activity first. Flockie pre-fills the likely vibe tags, and you can swap them below.
+            Pick one or more — tap to add, tap a chip to remove. Flockie pre-fills the likely vibe
+            tags from your first pick, and you can swap them below.
           </p>
         </Field>
         <Field label="Activity link (optional)">
