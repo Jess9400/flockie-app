@@ -3,7 +3,10 @@ import { NextResponse, type NextRequest } from "next/server";
 
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
-const PUBLIC_PATHS = ["/login", "/auth", "/vouch", "/privacy", "/terms", "/safety", "/invite", "/compat", "/join"];
+// "/api" is public at the middleware level: API routes enforce their own auth
+// (getUser + 401) and some are called by external services (e.g. the email
+// webhook from Supabase), which must never be redirected to /login.
+const PUBLIC_PATHS = ["/login", "/auth", "/api", "/vouch", "/privacy", "/terms", "/safety", "/invite", "/compat", "/join"];
 
 // Refreshes the Supabase session on every request and gates the app behind
 // auth: signed-out users are redirected to /login (except public paths).
