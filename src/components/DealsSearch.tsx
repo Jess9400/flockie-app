@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Hotel, Plane, Ticket, Search, Users, MapPin } from "lucide-react";
 
 // Travelpayouts affiliate marker (tracks commission on Hotellook / Aviasales).
-const MARKER = "541157";
+const MARKER = "544482";
 // Tracked Klook affiliate link (Travelpayouts) for activities/experiences.
 const KLOOK_LINK = "https://klook.tpo.li/vhFuivdk";
 
