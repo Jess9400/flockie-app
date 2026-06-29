@@ -16,6 +16,7 @@ type Trip = {
   destination?: string;
   destinations?: string[];
   title?: string | null;
+  description?: string | null;
   start_date?: string;
   end_date?: string;
   group_size?: number;
@@ -46,6 +47,7 @@ export default function TripForm({
 
   const initialDests = initial.destinations ?? (initial.destination ? [initial.destination] : []);
   const [title, setTitle] = useState(initial.title ?? "");
+  const [description, setDescription] = useState(initial.description ?? "");
   const [dest1, setDest1] = useState(initialDests[0] ?? "");
   const [dest2, setDest2] = useState(initialDests[1] ?? "");
   const [dest3, setDest3] = useState(initialDests[2] ?? "");
@@ -120,6 +122,7 @@ export default function TripForm({
       end_date: end,
       group_size: isFlock ? groupSize : 2, // buddy/activity = 1:1
       trip_type: types,
+      description: description.trim() || null,
       budget,
       pace,
       cover_photo: cover,
@@ -146,6 +149,26 @@ export default function TripForm({
         <label className="block">
           <span className="mb-1 block text-sm font-bold">Activity</span>
           <input className={inputCls} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Sunrise surf, padel game, gallery hop" />
+        </label>
+      )}
+
+      {!isActivity && (
+        <label className="block">
+          <span className="mb-1 block text-sm font-bold">
+            About this {isFlock ? "Flock" : "trip"}{" "}
+            <span className="font-medium text-muted">(optional)</span>
+          </span>
+          <textarea
+            className={`${inputCls} h-24 resize-none`}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            maxLength={600}
+            placeholder={
+              isFlock
+                ? "What's the plan and the vibe? Who's it for? e.g. Chill week in Bali — surf, cafés, no big parties. Easy-going people welcome."
+                : "A few words about the trip and the kind of buddy you're after."
+            }
+          />
         </label>
       )}
 
