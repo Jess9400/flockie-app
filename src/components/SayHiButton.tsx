@@ -44,7 +44,11 @@ export default function SayHiButton({
     });
     setBusy(false);
     if (error) {
-      setError(error.message);
+      setError(
+        error.message.includes("blocked_by_preferences")
+          ? "You two have conflicting match preferences."
+          : error.message
+      );
       return;
     }
     setSent(title);

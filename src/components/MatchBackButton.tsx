@@ -9,11 +9,11 @@ export default function MatchBackButton({ personId, name }: { personId: string; 
   const router = useRouter();
   const supabase = createClient();
   const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
 
   async function matchBack() {
     setBusy(true);
-    setErr(false);
+    setErr(null);
     const { data, error } = await supabase.rpc("buddy_swipe", {
       p_target: personId,
       p_liked: true,
@@ -21,7 +21,11 @@ export default function MatchBackButton({ personId, name }: { personId: string; 
     });
     if (error) {
       setBusy(false);
-      setErr(true);
+      setErr(
+        error.message.includes("blocked_by_preferences")
+          ? "You two have conflicting match preferences."
+          : "Couldn’t match back — try again."
+      );
       return;
     }
     const res = data as { matched: boolean; chat_id?: string } | null;
@@ -46,11 +50,7 @@ export default function MatchBackButton({ personId, name }: { personId: string; 
       >
         <Heart size={16} fill="currentColor" /> {busy ? "…" : `Match back & chat`}
       </button>
-      {err && (
-        <p className="mt-2 text-xs font-bold text-red-700">
-          Couldn&rsquo;t match back — try again.
-        </p>
-      )}
+      {err && <p className="mt-2 text-xs font-bold text-red-700">{err}</p>}
     </div>
   );
 }

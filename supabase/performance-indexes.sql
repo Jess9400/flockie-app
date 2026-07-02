@@ -18,3 +18,10 @@ create index if not exists vibe_interests_vibe_status_user_idx
 
 create index if not exists vibe_feedback_user_signal_vibe_idx
   on public.vibe_feedback (user_id, signal, vibe_id);
+
+-- city_people / activity_candidates look up same-city discoverable people with
+-- lower(home_city) = lower(...). The trgm index only covers vibes.city ILIKE,
+-- so this btree expression index (partial on the discovery flag) serves the
+-- equality path.
+create index if not exists profiles_home_city_lower_idx
+  on public.profiles (lower(home_city)) where open_to_discovery;

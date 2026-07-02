@@ -194,7 +194,15 @@ as $$
       where s.swiper_id = auth.uid()
         and s.target_id = cp.id
     )
-  order by score desc
+    -- reciprocity: don't resurface people who already swiped no on the viewer
+    and not exists (
+      select 1
+      from public.buddy_swipes s
+      where s.swiper_id = cp.id
+        and s.target_id = auth.uid()
+        and not s.liked
+    )
+  order by score desc nulls last, cp.id
   limit p_limit;
 $$;
 grant execute on function public.activity_candidates(uuid, int)
