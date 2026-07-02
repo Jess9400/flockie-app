@@ -301,10 +301,10 @@ export default async function VibeDetailPage({
         )}
       </div>
 
-      {/* Square cover on the left, info on the right — never cropped. */}
-      <div className="mt-3 flex gap-4">
+      {/* Cover stacks above the info on phones, sits beside it at sm+. */}
+      <div className="mt-3 flex flex-col gap-4 sm:flex-row">
         {vibe.photos?.[0] && (
-          <div className="relative aspect-square w-1/2 max-w-sm shrink-0 self-start overflow-hidden rounded-2xl border-2 border-ink bg-cream">
+          <div className="relative aspect-square w-full max-w-sm shrink-0 self-start overflow-hidden rounded-2xl border-2 border-ink bg-cream sm:w-1/2">
             <Image
               src={vibe.photos[0]}
               alt=""
@@ -583,7 +583,7 @@ export default async function VibeDetailPage({
           <p className="mt-0.5 text-xs font-medium text-muted">
             This one filled up — here&rsquo;s what fits your vibe better.
           </p>
-          <div className="mt-3 grid grid-cols-3 gap-2.5">
+          <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
             {suggestions.map((s) => (
               <Link
                 key={s.id}

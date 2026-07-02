@@ -10,6 +10,8 @@ import { isImageUrl, firstUrl } from "@/lib/chat-content";
 import LinkPreview from "@/components/LinkPreview";
 
 type Msg = { id: string; sender_id: string; content: string; created_at: string };
+// Client-only flags for optimistic local echo (never persisted).
+type LocalMsg = Msg & { pending?: boolean; failed?: boolean };
 
 function hoursUntil(iso: string) {
   return (new Date(iso).getTime() - Date.now()) / 3_600_000;
@@ -40,9 +42,8 @@ export default function BuddyChatRoom({
 }) {
   const supabase = createClient();
   const router = useRouter();
-  const [messages, setMessages] = useState<Msg[]>(initialMessages);
+  const [messages, setMessages] = useState<LocalMsg[]>(initialMessages);
   const [text, setText] = useState("");
-  const [sending, setSending] = useState(false);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -114,17 +115,42 @@ export default function BuddyChatRoom({
     });
   }
 
+  // Insert the row and reconcile the optimistic copy. On success the temp row
+  // is swapped for the real one (deduped against a realtime INSERT that may have
+  // already landed); on failure it's marked failed so the user can retry.
+  async function deliver(tempId: string, content: string) {
+    const { data, error } = await supabase
+      .from("buddy_messages")
+      .insert({ chat_id: chatId, sender_id: currentUserId, content })
+      .select("id, sender_id, content, created_at")
+      .single();
+    if (error || !data) {
+      setMessages((cur) => cur.map((x) => (x.id === tempId ? { ...x, pending: false, failed: true } : x)));
+      return;
+    }
+    const real = data as Msg;
+    setMessages((cur) => {
+      const without = cur.filter((x) => x.id !== tempId);
+      return without.some((x) => x.id === real.id) ? without : [...without, real];
+    });
+  }
+
   async function send(e: React.FormEvent) {
     e.preventDefault();
     const content = text.trim();
     if (!content) return;
-    setSending(true);
     setText("");
-    const { error } = await supabase
-      .from("buddy_messages")
-      .insert({ chat_id: chatId, sender_id: currentUserId, content });
-    setSending(false);
-    if (error) setText(content);
+    const tempId = `temp-${crypto.randomUUID()}`;
+    setMessages((cur) => [
+      ...cur,
+      { id: tempId, sender_id: currentUserId, content, created_at: new Date().toISOString(), pending: true },
+    ]);
+    await deliver(tempId, content);
+  }
+
+  function retry(m: LocalMsg) {
+    setMessages((cur) => cur.map((x) => (x.id === m.id ? { ...x, pending: true, failed: false } : x)));
+    deliver(m.id, m.content);
   }
 
   // Progressive prompts (client-derived, dismissible).
@@ -232,10 +258,19 @@ export default function BuddyChatRoom({
                           mine
                             ? "rounded-[18px] rounded-br-[4px] bg-flockie-blue text-white"
                             : "rounded-[18px] rounded-bl-[4px] bg-white text-navy"
-                        }`}
+                        } ${m.pending ? "opacity-60" : ""}`}
                       >
                         {m.content}
                       </div>
+                      {m.failed && (
+                        <button
+                          type="button"
+                          onClick={() => retry(m)}
+                          className="mr-1 mt-0.5 font-nunito text-[11px] font-bold text-flockie-coral"
+                        >
+                          Failed — tap to retry
+                        </button>
+                      )}
                       {firstUrl(m.content) && <LinkPreview url={firstUrl(m.content)!} />}
                     </>
                   )}
@@ -272,7 +307,7 @@ export default function BuddyChatRoom({
         <div ref={endRef} />
       </div>
 
-      <form onSubmit={send} className="flex shrink-0 items-center gap-2 pb-3 pt-1">
+      <form onSubmit={send} className="flex shrink-0 items-center gap-2 pt-1 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         <input ref={imgInput} type="file" accept="image/*" hidden onChange={onImage} />
         <button
           type="button"
@@ -291,7 +326,7 @@ export default function BuddyChatRoom({
         />
         <button
           type="submit"
-          disabled={sending}
+          disabled={!text.trim()}
           aria-label="Send"
           className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-flockie-coral text-white disabled:opacity-50"
         >
