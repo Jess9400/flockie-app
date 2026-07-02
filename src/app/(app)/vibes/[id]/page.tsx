@@ -110,29 +110,16 @@ export default async function VibeDetailPage({
     .eq("signal", "not_for_me")
     .maybeSingle();
 
-  // confirmed attendees (avatars) + count
-  const { data: confirmedRows } = await supabase
-    .from("vibe_interests")
-    .select("user_id")
-    .eq("vibe_id", params.id)
-    .eq("status", "confirmed")
-    .limit(8);
-
-  const { count: confirmedCount } = await supabase
-    .from("vibe_interests")
-    .select("id", { count: "exact", head: true })
-    .eq("vibe_id", params.id)
-    .eq("status", "confirmed");
-
-  let attendees: { id: string; display_name: string | null; photos: string[] | null }[] = [];
-  const attendeeIds = (confirmedRows ?? []).map((r) => r.user_id);
-  if (attendeeIds.length) {
-    const { data: ap } = await supabase
-      .from("public_profiles")
-      .select("id, display_name, photos")
-      .in("id", attendeeIds);
-    attendees = ap ?? [];
-  }
+  // confirmed attendees (avatars) + count — via RPC (vibe_interests is no longer
+  // broadly readable; see supabase/vibe-attendees-rls.sql)
+  const { data: attendeeRows } = await supabase.rpc("vibe_attendees", { p_vibe: params.id });
+  const allAttendees = (attendeeRows ?? []) as {
+    id: string;
+    display_name: string | null;
+    photos: string[] | null;
+  }[];
+  const confirmedCount = allAttendees.length;
+  const attendees = allAttendees.slice(0, 8);
 
   const eventStarted = new Date(vibe.starts_at) <= new Date();
   const approximateLocation =

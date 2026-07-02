@@ -111,8 +111,10 @@ export default async function VibesPage({
     isPast && ids.length
       ? supabase.from("vibe_reviews").select("vibe_id, rating").in("vibe_id", ids)
       : Promise.resolve({ data: [] }),
+    // "Going" counts via aggregate RPC (vibe_interests is no longer broadly
+    // readable; see supabase/vibe-attendees-rls.sql)
     ids.length
-      ? supabase.from("vibe_interests").select("vibe_id").eq("status", "confirmed").in("vibe_id", ids)
+      ? supabase.rpc("vibe_confirmed_counts", { p_vibes: ids })
       : Promise.resolve({ data: [] }),
     ids.length
       ? supabase.from("vibe_interests").select("vibe_id, status").eq("user_id", user!.id).in("vibe_id", ids)
@@ -134,8 +136,8 @@ export default async function VibesPage({
   });
   Object.entries(agg).forEach(([id, a]) => (ratings[id] = a.sum / a.n));
 
-  confirmed?.forEach((r) => {
-    counts[r.vibe_id] = (counts[r.vibe_id] ?? 0) + 1;
+  (confirmed as { vibe_id: string; going: number }[] | null)?.forEach((r) => {
+    counts[r.vibe_id] = r.going;
   });
   myInterests?.forEach((r) => {
     mine[r.vibe_id] = r.status as InterestStatus;
