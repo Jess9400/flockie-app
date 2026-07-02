@@ -58,9 +58,11 @@ end $$;
 grant execute on function public.backfill_vibe(uuid) to authenticated;
 */
 
--- ── Same-city fallback: when interest can't fill the room, invite matched
---    same-city flockies (like find-a-buddy). Only fires when the funnel is
---    short of capacity, never re-invites, and respects gender preference. ─────
+-- ── Same-city fallback: when interest can't fill the room, put matched
+--    same-city flockies on the SHORTLIST (like every algo candidate). Only
+--    fires when the algo's share is short, never re-adds anyone, and enforces
+--    the host's eligibility prefs (gender + age) via vibe_eligible.
+--    Run AFTER vibe-eligibility-enforce.sql + vibe-v2-private-link.sql. ────────
 create or replace function public.invite_city_fallback(p_vibe uuid)
 returns int language plpgsql security definer set search_path = public as $$
 declare v public.vibes; v_pool int; v_remaining int; v_added int := 0; c record;
@@ -69,12 +71,14 @@ begin
   if v.id is null or v.status = 'cancelled' then return 0; end if;
   if v.starts_at <= now() then return 0; end if;  -- never invite into a started/finished Vibe
 
-  -- Everyone already in the funnel (interested counts — they'll be ranked).
-  -- Cold invites only fill the GAP to capacity, so they never displace
-  -- genuinely-interested people when this runs early (before ranking).
+  -- Same remaining-spots helper as _rank_vibe_core: shortlisted/invited/confirmed
+  -- holds and the host's private share are all accounted for inside
+  -- _vibe_algo_remaining. Then subtract everyone still WAITING in the funnel
+  -- (interested/requested/standby — they'll be ranked / host-reviewed), so cold
+  -- candidates never displace genuinely-interested people when this runs early.
   select count(*) into v_pool from public.vibe_interests
-    where vibe_id = p_vibe and status in ('interested','invited','confirmed','standby');
-  v_remaining := v.capacity - v_pool;
+    where vibe_id = p_vibe and status in ('interested','requested','standby');
+  v_remaining := public._vibe_algo_remaining(p_vibe) - v_pool;
   if v_remaining <= 0 then return 0; end if;  -- enough in the funnel already
 
   for c in
@@ -92,17 +96,18 @@ begin
       and p.home_city is not null and lower(p.home_city) = lower(v.city)  -- same city
       and not exists (select 1 from public.vibe_interests vi where vi.vibe_id=p_vibe and vi.user_id=p.id)
       and not exists (select 1 from public.vibe_feedback vf where vf.vibe_id=p_vibe and vf.user_id=p.id and vf.signal='not_for_me')
-      and (v.gender_pref is null or v.gender_pref = 'any'
-           or (v.gender_pref='women' and p.gender='woman')
-           or (v.gender_pref='men' and p.gender='man'))
-    order by score desc
+      and public.vibe_eligible(p.id, p_vibe)  -- host's gender + age prefs (age filter restored)
+    order by score desc nulls last, p.id
     limit v_remaining
   loop
-    insert into public.vibe_interests (vibe_id, user_id, status, match_score, invitation_sent_at, invitation_expires_at)
-      values (p_vibe, c.id, 'invited', c.score, now(), public._vibe_confirm_deadline(v.starts_at))
+    -- Cold candidates join as 'shortlisted' (NOT a direct invite): they go
+    -- through the host's pre-invite review + commit_vibe_matching exactly like
+    -- the candidates _rank_vibe_core shortlists.
+    insert into public.vibe_interests (vibe_id, user_id, status, source, match_score)
+      values (p_vibe, c.id, 'shortlisted', 'algo', c.score)
       on conflict (vibe_id, user_id) do nothing;
-    perform public.notify(c.id, 'vibe_invitation', 'A Vibe in ' || v.city || ' you might love: ' || v.title,
-            'There''s a spot for you — confirm to join.', jsonb_build_object('vibe_id', p_vibe));
+    perform public.notify(c.id, 'vibe_shortlisted', 'A Vibe in ' || v.city || ' you might love: ' || v.title,
+            'You''re in the running — we''ll notify you if a spot is yours.', jsonb_build_object('vibe_id', p_vibe));
     v_added := v_added + 1;
   end loop;
   return v_added;

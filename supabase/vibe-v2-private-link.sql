@@ -1,5 +1,6 @@
 -- Vibe Matching v2: host private-link direct invites (manual accept).
--- Run AFTER vibe-v2-algo-share.sql. Safe to re-run.
+-- Run AFTER vibe-v2-algo-share.sql and vibe-eligibility-enforce.sql
+-- (_rank_vibe_core now filters through vibe_eligible). Safe to re-run.
 --
 -- Capacity is split: the algo fills its share; the host fills the rest via a
 -- private link (joiners still do the activity vibe-check, but skip ranking — the
@@ -56,7 +57,14 @@ begin
             select count(*)::float / array_length(v.event_vibe_tags,1) from unnest(v.event_vibe_tags) t
             where exists (select 1 from unnest(coalesce(p.trip_vibe,'{}')||coalesce(p.activity_vibe,'{}')) uv
                           where lower(uv) like '%'||lower(t)||'%')), 0.0) end)
-      + 0.20 * (case when p.planning is null or h.planning is null then 0.5 else 1 - (
+      -- Guard EVERY slider (not just planning): one NULL on either side used to
+      -- turn the whole score NULL, and NULLs sorted FIRST — rank 1 shortlists.
+      + 0.20 * (case when p.planning is null or h.planning is null
+                       or p.pace is null or h.pace is null
+                       or p.social_energy is null or h.social_energy is null
+                       or p.budget is null or h.budget is null
+                       or p.nightlife is null or h.nightlife is null
+                       or p.adventurousness is null or h.adventurousness is null then 0.5 else 1 - (
             (abs(p.planning-h.planning)+abs(p.pace-h.pace)+abs(p.social_energy-h.social_energy)
             +abs(p.budget-h.budget)+abs(p.nightlife-h.nightlife)+abs(p.adventurousness-h.adventurousness))::float/24) end)
       + 0.10 * public.vibe_review_fit(vi.user_id, p_vibe)
@@ -66,7 +74,8 @@ begin
     join public.profiles p on p.id = vi.user_id
     left join public.profiles h on h.id = v.host_id
     where vi.vibe_id=p_vibe and vi.status='interested' and coalesce(vi.source,'algo') <> 'private'
-    order by score desc
+      and public.vibe_eligible(vi.user_id, p_vibe)  -- host's gender/age prefs
+    order by score desc nulls last, vi.user_id      -- deterministic; NULLs never win
   loop
     rnk := rnk + 1;
     if rnk <= v_remaining then

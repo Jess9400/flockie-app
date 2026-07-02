@@ -10,6 +10,9 @@ import ActivityVibeForm from "@/components/ActivityVibeForm";
 import { useConfirm } from "@/components/ui/feedback";
 import type { InterestStatus } from "@/lib/vibes";
 
+const INELIGIBLE_MESSAGE =
+  "This vibe has preferences that don't include your profile.";
+
 type Props = {
   vibeId: string;
   userId: string;
@@ -75,12 +78,27 @@ export default function InterestButton({
   async function doInsert() {
     setBusy(true);
     setMessage(null);
+    // Friendly pre-check: hosts can set who a vibe is for (gender / age range).
+    const { data: eligible } = await supabase.rpc("vibe_eligible", {
+      p_user: userId,
+      p_vibe: vibeId,
+    });
+    if (eligible === false) {
+      setBusy(false);
+      return setMessage(INELIGIBLE_MESSAGE);
+    }
     await supabase.rpc("undo_vibe_not_for_me", { p_vibe: vibeId });
     const { error } = await supabase
       .from("vibe_interests")
       .insert({ vibe_id: vibeId, user_id: userId, status: "interested" });
     setBusy(false);
-    if (error) return setMessage(error.message);
+    if (error) {
+      // The insert policy enforces eligibility too — translate a raw RLS
+      // violation (pre-check skipped/raced) into the same friendly message.
+      const rlsViolation =
+        error.code === "42501" || /row-level security/i.test(error.message);
+      return setMessage(rlsViolation ? INELIGIBLE_MESSAGE : error.message);
+    }
     setNotForMe(false);
     setStatus("interested");
     setPopup("interested");

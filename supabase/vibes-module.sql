@@ -197,12 +197,18 @@ create policy "pins host write" on public.vibe_pins for all to authenticated
 -- bypass RLS. Without the status check, a user could directly POST/PATCH their row
 -- to 'confirmed' and bypass the invite/matching/capacity flow — unlocking exact
 -- GPS (vibe_private_logistics) and the vibe chat with no host approval.
+-- SUPERSEDED: canonical "interests self insert"/"interests self update" policies
+-- are in supabase/vibe-interests-status-lock.sql (live; status-locked, and INSERT
+-- now also enforces the host's gender/age prefs via vibe_eligible). Wrapped out
+-- 2026-07-02 — repo-only, no DB change. ("interests self delete" below stays active.)
+/*
 drop policy if exists "interests self insert" on public.vibe_interests;
 create policy "interests self insert" on public.vibe_interests for insert to authenticated
   with check (user_id = auth.uid() and status = 'interested');
 drop policy if exists "interests self update" on public.vibe_interests;
 create policy "interests self update" on public.vibe_interests for update to authenticated
   using (user_id = auth.uid()) with check (user_id = auth.uid() and status = 'interested');
+*/
 drop policy if exists "interests self delete" on public.vibe_interests;
 create policy "interests self delete" on public.vibe_interests for delete to authenticated
   using (user_id = auth.uid());

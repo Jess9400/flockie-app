@@ -1,5 +1,6 @@
 -- Vibe match scoring + "Picked for you". Run the whole file in the Supabase SQL
--- editor. Safe to re-run.
+-- editor AFTER vibe-eligibility-enforce.sql (recommended_vibes filters through
+-- vibe_eligible). Safe to re-run.
 --
 -- vibe_match(user, vibe) -> 0-100, how well an open Vibe fits a user's profile:
 --   0.40 category fit   — does the Vibe's category match something you do?
@@ -119,6 +120,8 @@ language sql security definer set search_path = public stable as $$
       select 1 from public.vibe_feedback vf
       where vf.vibe_id = v.id and vf.user_id = m.id and vf.signal = 'not_for_me'
     )
+    -- never recommend a vibe whose host prefs (gender/age) exclude the viewer
+    and public.vibe_eligible(m.id, v.id)
   order by match_score desc nulls last, v.starts_at asc
   limit p_limit;
 $$;
