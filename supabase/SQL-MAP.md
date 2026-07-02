@@ -90,13 +90,18 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
   legacy buddy drops. Idempotent. Snapshots of the canonical bodies — if you edit the
   canonical files later, this bundle is stale (re-generate or just run the canonical files).
 
-## ⚠️ Prod-only objects with NO repo definition (schema drift)
+## Schema drift — CAPTURED 2026-07-02
 
-Tracked in **`prod-only-functions.sql`** (has the exact dump queries + placeholders). Still
-needs the prod dumps pasted in. Dump via `select pg_get_functiondef('public.<fn>'::regproc);`:
+✅ The previously prod-only objects are now transcribed from prod into
+**`prod-only-functions.sql`** (dumped via `pg_get_functiondef` / `information_schema`
+/ `pg_constraint` / `pg_policies`). Security-reviewed — all correctly scoped:
+- `set_my_location` — writes `profiles.location` for `auth.uid()` only
+- `get_or_create_chat` — gates on `is_vibe_member`
+- `accept_terms` — stamps `auth.uid()` only (coalesce, won't overwrite)
+- `vibe_chat_summaries` — filters `where is_vibe_member(c.vibe_id)`
+- `chat_reads` table — RLS on, policy `user_id = auth.uid()`
 
-- `set_my_location` (writes GPS to `profiles.location` — called from `src/lib/location.ts`)
-- `get_or_create_chat` (vibe chat membership gate — `vibes/[id]/chat/page.tsx`)
-- `accept_terms` (legal consent stamping — `auth/callback/route.ts`)
-- `vibe_chat_summaries` (`chats/page.tsx`)
+They already exist on prod (no re-run needed); the file exists for review + fresh-DB
+reproducibility. One reconstruction: `vibe_chat_summaries`'s RETURNS TABLE tail
+(`last_at`/`unread`) was inferred from the body (the prod dump was truncated in the viewer).
 - `chat_reads` table (no CREATE/RLS in repo; written by `mark_chat_read`)
