@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home, Compass, Map, Sparkles, MessageCircle, User, Bell, Menu, X, Ticket, Tag, Settings,
+  Home, Compass, Map, Sparkles, MessageCircle, User, Bell, Menu, X,
 } from "lucide-react";
 import Footer from "@/components/Footer";
 import SignOutButton from "@/components/SignOutButton";
@@ -53,20 +53,17 @@ type NavItem = {
   sections: string[];
 };
 
+// The drawer/sidebar is deliberately kept to these 5 (+ Profile below). The
+// nested surfaces are NOT nav rows: My Vibes is a tab inside Vibes, Deals a tab
+// inside My Trips, Inbox is the top-right bell, Settings lives on the Profile
+// page. `sections` therefore include the child tabs so the parent highlights
+// on them (e.g. Vibes stays active on /my-vibes).
 const PRIMARY_NAV: NavItem[] = [
   { href: "/home", label: "Home", icon: Home, sections: ["home"] },
-  { href: "/vibes", label: "Vibes", icon: Sparkles, sections: ["vibes"] },
+  { href: "/vibes", label: "Vibes", icon: Sparkles, sections: ["vibes", "my-vibes"] },
   { href: "/match", label: "Find a Buddy", icon: Compass, sections: ["match"] },
-  { href: "/my-trips", label: "My Trips", icon: Map, sections: ["trips"] },
+  { href: "/my-trips", label: "My Trips", icon: Map, sections: ["trips", "deals"] },
   { href: "/chats", label: "Chats", icon: MessageCircle, sections: ["chats"] },
-];
-
-// Secondary destinations live in the drawer/sidebar only (not the tab bar).
-const SECONDARY_NAV: NavItem[] = [
-  { href: "/my-vibes", label: "My Vibes", icon: Ticket, sections: ["my-vibes"] },
-  { href: "/deals", label: "Deals", icon: Tag, sections: ["deals"] },
-  { href: "/inbox", label: "Inbox", icon: Bell, sections: ["inbox"] },
-  { href: "/settings", label: "Settings", icon: Settings, sections: ["settings"] },
 ];
 
 // Mobile bottom tab bar: the 5 core surfaces, thumb-reachable. Tabs claim the
@@ -129,21 +126,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const NavList = (
     <nav className="flex h-full flex-col gap-1">
       {PRIMARY_NAV.map((item) => {
-        const Icon = item.icon;
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={() => setOpen(false)}
-            className={navItemCls(item.sections.includes(section))}
-          >
-            <Icon size={18} />
-            <span className="flex-1">{item.label}</span>
-          </Link>
-        );
-      })}
-      <div className="my-2 border-t-2 border-navy/10" />
-      {SECONDARY_NAV.map((item) => {
         const Icon = item.icon;
         return (
           <Link
