@@ -184,14 +184,13 @@ create policy "pins host write" on public.vibe_pins for all to authenticated
   using (auth.uid() = (select host_id from public.vibes v where v.id = vibe_id))
   with check (auth.uid() = (select host_id from public.vibes v where v.id = vibe_id));
 
--- interests: own row, the host, or any confirmed row (for attendee counts/avatars)
-drop policy if exists "interests read" on public.vibe_interests;
-create policy "interests read" on public.vibe_interests for select to authenticated
-  using (
-    user_id = auth.uid()
-    or status = 'confirmed'
-    or auth.uid() = (select host_id from public.vibes v where v.id = vibe_id)
-  );
+-- interests SELECT policy: SUPERSEDED — do not recreate here.
+-- The live, scoped policy is in supabase/vibe-attendees-rls.sql (own rows +
+-- vibe host only; attendee avatars and "going" counts go through the
+-- vibe_attendees / vibe_confirmed_counts SECURITY DEFINER RPCs instead).
+-- The old version here had an unscoped `or status = 'confirmed'` clause, so any
+-- authed user could enumerate anyone's confirmed vibes (future whereabouts).
+-- Removed 2026-07-02 so re-running this file can't re-open the table.
 -- Users may only create their OWN row in the 'interested' state. Every privileged
 -- status (shortlisted/invited/confirmed/standby) is set exclusively by the
 -- SECURITY DEFINER RPCs (rank_vibe, host_commit_matching, confirm_vibe, …), which

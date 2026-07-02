@@ -50,8 +50,12 @@ create index if not exists trips_dest_idx on public.trips (lower(destination));
 create index if not exists trips_user_idx on public.trips (user_id, status, created_at desc);
 
 alter table public.trips enable row level security;
-drop policy if exists "trips readable" on public.trips;
-create policy "trips readable" on public.trips for select to authenticated using (true);
+-- trips SELECT policy: SUPERSEDED — do not recreate here.
+-- The live, scoped policy is in supabase/trips-rls.sql ("trips readable" via
+-- can_see_trip: owner / co-host / public flock / accepted member / buddy match).
+-- The old `using (true)` version (any authed user reads every trip, including
+-- private personal trips: destinations, dates, budget) was removed 2026-07-02
+-- so re-running this file can't re-open the table.
 drop policy if exists "trips own write" on public.trips;
 create policy "trips own write" on public.trips for all to authenticated
   using (user_id = auth.uid()) with check (user_id = auth.uid());

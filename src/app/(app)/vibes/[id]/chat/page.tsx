@@ -59,14 +59,16 @@ export default async function VibeChatPage({
     .order("created_at", { ascending: true })
     .limit(200);
 
-  const { data: confirmedRows } = await supabase
-    .from("vibe_interests")
-    .select("user_id")
-    .eq("vibe_id", params.id)
-    .eq("status", "confirmed");
+  // Confirmed members via RPC (vibe_interests is no longer broadly readable;
+  // see supabase/vibe-attendees-rls.sql)
+  const { data: confirmedRows } = await supabase.rpc("vibe_attendees", { p_vibe: params.id });
 
   const memberIds = Array.from(
-    new Set([vibe?.host_id, ...(confirmedRows ?? []).map((r) => r.user_id)].filter(Boolean))
+    new Set(
+      [vibe?.host_id, ...((confirmedRows ?? []) as { id: string }[]).map((r) => r.id)].filter(
+        Boolean
+      )
+    )
   ) as string[];
 
   const profiles: Record<string, { display_name: string | null; photos: string[] | null; age: number | null; home_city: string | null }> = {};

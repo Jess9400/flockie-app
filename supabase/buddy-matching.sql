@@ -24,6 +24,19 @@ drop policy if exists "see own matches" on public.buddy_matches;
 create policy "see own matches" on public.buddy_matches for select to authenticated
   using (auth.uid() = user_a or auth.uid() = user_b);
 
+/* SUPERSEDED (2026-07-02) — do not recreate the functions below.
+   These are the original flat-weight buddy deck, unused by the client:
+     • buddy_city_count()            — no callers in src/
+     • buddy_candidates(int)        — replaced by buddy_candidates_trip
+                                       (supabase/match-priorities.sql: weighted
+                                       priorities + hard-block filters)
+     • buddy_swipe(uuid, boolean)   — replaced by the 3-arg
+                                       buddy_swipe(uuid, boolean, text)
+                                       (supabase/buddy-swipe-notify-once.sql:
+                                       notify-once + activity title)
+   The legacy versions had no hard-block filtering and stayed granted to
+   authenticated. Drop them on prod with supabase/legacy-buddy-cleanup.sql.
+
 -- How many registered profiles share my city (excluding me)?
 create or replace function public.buddy_city_count()
 returns int language sql security definer set search_path = public stable as $$
@@ -84,3 +97,4 @@ begin
   return matched;
 end $$;
 grant execute on function public.buddy_swipe(uuid, boolean) to authenticated;
+*/

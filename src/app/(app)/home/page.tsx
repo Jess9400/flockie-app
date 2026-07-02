@@ -50,17 +50,21 @@ async function loadHostsAndCounts(
   const hostIds = Array.from(new Set(list.map((v) => v.host_id)));
   const ids = list.map((v) => v.id);
 
+  // "Going" counts via aggregate RPC (vibe_interests is no longer broadly
+  // readable; see supabase/vibe-attendees-rls.sql)
   const [hostResult, confirmedResult] = await Promise.all([
     hostIds.length
       ? supabase.from("public_profiles").select("id, display_name, photos").in("id", hostIds)
       : Promise.resolve({ data: [] }),
     ids.length
-      ? supabase.from("vibe_interests").select("vibe_id").eq("status", "confirmed").in("vibe_id", ids)
+      ? supabase.rpc("vibe_confirmed_counts", { p_vibes: ids })
       : Promise.resolve({ data: [] }),
   ]);
 
   hostResult.data?.forEach((h) => (hosts[h.id] = { display_name: h.display_name, photos: h.photos }));
-  confirmedResult.data?.forEach((r) => (counts[r.vibe_id] = (counts[r.vibe_id] ?? 0) + 1));
+  (confirmedResult.data as { vibe_id: string; going: number }[] | null)?.forEach(
+    (r) => (counts[r.vibe_id] = r.going)
+  );
   return { hosts, counts };
 }
 
