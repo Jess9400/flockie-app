@@ -1,0 +1,79 @@
+-- Prod-only objects — schema-drift capture (2026-07-02).
+--
+-- These objects EXIST on the production database but had NO definition anywhere
+-- in this repo. That is the same drift class that previously hid the
+-- `trip_join_requests using (true)` hole (it lived only in prod until 2026-06-29).
+-- This file is the repo's record of them.
+--
+-- HOW TO FILL THIS IN: run the dump queries in the "DUMP QUERIES" block below on
+-- prod (Supabase SQL editor), then paste each result into the matching
+-- placeholder. Once filled, this file becomes the canonical source for these
+-- objects and should be listed in SQL-MAP.md.
+--
+-- Client call sites (why each matters):
+--   set_my_location      writes exact GPS to profiles.location   (src/lib/location.ts)
+--   get_or_create_chat   vibe chat membership gate               (src/app/(app)/vibes/[id]/chat/page.tsx)
+--   accept_terms         legal-consent stamping                  (src/app/auth/callback/route.ts)
+--   vibe_chat_summaries  chat list summaries                     (src/app/(app)/chats/page.tsx)
+--   chat_reads (table)   per-user read cursor, written by mark_chat_read
+--
+-- ⚠️ Do NOT invent these definitions from the call sites — dump the REAL ones
+-- from prod so behavior and (for the SECURITY DEFINER functions) search_path and
+-- grants match exactly.
+
+-- ════════════════════════════════════════════════════════════════════════════
+-- DUMP QUERIES — run each on prod, paste output into the placeholders below.
+-- ════════════════════════════════════════════════════════════════════════════
+--
+-- -- 1. Function definitions (returns full CREATE OR REPLACE ... source):
+--    select pg_get_functiondef('public.set_my_location'::regproc);
+--    select pg_get_functiondef('public.get_or_create_chat'::regproc);
+--    select pg_get_functiondef('public.accept_terms'::regproc);
+--    select pg_get_functiondef('public.vibe_chat_summaries'::regproc);
+--    -- If any name has multiple overloads, regproc errors; disambiguate with the
+--    -- full signature, e.g. 'public.get_or_create_chat(uuid)'::regprocedure, and
+--    -- use pg_get_functiondef(...::regprocedure). To list overloads first:
+--    --   select oid::regprocedure from pg_proc where proname = 'get_or_create_chat';
+--
+-- -- 2. chat_reads table DDL (columns, defaults, PK/FK):
+--    -- Column + default list:
+--    select column_name, data_type, is_nullable, column_default
+--    from information_schema.columns
+--    where table_schema = 'public' and table_name = 'chat_reads'
+--    order by ordinal_position;
+--    -- Constraints (PK/FK/unique):
+--    select conname, pg_get_constraintdef(oid)
+--    from pg_constraint where conrelid = 'public.chat_reads'::regclass;
+--    -- Indexes:
+--    select indexdef from pg_indexes
+--    where schemaname = 'public' and tablename = 'chat_reads';
+--
+-- -- 3. chat_reads RLS (is-enabled flag + policies):
+--    select relrowsecurity from pg_class where oid = 'public.chat_reads'::regclass;
+--    select polname, cmd, qual, with_check
+--    from pg_policies where schemaname = 'public' and tablename = 'chat_reads';
+--    -- (pg_get_expr / the pg_policies view both give the USING / WITH CHECK text.)
+
+-- ════════════════════════════════════════════════════════════════════════════
+-- PLACEHOLDERS — replace each block with the dumped definition.
+-- ════════════════════════════════════════════════════════════════════════════
+
+-- ── set_my_location ─────────────────────────────────────────────────────────
+-- TODO(prod-dump): paste `pg_get_functiondef('public.set_my_location'::regproc)`.
+-- After pasting, verify it writes ONLY auth.uid()'s row and pins search_path.
+
+-- ── get_or_create_chat ──────────────────────────────────────────────────────
+-- TODO(prod-dump): paste definition. Verify it enforces vibe membership before
+-- returning/creating a chat id (the client comment claims it does).
+
+-- ── accept_terms ────────────────────────────────────────────────────────────
+-- TODO(prod-dump): paste definition. Verify it stamps consent for auth.uid() only.
+
+-- ── vibe_chat_summaries ─────────────────────────────────────────────────────
+-- TODO(prod-dump): paste definition. Verify it only returns chats the caller is
+-- a member of.
+
+-- ── chat_reads (table + RLS) ────────────────────────────────────────────────
+-- TODO(prod-dump): paste the CREATE TABLE, constraints/indexes, and the
+-- `alter table ... enable row level security;` + policies. Expected shape:
+-- a per-(user, chat) read cursor readable/writable only by that user.
