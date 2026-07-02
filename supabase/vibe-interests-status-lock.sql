@@ -1,5 +1,8 @@
 -- P0 FIX (2026-06-28): lock the vibe_interests self-write policies to status
--- 'interested' only. Run in the Supabase SQL editor. Safe to re-run.
+-- 'interested' only. Run in the Supabase SQL editor AFTER
+-- vibe-eligibility-enforce.sql (the INSERT policy calls vibe_eligible).
+-- Safe to re-run. This file is the CANONICAL definition of the self-write
+-- policies (the older inline copies in vibes-module.sql are wrapped out).
 --
 -- Before this, the INSERT/UPDATE policies only checked `user_id = auth.uid()`, so
 -- any signed-in user could directly POST/PATCH their own interest row to
@@ -11,9 +14,13 @@
 -- All privileged transitions run through SECURITY DEFINER RPCs that bypass RLS,
 -- so this change breaks nothing legitimate.
 
+-- Eligibility (2026-07-02): entering the funnel also requires satisfying the
+-- host's gender/age preferences (vibe_eligible — see vibe-eligibility-enforce.sql).
+-- The client shows a friendly message via a pre-check (InterestButton).
 drop policy if exists "interests self insert" on public.vibe_interests;
 create policy "interests self insert" on public.vibe_interests for insert to authenticated
-  with check (user_id = auth.uid() and status = 'interested');
+  with check (user_id = auth.uid() and status = 'interested'
+              and public.vibe_eligible(auth.uid(), vibe_id));
 
 drop policy if exists "interests self update" on public.vibe_interests;
 create policy "interests self update" on public.vibe_interests for update to authenticated
