@@ -24,8 +24,14 @@ begin
   end if;
 
   if not p_approve then
+    -- Only flip (and notify) a live request, so re-running a decline can't spam.
     update public.trip_join_requests set status = 'declined'
-      where trip_id = p_trip and user_id = p_user;
+      where trip_id = p_trip and user_id = p_user and status <> 'declined';
+    if found then
+      perform public.notify(p_user, 'flock_declined', 'Update on ' || v_dest,
+        'The host went with other travelers for ' || v_dest || ' this time. More Flocks are waiting for you.',
+        jsonb_build_object('trip_id', p_trip));
+    end if;
     return;
   end if;
 
@@ -63,11 +69,14 @@ begin
       returning id into v_match;
     insert into public.buddy_chats (match_id) values (v_match)
       on conflict (match_id) do nothing;
+    select id into v_chat from public.buddy_chats where match_id = v_match;
   end if;
 
+  -- chat_id in the payload so the inbox can deep-link straight into the chat
+  -- (/my-trips only lists trips the viewer hosts, so it was a dead end here).
   perform public.notify(p_user, 'flock_approved', 'You''re in! ' || v_dest,
     'Your request to join was approved — say hi in the group chat.',
-    jsonb_build_object('trip_id', p_trip));
+    jsonb_build_object('trip_id', p_trip, 'chat_id', v_chat));
 end $$;
 grant execute on function public.respond_join_request(uuid, uuid, boolean) to authenticated;
 

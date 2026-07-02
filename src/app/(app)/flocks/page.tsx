@@ -81,13 +81,19 @@ export default async function FlocksPage({
   };
 
   // join requests: accepted count via definer RPC (no row-level exposure),
-  // "requested" from my own rows (visible under the scoped RLS policy).
+  // "requested" from my own LIVE rows (visible under the scoped RLS policy).
+  // Declined rows don't count — the button comes back so the user can re-request.
   const acceptedCount: Record<string, number> = {};
   const requested = new Set<string>();
   if (ids.length) {
     const [{ data: counts }, { data: mine }] = await Promise.all([
       supabase.rpc("flock_going_counts", { p_trip_ids: ids }),
-      supabase.from("trip_join_requests").select("trip_id").eq("user_id", user!.id).in("trip_id", ids),
+      supabase
+        .from("trip_join_requests")
+        .select("trip_id")
+        .eq("user_id", user!.id)
+        .in("trip_id", ids)
+        .in("status", ["pending", "accepted"]),
     ]);
     (counts ?? []).forEach((c: { trip_id: string; accepted: number }) => {
       acceptedCount[c.trip_id] = c.accepted;

@@ -47,6 +47,7 @@ language sql security definer set search_path = public stable as $$
          exists(
            select 1 from public.trip_join_requests r
            where r.trip_id = t.id and r.user_id = auth.uid()
+             and r.status in ('pending', 'accepted') -- declined = not requested anymore
          ) as requested,
          hp.display_name as host_name,
          (hp.photos)[1] as host_photo

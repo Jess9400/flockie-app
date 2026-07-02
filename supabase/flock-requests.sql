@@ -17,8 +17,10 @@ alter table public.trip_join_requests
   add column if not exists status text not null default 'pending';
 
 -- A user requests to join a public Flock → creates a request (status defaults to
--- 'pending') and notifies the host. Captured verbatim from prod 2026-06-29 — this
--- was previously DB-only / missing from the repo.
+-- 'pending') and notifies the host. Captured from prod 2026-06-29; updated to let
+-- a previously-declined user request again: their old row resets to 'pending'
+-- (approvals cleared) instead of the insert silently no-op'ing. The host is only
+-- notified when a request was actually created/revived (no repeat-click spam).
 create or replace function public.request_join_trip(p_trip uuid)
 returns void language plpgsql security definer set search_path = public as $$
   declare v public.trips;
@@ -27,10 +29,14 @@ returns void language plpgsql security definer set search_path = public as $$
     if v.id is null or v.visibility <> 'public' then raise exception 'not joinable'; end if;
     if v.user_id = auth.uid() then raise exception 'own trip'; end if;
     insert into public.trip_join_requests (trip_id, user_id) values (p_trip, auth.uid())
-      on conflict do nothing;
-    perform public.notify(v.user_id, 'trip_join_request', 'Someone wants to join your trip',
-      'A flockie requested to join your ' || v.destination || ' trip.',
-      jsonb_build_object('trip_id', p_trip));
+      on conflict (trip_id, user_id) do update
+        set status = 'pending', approvals = '{}', created_at = now()
+        where trip_join_requests.status = 'declined';
+    if found then
+      perform public.notify(v.user_id, 'trip_join_request', 'Someone wants to join your trip',
+        'A flockie requested to join your ' || v.destination || ' trip.',
+        jsonb_build_object('trip_id', p_trip));
+    end if;
   end $$;
 grant execute on function public.request_join_trip(uuid) to authenticated;
 

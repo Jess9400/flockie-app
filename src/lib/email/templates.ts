@@ -16,7 +16,7 @@ const EMAILABLE: Record<string, string> = {
   vibe_invitation: "Confirm your spot",
   vibe_confirmed: "Open the chat",
   buddy_match: "Say hi",
-  flock_approved: "Open My Trips",
+  flock_approved: "Open the Flock chat",
   vibe_cancelled: "See details",
   vibe_private_request: "View the Vibe",
 };
@@ -24,6 +24,8 @@ const EMAILABLE: Record<string, string> = {
 function linkFor(n: NotifRecord): string {
   const d = (n.data ?? {}) as Record<string, string | undefined>;
   if (n.type === "vibe_confirmed" && d.vibe_id) return `${SITE}/vibes/${d.vibe_id}/chat`;
+  // Approved flock member → the flock chat (/my-trips only lists trips they host).
+  if (n.type === "flock_approved") return d.chat_id ? `${SITE}/buddies/${d.chat_id}` : `${SITE}/chats`;
   if (d.vibe_id) return `${SITE}/vibes/${d.vibe_id}`;
   if (d.trip_id) return `${SITE}/my-trips#trip-${d.trip_id}`;
   if (d.chat_id) return `${SITE}/buddies/${d.chat_id}`;

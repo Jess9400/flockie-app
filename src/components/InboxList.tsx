@@ -73,25 +73,35 @@ export default function InboxList({ notifications }: { notifications: Notif[] })
         const tripId = n.data?.trip_id;
         const href = n.data?.href
           ? n.data.href
-          : n.type === "vibe_confirmed" && vibeId
-            ? `/vibes/${vibeId}/chat` // confirmed → straight into the group chat
-            : vibeId
-              ? `/vibes/${vibeId}`
-              : tripId
-                ? `/my-trips#trip-${tripId}` // flock join request → the trip to accept/reject
-                : n.data?.chat_id
-                  ? `/buddies/${n.data.chat_id}`
-                  : n.data?.like_from
-                    ? `/people/${n.data.like_from}`
-                    : null;
+          : n.type === "flock_approved"
+            ? n.data?.chat_id
+              ? `/buddies/${n.data.chat_id}` // approved → straight into the flock chat
+              : "/chats" // older notifications have no chat_id — the chat is in the list
+            : n.type === "flock_declined"
+              ? "/flocks" // declined → browse other flocks
+              : n.type === "vibe_confirmed" && vibeId
+                ? `/vibes/${vibeId}/chat` // confirmed → straight into the group chat
+                : vibeId
+                  ? `/vibes/${vibeId}`
+                  : tripId
+                    ? `/my-trips#trip-${tripId}` // flock join request → the trip to accept/reject
+                    : n.data?.chat_id
+                      ? `/buddies/${n.data.chat_id}`
+                      : n.data?.like_from
+                        ? `/people/${n.data.like_from}`
+                        : null;
         const linkLabel =
-          n.type === "vibe_invitation"
-            ? "View & confirm →"
-            : n.type === "vibe_confirmed"
-              ? "Say hi in the group chat →"
-              : tripId
-                ? "Open My Trips →"
-                : "Open →";
+          n.type === "flock_approved"
+            ? "Open Flock Chat →"
+            : n.type === "flock_declined"
+              ? "Find another Flock →"
+              : n.type === "vibe_invitation"
+                ? "View & confirm →"
+                : n.type === "vibe_confirmed"
+                  ? "Say hi in the group chat →"
+                  : tripId
+                    ? "Open My Trips →"
+                    : "Open →";
         const card = (
           <div
             className={`rounded-2xl border-2 p-4 ${STYLE[n.type] ?? "border-ink/15 bg-white"} ${
