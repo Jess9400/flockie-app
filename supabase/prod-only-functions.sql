@@ -1,79 +1,108 @@
 -- Prod-only objects — schema-drift capture (2026-07-02).
 --
--- These objects EXIST on the production database but had NO definition anywhere
--- in this repo. That is the same drift class that previously hid the
--- `trip_join_requests using (true)` hole (it lived only in prod until 2026-06-29).
--- This file is the repo's record of them.
+-- These objects EXISTED on production but had NO definition in the repo — the
+-- same drift class that previously hid the `trip_join_requests using (true)`
+-- hole. Captured 2026-07-02 by dumping them from prod (pg_get_functiondef /
+-- information_schema / pg_constraint / pg_policies) and transcribing here.
 --
--- HOW TO FILL THIS IN: run the dump queries in the "DUMP QUERIES" block below on
--- prod (Supabase SQL editor), then paste each result into the matching
--- placeholder. Once filled, this file becomes the canonical source for these
--- objects and should be listed in SQL-MAP.md.
+-- ⚠️ They ALREADY EXIST on prod — you do NOT need to re-run this file there.
+-- Its purpose is (a) code review and (b) making a fresh database reproducible.
+-- For a fresh DB, run this AFTER the core schema (it references profiles, vibes,
+-- vibing_chats, vibing_messages, and is_vibe_member).
 --
--- Client call sites (why each matters):
---   set_my_location      writes exact GPS to profiles.location   (src/lib/location.ts)
---   get_or_create_chat   vibe chat membership gate               (src/app/(app)/vibes/[id]/chat/page.tsx)
---   accept_terms         legal-consent stamping                  (src/app/auth/callback/route.ts)
---   vibe_chat_summaries  chat list summaries                     (src/app/(app)/chats/page.tsx)
---   chat_reads (table)   per-user read cursor, written by mark_chat_read
---
--- ⚠️ Do NOT invent these definitions from the call sites — dump the REAL ones
--- from prod so behavior and (for the SECURITY DEFINER functions) search_path and
--- grants match exactly.
+-- Security review (2026-07-02) — all clean:
+--   • set_my_location   — writes profiles.location for auth.uid() ONLY; sp pinned.
+--   • accept_terms      — stamps auth.uid() only; coalesce() won't overwrite an
+--                         earlier consent time.
+--   • get_or_create_chat— gates on is_vibe_member before returning/creating.
+--   • vibe_chat_summaries— filters `where is_vibe_member(c.vibe_id)`; only the
+--                         caller's chats are returned.
+--   • chat_reads        — RLS on; policy scoped to user_id = auth.uid().
+-- Note: profiles.location (exact GPS) is written here but never exposed — the
+-- profiles SELECT policy is owner-only and public_profiles excludes location.
 
--- ════════════════════════════════════════════════════════════════════════════
--- DUMP QUERIES — run each on prod, paste output into the placeholders below.
--- ════════════════════════════════════════════════════════════════════════════
---
--- -- 1. Function definitions (returns full CREATE OR REPLACE ... source):
---    select pg_get_functiondef('public.set_my_location'::regproc);
---    select pg_get_functiondef('public.get_or_create_chat'::regproc);
---    select pg_get_functiondef('public.accept_terms'::regproc);
---    select pg_get_functiondef('public.vibe_chat_summaries'::regproc);
---    -- If any name has multiple overloads, regproc errors; disambiguate with the
---    -- full signature, e.g. 'public.get_or_create_chat(uuid)'::regprocedure, and
---    -- use pg_get_functiondef(...::regprocedure). To list overloads first:
---    --   select oid::regprocedure from pg_proc where proname = 'get_or_create_chat';
---
--- -- 2. chat_reads table DDL (columns, defaults, PK/FK):
---    -- Column + default list:
---    select column_name, data_type, is_nullable, column_default
---    from information_schema.columns
---    where table_schema = 'public' and table_name = 'chat_reads'
---    order by ordinal_position;
---    -- Constraints (PK/FK/unique):
---    select conname, pg_get_constraintdef(oid)
---    from pg_constraint where conrelid = 'public.chat_reads'::regclass;
---    -- Indexes:
---    select indexdef from pg_indexes
---    where schemaname = 'public' and tablename = 'chat_reads';
---
--- -- 3. chat_reads RLS (is-enabled flag + policies):
---    select relrowsecurity from pg_class where oid = 'public.chat_reads'::regclass;
---    select polname, cmd, qual, with_check
---    from pg_policies where schemaname = 'public' and tablename = 'chat_reads';
---    -- (pg_get_expr / the pg_policies view both give the USING / WITH CHECK text.)
+-- ── chat_reads: per-(user,chat) read cursor (written by mark_chat_read) ──────
+create table if not exists public.chat_reads (
+  user_id      uuid not null references public.profiles(id) on delete cascade,
+  chat_id      uuid not null,
+  last_read_at timestamptz not null default now(),
+  primary key (user_id, chat_id)
+);
+-- (Prod has no FK on chat_id — it spans vibing_chats/buddy_chats — so none here.)
 
--- ════════════════════════════════════════════════════════════════════════════
--- PLACEHOLDERS — replace each block with the dumped definition.
--- ════════════════════════════════════════════════════════════════════════════
+alter table public.chat_reads enable row level security;
+drop policy if exists "own reads" on public.chat_reads;
+create policy "own reads" on public.chat_reads for all to authenticated
+  using (user_id = auth.uid())
+  with check (user_id = auth.uid());
 
--- ── set_my_location ─────────────────────────────────────────────────────────
--- TODO(prod-dump): paste `pg_get_functiondef('public.set_my_location'::regproc)`.
--- After pasting, verify it writes ONLY auth.uid()'s row and pins search_path.
+-- ── set_my_location: write my own GPS point ─────────────────────────────────
+CREATE OR REPLACE FUNCTION public.set_my_location(p_lng double precision, p_lat double precision)
+ RETURNS void
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+  begin
+    update public.profiles
+      set location = st_setsrid(st_makepoint(p_lng, p_lat), 4326)::geography
+      where id = auth.uid();
+  end
+$function$;
 
--- ── get_or_create_chat ──────────────────────────────────────────────────────
--- TODO(prod-dump): paste definition. Verify it enforces vibe membership before
--- returning/creating a chat id (the client comment claims it does).
+-- ── accept_terms: stamp legal-consent time (once) ───────────────────────────
+CREATE OR REPLACE FUNCTION public.accept_terms()
+ RETURNS void
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+  begin
+    update public.profiles set terms_accepted_at = coalesce(terms_accepted_at, now())
+    where id = auth.uid();
+  end
+$function$;
 
--- ── accept_terms ────────────────────────────────────────────────────────────
--- TODO(prod-dump): paste definition. Verify it stamps consent for auth.uid() only.
+-- ── get_or_create_chat: membership-gated vibe chat lookup/creation ──────────
+CREATE OR REPLACE FUNCTION public.get_or_create_chat(p_vibe uuid)
+ RETURNS uuid
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+  declare cid uuid;
+  begin
+    if not public.is_vibe_member(p_vibe) then raise exception 'not a member'; end if;
+    select id into cid from public.vibing_chats where vibe_id = p_vibe;
+    if cid is null then
+      insert into public.vibing_chats (vibe_id) values (p_vibe)
+        on conflict (vibe_id) do nothing returning id into cid;
+      if cid is null then select id into cid from public.vibing_chats where vibe_id = p_vibe; end if;
+    end if;
+    return cid;
+  end
+$function$;
 
--- ── vibe_chat_summaries ─────────────────────────────────────────────────────
--- TODO(prod-dump): paste definition. Verify it only returns chats the caller is
--- a member of.
-
--- ── chat_reads (table + RLS) ────────────────────────────────────────────────
--- TODO(prod-dump): paste the CREATE TABLE, constraints/indexes, and the
--- `alter table ... enable row level security;` + policies. Expected shape:
--- a per-(user, chat) read cursor readable/writable only by that user.
+-- ── vibe_chat_summaries: the caller's vibe chats + unread counts ────────────
+-- (The RETURNS TABLE tail — last_at / unread — was reconstructed from the body,
+--  since the prod dump was truncated in the viewer.)
+CREATE OR REPLACE FUNCTION public.vibe_chat_summaries()
+ RETURNS TABLE(vibe_id uuid, chat_id uuid, title text, photo text, starts_at timestamptz, last_at timestamptz, unread int)
+ LANGUAGE sql
+ STABLE SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+  select v.id, c.id, v.title, (v.photos)[1], v.starts_at,
+    coalesce(lm.last_at, c.created_at) as last_at,
+    coalesce((select count(*) from public.vibing_messages m
+      where m.chat_id = c.id and m.sender_id <> auth.uid()
+        and m.created_at > coalesce((select last_read_at from public.chat_reads r
+          where r.user_id = auth.uid() and r.chat_id = c.id), 'epoch')), 0)::int
+    from public.vibing_chats c
+    join public.vibes v on v.id = c.vibe_id
+    left join lateral (
+      select max(created_at) last_at from public.vibing_messages m where m.chat_id = c.id
+    ) lm on true
+    where public.is_vibe_member(c.vibe_id)
+    order by last_at desc;
+$function$;
