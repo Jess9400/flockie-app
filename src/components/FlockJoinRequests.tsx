@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Check, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useConfirm } from "@/components/ui/feedback";
 
 export type JoinReq = {
   userId: string;
@@ -37,6 +38,7 @@ export default function FlockJoinRequests({
   canRemove?: boolean;
 }) {
   const supabase = createClient();
+  const confirm = useConfirm();
   const [items, setItems] = useState(requests);
   const [busy, setBusy] = useState<string | null>(null);
   const [err, setErr] = useState(false);
@@ -56,7 +58,15 @@ export default function FlockJoinRequests({
   }
 
   async function remove(userId: string) {
-    if (!window.confirm("Remove this member? Their spot opens up for someone else.")) return;
+    if (
+      !(await confirm({
+        title: "Remove this member?",
+        message: "Their spot opens up for someone else.",
+        confirmLabel: "Remove",
+        destructive: true,
+      }))
+    )
+      return;
     setBusy(userId);
     setErr(false);
     const { error } = await supabase.rpc("remove_flock_member", { p_trip: tripId, p_user: userId });

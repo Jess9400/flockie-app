@@ -4,20 +4,31 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useConfirm, useToast } from "@/components/ui/feedback";
 
 // Owner-only delete for a trip / activity / flock (My Trips). Confirms, calls
 // the delete_trip RPC, then refreshes the list.
 export default function DeleteTripButton({ tripId, label = "this" }: { tripId: string; label?: string }) {
   const router = useRouter();
+  const confirm = useConfirm();
+  const toast = useToast();
   const [busy, setBusy] = useState(false);
 
   async function del() {
-    if (!window.confirm(`Delete ${label}? This can't be undone.`)) return;
+    if (
+      !(await confirm({
+        title: `Delete ${label}?`,
+        message: "This can't be undone.",
+        confirmLabel: "Delete",
+        destructive: true,
+      }))
+    )
+      return;
     setBusy(true);
     const { error } = await createClient().rpc("delete_trip", { p_trip: tripId });
     if (error) {
       setBusy(false);
-      alert(error.message);
+      toast(error.message, "error");
       return;
     }
     router.refresh();

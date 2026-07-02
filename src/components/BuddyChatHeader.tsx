@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, MoreVertical, ChevronDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import ProfilePeek, { type PeekData } from "@/components/ProfilePeek";
+import { useConfirm, useToast } from "@/components/ui/feedback";
 
 export default function BuddyChatHeader({
   matchId,
@@ -53,6 +54,8 @@ export default function BuddyChatHeader({
 }) {
   const router = useRouter();
   const supabase = createClient();
+  const confirm = useConfirm();
+  const toast = useToast();
   const [expanded, setExpanded] = useState(false);
   const [menu, setMenu] = useState(false);
   const [showPeek, setShowPeek] = useState(false);
@@ -60,7 +63,14 @@ export default function BuddyChatHeader({
   const [muted, setMuted] = useState(initialMuted);
 
   async function leave() {
-    if (!window.confirm(`Leave this match? You'll lose access to this chat and ${name} will be notified.`))
+    if (
+      !(await confirm({
+        title: "Leave this match?",
+        message: `You'll lose access to this chat and ${name} will be notified.`,
+        confirmLabel: "Leave",
+        destructive: true,
+      }))
+    )
       return;
     setLeaving(true);
     await supabase.rpc("leave_buddy_match", { p_match: matchId });
@@ -77,13 +87,20 @@ export default function BuddyChatHeader({
   async function leaveFlock() {
     setMenu(false);
     if (!flockTripId) return;
-    if (!window.confirm("Leave this Flock? You'll lose your spot and the group chat."))
+    if (
+      !(await confirm({
+        title: "Leave this Flock?",
+        message: "You'll lose your spot and the group chat.",
+        confirmLabel: "Leave",
+        destructive: true,
+      }))
+    )
       return;
     setLeaving(true);
     const { error } = await supabase.rpc("leave_flock", { p_trip: flockTripId });
     if (error) {
       setLeaving(false);
-      return window.alert(error.message);
+      return toast(error.message, "error");
     }
     router.push("/chats");
     router.refresh();
@@ -91,23 +108,33 @@ export default function BuddyChatHeader({
 
   async function report() {
     setMenu(false);
-    const reason = window.prompt(`Report ${name}? Tell us what's wrong (optional):`);
-    if (reason === null) return;
-    await supabase.rpc("report_user", { p_target: peek.id, p_reason: reason });
-    window.alert("Thanks — our team will review this report.");
+    const res = await confirm({
+      title: `Report ${name}?`,
+      message: "Tell us what's wrong. This is private to Flockie.",
+      allowFreeText: true,
+      freeTextPlaceholder: "What happened? (optional)",
+      confirmLabel: "Report",
+      destructive: true,
+    });
+    if (!res) return;
+    await supabase.rpc("report_user", { p_target: peek.id, p_reason: res.note });
+    toast("Thanks — our team will review this report.");
   }
 
   async function makeFlock() {
     setMenu(false);
     if (
-      !window.confirm(
-        "Turn this trip into a Flock? It becomes a public group trip others can request to join — you and your buddy approve new members together."
-      )
+      !(await confirm({
+        title: "Turn this trip into a Flock?",
+        message:
+          "It becomes a public group trip others can request to join — you and your buddy approve new members together.",
+        confirmLabel: "Make it a Flock",
+      }))
     )
       return;
     const { error } = await supabase.rpc("convert_match_to_flock", { p_match: matchId });
-    if (error) return window.alert(error.message);
-    window.alert("Done! Your trip is now a Flock. Approve join requests from this chat or My Trips.");
+    if (error) return toast(error.message, "error");
+    toast("Done! Your trip is now a Flock — approve join requests from this chat or My Trips.");
     router.refresh();
   }
 

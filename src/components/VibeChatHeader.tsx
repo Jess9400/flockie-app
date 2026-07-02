@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { ChevronDown, MapPin, CalendarClock, Users, X, MoreVertical } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import BrandedMap from "@/components/BrandedMap";
+import { useConfirm } from "@/components/ui/feedback";
 import { formatVibeWhen } from "@/lib/vibes";
 
 const GMAPS_KEY = process.env.NEXT_PUBLIC_GMAPS_KEY;
@@ -47,6 +48,7 @@ export default function VibeChatHeader({
 }) {
   const router = useRouter();
   const supabase = createClient();
+  const confirm = useConfirm();
   const [expanded, setExpanded] = useState(false);
   const [panel, setPanel] = useState(false);
   const [leaving, setLeaving] = useState(false);
@@ -63,7 +65,15 @@ export default function VibeChatHeader({
   const extra = members.length - shown.length;
 
   async function leave() {
-    if (!window.confirm("Leave this Vibe? You'll lose your spot and the chat.")) return;
+    if (
+      !(await confirm({
+        title: "Leave this Vibe?",
+        message: "You'll lose your spot and the chat.",
+        confirmLabel: "Leave",
+        destructive: true,
+      }))
+    )
+      return;
     setLeaving(true);
     await supabase.rpc("leave_vibe", { p_vibe: vibeId });
     router.push("/chats");

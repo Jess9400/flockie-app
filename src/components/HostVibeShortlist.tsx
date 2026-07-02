@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Send, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useConfirm } from "@/components/ui/feedback";
 
 export type ShortlistCandidate = {
   id: string;
@@ -30,6 +31,7 @@ export default function HostVibeShortlist({
 }) {
   const router = useRouter();
   const supabase = createClient();
+  const confirm = useConfirm();
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const left = Math.max(0, rejectCap - rejectsUsed);
@@ -44,7 +46,14 @@ export default function HostVibeShortlist({
   }
 
   async function sendInvites() {
-    if (!window.confirm("Send invites to this list now? Invited people can no longer be rejected here.")) return;
+    if (
+      !(await confirm({
+        title: "Send invites now?",
+        message: "Invited people can no longer be rejected here.",
+        confirmLabel: "Send invites",
+      }))
+    )
+      return;
     setBusy(true);
     setMsg(null);
     const { error } = await supabase.rpc("host_commit_matching", { p_vibe: vibeId });

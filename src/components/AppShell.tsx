@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import Footer from "@/components/Footer";
 import SignOutButton from "@/components/SignOutButton";
+import { FeedbackProvider } from "@/components/ui/feedback";
 import { createClient } from "@/lib/supabase/client";
 
 // Explicit route → section mapping so child routes highlight their section
@@ -164,6 +165,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   );
 
   return (
+    <FeedbackProvider>
     <div className="min-h-screen">
       {/* Top bar */}
       <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b-2 border-ink bg-cream px-4 sm:px-6">
@@ -287,5 +289,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
       )}
     </div>
+    </FeedbackProvider>
   );
 }
