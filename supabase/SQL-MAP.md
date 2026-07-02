@@ -49,9 +49,9 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | `vibe-v2-preview-reject.sql:158` | old `autofill_open_vibes` | no `starts_at` guard → `vibe-auto-matching.sql` |
 | `vibe-v2-algo-share.sql:21` | algo-budget `_rank_vibe_core` + `backfill_vibe` | not live → `vibe-v2-private-link.sql` |
 | `vibe-v2-algo-share.sql:108` | algo-budget `invite_city_fallback` | not live → `vibe-auto-matching.sql` |
-| `vibe-review-preferences.sql:44` | review-fit `vibe_match` | raw `::int` cast; **contains the 0.15 review-fit weighting we may want to port** → `recommended-vibes.sql` |
+| `vibe-review-preferences.sql:44` | review-fit `vibe_match` | raw `::int` cast. ✅ 2026-07-02: the 0.15 review-fit weighting was PORTED into the live `recommended-vibes.sql` (using the #98 regex-guarded cast, weights rescaled to 0.35/0.25/0.12/0.13/0.15). → `recommended-vibes.sql` |
 | `vibe-review-preferences.sql:106` | review-fit `_rank_vibe_core` | auto-invited → `vibe-v2-private-link.sql` |
-| `vibe-review-preferences.sql:170` | review-fit `invite_city_fallback` | **contains the age filter missing from the live version** → `vibe-auto-matching.sql` |
+| `vibe-review-preferences.sql:170` | review-fit `invite_city_fallback` | contained the age filter the live version had lost. ✅ 2026-07-02: age (and gender) now enforced live via `vibe_eligible()` inside `invite_city_fallback` → `vibe-auto-matching.sql` |
 | `vibe-not-for-me.sql:106` | stale `vibe_match` | raw cast + different formula → `recommended-vibes.sql` |
 | `ranking.sql:3` | old direct `rank_vibe` | pre-wrapper → `vibe-auto-matching.sql` |
 | `match-weights.sql:1` | **entire file is a no-op** | its `buddy_pair_score`/`rank_vibe` would downgrade the engine |
@@ -72,19 +72,28 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
   RLS lockdowns (e.g. `trip_join_requests using (true)`). Loud header at line 1. Keep as history only.
 - **`match-weights.sql`** — intentionally emptied to a no-op.
 
-## ⚠️ Known re-run hazards NOT yet defused (2026-07-02 audit)
+## Re-run hazards — DEFUSED 2026-07-02
 
-- **`buddy-matching.sql:28-63`** — legacy `buddy_city_count` / `buddy_candidates` / 2-arg
-  `buddy_swipe` are **unwrapped**: old flat 0.6/0.4 deck, no hard block, NULL-score bug,
-  still `grant execute to authenticated`. Unused by the client but callable, and re-running
-  the file re-creates them. TODO: wrap + drop from prod.
-- **`trips-and-buddy.sql:53-54`** — re-creates the `using (true)` "trips readable" policy,
-  reverting `trips-rls.sql`, and the file header says "Safe to re-run". TODO: defuse like
-  `flock-requests.sql`.
+- ✅ **`buddy-matching.sql:27-100`** — legacy `buddy_city_count` / `buddy_candidates` / 2-arg
+  `buddy_swipe` are now wrapped in a `/* SUPERSEDED */` block. Drops for all three are in
+  `legacy-buddy-cleanup.sql` and `deploy-2026-07-02.sql` (verified: all live `buddy_swipe`
+  callers pass 3 args; only `buddy_candidates_trip` is used). → `match-priorities.sql` /
+  `buddy-swipe-notify-once.sql`
+- ✅ **`trips-and-buddy.sql:53`** — the `using (true)` "trips readable" policy is tombstoned
+  and the file header is now a loud DO-NOT-RE-RUN warning. Live scoped policy (via
+  `can_see_trip`) is in `trips-rls.sql` — no prod SQL needed, it's already correct.
+
+## Deploy bundles
+
+- **`deploy-2026-07-02.sql`** — point-in-time prod script for the tombstone-followup batch:
+  updated `vibe_match` (review-fit), `invite_city_fallback` (eligibility+guard), and the
+  legacy buddy drops. Idempotent. Snapshots of the canonical bodies — if you edit the
+  canonical files later, this bundle is stale (re-generate or just run the canonical files).
 
 ## ⚠️ Prod-only objects with NO repo definition (schema drift)
 
-Dump via `select pg_get_functiondef('public.<fn>'::regproc);` and commit:
+Tracked in **`prod-only-functions.sql`** (has the exact dump queries + placeholders). Still
+needs the prod dumps pasted in. Dump via `select pg_get_functiondef('public.<fn>'::regproc);`:
 
 - `set_my_location` (writes GPS to `profiles.location` — called from `src/lib/location.ts`)
 - `get_or_create_chat` (vibe chat membership gate — `vibes/[id]/chat/page.tsx`)

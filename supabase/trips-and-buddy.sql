@@ -1,5 +1,12 @@
 -- Phase 1: trip posting + trip-based buddy matching + match-opens-chat.
--- Run in Supabase SQL Editor.
+--
+-- ⚠️⚠️ DO NOT RE-RUN THIS WHOLE FILE ON A HARDENED DATABASE. ⚠️⚠️
+-- It historically re-created a `using (true)` "trips readable" SELECT policy
+-- (any authed user could read every trip, including private personal trips —
+-- destinations, dates, budget). That policy is now TOMBSTONED below and the
+-- live, scoped version lives in supabase/trips-rls.sql (via can_see_trip).
+-- Re-running the unwrapped file would REVERT that RLS hardening. If you need a
+-- specific object from here, run only that statement — not the file.
 
 -- Base swipe/match tables (safe if already created earlier)
 create table if not exists public.buddy_swipes (

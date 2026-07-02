@@ -3,18 +3,22 @@
 -- vibe_eligible). Safe to re-run.
 --
 -- vibe_match(user, vibe) -> 0-100, how well an open Vibe fits a user's profile:
---   0.40 category fit   — does the Vibe's category match something you do?
---   0.30 vibe-tag fit   — event tags (chill/social/party…) vs your activity vibe
---   0.15 skill fit      — required skill vs your skill in that activity
---   0.15 social fit     — how social the event reads vs your activity-social pref
+--   0.35 category fit   — does the Vibe's category match something you do?
+--   0.25 vibe-tag fit   — event tags (chill/social/party…) vs your activity vibe
+--   0.12 skill fit      — required skill vs your skill in that activity
+--   0.13 social fit     — how social the event reads vs your activity-social pref
+--   0.15 review fit     — do you tend to recommend Vibes like this? (vibe_review_fit)
 -- Used by both the "X% your vibe" card badge and the "Picked for you" ranking.
+-- The review-fit term (2026-07-02) was ported from the tombstoned copy in
+-- vibe-review-preferences.sql; the other four weights were rescaled from
+-- 0.40/0.30/0.15/0.15 so the five still sum to 1.0.
 
 create or replace function public.vibe_match(p_user uuid, p_vibe uuid)
 returns int language plpgsql security definer set search_path = public stable as $$
 declare
   pr public.profiles%rowtype;
   v public.vibes%rowtype;
-  cat_fit numeric; tag_fit numeric; skill_fit numeric; social_fit numeric;
+  cat_fit numeric; tag_fit numeric; skill_fit numeric; social_fit numeric; review_fit numeric;
   n_tags int; n_match int; event_social int; matched_skill int;
 begin
   select * into pr from public.profiles where id = p_user;
@@ -68,7 +72,11 @@ begin
     social_fit := 1 - abs(event_social - pr.activity_social)::numeric / 4;
   end if;
 
-  return round(100 * (0.40 * cat_fit + 0.30 * tag_fit + 0.15 * skill_fit + 0.15 * social_fit));
+  -- review fit: do this user's past positive reviews lean toward this category /
+  -- these tags? vibe_review_fit returns 0..1 (0.5 neutral when no reviews yet).
+  review_fit := public.vibe_review_fit(p_user, p_vibe);
+
+  return round(100 * (0.35 * cat_fit + 0.25 * tag_fit + 0.12 * skill_fit + 0.13 * social_fit + 0.15 * review_fit));
 end $$;
 grant execute on function public.vibe_match(uuid, uuid) to authenticated;
 
