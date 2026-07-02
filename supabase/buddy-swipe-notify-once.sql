@@ -7,6 +7,11 @@
 -- After: the match notification fires only when the chat row is newly created,
 -- and the activity-like notification fires only on a fresh like (new swipe row).
 -- Behavior, matching, and the returned shape are otherwise unchanged.
+--
+-- Also enforces buddy_hard_block server-side: decks pre-filter hard-blocked
+-- pairs, but direct RPC callers ("Say hi", match-back) could bypass it. A
+-- blocked pair now gets a stable, client-distinguishable error
+-- ('blocked_by_preferences') instead of silently recording the swipe.
 
 create or replace function public.buddy_swipe(p_target uuid, p_liked boolean, p_activity_title text default null)
 returns jsonb language plpgsql security definer set search_path = public as $$
@@ -18,6 +23,10 @@ declare
   v_swipe_new boolean;
   v_new_chat uuid;
 begin
+  if public.buddy_hard_block(auth.uid(), p_target) then
+    raise exception 'blocked_by_preferences';
+  end if;
+
   insert into public.buddy_swipes (swiper_id, target_id, liked)
   values (auth.uid(), p_target, p_liked)
   on conflict (swiper_id, target_id) do update set liked = excluded.liked

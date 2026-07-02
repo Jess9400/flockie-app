@@ -102,7 +102,11 @@ export default function SwipeDeck({
         });
     setBusy(false);
     if (error) {
-      setActionError("We couldn’t save that choice. Please try again.");
+      setActionError(
+        error.message.includes("blocked_by_preferences")
+          ? "You two have conflicting match preferences."
+          : "We couldn’t save that choice. Please try again."
+      );
       return;
     }
     const res = data as { matched: boolean; chat_id?: string } | null;
