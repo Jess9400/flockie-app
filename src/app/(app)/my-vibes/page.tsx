@@ -22,6 +22,20 @@ const STATUS_STYLE: Record<string, string> = {
   cancelled: "bg-ink text-white",
 };
 
+// Participant-side interest states shown in "In the running".
+const INTEREST_LABEL: Record<string, string> = {
+  interested: "Interested",
+  shortlisted: "Shortlisted",
+  invited: "You're invited",
+  confirmed: "Confirmed",
+};
+const INTEREST_STYLE: Record<string, string> = {
+  interested: "bg-flockie-blue text-white",
+  shortlisted: "bg-flockie-orange text-white",
+  invited: "bg-flockie-coral text-white",
+  confirmed: "bg-[#06D6A0] text-white",
+};
+
 type VibeRow = {
   id: string;
   title: string;
@@ -84,6 +98,40 @@ export default async function MyVibesPage({
       .eq("status", "confirmed")
       .in("vibe_id", ids);
     confirmed?.forEach((r) => (counts[r.vibe_id] = (counts[r.vibe_id] ?? 0) + 1));
+  }
+
+  // "In the running" — Vibes the user is a PARTICIPANT in (not hosting). These
+  // otherwise have no home: interested/shortlisted/invited/confirmed rows never
+  // surface, and 'reviewing'-status vibes drop out of browse/home entirely.
+  // Own rows are readable by RLS; display data comes from vibe_directory (no GPS,
+  // and — unlike the browse filters — it includes every status).
+  const { data: myInterests } = await supabase
+    .from("vibe_interests")
+    .select("vibe_id, status")
+    .eq("user_id", user!.id)
+    .in("status", ["interested", "shortlisted", "invited", "confirmed"]);
+  const interestStatus: Record<string, string> = {};
+  (myInterests ?? []).forEach((r) => {
+    if (!ids.includes(r.vibe_id)) interestStatus[r.vibe_id] = r.status; // skip own hosted
+  });
+  const runningIds = Object.keys(interestStatus);
+  let running: {
+    id: string;
+    title: string;
+    photos: string[] | null;
+    city: string;
+    area: string | null;
+    starts_at: string;
+    status: string;
+  }[] = [];
+  if (runningIds.length) {
+    const { data: dir } = await supabase
+      .from("vibe_directory")
+      .select("id, title, photos, city, area, starts_at, status")
+      .in("id", runningIds);
+    running = (dir ?? []).sort(
+      (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
+    );
   }
 
   function VibeRowCard({ v, faded }: { v: VibeRow; faded?: boolean }) {
@@ -155,10 +203,52 @@ export default async function MyVibesPage({
         </Link>
       </div>
       <p className="mt-1 text-sm font-medium text-muted">
-        Everything you&rsquo;ve hosted — manage matching, dates, and chats.
+        Vibes you&rsquo;re hosting and the ones you&rsquo;ve joined.
       </p>
 
-      <div className="mt-6 space-y-3">
+      {running.length > 0 && (
+        <section className="mt-6">
+          <h2 className="text-lg font-extrabold">In the running</h2>
+          <p className="mt-0.5 text-xs font-medium text-muted">
+            Vibes you&rsquo;ve joined — we&rsquo;ll let you know as the host picks their group.
+          </p>
+          <div className="mt-3 space-y-3">
+            {running.map((v) => (
+              <Link
+                key={v.id}
+                href={`/vibes/${v.id}`}
+                className="flex items-center gap-3 rounded-2xl border-2 border-ink bg-white p-3 shadow-[0_3px_0_0_rgba(26,26,26,1)]"
+              >
+                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-cream">
+                  {v.photos?.[0] ? (
+                    <Image src={v.photos[0]} alt="" fill sizes="48px" className="object-cover" />
+                  ) : (
+                    <span className="flex h-full items-center justify-center text-lg">🎟️</span>
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-extrabold">{v.title}</p>
+                  <p className="truncate text-xs font-medium text-muted">
+                    {formatVibeWhen(v.starts_at)} · {v.area || v.city}
+                  </p>
+                </div>
+                <span
+                  className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-extrabold ${
+                    INTEREST_STYLE[interestStatus[v.id]] ?? "bg-cream text-ink"
+                  }`}
+                >
+                  {INTEREST_LABEL[interestStatus[v.id]] ?? interestStatus[v.id]}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {(running.length > 0 || activeList.length > 0) && (
+        <h2 className="mt-8 text-lg font-extrabold">Hosting</h2>
+      )}
+      <div className="mt-3 space-y-3">
         {activeList.length === 0 ? (
           <div className="rounded-3xl border-2 border-dashed border-ink/30 py-16 text-center font-medium text-muted">
             You haven&rsquo;t hosted an upcoming Vibe. Create your first one.

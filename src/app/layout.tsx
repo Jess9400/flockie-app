@@ -36,7 +36,8 @@ export const viewport: Viewport = {
   themeColor: "#F7F3EE",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  // No maximumScale — blocking pinch-zoom fails WCAG 1.4.4 and hurts the
+  // small-text screens (11px meta / dense grids) most.
   viewportFit: "cover",
 };
 
@@ -52,7 +53,7 @@ export default function RootLayout({
         <Script
           id="travelpayouts"
           src="https://emrldtp.com/NTQ0NDgy.js?t=544482"
-          strategy="beforeInteractive"
+          strategy="lazyOnload"
         />
         {children}
         <CookieConsent />
