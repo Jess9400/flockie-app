@@ -5,24 +5,83 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home, Compass, Map, Sparkles, MessageCircle, User, Bell, Menu, X,
+  Home, Compass, Map, Sparkles, MessageCircle, User, Bell, Menu, X, Ticket, Tag, Settings,
 } from "lucide-react";
 import Footer from "@/components/Footer";
 import SignOutButton from "@/components/SignOutButton";
+import { FeedbackProvider } from "@/components/ui/feedback";
 import { createClient } from "@/lib/supabase/client";
 
-// My Vibes now lives as a tab inside Vibes, and Deals as a tab inside My Trips,
-// so they're not top-level nav. Notifications (Inbox) moved to the top-right bell.
-const NAV = [
-  { href: "/home", label: "Home", icon: Home },
-  { href: "/vibes", label: "Vibes", icon: Sparkles },
-  { href: "/match", label: "Find a Buddy", icon: Compass },
-  { href: "/my-trips", label: "My Trips", icon: Map },
-  { href: "/chats", label: "Chats", icon: MessageCircle },
+// Explicit route → section mapping so child routes highlight their section
+// (e.g. /buddies/* highlights Chats, /flocks/* highlights Match, /my-activities
+// highlights My Trips). Keyed off the first path segment.
+function sectionFor(pathname: string): string {
+  const seg = "/" + (pathname.split("/")[1] ?? "");
+  switch (seg) {
+    case "/home":
+      return "home";
+    case "/vibes":
+      return "vibes";
+    case "/my-vibes":
+      return "my-vibes";
+    case "/match":
+    case "/flocks":
+      return "match";
+    case "/my-trips":
+    case "/my-activities":
+      return "trips";
+    case "/deals":
+      return "deals";
+    case "/chats":
+    case "/buddies":
+      return "chats";
+    case "/inbox":
+      return "inbox";
+    case "/settings":
+      return "settings";
+    case "/profile":
+      return "profile";
+    default:
+      return "";
+  }
+}
+
+type NavItem = {
+  href: string;
+  label: string;
+  icon: typeof Home;
+  sections: string[];
+};
+
+const PRIMARY_NAV: NavItem[] = [
+  { href: "/home", label: "Home", icon: Home, sections: ["home"] },
+  { href: "/vibes", label: "Vibes", icon: Sparkles, sections: ["vibes"] },
+  { href: "/match", label: "Find a Buddy", icon: Compass, sections: ["match"] },
+  { href: "/my-trips", label: "My Trips", icon: Map, sections: ["trips"] },
+  { href: "/chats", label: "Chats", icon: MessageCircle, sections: ["chats"] },
+];
+
+// Secondary destinations live in the drawer/sidebar only (not the tab bar).
+const SECONDARY_NAV: NavItem[] = [
+  { href: "/my-vibes", label: "My Vibes", icon: Ticket, sections: ["my-vibes"] },
+  { href: "/deals", label: "Deals", icon: Tag, sections: ["deals"] },
+  { href: "/inbox", label: "Inbox", icon: Bell, sections: ["inbox"] },
+  { href: "/settings", label: "Settings", icon: Settings, sections: ["settings"] },
+];
+
+// Mobile bottom tab bar: the 5 core surfaces, thumb-reachable. Tabs claim the
+// sections of their children so e.g. /my-vibes lights up Vibes.
+const TABS: NavItem[] = [
+  { href: "/home", label: "Home", icon: Home, sections: ["home"] },
+  { href: "/vibes", label: "Vibes", icon: Sparkles, sections: ["vibes", "my-vibes"] },
+  { href: "/match", label: "Match", icon: Compass, sections: ["match"] },
+  { href: "/chats", label: "Chats", icon: MessageCircle, sections: ["chats"] },
+  { href: "/profile", label: "Profile", icon: User, sections: ["profile", "settings"] },
 ];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const section = sectionFor(pathname);
   // Chat rooms fill the viewport exactly (no page scroll, no footer) so the
   // chat window stays static and only the message list scrolls inside it.
   const isChatRoom =
@@ -61,38 +120,52 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     return () => { active = false; supabase.removeChannel(channel); };
   }, [pathname]);
 
-  function navItemCls(href: string) {
-    const activeItem = pathname === href || pathname.startsWith(href + "/");
+  function navItemCls(active: boolean) {
     return `flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-bold transition-colors ${
-      activeItem ? "bg-flockie-blue text-white" : "text-ink hover:bg-navy/5"
+      active ? "bg-flockie-blue text-white" : "text-ink hover:bg-navy/5"
     }`;
   }
 
   const NavList = (
     <nav className="flex h-full flex-col gap-1">
-      <Link href="/home" onClick={() => setOpen(false)} className={navItemCls("/home")}>
-        <Home size={18} /> <span className="flex-1">Home</span>
-      </Link>
-      <Link href="/vibes" onClick={() => setOpen(false)} className={navItemCls("/vibes")}>
-        <Sparkles size={18} /> <span className="flex-1">Vibes</span>
-      </Link>
-      {NAV.filter((n) => !["/home", "/vibes"].includes(n.href)).map((item) => {
+      {PRIMARY_NAV.map((item) => {
         const Icon = item.icon;
         return (
-          <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className={navItemCls(item.href)}>
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={() => setOpen(false)}
+            className={navItemCls(item.sections.includes(section))}
+          >
             <Icon size={18} />
             <span className="flex-1">{item.label}</span>
           </Link>
         );
       })}
       <div className="my-2 border-t-2 border-navy/10" />
-      <Link href="/profile" onClick={() => setOpen(false)} className={navItemCls("/profile")}>
+      {SECONDARY_NAV.map((item) => {
+        const Icon = item.icon;
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={() => setOpen(false)}
+            className={navItemCls(item.sections.includes(section))}
+          >
+            <Icon size={18} />
+            <span className="flex-1">{item.label}</span>
+          </Link>
+        );
+      })}
+      <div className="my-2 border-t-2 border-navy/10" />
+      <Link href="/profile" onClick={() => setOpen(false)} className={navItemCls(section === "profile")}>
         <User size={18} /> <span className="flex-1">Profile</span>
       </Link>
     </nav>
   );
 
   return (
+    <FeedbackProvider>
     <div className="min-h-screen">
       {/* Top bar */}
       <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b-2 border-ink bg-cream px-4 sm:px-6">
@@ -168,7 +241,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       {/* Main */}
       <div
         className={`flex flex-col pt-16 lg:pl-[200px] ${
-          isChatRoom ? "h-[100dvh] overflow-hidden" : "min-h-screen"
+          isChatRoom
+            ? "h-[100dvh] overflow-hidden"
+            : "min-h-screen pb-[calc(4.5rem+env(safe-area-inset-bottom))] sm:pb-0"
         }`}
       >
         <div className={`w-full flex-1 ${isChatRoom ? "min-h-0" : "mx-auto max-w-4xl"}`}>
@@ -176,6 +251,44 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </div>
         {!isChatRoom && <Footer />}
       </div>
+
+      {/* Bottom tab bar (mobile only). Hidden in chat rooms so the composer
+          keeps the bottom edge, and hidden at sm+ where the drawer/sidebar
+          layout stays. */}
+      {!isChatRoom && (
+        <nav
+          aria-label="Primary"
+          className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-ink bg-white pb-[env(safe-area-inset-bottom)] sm:hidden"
+        >
+          <div className="grid grid-cols-5">
+            {TABS.map((tab) => {
+              const Icon = tab.icon;
+              const active = tab.sections.includes(section);
+              return (
+                <Link
+                  key={tab.href}
+                  href={tab.href}
+                  aria-current={active ? "page" : undefined}
+                  className={`flex flex-col items-center gap-0.5 pb-1.5 pt-2 text-[10px] font-extrabold ${
+                    active ? "text-flockie-coral" : "text-ink/60"
+                  }`}
+                >
+                  <span className="relative">
+                    <Icon size={22} strokeWidth={active ? 2.5 : 2} />
+                    {tab.href === "/chats" && unread > 0 && (
+                      <span className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full border border-white bg-flockie-coral px-0.5 text-[9px] font-bold leading-none text-white">
+                        {unread > 9 ? "9+" : unread}
+                      </span>
+                    )}
+                  </span>
+                  {tab.label}
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+      )}
     </div>
+    </FeedbackProvider>
   );
 }

@@ -163,7 +163,7 @@ export default async function FlocksPage({
                   className="flex flex-col overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-[0_4px_0_0_rgba(26,26,26,1)]"
                 >
                   {/* Artwork — square so the whole cover shows, never cropped */}
-                  <div className="relative aspect-square w-full border-b-2 border-ink bg-cream">
+                  <Link href={`/flocks/${t.id}`} className="relative block aspect-square w-full border-b-2 border-ink bg-cream">
                     {t.cover_photo ? (
                       <Image
                         src={t.cover_photo}
@@ -180,14 +180,17 @@ export default async function FlocksPage({
                         ✨ {pct}%
                       </span>
                     )}
-                  </div>
+                  </Link>
 
                   {/* Body */}
                   <div className="flex flex-1 flex-col p-2.5">
-                    <p className="line-clamp-2 flex items-start gap-1 text-[13px] font-extrabold leading-tight text-ink">
+                    <Link
+                      href={`/flocks/${t.id}`}
+                      className="line-clamp-2 flex items-start gap-1 text-[13px] font-extrabold leading-tight text-ink"
+                    >
                       <MapPin size={12} className="mt-0.5 shrink-0 text-flockie-orange" />
                       <span className="line-clamp-2">{destination}</span>
-                    </p>
+                    </Link>
                     <p className="mt-1 flex items-center gap-1 text-[11px] font-medium leading-tight text-muted">
                       <CalendarClock size={11} className="shrink-0" />
                       <span className="truncate">

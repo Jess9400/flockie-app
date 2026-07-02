@@ -19,6 +19,7 @@ import ProfileIdentityCard from "@/components/ProfileIdentityCard";
 import type { EventsData } from "@/components/ProfileEvents";
 import type { ReviewItem } from "@/components/ProfileReviews";
 import TripVibeForm from "@/components/TripVibeForm";
+import { useConfirm } from "@/components/ui/feedback";
 import { restartVibeCheck } from "@/lib/onboarding/vibe-actions";
 import type { VibeScores } from "@/lib/onboarding/types";
 import { formatVibeWhen } from "@/lib/vibes";
@@ -54,6 +55,7 @@ export default function OwnerProfileDashboard({
   onShare: () => void;
 }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [openSetup, setOpenSetup] = useState<SetupKey>(null);
   const [redoing, setRedoing] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
@@ -72,7 +74,13 @@ export default function OwnerProfileDashboard({
   }
 
   async function redoQuiz() {
-    if (!window.confirm("Retake your vibe quiz? Your future matching signals will update.")) {
+    if (
+      !(await confirm({
+        title: "Retake your vibe quiz?",
+        message: "Your future matching signals will update.",
+        confirmLabel: "Retake quiz",
+      }))
+    ) {
       return;
     }
     setRedoing(true);

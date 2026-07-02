@@ -3,18 +3,24 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useConfirm } from "@/components/ui/feedback";
 
 export default function DeleteAccountButton() {
   const router = useRouter();
   const supabase = createClient();
+  const confirm = useConfirm();
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   async function remove() {
     if (
-      !window.confirm(
-        "Delete your account? This permanently removes your profile, vibe check, and matches. This can't be undone."
-      )
+      !(await confirm({
+        title: "Delete your account?",
+        message:
+          "This permanently removes your profile, vibe check, and matches. This can't be undone.",
+        confirmLabel: "Delete account",
+        destructive: true,
+      }))
     )
       return;
     setBusy(true);

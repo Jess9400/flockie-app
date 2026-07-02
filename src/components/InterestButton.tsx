@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useEsc } from "@/lib/use-esc";
 import ActivityVibeForm from "@/components/ActivityVibeForm";
+import { useConfirm } from "@/components/ui/feedback";
 import type { InterestStatus } from "@/lib/vibes";
 
 type Props = {
@@ -40,6 +41,7 @@ export default function InterestButton({
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
+  const askConfirm = useConfirm();
   const [status, setStatus] = useState<InterestStatus | null>(initialStatus);
   const [hasActivities, setHasActivities] = useState(activitiesDone);
   const [busy, setBusy] = useState(false);
@@ -203,13 +205,20 @@ export default function InterestButton({
   }
 
   async function appealRemoval() {
-    const note = window.prompt("Tell us what happened. This is private to Flockie.");
-    if (!note?.trim()) return;
+    const res = await askConfirm({
+      title: "Appeal this removal",
+      message: "Tell us what happened. This is private to Flockie.",
+      allowFreeText: true,
+      reasonRequired: true,
+      freeTextPlaceholder: "What happened?",
+      confirmLabel: "Send appeal",
+    });
+    if (!res || !res.note) return;
     setBusy(true);
     setMessage(null);
     const { error } = await supabase.rpc("appeal_vibe_removal", {
       p_vibe: vibeId,
-      p_note: note.trim(),
+      p_note: res.note,
     });
     setBusy(false);
     setMessage(error ? error.message : "Thanks — we got your note.");

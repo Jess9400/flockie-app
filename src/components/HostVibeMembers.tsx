@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useConfirm } from "@/components/ui/feedback";
 
 type HostVibeMember = {
   id: string;
@@ -37,44 +38,41 @@ export default function HostVibeMembers({
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
+  const confirm = useConfirm();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
   async function removeMember(member: HostVibeMember) {
-    const options = eventStarted
-      ? "Safety concern"
-      : "Known conflict, Other, or Safety concern";
-    const choice = window.prompt(`Remove ${member.display_name || "this person"}?\nReason: ${options}`);
-    if (!choice) return;
+    // After the event starts, only safety removals are allowed.
+    const reasonChoices = eventStarted
+      ? [{ value: "safety", label: reasonLabels.safety }]
+      : [
+          { value: "known_conflict", label: reasonLabels.known_conflict },
+          { value: "other", label: reasonLabels.other },
+          { value: "safety", label: reasonLabels.safety },
+        ];
 
-    const normalized = choice.trim().toLowerCase();
-    const reason: RemovalReason | null =
-      normalized.includes("safety") ? "safety" :
-      normalized.includes("other") ? "other" :
-      normalized.includes("known") || normalized.includes("conflict") ? "known_conflict" :
-      null;
+    const res = await confirm({
+      title: `Remove ${member.display_name || "this person"}?`,
+      message: eventStarted
+        ? "After the Vibe starts, only safety removals are available."
+        : "Pick a reason. This is private to Flockie.",
+      reasons: reasonChoices,
+      reasonRequired: true,
+      allowFreeText: true,
+      freeTextPlaceholder: "Private note (required for Other / Safety)",
+      confirmLabel: "Remove",
+      destructive: true,
+    });
+    if (!res) return;
 
-    if (!reason) {
-      setMessage("Choose Known conflict, Other, or Safety concern.");
+    const reason = res.value as RemovalReason;
+    const note = res.note || null;
+    // Other / Safety removals require a private note for Flockie.
+    if ((reason === "other" || reason === "safety") && !note) {
+      setMessage("Please add a short private note for that reason.");
       return;
     }
-    if (eventStarted && reason !== "safety") {
-      setMessage("After the Vibe starts, only safety removal is available.");
-      return;
-    }
-
-    let note: string | null = null;
-    if (reason === "other" || reason === "safety") {
-      const entered = window.prompt(
-        reason === "safety"
-          ? "Safety removals require a private note for Flockie."
-          : "Please add a short private note."
-      );
-      if (!entered?.trim()) return;
-      note = entered.trim();
-    }
-
-    if (!window.confirm(`Remove ${member.display_name || "this person"} from this Vibe?`)) return;
 
     setBusyId(member.id);
     setMessage(null);

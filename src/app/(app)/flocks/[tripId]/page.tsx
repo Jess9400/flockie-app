@@ -1,0 +1,283 @@
+import Link from "next/link";
+import Image from "next/image";
+import { ChevronLeft, MapPin, CalendarClock, Users, Globe2, Wallet } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import FlockRequestButton from "@/components/FlockRequestButton";
+import ArchetypeBadge from "@/components/ArchetypeBadge";
+import { loadFlockMatch } from "@/lib/vibe-stats";
+import { tripDays } from "@/lib/trips";
+import { ARCHETYPES } from "@/lib/onboarding/archetypes";
+import type { VibeDimension } from "@/lib/onboarding/types";
+
+// Friendly unavailable state — same graceful pattern as the Vibe detail page
+// (no hard 404: the Flock may simply be cancelled, deleted, or private).
+function Unavailable() {
+  return (
+    <main className="mx-auto w-full max-w-md px-5 pt-16 text-center font-nunito">
+      <p className="text-4xl">🧳</p>
+      <h1 className="mt-3 text-xl font-black">This Flock isn&rsquo;t available</h1>
+      <p className="mt-1 font-medium text-muted">It may have been cancelled, filled up, or made private.</p>
+      <Link
+        href="/flocks"
+        className="mt-6 inline-block rounded-full border-2 border-ink bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
+      >
+        Explore Flocks
+      </Link>
+    </main>
+  );
+}
+
+export default async function FlockDetailPage({
+  params,
+}: {
+  params: { tripId: string };
+}) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Same table/columns the browse page reads; RLS (can_see_trip) already allows
+  // owner / co-host / public / accepted member — see supabase/trips-rls.sql.
+  const { data: trip } = await supabase
+    .from("trips")
+    .select(
+      "id, user_id, co_host_id, destination, destinations, start_date, end_date, group_size, trip_type, cover_photo, continent, group_gender, language, budget, pace, description, status, visibility, kind"
+    )
+    .eq("id", params.tripId)
+    .eq("kind", "trip")
+    .maybeSingle();
+
+  if (!trip) return <Unavailable />;
+
+  const isHost = trip.user_id === user!.id || trip.co_host_id === user!.id;
+  // Non-hosts only see public, active Flocks (cancelled/private degrade gracefully).
+  if (!isHost && (trip.status !== "active" || trip.visibility !== "public")) {
+    return <Unavailable />;
+  }
+
+  const ended = trip.end_date < new Date().toISOString().slice(0, 10);
+
+  // Going count via the same definer RPC the browse page uses (no row exposure).
+  const [{ data: counts }, { data: myReq }, { data: host }] = await Promise.all([
+    supabase.rpc("flock_going_counts", { p_trip_ids: [trip.id] }),
+    isHost
+      ? Promise.resolve({ data: null })
+      : supabase
+          .from("trip_join_requests")
+          .select("status")
+          .eq("trip_id", trip.id)
+          .eq("user_id", user!.id)
+          .maybeSingle(),
+    supabase
+      .from("public_profiles")
+      .select("id, display_name, photos, one_liner, archetype")
+      .eq("id", trip.user_id)
+      .maybeSingle(),
+  ]);
+
+  const accepted = (counts ?? [])[0]?.accepted ?? 0;
+  const going = 1 + accepted;
+  const isFull = going >= trip.group_size;
+  const days = tripDays(trip.start_date, trip.end_date);
+  const destination = (trip.destinations ?? [trip.destination]).filter(Boolean).join(" · ");
+  const hostName = host?.display_name || "Host";
+  const archetype = host?.archetype ? ARCHETYPES[host.archetype as VibeDimension] : null;
+
+  // Vibe-match % (viewer vs this Flock) — only meaningful for non-hosts.
+  const pct = isHost ? undefined : (await loadFlockMatch(supabase, [trip.id]))[trip.id];
+
+  // Join gate: same Trip-form check the browse page applies (migration-safe).
+  let tripPrefsDone = true;
+  if (!isHost) {
+    const { data: prefRow, error: prefErr } = await supabase
+      .from("profiles")
+      .select("trip_prefs_complete")
+      .eq("id", user!.id)
+      .maybeSingle();
+    tripPrefsDone = prefErr ? true : !!prefRow?.trip_prefs_complete;
+  }
+
+  // Host view: pending join requests (host can read requests to their own trips).
+  let pendingCount = 0;
+  if (isHost) {
+    const { count } = await supabase
+      .from("trip_join_requests")
+      .select("trip_id", { count: "exact", head: true })
+      .eq("trip_id", trip.id)
+      .eq("status", "pending");
+    pendingCount = count ?? 0;
+  }
+
+  const budgetLabel =
+    typeof trip.budget === "number"
+      ? trip.budget <= 2
+        ? "Budget-friendly"
+        : trip.budget === 3
+          ? "Mid-range"
+          : "Comfort"
+      : null;
+
+  return (
+    <main className="px-5 pb-10 pt-6">
+      <Link href="/flocks" className="flex items-center gap-1 text-sm font-bold text-ink/60">
+        <ChevronLeft size={16} /> Flocks
+      </Link>
+
+      {/* Cover */}
+      <div className="relative mt-4 aspect-square w-full overflow-hidden rounded-3xl border-2 border-ink bg-cream shadow-[0_4px_0_0_rgba(26,26,26,1)] sm:aspect-[16/9]">
+        {trip.cover_photo ? (
+          <Image
+            src={trip.cover_photo}
+            alt=""
+            fill
+            sizes="(max-width:640px) 100vw, 768px"
+            className="object-contain"
+            priority
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center text-6xl">🧳</div>
+        )}
+        {typeof pct === "number" && (
+          <span className="absolute right-3 top-3 rounded-full border-2 border-ink bg-flockie-blue px-2.5 py-1 text-xs font-extrabold text-white">
+            ✨ {pct}% your vibe
+          </span>
+        )}
+      </div>
+
+      {/* Essentials */}
+      <h1 className="mt-5 flex items-start gap-2 text-2xl font-black leading-tight">
+        <MapPin size={22} className="mt-1 shrink-0 text-flockie-orange" />
+        <span>{destination}</span>
+      </h1>
+      <p className="mt-2 flex items-center gap-1.5 text-sm font-medium text-muted">
+        <CalendarClock size={15} className="shrink-0" />
+        {trip.start_date} → {trip.end_date}
+        {days > 0 && ` · ${days} days`}
+      </p>
+      <p className="mt-1 flex items-center gap-1.5 text-sm font-bold text-ink">
+        <Users size={15} className="shrink-0" /> {going}/{trip.group_size} going
+        {isFull && <span className="text-muted">· Full</span>}
+      </p>
+
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {trip.group_gender === "women" && (
+          <span className="rounded-full border-2 border-ink bg-flockie-coral/15 px-2.5 py-1 text-xs font-bold text-flockie-coral">
+            Women only
+          </span>
+        )}
+        {trip.continent && (
+          <span className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-white px-2.5 py-1 text-xs font-bold text-ink/70">
+            <Globe2 size={12} /> {trip.continent}
+          </span>
+        )}
+        {trip.language && (
+          <span className="rounded-full border-2 border-ink bg-white px-2.5 py-1 text-xs font-bold text-ink/70">
+            🗣 {trip.language}
+          </span>
+        )}
+        {budgetLabel && (
+          <span className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-white px-2.5 py-1 text-xs font-bold text-ink/70">
+            <Wallet size={12} /> {budgetLabel}
+          </span>
+        )}
+        {(trip.trip_type ?? []).map((t: string) => (
+          <span key={t} className="rounded-full border-2 border-ink bg-cream px-2.5 py-1 text-xs font-bold text-ink/70">
+            {t}
+          </span>
+        ))}
+      </div>
+
+      {/* Full description */}
+      {trip.description && (
+        <div className="mt-5 rounded-2xl border-2 border-ink bg-white p-4 shadow-[0_4px_0_0_rgba(26,26,26,1)]">
+          <p className="text-sm font-extrabold">About this Flock</p>
+          <p className="mt-1.5 whitespace-pre-line text-sm font-medium leading-relaxed text-ink/80">
+            {trip.description}
+          </p>
+        </div>
+      )}
+
+      {/* Host card */}
+      <Link
+        href={`/people/${trip.user_id}`}
+        className="mt-4 flex items-center gap-3 rounded-2xl border-2 border-ink bg-white p-4 shadow-[0_4px_0_0_rgba(26,26,26,1)] transition-transform active:translate-y-[2px]"
+      >
+        {host?.photos?.[0] ? (
+          <Image
+            src={host.photos[0]}
+            alt=""
+            width={52}
+            height={52}
+            className="h-13 w-13 shrink-0 rounded-full border-2 border-ink object-cover"
+            style={{ height: 52, width: 52 }}
+          />
+        ) : (
+          <span className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full border-2 border-ink bg-flockie-blue text-lg font-bold text-white">
+            {hostName[0]}
+          </span>
+        )}
+        <span className="min-w-0 flex-1">
+          <span className="block text-xs font-bold uppercase tracking-wide text-muted">Hosted by</span>
+          <span className="block truncate text-base font-extrabold text-ink">{hostName}</span>
+          {archetype ? (
+            <span className="mt-0.5 flex items-center gap-1.5 text-xs font-bold text-ink/70">
+              <ArchetypeBadge archetypeKey={host!.archetype!} size={18} /> {archetype.name}
+            </span>
+          ) : (
+            host?.one_liner && (
+              <span className="block truncate text-xs font-medium text-muted">{host.one_liner}</span>
+            )
+          )}
+        </span>
+        <span className="shrink-0 text-sm font-bold text-flockie-blue">View →</span>
+      </Link>
+
+      {/* Action area */}
+      <div className="mt-6">
+        {isHost ? (
+          <div className="rounded-2xl border-2 border-ink bg-cream p-4">
+            <p className="text-sm font-extrabold">
+              You&rsquo;re hosting this Flock
+              {trip.status !== "active" && <span className="text-muted"> · no longer active</span>}
+            </p>
+            <p className="mt-0.5 text-xs font-medium text-muted">
+              {pendingCount > 0
+                ? `${pendingCount} join request${pendingCount === 1 ? "" : "s"} waiting for your review.`
+                : "No pending join requests right now."}
+            </p>
+            <Link
+              href="/my-trips"
+              className="mt-3 inline-block rounded-full border-2 border-ink bg-flockie-blue px-5 py-2.5 text-sm font-bold text-white"
+            >
+              Manage in My Trips
+            </Link>
+          </div>
+        ) : myReq?.status === "accepted" ? (
+          <div className="rounded-2xl border-2 border-ink bg-[#06D6A0]/10 p-4 text-center">
+            <p className="font-extrabold text-ink">You&rsquo;re in this Flock 🎉</p>
+            <Link href="/chats" className="mt-2 inline-block text-sm font-bold text-flockie-blue underline">
+              Open your chats
+            </Link>
+          </div>
+        ) : ended ? (
+          <div className="rounded-2xl border-2 border-ink bg-cream p-4 text-center font-bold text-muted">
+            This Flock&rsquo;s dates have passed.
+          </div>
+        ) : isFull && !myReq ? (
+          <div className="rounded-2xl border-2 border-ink bg-cream p-4 text-center font-bold text-muted">
+            This Flock is full — someone&rsquo;s spot may still open up.
+          </div>
+        ) : (
+          <FlockRequestButton
+            tripId={trip.id}
+            // Only a live request counts as "requested" — a declined one lets
+            // you ask again (consistent with the browse list's status filter).
+            requested={myReq?.status === "pending" || myReq?.status === "waiting"}
+            tripPrefsDone={tripPrefsDone}
+          />
+        )}
+      </div>
+    </main>
+  );
+}
