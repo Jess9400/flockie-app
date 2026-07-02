@@ -8,8 +8,9 @@ import { Plus, X } from "lucide-react";
 export default function CreateFab() {
   const [open, setOpen] = useState(false);
 
+  // Sits above the mobile bottom tab bar; back to bottom-5 at sm+ where the bar is hidden.
   return (
-    <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end gap-2.5">
+    <div className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-5 z-40 flex flex-col items-end gap-2.5 sm:bottom-5">
       <div
         className={`flex flex-col items-end gap-2 transition-all duration-200 ${
           open ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"
