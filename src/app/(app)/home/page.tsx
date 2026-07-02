@@ -79,18 +79,22 @@ export default async function HomePage({
   } = await supabase.auth.getUser();
   const nowIso = new Date().toISOString();
 
-  const [{ data: profile }, { data: hiddenRows }] = await Promise.all([
+  const [
+    { data: profile },
+    { data: hiddenRows },
+    { data: prefRow, error: prefErr },
+  ] = await Promise.all([
     supabase.from("profiles").select("display_name, home_city, vibe_completed_at").eq("id", user!.id).maybeSingle(),
     supabase.from("vibe_feedback").select("vibe_id").eq("user_id", user!.id).eq("signal", "not_for_me"),
+    supabase
+      .from("profiles")
+      .select("trip_prefs_complete")
+      .eq("id", user!.id)
+      .maybeSingle(),
   ]);
 
   // Joining a Flock needs the Trip form (guarded separately so a missing column
   // can't break the home query).
-  const { data: prefRow, error: prefErr } = await supabase
-    .from("profiles")
-    .select("trip_prefs_complete")
-    .eq("id", user!.id)
-    .maybeSingle();
   const tripPrefsDone = prefErr ? true : !!prefRow?.trip_prefs_complete;
 
   const firstName = (profile?.display_name?.trim() || "there").split(" ")[0];

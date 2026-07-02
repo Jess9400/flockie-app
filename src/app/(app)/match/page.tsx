@@ -21,20 +21,21 @@ export default async function MatchPage({
   const mode = searchParams.mode === "activity" ? "activity" : "trip";
   const isActivity = mode === "activity";
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("onboarding_complete, activities, display_name")
-    .eq("id", user!.id)
-    .maybeSingle();
-
   // Trip matching only needs the Trip vibe (trip_prefs); activity matching
   // needs the activity vibe check. Migration-safe: if the trip_prefs column
   // doesn't exist yet, the query errors and we degrade open (no gate).
-  const { data: prefs, error: prefsErr } = await supabase
-    .from("profiles")
-    .select("trip_prefs_complete")
-    .eq("id", user!.id)
-    .maybeSingle();
+  const [{ data: profile }, { data: prefs, error: prefsErr }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("onboarding_complete, activities, display_name")
+      .eq("id", user!.id)
+      .maybeSingle(),
+    supabase
+      .from("profiles")
+      .select("trip_prefs_complete")
+      .eq("id", user!.id)
+      .maybeSingle(),
+  ]);
   const tripPrefsDone = prefsErr ? true : !!prefs?.trip_prefs_complete;
   const complete = isActivity
     ? !!profile?.onboarding_complete && (profile?.activities ?? []).length > 0

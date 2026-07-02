@@ -111,44 +111,48 @@ export default async function ChatsPage({
   } = await supabase.auth.getUser();
   const meId = user!.id;
 
-  const { data: buddies } = await supabase.rpc("buddy_chat_summaries");
-  const { data: vibes } = await supabase.rpc("vibe_chat_summaries");
+  const [{ data: buddies }, { data: vibes }, { data: flockChats }] = await Promise.all([
+    supabase.rpc("buddy_chat_summaries"),
+    supabase.rpc("vibe_chat_summaries"),
+    supabase.rpc("my_flock_chats"),
+  ]);
   const buddyList = (buddies ?? []) as BuddySummary[];
   const vibeList = (vibes ?? []) as VibeSummary[];
 
   // Flock group chats I've joined (as an approved member) — append if not present.
-  const { data: flockChats } = await supabase.rpc("my_flock_chats");
   (flockChats ?? []).forEach((fc: { chat_id: string; name: string | null; photo: string | null }) => {
     if (!buddyList.some((b) => b.chat_id === fc.chat_id)) {
       buddyList.push({ chat_id: fc.chat_id, name: fc.name, photo: fc.photo, unread: 0, kind: "flock" });
     }
   });
 
-  const buddyLast = await latestPerChat(
-    supabase,
-    "buddy_messages",
-    buddyList.map((b) => b.chat_id)
-  );
-  const vibeLast = await latestPerChat(
-    supabase,
-    "vibing_messages",
-    vibeList.map((v) => v.chat_id)
-  );
+  const [buddyLast, vibeLast, { data: vibeMeta }] = await Promise.all([
+    latestPerChat(
+      supabase,
+      "buddy_messages",
+      buddyList.map((b) => b.chat_id)
+    ),
+    latestPerChat(
+      supabase,
+      "vibing_messages",
+      vibeList.map((v) => v.chat_id)
+    ),
+    vibeList.length
+      ? supabase
+          .from("vibe_directory")
+          .select("id, city, photos")
+          .in("id", vibeList.map((v) => v.vibe_id))
+      : Promise.resolve({ data: [] }),
+  ]);
 
   // Cities for the no-message context line on Vibe rows.
   const cities: Record<string, string> = {};
   const vibeBanner: Record<string, string | null> = {};
-  if (vibeList.length) {
-    const { data: vc } = await supabase
-      .from("vibe_directory")
-      .select("id, city, photos")
-      .in("id", vibeList.map((v) => v.vibe_id));
-    vc?.forEach((r) => {
-      cities[r.id] = r.city;
-      // Group (Vibe) chats show the Vibe's banner, not a person's photo.
-      vibeBanner[r.id] = (r.photos as string[] | null)?.[0] ?? null;
-    });
-  }
+  vibeMeta?.forEach((r) => {
+    cities[r.id] = r.city;
+    // Group (Vibe) chats show the Vibe's banner, not a person's photo.
+    vibeBanner[r.id] = (r.photos as string[] | null)?.[0] ?? null;
+  });
 
   const buddyRows: Row[] = buddyList.map((b) => {
     const last = buddyLast[b.chat_id];
