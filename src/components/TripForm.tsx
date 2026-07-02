@@ -133,11 +133,14 @@ export default function TripForm({
       status: "active",
     };
     const res = initial.id
-      ? await supabase.from("trips").update(payload).eq("id", initial.id)
-      : await supabase.from("trips").insert(payload);
+      ? await supabase.from("trips").update(payload).eq("id", initial.id).select("id").single()
+      : await supabase.from("trips").insert(payload).select("id").single();
     setSaving(false);
     if (res.error) return setErr(res.error.message);
-    router.push(isFlock ? "/flocks" : `/match?mode=${kind}`);
+    const tripId = res.data?.id ?? initial.id;
+    // Flocks land on their own detail page (the browse list excludes your own
+    // trips, so /flocks would show a page that doesn't contain what you made).
+    router.push(isFlock ? (tripId ? `/flocks/${tripId}` : "/flocks") : `/match?mode=${kind}`);
     router.refresh();
   }
 
