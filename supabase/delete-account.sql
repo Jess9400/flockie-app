@@ -5,7 +5,7 @@
 --
 -- Cancellation-aware (2026-07-02): before deleting, we cancel the user's UPCOMING
 -- hosted Vibes and notify their attendees, and notify accepted members of their
--- upcoming hosted Flocks — otherwise a host could vanish and silently strand
+-- upcoming hosted Flocks - otherwise a host could vanish and silently strand
 -- people who'd planned around the event. Runs BEFORE the delete so the rows (and
 -- auth.uid()) still exist while we notify; the notifications belong to the
 -- attendees (not the departing user), so they persist through the cascade.
@@ -19,7 +19,7 @@ as $$
 declare r record;
 begin
   -- 1) Cancel upcoming hosted Vibes. cancel_vibe sets status='cancelled' and
-  --    notifies invited/confirmed/standby attendees (host check passes — it's us).
+  --    notifies invited/confirmed/standby attendees (host check passes - it's us).
   for r in
     select id from public.vibes
     where host_id = auth.uid()
