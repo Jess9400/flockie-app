@@ -39,7 +39,7 @@ type HomeFlock = {
 type VibeRow = VibeCardData & { host_id: string };
 
 const VIBE_COLS =
-  "id, host_id, title, category, photos, city, area, country, starts_at, capacity, event_vibe_tags";
+  "id, host_id, title, category, categories, photos, city, area, country, starts_at, capacity, event_vibe_tags";
 
 async function loadHostsAndCounts(
   supabase: Awaited<ReturnType<typeof createClient>>,

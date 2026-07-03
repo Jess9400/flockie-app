@@ -49,6 +49,8 @@ export default async function VibeDetailPage({
     );
   }
   const isHost = vibe.host_id === user!.id;
+  // Full multi-select categories (falls back to the single `category` in render).
+  const vibeCategories = ((vibe.categories as string[] | null) ?? []).filter(Boolean);
 
   // host (plain query, no embed)
   const { data: host } = await supabase
@@ -286,9 +288,18 @@ export default async function VibeDetailPage({
       )}
 
       <div className="mt-4 flex items-center justify-between gap-2">
-        <span className="inline-block rounded-full border-2 border-ink bg-white px-3 py-0.5 text-xs font-extrabold lowercase">
-          {vibe.category}
-        </span>
+        <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+          {(vibeCategories.length > 0 ? vibeCategories : [vibe.category])
+            .filter(Boolean)
+            .map((c: string) => (
+              <span
+                key={c}
+                className="inline-block rounded-full border-2 border-ink bg-white px-3 py-0.5 text-xs font-extrabold lowercase"
+              >
+                {c}
+              </span>
+            ))}
+        </div>
         {isHost ? (
           <VibeSettingsButton
             vibeId={vibe.id}
