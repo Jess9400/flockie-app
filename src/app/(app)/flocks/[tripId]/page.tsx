@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, MapPin, CalendarClock, Users, Globe2, Wallet } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import FlockRequestButton from "@/components/FlockRequestButton";
 import ArchetypeBadge from "@/components/ArchetypeBadge";
 import { loadFlockMatch } from "@/lib/vibe-stats";
@@ -33,9 +34,7 @@ export default async function FlockDetailPage({
   params: { tripId: string };
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   // Same table/columns the browse page reads; RLS (can_see_trip) already allows
   // owner / co-host / public / accepted member — see supabase/trips-rls.sql.

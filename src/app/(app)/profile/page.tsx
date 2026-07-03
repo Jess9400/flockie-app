@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import ProfileEditor from "@/components/ProfileEditor";
 import { type EventsData } from "@/components/ProfileEvents";
 import { type ReviewItem } from "@/components/ProfileReviews";
@@ -14,9 +15,7 @@ export default async function ProfilePage({
     safeRedirectPath(searchParams.returnTo, "") ||
     (searchParams.compat ? `/compat/${searchParams.compat}` : undefined);
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   const { data: profile } = await supabase
     .from("profiles")

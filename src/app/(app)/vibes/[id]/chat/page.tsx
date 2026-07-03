@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import ChatRoom from "@/components/ChatRoom";
 import VibeChatHeader, { type ChatMember } from "@/components/VibeChatHeader";
 
@@ -10,9 +11,7 @@ export default async function VibeChatPage({
   params: { id: string };
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   // get_or_create_chat enforces membership (host or confirmed)
   const { data: chatId, error } = await supabase.rpc("get_or_create_chat", {

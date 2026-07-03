@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import DealsSearch, { type Plan } from "@/components/DealsSearch";
 import PageTabs from "@/components/PageTabs";
 
@@ -10,9 +11,7 @@ const TRIP_TABS = [
 
 export default async function DealsPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   const [{ data: profile }, { data: trips }] = await Promise.all([
     supabase.from("profiles").select("home_city").eq("id", user!.id).maybeSingle(),

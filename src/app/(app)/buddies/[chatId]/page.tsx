@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import BuddyChatRoom from "@/components/BuddyChatRoom";
 import BuddyChatHeader from "@/components/BuddyChatHeader";
 import FlockJoinRequests, { type JoinReq } from "@/components/FlockJoinRequests";
@@ -13,13 +14,8 @@ export default async function BuddyChatPage({
 }) {
   const supabase = await createClient();
   // The chat lookup only needs params.chatId — fetch it alongside the user.
-  const [
-    {
-      data: { user },
-    },
-    { data: chat },
-  ] = await Promise.all([
-    supabase.auth.getUser(),
+  const [user, { data: chat }] = await Promise.all([
+    getSessionUser(),
     supabase.from("buddy_chats").select("id, match_id").eq("id", params.chatId).maybeSingle(),
   ]);
   if (!chat) notFound();

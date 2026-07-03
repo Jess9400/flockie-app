@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
 import VibeSearch from "@/components/VibeSearch";
 import LocationPrompt from "@/components/LocationPrompt";
@@ -29,9 +30,7 @@ export default async function VibesPage({
   const view = searchParams.view === "past" ? "past" : "upcoming";
   const isPast = view === "past";
   const page = Math.max(1, Number(searchParams.page) || 1);
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   const [{ data: profile }, { data: loc }, { data: hiddenRows }] = await Promise.all([
     supabase.from("profiles").select("activities, home_city").eq("id", user!.id).single(),

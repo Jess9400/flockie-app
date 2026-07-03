@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import ChatRow from "@/components/ChatRow";
 import ChatEmptyArt from "@/components/ChatEmptyArt";
 import { formatChatTime, formatVibeShort } from "@/lib/chat";
@@ -106,9 +107,7 @@ export default async function ChatsPage({
   searchParams: { tab?: string };
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
   const meId = user!.id;
 
   const [{ data: buddies }, { data: vibes }, { data: flockChats }] = await Promise.all([

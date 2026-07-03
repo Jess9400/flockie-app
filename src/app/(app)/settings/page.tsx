@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import NotificationsToggle from "@/components/NotificationsToggle";
 import LocationToggle from "@/components/LocationToggle";
 import DiscoveryToggle from "@/components/DiscoveryToggle";
@@ -10,9 +11,7 @@ import DeleteAccountButton from "@/components/DeleteAccountButton";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   const { data: profile } = await supabase
     .from("profiles")

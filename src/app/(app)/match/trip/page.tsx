@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, Star, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import TripForm from "@/components/TripForm";
 import TripVibeForm from "@/components/TripVibeForm";
 import ActivityVibeForm from "@/components/ActivityVibeForm";
@@ -14,9 +15,7 @@ export default async function TripPage({
   searchParams: { id?: string; kind?: string };
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   const { data: profile } = await supabase
     .from("profiles")

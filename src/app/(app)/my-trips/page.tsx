@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Plus, Pencil, MapPin, CalendarClock, MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import FlockJoinRequests, { type JoinReq } from "@/components/FlockJoinRequests";
 import DeleteTripButton from "@/components/DeleteTripButton";
 import PageTabs from "@/components/PageTabs";
@@ -36,9 +37,7 @@ export default async function MyTripsPage({
   searchParams: { page?: string };
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   const { data: trips } = await supabase
     .from("trips")
