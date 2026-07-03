@@ -38,12 +38,13 @@ export async function getVibeProgress(): Promise<{
   answers: Partial<Record<string, Answer>>;
   nextQuestionIndex: number;
   isComplete: boolean;
+  isRetake: boolean;
 }> {
   const { supabase, user } = await authenticatedClient();
   const [{ data: profile }, { data: rows, error }] = await Promise.all([
     supabase
       .from("profiles")
-      .select("vibe_completed_at")
+      .select("vibe_completed_at, archetype")
       .eq("id", user.id)
       .maybeSingle(),
     supabase
@@ -65,6 +66,9 @@ export async function getVibeProgress(): Promise<{
       (question) => !answers[question.id]
     ),
     isComplete: Boolean(profile?.vibe_completed_at),
+    // An old result with no completed flag means a retake in progress —
+    // the quiz UI locks its exit until the run is finished.
+    isRetake: Boolean(profile?.archetype) && !profile?.vibe_completed_at,
   };
 }
 
@@ -106,7 +110,10 @@ export async function completeVibeCheck() {
   return { scores, archetype };
 }
 
-// Clears the saved quiz so the user can retake it from scratch.
+// Clears the saved quiz answers so the user retakes it from question 1.
+// Deliberately keeps archetype/vibe_scores: matching runs on the old result
+// until completeVibeCheck overwrites it, so an unfinished retake never leaves
+// the user without a signal.
 export async function restartVibeCheck() {
   const { supabase, user } = await authenticatedClient();
   // .select() so a silent RLS deny (0 rows, no error) is detectable: the
@@ -127,7 +134,7 @@ export async function restartVibeCheck() {
   }
   const { error } = await supabase
     .from("profiles")
-    .update({ vibe_completed_at: null, archetype: null, vibe_scores: null })
+    .update({ vibe_completed_at: null })
     .eq("id", user.id);
   if (error) throw error;
 }

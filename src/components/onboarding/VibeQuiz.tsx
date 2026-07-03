@@ -12,10 +12,12 @@ export function VibeQuiz({
   initialAnswers,
   initialQuestionIndex,
   returnTo,
+  lockExit = false,
 }: {
   initialAnswers: Partial<Record<string, Answer>>;
   initialQuestionIndex: number;
   returnTo?: string | null;
+  lockExit?: boolean;
 }) {
   const router = useRouter();
   const [answers, setAnswers] = useState(initialAnswers);
@@ -62,7 +64,11 @@ export function VibeQuiz({
       <div className="flex items-center gap-2.5 border-b border-ink/10 bg-white px-4 py-3">
         <button type="button" onClick={() => setQuestionIndex((index) => Math.max(0, index - 1))} className={questionIndex === 0 ? "invisible" : ""} aria-label="Back"><span className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-cream">‹</span></button>
         <div className="h-[5px] flex-1 overflow-hidden rounded-full bg-ink/10"><div className="h-full rounded-full bg-flockie-coral transition-all" style={{ width: `${((questionIndex + 1) / TOTAL_QUESTIONS) * 100}%` }} /></div>
-        <button type="button" onClick={() => setShowExitSheet(true)} aria-label="Pause"><span className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-cream">✕</span></button>
+        {lockExit ? (
+          <span title="Finish the quiz to lock in your new vibe" className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-cream">🔒</span>
+        ) : (
+          <button type="button" onClick={() => setShowExitSheet(true)} aria-label="Pause"><span className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-cream">✕</span></button>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col px-5 pb-4 pt-5">
