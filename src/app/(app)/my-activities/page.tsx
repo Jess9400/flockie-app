@@ -59,49 +59,53 @@ export default async function MyActivitiesPage({
       <div
         className={`rounded-2xl border-2 border-ink bg-white p-4 shadow-[0_3px_0_0_rgba(26,26,26,1)] ${faded ? "opacity-60" : ""}`}
       >
-        <div className="flex items-start justify-between gap-3">
-          {t.cover_photo && (
-            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 border-ink bg-cream">
-              <Image src={t.cover_photo} alt="" fill sizes="64px" className="object-cover" />
-            </div>
-          )}
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <span className="rounded-full border-2 border-ink bg-flockie-blue px-2 py-0.5 text-[10px] font-extrabold uppercase text-white">
-                Activity
-              </span>
-              {faded ? (
-                <span
-                  className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase ${
-                    t.status === "cancelled" ? "bg-ink text-white" : "bg-[#06D6A0] text-white"
-                  }`}
-                >
-                  {t.status === "cancelled" ? "Cancelled" : "Completed"}
-                </span>
-              ) : (
-                t.status !== "active" && (
-                  <span className="text-[10px] font-bold uppercase text-muted">{t.status}</span>
-                )
-              )}
-            </div>
-            <p className="mt-1 flex items-center gap-1.5 font-extrabold">
-              <MapPin size={15} className="text-flockie-orange" />{" "}
-              {t.title || (t.destinations ?? [t.destination]).filter(Boolean).join(" · ")}
-            </p>
-            <p className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-muted">
-              <CalendarClock size={13} /> {t.start_date} → {t.end_date}
-            </p>
-            {(t.trip_type?.length ?? 0) > 0 && (
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {t.trip_type!.map((tag) => (
-                  <span key={tag} className="rounded-full bg-cream px-2 py-0.5 text-[11px] font-bold">
-                    {tag}
-                  </span>
-                ))}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+          <div className="flex min-w-0 flex-1 items-start gap-3">
+            {t.cover_photo && (
+              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 border-ink bg-cream">
+                <Image src={t.cover_photo} alt="" fill sizes="64px" className="object-cover" />
               </div>
             )}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <span className="rounded-full border-2 border-ink bg-flockie-blue px-2 py-0.5 text-[10px] font-extrabold uppercase text-white">
+                  Activity
+                </span>
+                {faded ? (
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase ${
+                      t.status === "cancelled" ? "bg-ink text-white" : "bg-[#06D6A0] text-white"
+                    }`}
+                  >
+                    {t.status === "cancelled" ? "Cancelled" : "Completed"}
+                  </span>
+                ) : (
+                  t.status !== "active" && (
+                    <span className="text-[10px] font-bold uppercase text-muted">{t.status}</span>
+                  )
+                )}
+              </div>
+              <p className="mt-1 flex items-center gap-1.5 font-extrabold">
+                <MapPin size={15} className="shrink-0 text-flockie-orange" />{" "}
+                <span className="min-w-0 break-words">
+                  {t.title || (t.destinations ?? [t.destination]).filter(Boolean).join(" · ")}
+                </span>
+              </p>
+              <p className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-muted">
+                <CalendarClock size={13} className="shrink-0" /> {t.start_date} → {t.end_date}
+              </p>
+              {(t.trip_type?.length ?? 0) > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {t.trip_type!.map((tag) => (
+                    <span key={tag} className="rounded-full bg-cream px-2 py-0.5 text-[11px] font-bold">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center justify-end gap-2 sm:ml-auto">
             {!faded && (
               <Link
                 href={`/match/trip?id=${t.id}`}
