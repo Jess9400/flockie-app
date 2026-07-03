@@ -131,7 +131,7 @@ export default function PublicProfileDashboard({
           description="Completed public Vibes and flocks—not future plans."
           badge={
             history.length > 0 ? (
-              <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-700">
+              <span className="shrink-0 whitespace-nowrap rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-700">
                 {history.length} completed
               </span>
             ) : undefined
@@ -155,7 +155,7 @@ export default function PublicProfileDashboard({
           description="Feedback from completed Flockie interactions."
           badge={
             reviewItems.length > 0 ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-700">
+              <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-700">
                 <CheckCircle2 size={11} /> {reviewItems.length} verified
               </span>
             ) : undefined
@@ -191,14 +191,14 @@ function Panel({
 }) {
   return (
     <section className="rounded-[26px] border-2 border-ink bg-white p-4 shadow-[0_4px_0_0_#10233d]">
-      <div className="mb-3 flex items-start justify-between gap-3">
-        <div>
+      <div className="mb-3">
+        <div className="flex items-center justify-between gap-3">
           <h2 className="font-fredoka text-xl font-bold text-navy">{title}</h2>
-          <p className="mt-1 text-xs font-medium leading-relaxed text-muted">
-            {description}
-          </p>
+          {badge}
         </div>
-        {badge}
+        <p className="mt-1 text-xs font-medium leading-relaxed text-muted">
+          {description}
+        </p>
       </div>
       {children}
     </section>
