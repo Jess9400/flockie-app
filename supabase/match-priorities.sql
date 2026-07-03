@@ -230,8 +230,9 @@ language sql security definer set search_path = public stable as $$
     and ct.status = 'active'
     and ct.kind = me_t.kind
     and coalesce(ct.visibility, 'private') <> 'public'  -- exclude Flocks from 1:1
-    and exists (select 1 from unnest(coalesce(ct.destinations,'{}')) a
-                join unnest(coalesce(me_t.destinations,'{}')) b on lower(a)=lower(b))
+    -- shared destination (case/space-insensitive); && uses the GIN index on
+    -- lower_array(destinations) — see supabase/dest-gin-index.sql
+    and public.lower_array(ct.destinations) && public.lower_array(me_t.destinations)
     and (greatest(ct.start_date, me_t.start_date) - least(ct.end_date, me_t.end_date)) <= 30
     and cp.onboarding_complete
     and not public.buddy_hard_block(auth.uid(), cp.id)  -- hard dealbreaker filter
