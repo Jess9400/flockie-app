@@ -20,15 +20,28 @@ declare
   v public.vibes%rowtype;
   cat_fit numeric; tag_fit numeric; skill_fit numeric; social_fit numeric; review_fit numeric;
   n_tags int; n_match int; event_social int; matched_skill int;
+  v_cats text[];
 begin
   select * into pr from public.profiles where id = p_user;
   select * into v from public.vibes where id = p_vibe;
   if v.id is null then return null; end if;
 
-  -- category / activity fit
-  if coalesce(array_length(pr.activities, 1), 0) = 0 or v.category is null or v.category = 'other' then
+  -- category / activity fit — best match of the user's activities against ANY of
+  -- the Vibe's categories (multi-select), falling back to the single primary
+  -- `category` for older vibes. 'other' is dropped as it carries no signal.
+  v_cats := array(
+    select c
+    from unnest(coalesce(nullif(v.categories, '{}'), array[v.category])) c
+    where c is not null and c <> 'other'
+  );
+  if coalesce(array_length(pr.activities, 1), 0) = 0 or coalesce(array_length(v_cats, 1), 0) = 0 then
     cat_fit := 0.5;
-  elsif exists (select 1 from unnest(pr.activities) a where lower(a) like '%' || lower(v.category) || '%') then
+  elsif exists (
+    select 1
+    from unnest(pr.activities) a
+    cross join unnest(v_cats) c
+    where lower(a) like '%' || lower(c) || '%'
+  ) then
     cat_fit := 1.0;
   else
     cat_fit := 0.2;

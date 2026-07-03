@@ -12,6 +12,7 @@ export type VibeCardData = {
   id: string;
   title: string;
   category: string;
+  categories?: string[] | null;
   photos: string[] | null;
   city: string;
   area: string | null;
@@ -54,6 +55,12 @@ export default function VibeCard({
   const [collapsed, setCollapsed] = useState(false);
   const [busy, setBusy] = useState(false);
   const cover = vibe.photos?.[0];
+  // Full multi-select; fall back to the single primary category for older vibes.
+  const allCategories = (
+    vibe.categories && vibe.categories.length > 0 ? vibe.categories : [vibe.category]
+  ).filter(Boolean);
+  const shownCategories = allCategories.slice(0, 3);
+  const extraCategories = allCategories.length - shownCategories.length;
   const hostName = vibe.host?.display_name || "A flockie";
   const hostAvatar = vibe.host?.photos?.[0];
   const approximateLocation =
@@ -163,6 +170,24 @@ export default function VibeCard({
             <MapPin size={11} className="shrink-0" />
             <span className="truncate">{approximateLocation}</span>
           </p>
+
+          {shownCategories.length > 0 && (
+            <div className="mt-1.5 flex flex-wrap items-center gap-1">
+              {shownCategories.map((c) => (
+                <span
+                  key={c}
+                  className="rounded-full border-2 border-ink bg-cream px-1.5 py-0.5 text-[9px] font-extrabold lowercase leading-none text-ink"
+                >
+                  {c}
+                </span>
+              ))}
+              {extraCategories > 0 && (
+                <span className="text-[9px] font-extrabold leading-none text-muted">
+                  +{extraCategories}
+                </span>
+              )}
+            </div>
+          )}
 
           <div className="mt-auto pt-2">
             <div className="flex items-center justify-between gap-1 pt-0.5">

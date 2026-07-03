@@ -19,6 +19,7 @@ select
   v.title,
   v.description,
   v.category,
+  v.categories,
   v.photos,
   v.country,
   v.city,
