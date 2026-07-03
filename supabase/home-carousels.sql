@@ -37,8 +37,10 @@ language sql security definer set search_path = public stable as $$
     where cp.id <> auth.uid()
       and cp.open_to_discovery
       and cp.onboarding_complete
-      and coalesce(me.home_city, '') <> ''
-      and lower(coalesce(cp.home_city, '')) = lower(me.home_city)
+      and trim(coalesce(me.home_city, '')) <> ''
+      -- trim() so a stray space ("dubai " vs "dubai") can't silently break the
+      -- city match; case is already handled by lower().
+      and lower(trim(coalesce(cp.home_city, ''))) = lower(trim(coalesce(me.home_city, '')))
       and not public.buddy_hard_block(auth.uid(), cp.id)
       and not exists (  -- they already swiped no on the viewer
         select 1 from public.buddy_swipes s

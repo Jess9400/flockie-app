@@ -178,8 +178,9 @@ as $$
     -- vibe similarity. We match on the swiper's own home_city (me_p) — NOT the
     -- activity's destination — and we do NOT require the candidate to have posted
     -- their own activity. You swipe in-city people and invite them to your activity.
-    and coalesce(me_p.home_city, '') <> ''
-    and lower(coalesce(cp.home_city, '')) = lower(me_p.home_city)
+    and trim(coalesce(me_p.home_city, '')) <> ''
+    -- trim() so a stray space can't silently break the city match (case already lower()'d).
+    and lower(trim(coalesce(cp.home_city, ''))) = lower(trim(coalesce(me_p.home_city, '')))
     and not public.buddy_hard_block(auth.uid(), cp.id)
     and not exists (
       select 1
