@@ -2,9 +2,13 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { Answer, VibeResponseRow } from "./types";
+import { Answer, VibeResponseRow, VibeScores } from "./types";
 import { computeScores, topArchetype } from "./scoring";
+import { blendDisplayedScores, resolveArchetype } from "./blend";
 import { TOTAL_QUESTIONS, VIBE_QUESTIONS } from "./questions";
+
+const BLEND_PROFILE_FIELDS =
+  "archetype, vibe_scores, pace, social_energy, planning, nightlife, adventurousness, trip_vibe, activities, activity_vibe, activity_social, activity_intensity";
 
 async function authenticatedClient() {
   const supabase = await createClient();
@@ -96,7 +100,18 @@ export async function completeVibeCheck() {
   }
 
   const scores = computeScores(answers);
-  const archetype = topArchetype(scores);
+
+  // The displayed archetype blends the fresh quiz with any trip/activity
+  // answers. A full quiz run is a deliberate re-evaluation, so no hysteresis
+  // here (current = null): the blended argmax wins outright.
+  const { data: blendProfile } = await supabase
+    .from("profiles")
+    .select(BLEND_PROFILE_FIELDS)
+    .eq("id", user.id)
+    .maybeSingle();
+  const blended = blendDisplayedScores(scores, blendProfile ?? {}, blendProfile ?? {});
+  const archetype = blended ? resolveArchetype(null, blended) : topArchetype(scores);
+
   const { error: updateError } = await supabase
     .from("profiles")
     .update({
@@ -108,6 +123,38 @@ export async function completeVibeCheck() {
 
   if (updateError) throw updateError;
   return { scores, archetype };
+}
+
+// Recomputes the displayed archetype after a trip/activity form save.
+// Display-only: vibe_scores (the matching input) is never touched here.
+export async function recomputeDisplayedVibe(): Promise<{
+  changed: boolean;
+  archetype: string | null;
+  previous: string | null;
+}> {
+  const { supabase, user } = await authenticatedClient();
+  const { data: p } = await supabase
+    .from("profiles")
+    .select(BLEND_PROFILE_FIELDS)
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const previous = p?.archetype ?? null;
+  // No completed quiz -> no displayed vibe to refine.
+  const blended = p?.vibe_scores
+    ? blendDisplayedScores(p.vibe_scores as VibeScores, p, p)
+    : null;
+  if (!blended) return { changed: false, archetype: previous, previous };
+
+  const next = resolveArchetype(previous, blended);
+  if (next === previous) return { changed: false, archetype: previous, previous };
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ archetype: next })
+    .eq("id", user.id);
+  if (error) throw error;
+  return { changed: true, archetype: next, previous };
 }
 
 // Clears the saved quiz answers so the user retakes it from question 1.

@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Wizard, { type WizardAnswers, type WizardPage } from "@/components/Wizard";
+import { useToast } from "@/components/ui/feedback";
+import { ARCHETYPES } from "@/lib/onboarding/archetypes";
+import { recomputeDisplayedVibe } from "@/lib/onboarding/vibe-actions";
+import type { VibeDimension } from "@/lib/onboarding/types";
 import {
   TRIP_VIBES,
   DEALBREAKERS,
@@ -96,6 +100,7 @@ export default function TripVibeForm({
 }) {
   const supabase = createClient();
   const router = useRouter();
+  const toast = useToast();
   const [initial, setInitial] = useState<WizardAnswers | null>(null);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -145,6 +150,15 @@ export default function TripVibeForm({
     }
     // Separate, migration-safe flag write (column may not exist yet).
     await supabase.from("profiles").update({ trip_prefs_complete: true }).eq("id", userId);
+    // These answers refine the displayed vibe; best-effort so a recompute
+    // hiccup never blocks the save.
+    try {
+      const res = await recomputeDisplayedVibe();
+      const evolved = res.changed
+        ? ARCHETYPES[res.archetype as VibeDimension]
+        : null;
+      if (evolved) toast(`Your vibe evolved — you're now ${evolved.name} ${evolved.emoji}`, "success");
+    } catch {}
     setSaving(false);
     if (onDone) onDone();
     else if (redirectAfter) router.push(redirectAfter);
