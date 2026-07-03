@@ -76,7 +76,13 @@ const TABS: NavItem[] = [
   { href: "/profile", label: "Profile", icon: User, sections: ["profile", "settings"] },
 ];
 
-export default function AppShell({ children }: { children: React.ReactNode }) {
+export default function AppShell({
+  children,
+  userId,
+}: {
+  children: React.ReactNode;
+  userId: string;
+}) {
   const pathname = usePathname();
   const section = sectionFor(pathname);
   // Chat rooms fill the viewport exactly (no page scroll, no footer) so the
@@ -93,16 +99,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     const supabase = createClient();
     let active = true;
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
       const [{ count }, { data: p }] = await Promise.all([
         supabase
           .from("notifications")
           .select("id", { count: "exact", head: true })
-          .eq("user_id", user.id)
+          .eq("user_id", userId)
           .is("read_at", null)
           .is("dismissed_at", null),
-        supabase.from("profiles").select("display_name, photos").eq("id", user.id).maybeSingle(),
+        supabase.from("profiles").select("display_name, photos").eq("id", userId).maybeSingle(),
       ]);
       if (!active) return;
       setUnread(count ?? 0);
@@ -115,7 +119,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications" }, () => load())
       .subscribe();
     return () => { active = false; supabase.removeChannel(channel); };
-  }, [pathname]);
+  }, [pathname, userId]);
 
   function navItemCls(active: boolean) {
     return `flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-bold transition-colors ${

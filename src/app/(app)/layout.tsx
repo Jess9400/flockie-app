@@ -14,5 +14,5 @@ export default async function AppLayout({
 
   if (!user) redirect("/login");
 
-  return <AppShell>{children}</AppShell>;
+  return <AppShell userId={user.id}>{children}</AppShell>;
 }
