@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import PhotoCropper from "@/components/PhotoCropper";
+import CityAutocomplete from "@/components/CityAutocomplete";
 import {
   ProfileInput,
   saveOnboardingProfile,
@@ -172,12 +173,11 @@ export function ProfileForm({ defaults, returnTo, quick }: ProfileFormProps) {
         </Field>
 
         <Field label="Your city right now">
-          <input
+          <CityAutocomplete
             className="w-full rounded-xl border-2 border-ink/15 bg-white px-3.5 py-3 text-[15px] font-bold outline-none focus:border-flockie-blue"
             value={city}
-            onChange={(event) => setCity(event.target.value)}
-            placeholder="Where are you?"
-            autoComplete="address-level2"
+            onChange={setCity}
+            placeholder="e.g. Lisbon"
           />
           <p className="mt-1.5 text-[11.5px] font-semibold text-muted">
             Powers who&apos;s nearby — update anytime.
