@@ -34,7 +34,7 @@ export default function ProfileReviews({
 
       {count === 0 ? (
         <p className="mt-2 font-nunito text-sm font-normal text-navy/60">
-          No reviews yet — travel buddies can review each other after a trip.
+          No reviews yet — reviews appear after you travel together, do an activity, or share a Flock.
         </p>
       ) : (
         <ul className="mt-4 space-y-3">

@@ -387,7 +387,7 @@ export default function OwnerProfileDashboard({
               </div>
             ) : (
               <p className="rounded-2xl bg-[#FCF9F4] p-4 text-sm font-medium text-muted">
-                No reviews yet — they appear after completed Flockie interactions.
+                No reviews yet — reviews appear after you travel together, do an activity, or share a Flock.
               </p>
             )}
           </Panel>

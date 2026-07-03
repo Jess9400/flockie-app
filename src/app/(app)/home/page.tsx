@@ -433,12 +433,7 @@ export default async function HomePage({
         <section id="explore-world" className="mx-4 mt-8 scroll-mt-4">
           <div className="flex items-end justify-between gap-3 px-1">
             <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-[22px] font-extrabold sm:text-[28px]">Explore Vibes around the world</h2>
-                <span className="rounded-full border-2 border-ink bg-white px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-ink">
-                  🌍 Global
-                </span>
-              </div>
+              <h2 className="text-[22px] font-extrabold sm:text-[28px]">Explore Vibes around the world</h2>
               <p className="mt-0.5 font-bold text-navy/60">
                 Browsing group plans in other cities — jump into one.
               </p>
@@ -460,12 +455,7 @@ export default async function HomePage({
       <section className="mx-4 mt-8">
         <div className="flex items-end justify-between gap-3 px-1">
           <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-[22px] font-extrabold sm:text-[28px]">Flocks you can join, anywhere</h2>
-              <span className="rounded-full border-2 border-ink bg-white px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-ink">
-                🌍 Global
-              </span>
-            </div>
+            <h2 className="text-[22px] font-extrabold sm:text-[28px]">Flocks you can join, anywhere</h2>
             <p className="mt-0.5 font-bold text-navy/60">Newest open group trips worldwide — request in.</p>
           </div>
           <Link
