@@ -12,32 +12,35 @@ export default async function BuddyChatPage({
   params: { chatId: string };
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const { data: chat } = await supabase
-    .from("buddy_chats")
-    .select("id, match_id")
-    .eq("id", params.chatId)
-    .maybeSingle();
+  // The chat lookup only needs params.chatId — fetch it alongside the user.
+  const [
+    {
+      data: { user },
+    },
+    { data: chat },
+  ] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase.from("buddy_chats").select("id, match_id").eq("id", params.chatId).maybeSingle(),
+  ]);
   if (!chat) notFound();
 
-  const { data: match } = await supabase
-    .from("buddy_matches")
-    .select("user_a, user_b")
-    .eq("id", chat.match_id)
-    .maybeSingle();
+  // Both match reads key on chat.match_id. The extended context stays its own
+  // query (columns added by buddy-match-context.sql; queried separately so the
+  // page still works before that migration is applied).
+  const [{ data: match }, { data: matchExt }] = await Promise.all([
+    supabase
+      .from("buddy_matches")
+      .select("user_a, user_b")
+      .eq("id", chat.match_id)
+      .maybeSingle(),
+    supabase
+      .from("buddy_matches")
+      .select("trip_a, trip_b, score")
+      .eq("id", chat.match_id)
+      .maybeSingle(),
+  ]);
 
   const otherId = (match?.user_a === user!.id ? match?.user_b : match?.user_a) as string;
-
-  // Extended match context — columns added by buddy-match-context.sql. Queried
-  // separately so the page still works before that migration is applied.
-  const { data: matchExt } = await supabase
-    .from("buddy_matches")
-    .select("trip_a, trip_b, score")
-    .eq("id", chat.match_id)
-    .maybeSingle();
   const otherTripId = (otherId === match?.user_a ? matchExt?.trip_a : matchExt?.trip_b) as string | null;
 
   // If this match was converted into a Flock, surface its pending join requests
@@ -51,91 +54,105 @@ export default async function BuddyChatPage({
   let flockEnd: string | null = null;
   let flockReqs: JoinReq[] = [];
   const chatMembers: Record<string, { name: string; photo: string | null }> = {};
-  if (flockTripIds.length) {
-    // Any public trip behind this chat is a Flock — group chat for host + all
-    // accepted members. (Previously required a co-host, which wrongly excluded
-    // directly-created flocks and rendered them as a 1:1.)
-    const { data: fls } = await supabase
-      .from("trips")
-      .select("id, user_id, destination, co_host_id, start_date, end_date")
-      .in("id", flockTripIds)
-      .eq("visibility", "public")
-      .limit(1);
-    const fl = fls?.[0] ?? null;
-    if (fl) {
-      flockTripId = fl.id;
-      flockHostId = fl.user_id;
-      flockCoHost = fl.co_host_id ?? null;
-      flockTitle = fl.destination ?? "Flock";
-      flockStart = fl.start_date ?? null;
-      flockEnd = fl.end_date ?? null;
-      const { data: jr } = await supabase
-        .from("trip_join_requests")
-        .select("user_id, status")
-        .eq("trip_id", fl.id)
-        .eq("status", "pending");
-      const ids = (jr ?? []).map((r) => r.user_id);
-      if (ids.length) {
-        const { data: rp } = await supabase
-          .from("public_profiles")
-          .select("id, display_name, age, photos, one_liner")
-          .in("id", ids);
-        const map: Record<string, { display_name: string | null; age: number | null; photos: string[] | null; one_liner: string | null }> = {};
-        rp?.forEach((p) => (map[p.id] = p));
-        flockReqs = (jr ?? []).map((r) => ({
-          userId: r.user_id,
-          status: r.status,
-          name: map[r.user_id]?.display_name || "Flockie",
-          age: map[r.user_id]?.age ?? null,
-          photo: map[r.user_id]?.photos?.[0] ?? null,
-          oneLiner: map[r.user_id]?.one_liner ?? null,
-        }));
-      }
-
-      // All chat participants (the two buddies + accepted members) for names.
-      const { data: accp } = await supabase
-        .from("trip_join_requests")
-        .select("user_id")
-        .eq("trip_id", fl.id)
-        .eq("status", "accepted");
-      const memberIds = Array.from(
-        new Set([match?.user_a, match?.user_b, ...(accp ?? []).map((r) => r.user_id)].filter(Boolean))
-      ) as string[];
-      if (memberIds.length) {
-        const { data: mp } = await supabase
-          .from("public_profiles")
-          .select("id, display_name, photos")
-          .in("id", memberIds);
-        mp?.forEach((p) => (chatMembers[p.id] = { name: p.display_name || "Flockie", photo: p.photos?.[0] ?? null }));
-      }
-    }
-  }
 
   const publicFields =
     "id, display_name, age, photos, home_city, one_liner, trip_vibe";
-  const [{ data: other }, { data: me }, { data: trips }, { data: messages }, { data: muteRow }] =
-    await Promise.all([
-      supabase.from("public_profiles").select(publicFields).eq("id", otherId).maybeSingle(),
-      supabase.from("profiles").select("id, trip_vibe").eq("id", user!.id).maybeSingle(),
+  // The flock lookup and the five chat reads are independent — one stage.
+  // Any public trip behind this chat is a Flock — group chat for host + all
+  // accepted members. (Previously required a co-host, which wrongly excluded
+  // directly-created flocks and rendered them as a 1:1.)
+  const [
+    { data: fls },
+    { data: other },
+    { data: me },
+    { data: trips },
+    { data: messages },
+    { data: muteRow },
+  ] = await Promise.all([
+    flockTripIds.length
+      ? supabase
+          .from("trips")
+          .select("id, user_id, destination, co_host_id, start_date, end_date")
+          .in("id", flockTripIds)
+          .eq("visibility", "public")
+          .limit(1)
+      : Promise.resolve({ data: null }),
+    supabase.from("public_profiles").select(publicFields).eq("id", otherId).maybeSingle(),
+    supabase.from("profiles").select("id, trip_vibe").eq("id", user!.id).maybeSingle(),
+    supabase
+      .from("trips")
+      .select("id, kind, destination, destinations, start_date, end_date")
+      .eq("user_id", otherId)
+      .eq("status", "active")
+      .order("start_date", { ascending: true }),
+    supabase
+      .from("buddy_messages")
+      .select("id, sender_id, content, created_at")
+      .eq("chat_id", params.chatId)
+      .order("created_at", { ascending: true })
+      .limit(200),
+    supabase
+      .from("chat_mutes")
+      .select("chat_id")
+      .eq("user_id", user!.id)
+      .eq("chat_id", params.chatId)
+      .maybeSingle(),
+  ]);
+
+  const fl = fls?.[0] ?? null;
+  if (fl) {
+    flockTripId = fl.id;
+    flockHostId = fl.user_id;
+    flockCoHost = fl.co_host_id ?? null;
+    flockTitle = fl.destination ?? "Flock";
+    flockStart = fl.start_date ?? null;
+    flockEnd = fl.end_date ?? null;
+
+    // Pending join requests + accepted members both key on fl.id.
+    const [{ data: jr }, { data: accp }] = await Promise.all([
       supabase
-        .from("trips")
-        .select("id, kind, destination, destinations, start_date, end_date")
-        .eq("user_id", otherId)
-        .eq("status", "active")
-        .order("start_date", { ascending: true }),
+        .from("trip_join_requests")
+        .select("user_id, status")
+        .eq("trip_id", fl.id)
+        .eq("status", "pending"),
       supabase
-        .from("buddy_messages")
-        .select("id, sender_id, content, created_at")
-        .eq("chat_id", params.chatId)
-        .order("created_at", { ascending: true })
-        .limit(200),
-      supabase
-        .from("chat_mutes")
-        .select("chat_id")
-        .eq("user_id", user!.id)
-        .eq("chat_id", params.chatId)
-        .maybeSingle(),
+        .from("trip_join_requests")
+        .select("user_id")
+        .eq("trip_id", fl.id)
+        .eq("status", "accepted"),
     ]);
+    const ids = (jr ?? []).map((r) => r.user_id);
+    // All chat participants (the two buddies + accepted members) for names.
+    const memberIds = Array.from(
+      new Set([match?.user_a, match?.user_b, ...(accp ?? []).map((r) => r.user_id)].filter(Boolean))
+    ) as string[];
+
+    const [{ data: rp }, { data: mp }] = await Promise.all([
+      ids.length
+        ? supabase
+            .from("public_profiles")
+            .select("id, display_name, age, photos, one_liner")
+            .in("id", ids)
+        : Promise.resolve({ data: null }),
+      memberIds.length
+        ? supabase.from("public_profiles").select("id, display_name, photos").in("id", memberIds)
+        : Promise.resolve({ data: null }),
+    ]);
+
+    if (ids.length) {
+      const map: Record<string, { display_name: string | null; age: number | null; photos: string[] | null; one_liner: string | null }> = {};
+      rp?.forEach((p) => (map[p.id] = p));
+      flockReqs = (jr ?? []).map((r) => ({
+        userId: r.user_id,
+        status: r.status,
+        name: map[r.user_id]?.display_name || "Flockie",
+        age: map[r.user_id]?.age ?? null,
+        photo: map[r.user_id]?.photos?.[0] ?? null,
+        oneLiner: map[r.user_id]?.one_liner ?? null,
+      }));
+    }
+    mp?.forEach((p) => (chatMembers[p.id] = { name: p.display_name || "Flockie", photo: p.photos?.[0] ?? null }));
+  }
 
   const otherName = (other?.display_name || "your match").split(" ")[0];
 
