@@ -251,10 +251,14 @@ export default function DealsSearch({
           href={AIRHELP}
           target="_blank"
           rel="noopener"
-          className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-2.5 font-bold text-ink"
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white px-4 py-2.5 text-center font-bold text-ink"
         >
-          <LifeBuoy size={16} /> Flights &amp; delay compensation — AirHelp
+          <LifeBuoy size={16} className="shrink-0" />
+          <span>Check flight compensation</span>
         </a>
+        <p className="mt-1.5 text-center text-[11px] font-medium text-white/80">
+          via AirHelp · external partner
+        </p>
       </div>
 
       {/* ── Car rentals ─────────────────────────────────────────────────── */}
