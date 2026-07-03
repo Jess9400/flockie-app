@@ -11,19 +11,37 @@ export type NotifRecord = {
   data: Record<string, unknown> | null;
 };
 
-// Tier-1 transactional types + their CTA label. Add Tier-2/3 here later.
+// Tier-1 transactional types + their CTA label.
+// Tier-2 retention + Tier-3 digest types are added below.
 const EMAILABLE: Record<string, string> = {
+  // ── Tier-1: transactional ────────────────────────────────────────────────
   vibe_invitation: "Confirm your spot",
   vibe_confirmed: "Open the chat",
   buddy_match: "Say hi",
   flock_approved: "Open the Flock chat",
   vibe_cancelled: "See details",
   vibe_private_request: "View the Vibe",
+  // ── Tier-2: retention (review reminders, event + message nudges) ──────────
+  vibe_review_reminder: "Leave a review",   // review the event you attended
+  buddy_review_reminder: "Rate your buddies", // review the people you went with
+  vibe_review_ready: "Review your matches", // host: shortlist is ready to review
+  vibe_starting_soon: "Open the chat",       // your Vibe is tomorrow
+  unread_messages: "Open the chat",          // new messages while you were away
+  // ── Tier-3: opt-outable digest ───────────────────────────────────────────
+  weekly_digest: "Browse Vibes",             // weekly "Vibes near you"
 };
 
 function linkFor(n: NotifRecord): string {
   const d = (n.data ?? {}) as Record<string, string | undefined>;
+  // Crons set an exact relative `href` in the notification payload (review
+  // reminders, unread-message nudges). Trust it when present so a new surface
+  // never needs a code change here.
+  if (typeof d.href === "string" && d.href.startsWith("/")) return `${SITE}${d.href}`;
   if (n.type === "vibe_confirmed" && d.vibe_id) return `${SITE}/vibes/${d.vibe_id}/chat`;
+  // "Your Vibe is tomorrow" → the vibe chat to coordinate.
+  if (n.type === "vibe_starting_soon" && d.vibe_id) return `${SITE}/vibes/${d.vibe_id}/chat`;
+  // Weekly digest → the Vibes browse page.
+  if (n.type === "weekly_digest") return `${SITE}/vibes`;
   // Approved flock member → the flock chat (/my-trips only lists trips they host).
   if (n.type === "flock_approved") return d.chat_id ? `${SITE}/buddies/${d.chat_id}` : `${SITE}/chats`;
   if (d.vibe_id) return `${SITE}/vibes/${d.vibe_id}`;
