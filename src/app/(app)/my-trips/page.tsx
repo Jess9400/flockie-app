@@ -62,73 +62,78 @@ export default async function MyTripsPage({
   const activeIds = activeTrips.map((t) => t.id);
   const coHostTrips = new Set<string>();
   const reqByTrip: Record<string, JoinReq[]> = {};
-  if (activeIds.length) {
-    const { data: ch } = await supabase
-      .from("trips")
-      .select("id")
-      .in("id", activeIds)
-      .not("co_host_id", "is", null);
-    ch?.forEach((r) => coHostTrips.add(r.id));
-
-    const { data: jr } = await supabase
-      .from("trip_join_requests")
-      .select("trip_id, user_id, status")
-      .in("trip_id", activeIds);
-    const reqUserIds = Array.from(new Set((jr ?? []).map((r) => r.user_id)));
-    const rp: Record<string, { display_name: string | null; age: number | null; photos: string[] | null; one_liner: string | null }> = {};
-    if (reqUserIds.length) {
-      const { data } = await supabase
-        .from("public_profiles")
-        .select("id, display_name, age, photos, one_liner")
-        .in("id", reqUserIds);
-      data?.forEach((p) => (rp[p.id] = p));
-    }
-    // Vibe-match between me (host) and each requester, so I can gauge fit.
-    const matchByUser: Record<string, number | null> = {};
-    await Promise.all(
-      reqUserIds.map(async (uid) => {
-        const { data } = await supabase.rpc("buddy_pair_score", { p_a: user!.id, p_b: uid });
-        matchByUser[uid] = typeof data === "number" ? Math.round(data) : null;
-      })
-    );
-    (jr ?? []).forEach((r) => {
-      (reqByTrip[r.trip_id] ??= []).push({
-        userId: r.user_id,
-        status: r.status,
-        name: rp[r.user_id]?.display_name || "Flockie",
-        age: rp[r.user_id]?.age ?? null,
-        photo: rp[r.user_id]?.photos?.[0] ?? null,
-        oneLiner: rp[r.user_id]?.one_liner ?? null,
-        match: matchByUser[r.user_id] ?? null,
-      });
-    });
-  }
-
   // Buddy/Flock chat per trip — the chat hangs off a buddy_match for the trip.
   const allTripIds = all.map((t) => t.id);
   const chatByTrip: Record<string, string> = {};
-  if (allTripIds.length) {
-    const inList = `(${allTripIds.join(",")})`;
-    const { data: matches } = await supabase
-      .from("buddy_matches")
-      .select("id, trip_a, trip_b")
-      .or(`trip_a.in.${inList},trip_b.in.${inList}`);
-    const matchIds = (matches ?? []).map((m) => m.id);
-    const chatByMatch: Record<string, string> = {};
-    if (matchIds.length) {
-      const { data: chats } = await supabase
-        .from("buddy_chats")
-        .select("id, match_id")
-        .in("match_id", matchIds);
-      chats?.forEach((c) => (chatByMatch[c.match_id] = c.id));
-    }
-    (matches ?? []).forEach((m) => {
-      const cid = chatByMatch[m.id];
-      if (!cid) return;
-      if (m.trip_a && allTripIds.includes(m.trip_a)) chatByTrip[m.trip_a] = cid;
-      if (m.trip_b && allTripIds.includes(m.trip_b)) chatByTrip[m.trip_b] = cid;
+
+  // Co-host flags, join requests, and trip matches all key on the trip lists.
+  const inList = `(${allTripIds.join(",")})`;
+  const [{ data: ch }, { data: jr }, { data: matches }] = await Promise.all([
+    activeIds.length
+      ? supabase.from("trips").select("id").in("id", activeIds).not("co_host_id", "is", null)
+      : Promise.resolve({ data: null }),
+    activeIds.length
+      ? supabase
+          .from("trip_join_requests")
+          .select("trip_id, user_id, status")
+          .in("trip_id", activeIds)
+      : Promise.resolve({ data: null }),
+    allTripIds.length
+      ? supabase
+          .from("buddy_matches")
+          .select("id, trip_a, trip_b")
+          .or(`trip_a.in.${inList},trip_b.in.${inList}`)
+      : Promise.resolve({ data: null }),
+  ]);
+
+  ch?.forEach((r) => coHostTrips.add(r.id));
+  const reqUserIds = Array.from(new Set((jr ?? []).map((r) => r.user_id)));
+  const matchIds = (matches ?? []).map((m) => m.id);
+
+  // Vibe-match between me (host) and each requester, so I can gauge fit —
+  // kicked off alongside the profile + chat lookups below.
+  const matchByUser: Record<string, number | null> = {};
+  const scoresPromise = Promise.all(
+    reqUserIds.map(async (uid) => {
+      const { data } = await supabase.rpc("buddy_pair_score", { p_a: user!.id, p_b: uid });
+      matchByUser[uid] = typeof data === "number" ? Math.round(data) : null;
+    })
+  );
+  const [{ data: rpData }, { data: chats }] = await Promise.all([
+    reqUserIds.length
+      ? supabase
+          .from("public_profiles")
+          .select("id, display_name, age, photos, one_liner")
+          .in("id", reqUserIds)
+      : Promise.resolve({ data: null }),
+    matchIds.length
+      ? supabase.from("buddy_chats").select("id, match_id").in("match_id", matchIds)
+      : Promise.resolve({ data: null }),
+  ]);
+  await scoresPromise;
+
+  const rp: Record<string, { display_name: string | null; age: number | null; photos: string[] | null; one_liner: string | null }> = {};
+  rpData?.forEach((p) => (rp[p.id] = p));
+  (jr ?? []).forEach((r) => {
+    (reqByTrip[r.trip_id] ??= []).push({
+      userId: r.user_id,
+      status: r.status,
+      name: rp[r.user_id]?.display_name || "Flockie",
+      age: rp[r.user_id]?.age ?? null,
+      photo: rp[r.user_id]?.photos?.[0] ?? null,
+      oneLiner: rp[r.user_id]?.one_liner ?? null,
+      match: matchByUser[r.user_id] ?? null,
     });
-  }
+  });
+
+  const chatByMatch: Record<string, string> = {};
+  chats?.forEach((c) => (chatByMatch[c.match_id] = c.id));
+  (matches ?? []).forEach((m) => {
+    const cid = chatByMatch[m.id];
+    if (!cid) return;
+    if (m.trip_a && allTripIds.includes(m.trip_a)) chatByTrip[m.trip_a] = cid;
+    if (m.trip_b && allTripIds.includes(m.trip_b)) chatByTrip[m.trip_b] = cid;
+  });
 
   function TripCard({ t, faded }: { t: TripRow; faded?: boolean }) {
     return (
