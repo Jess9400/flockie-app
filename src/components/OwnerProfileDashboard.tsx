@@ -20,14 +20,16 @@ import type { EventsData } from "@/components/ProfileEvents";
 import type { ReviewItem } from "@/components/ProfileReviews";
 import TripVibeForm from "@/components/TripVibeForm";
 import { useConfirm, useToast } from "@/components/ui/feedback";
+import { ARCHETYPES } from "@/lib/onboarding/archetypes";
 import { restartVibeCheck } from "@/lib/onboarding/vibe-actions";
-import type { VibeScores } from "@/lib/onboarding/types";
+import type { VibeDimension, VibeScores } from "@/lib/onboarding/types";
 import { formatVibeWhen } from "@/lib/vibes";
 import type { Profile } from "@/lib/vibe-check";
 
 type DashboardProfile = Partial<Profile> & {
   archetype?: string | null;
   vibe_scores?: VibeScores | null;
+  vibe_completed_at?: string | null;
   trip_prefs_complete?: boolean | null;
   activity_prefs_complete?: boolean | null;
   social_visibility?: "members" | "connections" | "private" | null;
@@ -61,7 +63,14 @@ export default function OwnerProfileDashboard({
   const [redoing, setRedoing] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
 
-  const vibeComplete = !!(profile.archetype && profile.vibe_scores);
+  // A kept old result with no completed flag = retake in progress: the old
+  // vibe keeps powering matching until the new run finishes.
+  const hasVibeResult = !!(profile.archetype && profile.vibe_scores);
+  const vibeComplete = hasVibeResult && !!profile.vibe_completed_at;
+  const vibeRetaking = hasVibeResult && !profile.vibe_completed_at;
+  const vibeArchetype = profile.archetype
+    ? ARCHETYPES[profile.archetype as VibeDimension] ?? null
+    : null;
   const tripComplete = !!profile.trip_prefs_complete || profile.planning != null;
   const activityComplete =
     !!profile.activity_prefs_complete || (profile.activities?.length ?? 0) > 0;
@@ -78,8 +87,9 @@ export default function OwnerProfileDashboard({
     if (
       !(await confirm({
         title: "Retake your vibe quiz?",
-        message: "Your future matching signals will update.",
-        confirmLabel: "Retake quiz",
+        message:
+          "You'll answer the whole quiz again from question 1 — there's no saving halfway. Your current vibe stays active until you finish.",
+        confirmLabel: "Start the quiz",
       }))
     ) {
       return;
@@ -149,31 +159,72 @@ export default function OwnerProfileDashboard({
               </span>
             }
           >
+            {vibeArchetype && (
+              <div
+                className="mb-2.5 flex items-center gap-3 rounded-2xl border-2 border-ink/10 p-3"
+                style={{
+                  background: `linear-gradient(135deg, ${vibeArchetype.gradientFrom}14, ${vibeArchetype.gradientTo}14)`,
+                }}
+              >
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border-2 border-ink bg-white text-2xl">
+                  {vibeArchetype.emoji}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[10px] font-extrabold uppercase tracking-wide text-muted">
+                    Your vibe
+                  </span>
+                  <span className="block font-fredoka text-base font-semibold text-navy">
+                    {vibeArchetype.name}
+                  </span>
+                  {vibeRetaking ? (
+                    <span className="block text-[10.5px] font-bold text-flockie-coral">
+                      Updates when you finish your quiz
+                    </span>
+                  ) : (
+                    <span className="block text-[10.5px] font-semibold text-muted">
+                      Built from your answers below
+                    </span>
+                  )}
+                </span>
+                <Link
+                  href="/onboarding/vibe-check/reveal?returnTo=%2Fprofile"
+                  className="shrink-0 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-extrabold text-navy"
+                >
+                  View
+                </Link>
+              </div>
+            )}
+
             <div className="space-y-2.5">
               <SetupCard
                 emoji="🧬"
                 title="Vibe quiz"
-                description="Your global personality read across buddies, trips, and Vibes."
+                description="Your global personality read. Retaking restarts the whole quiz."
                 complete={vibeComplete}
-                completionLabel={vibeComplete ? "Complete" : "Not started"}
+                completionLabel={
+                  vibeComplete
+                    ? "Complete"
+                    : vibeRetaking
+                      ? "Finish your quiz"
+                      : "Not started"
+                }
                 actions={
                   vibeComplete ? (
-                    <>
-                      <Link
-                        href="/onboarding/vibe-check/reveal?returnTo=%2Fprofile"
-                        className="rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-extrabold text-navy"
-                      >
-                        View
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={redoQuiz}
-                        disabled={redoing}
-                        className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-cream px-3 py-1.5 text-xs font-extrabold text-navy disabled:opacity-50"
-                      >
-                        <RefreshCw size={12} /> {redoing ? "Resetting…" : "Retake"}
-                      </button>
-                    </>
+                    <button
+                      type="button"
+                      onClick={redoQuiz}
+                      disabled={redoing}
+                      className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-extrabold text-navy disabled:opacity-50"
+                    >
+                      <RefreshCw size={12} /> {redoing ? "Starting…" : "Retake"}
+                    </button>
+                  ) : vibeRetaking ? (
+                    <Link
+                      href="/onboarding/vibe-check?returnTo=%2Fprofile"
+                      className="rounded-full border-2 border-ink bg-flockie-coral px-3 py-1.5 text-xs font-extrabold text-white"
+                    >
+                      Finish quiz
+                    </Link>
                   ) : (
                     <Link
                       href="/onboarding/vibe-check?returnTo=%2Fprofile"
@@ -195,9 +246,13 @@ export default function OwnerProfileDashboard({
                   <button
                     type="button"
                     onClick={() => setOpenSetup("trip")}
-                    className="rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-extrabold text-navy"
+                    className={
+                      tripComplete
+                        ? "rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-extrabold text-navy"
+                        : "rounded-full border-2 border-ink bg-flockie-coral px-3 py-1.5 text-xs font-extrabold text-white"
+                    }
                   >
-                    {tripComplete ? "Edit" : "Start"}
+                    {tripComplete ? "Retake" : "Start"}
                   </button>
                 }
               />
@@ -212,9 +267,13 @@ export default function OwnerProfileDashboard({
                   <button
                     type="button"
                     onClick={() => setOpenSetup("activity")}
-                    className="rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-extrabold text-navy"
+                    className={
+                      activityComplete
+                        ? "rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-extrabold text-navy"
+                        : "rounded-full border-2 border-ink bg-flockie-coral px-3 py-1.5 text-xs font-extrabold text-white"
+                    }
                   >
-                    {activityComplete ? "Edit" : "Start"}
+                    {activityComplete ? "Retake" : "Start"}
                   </button>
                 }
               />

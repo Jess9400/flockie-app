@@ -105,6 +105,17 @@ export function computeScores(
   return scores;
 }
 
+// Raw quiz totals scaled to 0..1 per dimension (each dimension divided by the
+// best it could have scored), so they can be compared and blended fairly.
+export function normalizeScores(scores: VibeScores): VibeScores {
+  const max = maxPossibleScores();
+  const out: VibeScores = { ...EMPTY_SCORES };
+  for (const d of DIMENSIONS) {
+    out[d] = max[d] > 0 ? Math.min(1, Math.max(0, scores[d] / max[d])) : 0;
+  }
+  return out;
+}
+
 export function topArchetype(scores: VibeScores): VibeDimension {
   const max = maxPossibleScores();
   let best: VibeDimension[] = [];
