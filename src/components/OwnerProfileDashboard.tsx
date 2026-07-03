@@ -19,7 +19,7 @@ import ProfileIdentityCard from "@/components/ProfileIdentityCard";
 import type { EventsData } from "@/components/ProfileEvents";
 import type { ReviewItem } from "@/components/ProfileReviews";
 import TripVibeForm from "@/components/TripVibeForm";
-import { useConfirm } from "@/components/ui/feedback";
+import { useConfirm, useToast } from "@/components/ui/feedback";
 import { restartVibeCheck } from "@/lib/onboarding/vibe-actions";
 import type { VibeScores } from "@/lib/onboarding/types";
 import { formatVibeWhen } from "@/lib/vibes";
@@ -56,6 +56,7 @@ export default function OwnerProfileDashboard({
 }) {
   const router = useRouter();
   const confirm = useConfirm();
+  const toast = useToast();
   const [openSetup, setOpenSetup] = useState<SetupKey>(null);
   const [redoing, setRedoing] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
@@ -89,6 +90,7 @@ export default function OwnerProfileDashboard({
       router.push("/onboarding/vibe-check?returnTo=%2Fprofile");
     } catch {
       setRedoing(false);
+      toast("Couldn't reset the quiz — try again.", "error");
     }
   }
 

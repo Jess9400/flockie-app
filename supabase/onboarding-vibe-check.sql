@@ -36,3 +36,11 @@ create policy "users update own vibe responses"
   to authenticated
   using (auth.uid() = profile_id)
   with check (auth.uid() = profile_id);
+
+-- Without this, restartVibeCheck's delete silently removes 0 rows (RLS deny is
+-- not an error), so "Retake quiz" re-completes from the old answers.
+drop policy if exists "users delete own vibe responses" on public.vibe_responses;
+create policy "users delete own vibe responses"
+  on public.vibe_responses for delete
+  to authenticated
+  using (auth.uid() = profile_id);
