@@ -6,9 +6,6 @@ import { Hotel, Plane, Ticket, Search, Users, MapPin, Car, LifeBuoy } from "luci
 
 // Travelpayouts affiliate marker (tracks commission on Hotellook / Aviasales).
 const MARKER = "544482";
-// Klook activity search by city. With Travelpayouts "Drive" active, outbound Klook
-// links are auto-attributed — so we link to the real (city-relevant) Klook search
-// as an <a> (Drive intercepts anchor clicks, not window.open).
 function klookUrl(city: string) {
   const c = city.trim();
   return c ? `https://www.klook.com/search/?query=${encodeURIComponent(c)}` : "https://www.klook.com/";
@@ -280,7 +277,7 @@ export default function DealsSearch({
       </div>
 
       <p className="text-center text-xs font-medium text-muted">
-        Deals powered by Travelpayouts. Booking through Flockie helps support the flock.
+        Some links are affiliate links. Booking through them helps support the flock.
       </p>
     </div>
   );

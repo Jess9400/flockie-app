@@ -74,7 +74,7 @@ export default function CookieConsent() {
       className="fixed inset-x-3 bottom-3 z-[60] mx-auto max-w-lg rounded-3xl border-2 border-navy bg-white p-5 font-nunito shadow-[0_8px_0_0_rgba(10,37,69,1)] sm:inset-x-0 sm:bottom-5"
     >
       <p className="text-sm font-medium text-navy/80">
-        We use cookies for analytics and to power travel-deal partner links. Your call.{" "}
+        We use optional cookies for analytics. Your call.{" "}
         <a
           href="https://www.findflockie.com/privacy"
           target="_blank"
