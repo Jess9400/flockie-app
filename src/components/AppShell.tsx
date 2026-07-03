@@ -98,28 +98,65 @@ export default function AppShell({
   useEffect(() => {
     const supabase = createClient();
     let active = true;
-    async function load() {
-      const [{ count }, { data: p }] = await Promise.all([
-        supabase
-          .from("notifications")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", userId)
-          .is("read_at", null)
-          .is("dismissed_at", null),
-        supabase.from("profiles").select("display_name, photos").eq("id", userId).maybeSingle(),
-      ]);
+    async function loadProfile() {
+      const { data } = await supabase
+        .from("profiles")
+        .select("display_name, photos")
+        .eq("id", userId)
+        .maybeSingle();
       if (!active) return;
-      setUnread(count ?? 0);
-      setName((p?.display_name ?? "").split(" ")[0]);
-      setPhoto(p?.photos?.[0] ?? null);
+      setName((data?.display_name ?? "").split(" ")[0]);
+      setPhoto(data?.photos?.[0] ?? null);
     }
-    load();
+    void loadProfile();
+    return () => {
+      active = false;
+    };
+  }, [pathname, userId]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    let active = true;
+    let subscribedOnce = false;
+    async function loadUnread() {
+      const { count } = await supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .is("read_at", null)
+        .is("dismissed_at", null);
+      if (active) setUnread(count ?? 0);
+    }
+    function refreshWhenVisible() {
+      if (document.visibilityState === "visible") void loadUnread();
+    }
+    void loadUnread();
     const channel = supabase
       .channel("shell-notif")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications" }, () => load())
-      .subscribe();
-    return () => { active = false; supabase.removeChannel(channel); };
-  }, [pathname, userId]);
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${userId}`,
+        },
+        () => void loadUnread()
+      )
+      .subscribe((status) => {
+        if (status !== "SUBSCRIBED") return;
+        if (subscribedOnce) void loadUnread();
+        subscribedOnce = true;
+      });
+    window.addEventListener("focus", refreshWhenVisible);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+    return () => {
+      active = false;
+      window.removeEventListener("focus", refreshWhenVisible);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+      supabase.removeChannel(channel);
+    };
+  }, [userId]);
 
   function navItemCls(active: boolean) {
     return `flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-bold transition-colors ${
