@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Plus, Users, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import ShareVibeButton from "@/components/ShareVibeButton";
 import PageTabs from "@/components/PageTabs";
 import Pagination from "@/components/Pagination";
@@ -55,9 +56,7 @@ export default async function MyVibesPage({
   searchParams: { page?: string; ppage?: string };
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   const { data: vibes } = await supabase
     .from("vibes")

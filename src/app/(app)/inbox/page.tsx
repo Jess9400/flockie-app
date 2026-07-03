@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import InboxList, { type Notif } from "@/components/InboxList";
 import Pagination from "@/components/Pagination";
 
@@ -10,9 +11,7 @@ export default async function InboxPage({
   searchParams: { page?: string };
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   const page = Math.max(1, Number(searchParams.page) || 1);
   const from = (page - 1) * PAGE_SIZE;

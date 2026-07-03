@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import ReviewForm from "@/components/ReviewForm";
 
 export default async function ReviewPage({
@@ -10,9 +11,7 @@ export default async function ReviewPage({
   params: { userId: string };
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   if (user!.id === params.userId) notFound();
 

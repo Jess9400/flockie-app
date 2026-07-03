@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import SwipeDeck from "@/components/SwipeDeck";
 import TripPicker from "@/components/TripPicker";
 import InviteFriendsButton from "@/components/InviteFriendsButton";
@@ -14,9 +15,7 @@ export default async function MatchPage({
   searchParams: { mode?: string; trip?: string };
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   const mode = searchParams.mode === "activity" ? "activity" : "trip";
   const isActivity = mode === "activity";

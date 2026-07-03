@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { MapPin, CalendarClock, Users, Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import FlockRequestButton from "@/components/FlockRequestButton";
 import FilterSheet from "@/components/FilterSheet";
 import Pagination from "@/components/Pagination";
@@ -25,9 +26,7 @@ export default async function FlocksPage({
   searchParams: { page?: string; continent?: string | string[]; gender?: string; size?: string; language?: string | string[] };
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   const page = Math.max(1, Number(searchParams.page) || 1);
   const from = (page - 1) * PAGE_SIZE;

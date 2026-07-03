@@ -114,12 +114,20 @@ export default function AppShell({
       setPhoto(p?.photos?.[0] ?? null);
     }
     load();
+    // Listen for ALL changes to THIS user's notifications (insert = new, update =
+    // read/dismiss so the badge drops live) — keyed on userId only, so it loads
+    // once per session and the channel persists across navigation instead of
+    // re-fetching + re-subscribing on every page click.
     const channel = supabase
       .channel("shell-notif")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications" }, () => load())
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+        () => load()
+      )
       .subscribe();
     return () => { active = false; supabase.removeChannel(channel); };
-  }, [pathname, userId]);
+  }, [userId]);
 
   function navItemCls(active: boolean) {
     return `flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-bold transition-colors ${

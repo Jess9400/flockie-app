@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import CreateVibeForm from "@/components/CreateVibeForm";
 import ActivityVibeForm from "@/components/ActivityVibeForm";
 
@@ -10,9 +11,7 @@ export default async function NewVibePage({
   searchParams: { activity?: string; city?: string; title?: string; from?: string };
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   // "Run it again": pre-fill from one of my past vibes (dates left blank to re-set).
   let clone: Parameters<typeof CreateVibeForm>[0]["clone"];

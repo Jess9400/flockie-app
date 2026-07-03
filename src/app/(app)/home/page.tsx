@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, MapPin, Plus, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
 import FlockRequestButton from "@/components/FlockRequestButton";
 import SayHiButton from "@/components/SayHiButton";
@@ -76,9 +77,7 @@ export default async function HomePage({
   searchParams: { when?: string };
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
   const nowIso = new Date().toISOString();
 
   const [

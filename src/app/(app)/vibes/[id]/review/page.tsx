@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import VibeReviewForm from "@/components/VibeReviewForm";
 
 export default async function VibeReviewPage({
@@ -10,9 +11,7 @@ export default async function VibeReviewPage({
   params: { id: string };
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   const { data: vibe } = await supabase
     .from("vibe_directory")

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import PublicProfileDashboard from "@/components/PublicProfileDashboard";
 import { type EventsData } from "@/components/ProfileEvents";
 import { type ReviewItem } from "@/components/ProfileReviews";
@@ -18,9 +19,7 @@ export default async function PersonPage({
   // everything except the reviewer/like follow-ups keys on params.id alone.
   const [
     { data: profile },
-    {
-      data: { user },
-    },
+    user,
     { data: reviewRows },
     { data: statsData },
     { data: eventsData },
@@ -32,7 +31,7 @@ export default async function PersonPage({
       )
       .eq("id", params.id)
       .maybeSingle(),
-    supabase.auth.getUser(),
+    getSessionUser(),
     supabase
       .from("reviews")
       .select("id, rating, comment, created_at, reviewer_id")

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, MapPin, Users, CalendarClock, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
 import InterestButton from "@/components/InterestButton";
 import HostVibeControls from "@/components/HostVibeControls";
 import HostVibeShortlist from "@/components/HostVibeShortlist";
@@ -24,13 +25,8 @@ export default async function VibeDetailPage({
 }) {
   const supabase = await createClient();
   // The vibe lookup only needs params.id — fetch it alongside the user.
-  const [
-    {
-      data: { user },
-    },
-    { data: vibe },
-  ] = await Promise.all([
-    supabase.auth.getUser(),
+  const [user, { data: vibe }] = await Promise.all([
+    getSessionUser(),
     supabase.from("vibe_directory").select("*").eq("id", params.id).maybeSingle(),
   ]);
 
