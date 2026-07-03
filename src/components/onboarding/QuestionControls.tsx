@@ -63,25 +63,18 @@ function Mood({ question, current, disabled, onAnswer }: { question: MoodQuestio
   );
 }
 
-function Swipe({ question, current, disabled, onAnswer }: { question: SwipeQuestion; current?: SwipeAnswer; disabled: boolean; onAnswer: (answer: Answer) => void }) {
-  const [flying, setFlying] = useState<"left" | "right" | null>(null);
-
+function Swipe({ question, disabled, onAnswer }: { question: SwipeQuestion; current?: SwipeAnswer; disabled: boolean; onAnswer: (answer: Answer) => void }) {
   function choose(side: "left" | "right") {
-    setFlying(side);
-    window.setTimeout(() => onAnswer({ type: "swipe", side }), 300);
+    onAnswer({ type: "swipe", side });
   }
 
   return (
     <div className="flex flex-col items-center pt-2">
-      <div className={`relative flex w-full items-center justify-center rounded-[20px] border-2 border-ink/15 bg-white px-5 py-6 shadow-lg transition-all duration-300 ${flying === "left" ? "-translate-x-[150%] -rotate-[18deg] opacity-0" : flying === "right" ? "translate-x-[150%] rotate-[18deg] opacity-0" : ""}`}>
-        {current && <span className="absolute -top-2.5 right-3.5 rounded-full bg-onboarding-green px-2.5 py-1 text-[10px] font-extrabold text-white">Saved {current.side === "right" ? question.right.emoji : question.left.emoji}</span>}
-        <EmojiBadge size={72}>🤔</EmojiBadge>
-      </div>
-      <div className="mt-4 flex w-full gap-3.5">
+      <div className="flex w-full gap-3.5">
         {[question.left, question.right].map((option, index) => {
           const side = index === 0 ? "left" : "right";
           return (
-            <button key={side} type="button" disabled={disabled || Boolean(flying)} onClick={() => choose(side)} className={`flex flex-1 flex-col items-center gap-1.5 rounded-2xl border-2 border-b-4 py-3.5 text-[13.5px] font-extrabold disabled:opacity-60 ${side === "right" ? "border-flockie-coral bg-flockie-coral/10 text-red-700" : "border-ink/15 bg-white text-muted"}`}>
+            <button key={side} type="button" disabled={disabled} onClick={() => choose(side)} className={`flex flex-1 flex-col items-center gap-1.5 rounded-2xl border-2 border-b-4 py-3.5 text-[13.5px] font-extrabold disabled:opacity-60 ${side === "right" ? "border-flockie-coral bg-flockie-coral/10 text-red-700" : "border-ink/15 bg-white text-muted"}`}>
               <EmojiBadge size={40}>{option.emoji}</EmojiBadge>{option.label}
             </button>
           );
