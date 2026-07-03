@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import PhotoGrid from "@/components/PhotoGrid";
 import PhotoCropper from "@/components/PhotoCropper";
 import VibeShareCard from "@/components/VibeShareCard";
+import CityAutocomplete from "@/components/CityAutocomplete";
 import { SectionHeader } from "@/components/profileControls";
 import { GENDER_OPTIONS, topVibeTags, type Profile } from "@/lib/vibe-check";
 
@@ -199,11 +200,11 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
               </Field>
             </div>
             <Field label="Home city">
-              <input
+              <CityAutocomplete
                 className={inputCls}
                 value={basics.home_city}
-                onChange={(e) => setBasics({ ...basics, home_city: e.target.value })}
-                placeholder="Where you're based"
+                onChange={(v) => setBasics({ ...basics, home_city: v })}
+                placeholder="e.g. Lisbon"
               />
             </Field>
             <Field label="A little about you (optional)">
