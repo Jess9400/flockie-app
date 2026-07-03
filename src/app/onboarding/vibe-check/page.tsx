@@ -28,6 +28,7 @@ export default async function VibeCheckPage({
         initialAnswers={progress.answers}
         initialQuestionIndex={progress.nextQuestionIndex}
         returnTo={returnTo}
+        lockExit={progress.isRetake}
       />
     </main>
   );
