@@ -29,15 +29,6 @@ export default async function FlocksPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Joining a Flock needs the Trip form. Guarded (migration-safe): if the column
-  // doesn't exist yet, degrade open so we don't block.
-  const { data: prefRow, error: prefErr } = await supabase
-    .from("profiles")
-    .select("trip_prefs_complete")
-    .eq("id", user!.id)
-    .maybeSingle();
-  const tripPrefsDone = prefErr ? true : !!prefRow?.trip_prefs_complete;
-
   const page = Math.max(1, Number(searchParams.page) || 1);
   const from = (page - 1) * PAGE_SIZE;
   const continents = toArray(searchParams.continent);
@@ -62,9 +53,14 @@ export default async function FlocksPage({
   if (languages.length) query = query.in("language", languages);
   if (sizeBucket) query = query.gte("group_size", sizeBucket.min).lte("group_size", sizeBucket.max);
 
-  const { data: trips, count } = await query
-    .order("start_date", { ascending: true })
-    .range(from, from + PAGE_SIZE - 1);
+  // The trip-prefs gate and the flock feed both key on the viewer only.
+  // Prefs stay guarded (migration-safe): if the column doesn't exist yet,
+  // degrade open so we don't block.
+  const [{ data: prefRow, error: prefErr }, { data: trips, count }] = await Promise.all([
+    supabase.from("profiles").select("trip_prefs_complete").eq("id", user!.id).maybeSingle(),
+    query.order("start_date", { ascending: true }).range(from, from + PAGE_SIZE - 1),
+  ]);
+  const tripPrefsDone = prefErr ? true : !!prefRow?.trip_prefs_complete;
 
   const list = trips ?? [];
   const ids = list.map((t) => t.id);
@@ -83,36 +79,33 @@ export default async function FlocksPage({
   // join requests: accepted count via definer RPC (no row-level exposure),
   // "requested" from my own LIVE rows (visible under the scoped RLS policy).
   // Declined rows don't count — the button comes back so the user can re-request.
+  // These four reads all key on the page's trip/host id lists — one stage.
   const acceptedCount: Record<string, number> = {};
   const requested = new Set<string>();
-  if (ids.length) {
-    const [{ data: counts }, { data: mine }] = await Promise.all([
-      supabase.rpc("flock_going_counts", { p_trip_ids: ids }),
-      supabase
-        .from("trip_join_requests")
-        .select("trip_id")
-        .eq("user_id", user!.id)
-        .in("trip_id", ids)
-        .in("status", ["pending", "accepted"]),
-    ]);
-    (counts ?? []).forEach((c: { trip_id: string; accepted: number }) => {
-      acceptedCount[c.trip_id] = c.accepted;
-    });
-    (mine ?? []).forEach((r) => requested.add(r.trip_id));
-  }
-
-  // host profiles
   const hostIds = Array.from(new Set(list.map((t) => t.user_id)));
   const profiles: Record<string, { display_name: string | null; photos: string[] | null }> = {};
-  if (hostIds.length) {
-    const { data: pp } = await supabase
-      .from("public_profiles")
-      .select("id, display_name, photos")
-      .in("id", hostIds);
-    pp?.forEach((p) => (profiles[p.id] = { display_name: p.display_name, photos: p.photos }));
-  }
-
-  const matches = await loadFlockMatch(supabase, ids);
+  const [{ data: counts }, { data: mine }, { data: pp }, matches] = await Promise.all([
+    ids.length
+      ? supabase.rpc("flock_going_counts", { p_trip_ids: ids })
+      : Promise.resolve({ data: null }),
+    ids.length
+      ? supabase
+          .from("trip_join_requests")
+          .select("trip_id")
+          .eq("user_id", user!.id)
+          .in("trip_id", ids)
+          .in("status", ["pending", "accepted"])
+      : Promise.resolve({ data: null }),
+    hostIds.length
+      ? supabase.from("public_profiles").select("id, display_name, photos").in("id", hostIds)
+      : Promise.resolve({ data: null }),
+    loadFlockMatch(supabase, ids),
+  ]);
+  (counts ?? []).forEach((c: { trip_id: string; accepted: number }) => {
+    acceptedCount[c.trip_id] = c.accepted;
+  });
+  (mine ?? []).forEach((r) => requested.add(r.trip_id));
+  pp?.forEach((p) => (profiles[p.id] = { display_name: p.display_name, photos: p.photos }));
 
   // Full Flocks drop off the list.
   const cards = list.filter((t) => 1 + (acceptedCount[t.id] ?? 0) < t.group_size);
