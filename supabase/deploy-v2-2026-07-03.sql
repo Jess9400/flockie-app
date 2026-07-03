@@ -1,9 +1,7 @@
 -- ════════════════════════════════════════════════════════════════════════════
--- deploy-v2-2026-07-03.sql
--- Pending prod SQL for the V2 batch (perf, multi-activity, email Tier 2/3) +
--- Taisiya's #175 retake-reset policy. Run the WHOLE file once in the Supabase
--- SQL editor. Idempotent (CREATE OR REPLACE / IF EXISTS). Order matters:
--- dest-gin-index.sql defines lower_array() before the functions that use it.
+-- deploy-v2-2026-07-03.sql  (v2 — fixed vibe_directory column position)
+-- Pending prod SQL for the V2 batch + Taisiya's #175. Run the WHOLE file once.
+-- Idempotent. Order matters: dest-gin-index.sql defines lower_array() first.
 -- ════════════════════════════════════════════════════════════════════════════
 
 
@@ -465,7 +463,6 @@ select
   v.title,
   v.description,
   v.category,
-  v.categories,
   v.photos,
   v.country,
   v.city,
@@ -484,7 +481,10 @@ select
   v.age_max,
   v.gender_pref,
   v.status,
-  v.created_at
+  v.created_at,
+  -- appended at the END so `create or replace view` accepts it (it can only
+  -- add columns, never reorder/rename existing ones).
+  v.categories
 from public.vibes v;
 
 revoke all on public.vibe_directory from public, anon, authenticated;
