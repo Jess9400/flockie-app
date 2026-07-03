@@ -9,6 +9,8 @@ import HomeHero from "@/components/HomeHero";
 import CreateFab from "@/components/CreateFab";
 import MatchKeyTip from "@/components/MatchKeyTip";
 import InviteFriendsButton from "@/components/InviteFriendsButton";
+import ReviewsToDoBanner from "@/components/ReviewsToDoBanner";
+import EarlyCityState from "@/components/EarlyCityState";
 import { loadVibeMatch } from "@/lib/vibe-stats";
 import { type InterestStatus } from "@/lib/vibes";
 
@@ -154,16 +156,30 @@ export default async function HomePage({
   const vibeUnion = Array.from(new Map([...near, ...allVibes].map((v) => [v.id, v])).values());
   const unionIds = vibeUnion.map((v) => v.id);
 
-  const [vibeMeta, vibeMatch, { data: cardInterests }, { data: flockRows }, { data: peopleRows }] =
-    await Promise.all([
-      loadHostsAndCounts(supabase, vibeUnion),
-      loadVibeMatch(supabase, unionIds),
-      unionIds.length
-        ? supabase.from("vibe_interests").select("vibe_id, status").eq("user_id", user!.id).in("vibe_id", unionIds)
-        : Promise.resolve({ data: [] }),
-      supabase.rpc("home_flocks", { p_limit: 10 }),
-      supabase.rpc("city_people", { p_limit: 12 }),
-    ]);
+  const [
+    vibeMeta,
+    vibeMatch,
+    { data: cardInterests },
+    { data: flockRows },
+    { data: peopleRows },
+    { data: buddyPending },
+    { data: myConfirmed },
+    { data: myVibeReviews },
+  ] = await Promise.all([
+    loadHostsAndCounts(supabase, vibeUnion),
+    loadVibeMatch(supabase, unionIds),
+    unionIds.length
+      ? supabase.from("vibe_interests").select("vibe_id, status").eq("user_id", user!.id).in("vibe_id", unionIds)
+      : Promise.resolve({ data: [] }),
+    supabase.rpc("home_flocks", { p_limit: 10 }),
+    supabase.rpc("city_people", { p_limit: 12 }),
+    // Pending reviews: ended 1:1 trips/activities with an unreviewed buddy.
+    supabase.rpc("pending_reviews"),
+    // Vibes I'm confirmed for (candidates for an event review once they start).
+    supabase.from("vibe_interests").select("vibe_id").eq("user_id", user!.id).eq("status", "confirmed"),
+    // Vibe reviews I've already left, to exclude them.
+    supabase.from("vibe_reviews").select("vibe_id").eq("reviewer_id", user!.id),
+  ]);
 
   const cardStatuses: Record<string, InterestStatus> = {};
   cardInterests?.forEach((r) => {
@@ -175,6 +191,39 @@ export default async function HomePage({
   const exploreVibes = homeCity
     ? allVibes.filter((v) => (v.city ?? "").trim().toLowerCase() !== homeCity.toLowerCase())
     : allVibes;
+
+  // ── Consolidated "reviews to leave" count ──────────────────────────────
+  // Buddy reviews come from the same RPC the creation gate uses. Vibe reviews:
+  // confirmed attendee, the Vibe has started, and I haven't reviewed it yet.
+  const buddyPendingList = (buddyPending ?? []) as { buddy_id: string }[];
+  const reviewedVibeIds = new Set((myVibeReviews ?? []).map((r) => r.vibe_id));
+  const candidateVibeIds = Array.from(
+    new Set((myConfirmed ?? []).map((r) => r.vibe_id))
+  ).filter((id) => !reviewedVibeIds.has(id));
+  let pendingVibeIds: string[] = [];
+  if (candidateVibeIds.length) {
+    // A Vibe is reviewable once it has started (matches the review page's gate).
+    const { data: startedVibes } = await supabase
+      .from("vibe_directory")
+      .select("id")
+      .in("id", candidateVibeIds)
+      .lte("starts_at", nowIso);
+    pendingVibeIds = (startedVibes ?? []).map((v) => v.id);
+  }
+  const reviewCount = buddyPendingList.length + pendingVibeIds.length;
+  // Link to the first pending item (there's no single review-hub route).
+  const firstReviewHref = buddyPendingList.length
+    ? `/review/${buddyPendingList[0].buddy_id}`
+    : pendingVibeIds.length
+      ? `/vibes/${pendingVibeIds[0]}/review`
+      : null;
+
+  // ── Local-pool state ───────────────────────────────────────────────────
+  // Empty local pool = no activity buddies AND no Vibes in the viewer's city.
+  // When true we lead with an encouraging "early city" state instead of letting
+  // worldwide carousels imply "everyone is in <another city>".
+  const localPoolEmpty =
+    !!homeCity && people.length === 0 && near.length === 0 && (liveCount ?? 0) === 0;
 
   const vibeCell = (v: VibeRow) => (
     <div key={v.id} className="w-72 shrink-0 snap-start">
@@ -196,7 +245,22 @@ export default async function HomePage({
       {/* What does the % mean? (dismissible legend) */}
       <MatchKeyTip />
 
+      {/* Reviews to leave (consolidated, session-dismissible) */}
+      {firstReviewHref && (
+        <ReviewsToDoBanner count={reviewCount} href={firstReviewHref} />
+      )}
+
+      {/* ── Early-city state: lead here when the local pool is empty ─────── */}
+      {localPoolEmpty && homeCity && (
+        <EarlyCityState
+          city={homeCity}
+          inviterId={user!.id}
+          inviterName={profile?.display_name ?? undefined}
+        />
+      )}
+
       {/* ── Find a buddy for an activity (people in your city) ───────────── */}
+      {!localPoolEmpty && (
       <section className="mx-4 mt-6">
         <div className="flex items-end justify-between gap-3 px-1">
           <div>
@@ -295,6 +359,7 @@ export default async function HomePage({
           </div>
         )}
       </section>
+      )}
 
       {/* ── Join a vibe (all cities) ────────────────────────────────────── */}
       <section className="mx-4 mt-8 px-1">
@@ -365,11 +430,18 @@ export default async function HomePage({
 
       {/* ── Explore vibes around the world (other cities) ───────────────── */}
       {exploreVibes.length > 0 && (
-        <section className="mx-4 mt-8">
+        <section id="explore-world" className="mx-4 mt-8 scroll-mt-4">
           <div className="flex items-end justify-between gap-3 px-1">
             <div>
-              <h2 className="text-[22px] font-extrabold sm:text-[28px]">Explore vibes around the world</h2>
-              <p className="mt-0.5 font-bold text-navy/60">Group plans in other cities — jump into one.</p>
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-[22px] font-extrabold sm:text-[28px]">Explore Vibes around the world</h2>
+                <span className="rounded-full border-2 border-ink bg-white px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-ink">
+                  🌍 Global
+                </span>
+              </div>
+              <p className="mt-0.5 font-bold text-navy/60">
+                Browsing group plans in other cities — jump into one.
+              </p>
             </div>
             <Link
               href="/vibes"
@@ -388,8 +460,13 @@ export default async function HomePage({
       <section className="mx-4 mt-8">
         <div className="flex items-end justify-between gap-3 px-1">
           <div>
-            <h2 className="text-[22px] font-extrabold sm:text-[28px]">Find a flock</h2>
-            <p className="mt-0.5 font-bold text-navy/60">Newest open group trips you can join.</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-[22px] font-extrabold sm:text-[28px]">Flocks you can join, anywhere</h2>
+              <span className="rounded-full border-2 border-ink bg-white px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-ink">
+                🌍 Global
+              </span>
+            </div>
+            <p className="mt-0.5 font-bold text-navy/60">Newest open group trips worldwide — request in.</p>
           </div>
           <Link
             href="/flocks"

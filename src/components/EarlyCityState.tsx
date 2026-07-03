@@ -1,0 +1,46 @@
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import InviteFriendsButton from "@/components/InviteFriendsButton";
+
+// Shown when the viewer's LOCAL pool is empty (no activity buddies AND no Vibes
+// in their city). Frames the emptiness as opportunity — not an apology — and
+// leads with an invite CTA, so the page never opens on "everyone is in <some
+// other city>". Global browsing still lives below, clearly labelled as global.
+export default function EarlyCityState({
+  city,
+  inviterId,
+  inviterName,
+}: {
+  city: string;
+  inviterId: string;
+  inviterName?: string;
+}) {
+  return (
+    <section className="mx-4 mt-6 rounded-3xl border-[3px] border-ink bg-cream p-6 text-center shadow-[0_6px_0_0_rgba(10,37,69,1)] sm:p-8">
+      <div className="text-4xl" aria-hidden>
+        🌱
+      </div>
+      <h2 className="mt-2 text-[24px] font-black leading-tight sm:text-[30px]">
+        You&rsquo;re early in {city}
+      </h2>
+      <p className="mx-auto mt-2 max-w-md font-bold text-ink/70">
+        Flockie is just getting started here — which means you get to shape it. Bring a
+        friend or two and you&rsquo;ll have people to explore with in no time.
+      </p>
+      <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <InviteFriendsButton
+          inviterId={inviterId}
+          inviterName={inviterName}
+          city={city}
+          label="Invite friends"
+        />
+        <Link
+          href="#explore-world"
+          className="inline-flex items-center gap-1 text-sm font-bold text-flockie-coral"
+        >
+          Meanwhile, explore around the world <ArrowRight size={15} />
+        </Link>
+      </div>
+    </section>
+  );
+}
