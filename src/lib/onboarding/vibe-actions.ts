@@ -109,7 +109,22 @@ export async function completeVibeCheck() {
 // Clears the saved quiz so the user can retake it from scratch.
 export async function restartVibeCheck() {
   const { supabase, user } = await authenticatedClient();
-  await supabase.from("vibe_responses").delete().eq("profile_id", user.id);
+  // .select() so a silent RLS deny (0 rows, no error) is detectable: the
+  // retake flow requires the old answers to actually be gone, otherwise the
+  // quiz page instantly re-completes from them.
+  const { data: deleted, error: deleteError } = await supabase
+    .from("vibe_responses")
+    .delete()
+    .eq("profile_id", user.id)
+    .select("question_id");
+  if (deleteError) throw deleteError;
+  if (!deleted?.length) {
+    const { count } = await supabase
+      .from("vibe_responses")
+      .select("id", { count: "exact", head: true })
+      .eq("profile_id", user.id);
+    if (count) throw new Error("Could not clear saved quiz answers");
+  }
   const { error } = await supabase
     .from("profiles")
     .update({ vibe_completed_at: null, archetype: null, vibe_scores: null })
