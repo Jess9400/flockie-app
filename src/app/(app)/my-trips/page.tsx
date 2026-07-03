@@ -92,12 +92,16 @@ export default async function MyTripsPage({
   // Vibe-match between me (host) and each requester, so I can gauge fit —
   // kicked off alongside the profile + chat lookups below.
   const matchByUser: Record<string, number | null> = {};
-  const scoresPromise = Promise.all(
-    reqUserIds.map(async (uid) => {
-      const { data } = await supabase.rpc("buddy_pair_score", { p_a: user!.id, p_b: uid });
-      matchByUser[uid] = typeof data === "number" ? Math.round(data) : null;
-    })
-  );
+  // One RPC for all requesters (was one round-trip per requester).
+  const scoresPromise = reqUserIds.length
+    ? supabase
+        .rpc("buddy_pair_scores", { p_a: user!.id, p_b: reqUserIds })
+        .then(({ data }) => {
+          (data ?? []).forEach((r: { user_id: string; score: number | null }) => {
+            matchByUser[r.user_id] = typeof r.score === "number" ? Math.round(r.score) : null;
+          });
+        })
+    : Promise.resolve();
   const [{ data: rpData }, { data: chats }] = await Promise.all([
     reqUserIds.length
       ? supabase
