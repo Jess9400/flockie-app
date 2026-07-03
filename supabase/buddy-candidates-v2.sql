@@ -19,10 +19,9 @@ returns int language sql security definer set search_path = public stable as $$
   from public.trips t cross join me_t
   where t.user_id <> auth.uid() and t.status = 'active' and t.kind = me_t.kind
     and coalesce(t.visibility, 'private') <> 'public'  -- exclude Flocks from 1:1
-    and exists (
-      select 1 from unnest(coalesce(t.destinations, '{}')) a
-      join unnest(coalesce(me_t.destinations, '{}')) b on lower(a) = lower(b)
-    );
+    -- shared destination (case/space-insensitive); && uses the GIN index on
+    -- lower_array(destinations) — see supabase/dest-gin-index.sql
+    and public.lower_array(t.destinations) && public.lower_array(me_t.destinations);
 $$;
 grant execute on function public.buddy_dest_count(text, uuid) to authenticated;
 
