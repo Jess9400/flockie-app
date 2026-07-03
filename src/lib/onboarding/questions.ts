@@ -105,7 +105,7 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
   {
     id: "qswipe",
     type: "swipe",
-    mechanicLabel: "Swipe or tap a side",
+    mechanicLabel: "Tap a side",
     text: "A plan falls through last minute. Be honest:",
     left: {
       emoji: "😤",
