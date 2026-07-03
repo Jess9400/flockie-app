@@ -19,7 +19,6 @@ select
   v.title,
   v.description,
   v.category,
-  v.categories,
   v.photos,
   v.country,
   v.city,
@@ -38,7 +37,10 @@ select
   v.age_max,
   v.gender_pref,
   v.status,
-  v.created_at
+  v.created_at,
+  -- appended at the END so `create or replace view` accepts it (it can only
+  -- add columns, never reorder/rename existing ones).
+  v.categories
 from public.vibes v;
 
 revoke all on public.vibe_directory from public, anon, authenticated;
