@@ -23,15 +23,16 @@ export default async function VibeDetailPage({
   searchParams: { interested?: string; request?: string; code?: string };
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const { data: vibe } = await supabase
-    .from("vibe_directory")
-    .select("*")
-    .eq("id", params.id)
-    .maybeSingle();
+  // The vibe lookup only needs params.id — fetch it alongside the user.
+  const [
+    {
+      data: { user },
+    },
+    { data: vibe },
+  ] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase.from("vibe_directory").select("*").eq("id", params.id).maybeSingle(),
+  ]);
 
   if (!vibe) {
     return (
@@ -50,18 +51,52 @@ export default async function VibeDetailPage({
   }
   const isHost = vibe.host_id === user!.id;
 
-  // host (plain query, no embed)
-  const { data: host } = await supabase
-    .from("public_profiles")
-    .select("id, display_name, photos, one_liner")
-    .eq("id", vibe.host_id)
-    .maybeSingle();
+  // These reads only depend on the vibe row and the viewer — fetch together.
+  // (attendees via RPC since vibe_interests is no longer broadly readable;
+  // see supabase/vibe-attendees-rls.sql)
+  const [
+    { data: host },
+    { data: me },
+    { data: myInterest },
+    { data: myFeedback },
+    { data: attendeeRows },
+    { data: reviewRows },
+    { data: hostMeta },
+  ] = await Promise.all([
+    supabase
+      .from("public_profiles")
+      .select("id, display_name, photos, one_liner")
+      .eq("id", vibe.host_id)
+      .maybeSingle(),
+    supabase
+      .from("profiles")
+      .select("onboarding_complete, activities, vibe_completed_at, home_city")
+      .eq("id", user!.id)
+      .maybeSingle(),
+    supabase
+      .from("vibe_interests")
+      .select("status, invitation_expires_at")
+      .eq("vibe_id", params.id)
+      .eq("user_id", user!.id)
+      .maybeSingle(),
+    supabase
+      .from("vibe_feedback")
+      .select("signal")
+      .eq("vibe_id", params.id)
+      .eq("user_id", user!.id)
+      .eq("signal", "not_for_me")
+      .maybeSingle(),
+    supabase.rpc("vibe_attendees", { p_vibe: params.id }),
+    supabase.from("vibe_reviews").select("recommend, rating, tags").eq("vibe_id", params.id),
+    isHost
+      ? supabase
+          .from("vibes")
+          .select("host_invite_code, algo_share, preview_rejects_used")
+          .eq("id", params.id)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+  ]);
 
-  const { data: me } = await supabase
-    .from("profiles")
-    .select("onboarding_complete, activities, vibe_completed_at, home_city")
-    .eq("id", user!.id)
-    .maybeSingle();
   // For Vibe interest we only need the activity vibe check (not full onboarding).
   const activitiesDone = (me?.activities ?? []).length > 0;
   // Warn before registering for a Vibe outside the user's home city.
@@ -69,13 +104,6 @@ export default async function VibeDetailPage({
     !!vibe.city &&
     !!me?.home_city &&
     vibe.city.trim().toLowerCase() !== me.home_city.trim().toLowerCase();
-
-  const { data: myInterest } = await supabase
-    .from("vibe_interests")
-    .select("status, invitation_expires_at")
-    .eq("vibe_id", params.id)
-    .eq("user_id", user!.id)
-    .maybeSingle();
 
   let privateLogistics: {
     location_name: string | null;
@@ -88,31 +116,9 @@ export default async function VibeDetailPage({
     privateLogistics = data?.[0] ?? null;
   }
 
-  let hostInviteCode: string | null = null;
-  let hostAlgoShare = 100;
-  let previewRejectsUsed = 0;
-  if (isHost) {
-    const { data } = await supabase
-      .from("vibes")
-      .select("host_invite_code, algo_share, preview_rejects_used")
-      .eq("id", params.id)
-      .maybeSingle();
-    hostInviteCode = data?.host_invite_code ?? null;
-    hostAlgoShare = data?.algo_share ?? 100;
-    previewRejectsUsed = data?.preview_rejects_used ?? 0;
-  }
-
-  const { data: myFeedback } = await supabase
-    .from("vibe_feedback")
-    .select("signal")
-    .eq("vibe_id", params.id)
-    .eq("user_id", user!.id)
-    .eq("signal", "not_for_me")
-    .maybeSingle();
-
-  // confirmed attendees (avatars) + count — via RPC (vibe_interests is no longer
-  // broadly readable; see supabase/vibe-attendees-rls.sql)
-  const { data: attendeeRows } = await supabase.rpc("vibe_attendees", { p_vibe: params.id });
+  const hostInviteCode: string | null = hostMeta?.host_invite_code ?? null;
+  const hostAlgoShare: number = hostMeta?.algo_share ?? 100;
+  const previewRejectsUsed: number = hostMeta?.preview_rejects_used ?? 0;
   const allAttendees = (attendeeRows ?? []) as {
     id: string;
     display_name: string | null;
@@ -147,70 +153,77 @@ export default async function VibeDetailPage({
   let privateRequests: { id: string; name: string | null; photo: string | null }[] = [];
   let hostFilled = 0;
   if (isHost) {
-    const { data: rows } = await supabase
-      .from("vibe_interests")
-      .select("status")
-      .eq("vibe_id", params.id);
+    // Stage 1: the four vibe_interests slices + removals count are independent.
+    const [{ data: rows }, { data: slRows }, { data: prRows }, { data: memberRows }, { count }] =
+      await Promise.all([
+        supabase.from("vibe_interests").select("status").eq("vibe_id", params.id),
+        vibe.status === "reviewing"
+          ? supabase
+              .from("vibe_interests")
+              .select("user_id, match_score")
+              .eq("vibe_id", params.id)
+              .eq("status", "shortlisted")
+              .order("match_score", { ascending: false, nullsFirst: false })
+          : Promise.resolve({ data: null }),
+        hostSpots > 0
+          ? supabase
+              .from("vibe_interests")
+              .select("user_id, status")
+              .eq("vibe_id", params.id)
+              .eq("source", "private")
+          : Promise.resolve({ data: null }),
+        supabase
+          .from("vibe_interests")
+          .select("user_id, status")
+          .eq("vibe_id", params.id)
+          .in("status", ["invited", "confirmed"]),
+        supabase
+          .from("vibe_removals")
+          .select("id", { count: "exact", head: true })
+          .eq("vibe_id", params.id)
+          .eq("is_safety", false),
+      ]);
+
     rows?.forEach((r) => {
       tally[r.status] = (tally[r.status] ?? 0) + 1;
     });
-
-    if (vibe.status === "reviewing") {
-      const { data: slRows } = await supabase
-        .from("vibe_interests")
-        .select("user_id, match_score")
-        .eq("vibe_id", params.id)
-        .eq("status", "shortlisted")
-        .order("match_score", { ascending: false, nullsFirst: false });
-      const slIds = (slRows ?? []).map((r) => r.user_id);
-      if (slIds.length) {
-        const { data: slProfiles } = await supabase
-          .from("public_profiles")
-          .select("id, display_name, photos")
-          .in("id", slIds);
-        const byId = new Map((slProfiles ?? []).map((p) => [p.id, p]));
-        shortlist = (slRows ?? []).map((r) => ({
-          id: r.user_id,
-          name: byId.get(r.user_id)?.display_name ?? null,
-          photo: byId.get(r.user_id)?.photos?.[0] ?? null,
-          score: r.match_score ?? null,
-        }));
-      }
-    }
-
-    if (hostSpots > 0) {
-      const { data: prRows } = await supabase
-        .from("vibe_interests")
-        .select("user_id, status")
-        .eq("vibe_id", params.id)
-        .eq("source", "private");
-      const reqIds = (prRows ?? []).filter((r) => r.status === "requested").map((r) => r.user_id);
-      hostFilled = (prRows ?? []).filter((r) => r.status === "invited" || r.status === "confirmed").length;
-      if (reqIds.length) {
-        const { data: pp } = await supabase
-          .from("public_profiles")
-          .select("id, display_name, photos")
-          .in("id", reqIds);
-        const byId = new Map((pp ?? []).map((p) => [p.id, p]));
-        privateRequests = reqIds.map((id) => ({
-          id,
-          name: byId.get(id)?.display_name ?? null,
-          photo: byId.get(id)?.photos?.[0] ?? null,
-        }));
-      }
-    }
-
-    const { data: memberRows } = await supabase
-      .from("vibe_interests")
-      .select("user_id, status")
-      .eq("vibe_id", params.id)
-      .in("status", ["invited", "confirmed"]);
+    const slIds = (slRows ?? []).map((r) => r.user_id);
+    const reqIds = (prRows ?? []).filter((r) => r.status === "requested").map((r) => r.user_id);
+    hostFilled = (prRows ?? []).filter((r) => r.status === "invited" || r.status === "confirmed").length;
     const memberIds = (memberRows ?? []).map((r) => r.user_id);
+    normalRemovalCount = count ?? 0;
+
+    // Stage 2: the public_profiles lookups keyed by stage-1 id lists.
+    const [{ data: slProfiles }, { data: pp }, { data: profiles }] = await Promise.all([
+      slIds.length
+        ? supabase.from("public_profiles").select("id, display_name, photos").in("id", slIds)
+        : Promise.resolve({ data: null }),
+      reqIds.length
+        ? supabase.from("public_profiles").select("id, display_name, photos").in("id", reqIds)
+        : Promise.resolve({ data: null }),
+      memberIds.length
+        ? supabase.from("public_profiles").select("id, display_name, photos").in("id", memberIds)
+        : Promise.resolve({ data: null }),
+    ]);
+
+    if (slIds.length) {
+      const byId = new Map((slProfiles ?? []).map((p) => [p.id, p]));
+      shortlist = (slRows ?? []).map((r) => ({
+        id: r.user_id,
+        name: byId.get(r.user_id)?.display_name ?? null,
+        photo: byId.get(r.user_id)?.photos?.[0] ?? null,
+        score: r.match_score ?? null,
+      }));
+    }
+    if (reqIds.length) {
+      const byId = new Map((pp ?? []).map((p) => [p.id, p]));
+      privateRequests = reqIds.map((id) => ({
+        id,
+        name: byId.get(id)?.display_name ?? null,
+        photo: byId.get(id)?.photos?.[0] ?? null,
+      }));
+    }
     if (memberIds.length) {
-      const { data: profiles } = await supabase
-        .from("public_profiles")
-        .select("id, display_name, photos")
-        .in("id", memberIds);
       const statusByUser = new Map(
         (memberRows ?? []).map((r) => [r.user_id, r.status as "invited" | "confirmed"])
       );
@@ -221,23 +234,12 @@ export default async function VibeDetailPage({
         status: statusByUser.get(profile.id) ?? "invited",
       }));
     }
-
-    const { count } = await supabase
-      .from("vibe_removals")
-      .select("id", { count: "exact", head: true })
-      .eq("vibe_id", params.id)
-      .eq("is_safety", false);
-    normalRemovalCount = count ?? 0;
   }
 
   const rules = (vibe.dealbreaker_rules ?? {}) as Record<string, boolean>;
   const activeRules = DEALBREAKER_RULES.filter((r) => rules[r.key]);
 
-  // Vibe reviews (the event) — aggregate into weighted %.
-  const { data: reviewRows } = await supabase
-    .from("vibe_reviews")
-    .select("recommend, rating, tags")
-    .eq("vibe_id", params.id);
+  // Vibe reviews (the event) — aggregate into weighted %. (fetched above)
   const reviews = reviewRows ?? [];
   const reviewCount = reviews.length;
   const recommendPct = reviewCount
