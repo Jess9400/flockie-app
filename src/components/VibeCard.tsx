@@ -164,32 +164,34 @@ export default function VibeCard({
             <span className="truncate">{approximateLocation}</span>
           </p>
 
-          <div className="mt-2 flex items-center justify-between gap-1 pt-0.5">
-            <span className="flex min-w-0 items-center gap-1 text-[11px] font-medium text-ink">
-              {hostAvatar ? (
-                <Image
-                  src={hostAvatar}
-                  alt=""
-                  width={18}
-                  height={18}
-                  className="h-[18px] w-[18px] shrink-0 rounded-full object-cover"
-                />
-              ) : (
-                <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-flockie-blue text-[9px] font-bold text-white">
-                  {hostName[0]}
-                </span>
-              )}
-              <span className="truncate">{hostName}</span>
-            </span>
-            <span className="flex shrink-0 items-center gap-0.5 text-[11px] font-bold text-muted">
-              <Users size={11} /> {faded ? `${confirmedCount} went` : `${confirmedCount}/${vibe.capacity}`}
-            </span>
+          <div className="mt-auto pt-2">
+            <div className="flex items-center justify-between gap-1 pt-0.5">
+              <span className="flex min-w-0 items-center gap-1 text-[11px] font-medium text-ink">
+                {hostAvatar ? (
+                  <Image
+                    src={hostAvatar}
+                    alt=""
+                    width={18}
+                    height={18}
+                    className="h-[18px] w-[18px] shrink-0 rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-flockie-blue text-[9px] font-bold text-white">
+                    {hostName[0]}
+                  </span>
+                )}
+                <span className="truncate">{hostName}</span>
+              </span>
+              <span className="flex shrink-0 items-center gap-0.5 text-[11px] font-bold text-muted">
+                <Users size={11} /> {faded ? `${confirmedCount} went` : `${confirmedCount}/${vibe.capacity}`}
+              </span>
+            </div>
+            {!faded && typeof matchPct === "number" && (
+              <span className="mt-2 block w-fit rounded-full border-2 border-ink bg-flockie-coral px-2 py-0.5 text-[10px] font-extrabold leading-none text-white">
+                {matchPct}% match
+              </span>
+            )}
           </div>
-          {!faded && typeof matchPct === "number" && (
-            <span className="mt-2 w-fit rounded-full border-2 border-ink bg-flockie-coral px-2 py-0.5 text-[10px] font-extrabold leading-none text-white">
-              {matchPct}% match
-            </span>
-          )}
         </div>
       </Link>
     </div>
