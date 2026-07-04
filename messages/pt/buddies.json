@@ -46,12 +46,12 @@
   "chatPage": {
     "yourMatch": "seu match",
     "alignOn": "Vocês dois combinam em {tags}.",
-    "similarOverall": "Vocês têm um vibe de viagem bem parecido no geral.",
+    "similarOverall": "Vocês têm uma Vibe de viagem bem parecido no geral.",
     "icebreakerMatched": "Vocês dois deram match em {destination}, {dateRange}.",
     "compatibleVibes": "Vibes compatíveis: {tags}.",
     "planTogether": "Comecem a planejar juntos — troquem datas, compartilhem o que não pode faltar e conversem sobre o que cada um espera desta viagem.",
-    "similarVibe": "Vocês dois têm um vibe de viagem parecido. Escolham um destino juntos e comecem a planejar. Sem pressão.",
-    "similarVibeWith": "Vocês dois têm um vibe de viagem parecido — {tags}. Escolham um destino juntos e comecem a planejar. Sem pressão.",
+    "similarVibe": "Vocês dois têm uma Vibe de viagem parecido. Escolham um destino juntos e comecem a planejar. Sem pressão.",
+    "similarVibeWith": "Vocês dois têm uma Vibe de viagem parecido — {tags}. Escolham um destino juntos e comecem a planejar. Sem pressão.",
     "flockIcebreaker": "Todos vão para {title}{dateRangeSuffix}. 🎒\nDigam oi e comecem a organizar juntos — fechem as datas que funcionam, onde vão ficar e o que não pode faltar para todo mundo.",
     "dateRange": "{start} → {end} · {days, plural, one {# dia} other {# dias}}"
   },
@@ -78,7 +78,7 @@
     "viewProfileNamed": "Ver o perfil de {name}",
     "turnIntoFlock": "Transformar em um Flock",
     "leaveMatch": "Sair deste match",
-    "yourVibeScore": "✨ {score}% do seu vibe",
+    "yourVibeScore": "✨ {score}% da sua Vibe",
     "viewFullProfileNamed": "Ver o perfil completo de {name}",
     "leaveMatchBtn": "Sair do match"
   },

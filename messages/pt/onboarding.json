@@ -43,7 +43,7 @@
       "body": "Suas respostas estão salvas. A gente traz você de volta para a pergunta {number}.",
       "continueNow": "Continuar agora →"
     },
-    "lockHint": "Termine o quiz para fixar o seu novo vibe",
+    "lockHint": "Termine o quiz para fixar o seu nova Vibe",
     "exitSheet": {
       "title": "Pausar aqui?",
       "body": "Suas respostas concluídas já estão salvas. Volte quando quiser.",
@@ -106,7 +106,7 @@
       "wired": "Como você funciona",
       "matching": "O que isso significa para os seus matches",
       "clickWith": "Você combinaria com",
-      "nearby": "Gente perto de você com esse vibe"
+      "nearby": "Gente perto de você com essa Vibe"
     },
     "traits": {
       "spontaneous": "Espontâneo",
@@ -118,7 +118,7 @@
     },
     "matchingIntro": "Os {name} dão match de um jeito diferente.",
     "emptyNearby": {
-      "title": "Ninguém combinou com esse vibe por aqui ainda",
+      "title": "Ninguém combinou com essa Vibe por aqui ainda",
       "body": "Será que seu BFF tem o mesmo vibe? Convide e descubra!",
       "invite": "Convide seu BFF"
     },

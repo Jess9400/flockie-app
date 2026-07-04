@@ -8,7 +8,7 @@
     "topPicks": "✨ Destaques",
     "subtitle": "Pessoas em {city} a fim de fazer algo — mande um oi.",
     "yourCity": "sua cidade",
-    "swipeMore": "Deslizar mais",
+    "swipeMore": "Swipe",
     "emptyTitle": "Nenhum buddy novo para atividades em {city} agora.",
     "emptyBody": "Criar uma atividade não vai gerar um match até que alguém compatível esteja disponível. Convide um amigo ou explore Vibes enquanto o grupo local cresce.",
     "inviteFriend": "Convidar um amigo",
@@ -16,7 +16,7 @@
     "someone": "Alguém"
   },
   "joinVibe": {
-    "heading": "Entre em um vibe",
+    "heading": "Entre em uma Vibe",
     "subtitle": "Planos em grupo por toda parte — entre em um."
   },
   "nearYou": {
@@ -26,7 +26,7 @@
     "filterAny": "Qualquer hora",
     "filter24": "24h",
     "filter48": "48h",
-    "createVibe": "Criar um Vibe",
+    "createVibe": "Criar uma Vibe",
     "subtitle": {
       "all": { "withCity": "Em breve em {city}", "noCity": "Próximos Vibes" },
       "24": { "withCity": "Nas próximas 24 horas em {city}", "noCity": "Vibes nas próximas 24 horas" },
@@ -49,13 +49,13 @@
   },
   "explore": {
     "heading": "Explore Vibes pelo mundo",
-    "subtitle": "Explorando planos em grupo em outras cidades — entre em um."
+    "subtitle": "Explorando planos em grupo em outras cidades — encontre o seu."
   },
   "flocks": {
     "heading": "Flocks para você entrar, em qualquer lugar",
     "subtitle": "As viagens em grupo mais recentes do mundo todo — peça para entrar.",
     "emptyTitle": "Nenhum flock aberto agora.",
-    "emptyBody": "Crie um e deixe outros viajantes pedirem para entrar.",
+    "emptyBody": "Crie um e possibilite outros viajantes de participarem.",
     "createFlock": "Criar um flock",
     "tripFallback": "Viagem",
     "hostFallback": "Anfitrião"
@@ -65,7 +65,7 @@
     "subtitleDone": "Crie o seu e deixe as pessoas virem até você.",
     "subtitleTodo": "Termine seu vibe check e vamos te conectar com as pessoas e Vibes certas.",
     "completeVibeCheck": "✨ Complete seu vibe check",
-    "createVibe": "Criar um vibe",
+    "createVibe": "Criar uma Vibe",
     "createActivity": "Criar uma atividade"
   }
 }
