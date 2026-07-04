@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import { format } from "date-fns";
+import { useTranslations } from "next-intl";
 import Stars from "@/components/Stars";
 
 export type ReviewItem = {
@@ -20,10 +23,11 @@ export default function ProfileReviews({
   count: number;
   items: ReviewItem[];
 }) {
+  const t = useTranslations("profile");
   return (
     <section className="mt-10 font-nunito">
       <div className="flex items-center gap-2">
-        <h2 className="font-fredoka text-[22px] font-semibold text-navy">Reviews</h2>
+        <h2 className="font-fredoka text-[22px] font-semibold text-navy">{t("reviews.title")}</h2>
         {count > 0 && (
           <span className="flex items-center gap-1.5 font-nunito text-sm font-semibold text-navy">
             <Stars value={avg} size={15} />
@@ -34,7 +38,7 @@ export default function ProfileReviews({
 
       {count === 0 ? (
         <p className="mt-2 font-nunito text-sm font-normal text-navy/60">
-          No reviews yet — reviews appear after you travel together, do an activity, or share a Flock.
+          {t("reviews.empty")}
         </p>
       ) : (
         <ul className="mt-4 space-y-3">

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import PhotoGrid from "@/components/PhotoGrid";
 import PhotoCropper from "@/components/PhotoCropper";
@@ -23,6 +24,7 @@ type Props = {
 // own wizard forms (TripVibeForm / ActivityVibeForm); the personality vibe is
 // the signup onboarding quiz. This stays focused on who you are + your photos.
 export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter }: Props) {
+  const t = useTranslations("profile");
   const router = useRouter();
   const supabase = createClient();
 
@@ -75,7 +77,7 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
       setPhotos((p) => [...p, url]);
       setPendingFile(null);
     } catch {
-      setMsg("Photo upload failed.");
+      setMsg(t("form.photoUploadFailed"));
     } finally {
       setUploading(false);
     }
@@ -89,7 +91,7 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
     try {
       setVideoUrl(await uploadFile("videos", file));
     } catch {
-      setMsg("Video upload failed.");
+      setMsg(t("form.videoUploadFailed"));
     } finally {
       setUploading(false);
       if (videoInput.current) videoInput.current.value = "";
@@ -107,7 +109,7 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
-    if (photos.length === 0) return setMsg("Add at least one profile photo.");
+    if (photos.length === 0) return setMsg(t("form.needPhoto"));
     setSaving(true);
     setMsg(null);
     const { bio, ...rest } = basics;
@@ -128,7 +130,7 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
     // Separate, migration-safe write (bio column may not exist yet).
     await supabase.from("profiles").update({ bio: bio || null }).eq("id", userId);
     setSaving(false);
-    setMsg("Saved!");
+    setMsg(t("form.saved"));
     setShowShare(true);
   }
 
@@ -139,8 +141,8 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
         <section>
           <SectionHeader
             id="sec-photos"
-            title="Photos & video"
-            subtitle="At least one photo. Your first photo is your primary — drag to reorder."
+            title={t("form.photosTitle")}
+            subtitle={t("form.photosSubtitle")}
           />
           <div className="mt-5">
             <PhotoGrid
@@ -161,18 +163,18 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
 
         {/* Basics */}
         <section>
-          <SectionHeader id="sec-basics" title="About you" />
+          <SectionHeader id="sec-basics" title={t("form.aboutTitle")} />
           <div className="mt-5 space-y-3">
-            <Field label="Name">
+            <Field label={t("form.name")}>
               <input
                 className={inputCls}
                 value={basics.display_name}
                 onChange={(e) => setBasics({ ...basics, display_name: e.target.value })}
-                placeholder="Your first name"
+                placeholder={t("form.namePlaceholder")}
               />
             </Field>
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Age">
+              <Field label={t("form.age")}>
                 <input
                   type="number"
                   min={18}
@@ -184,37 +186,37 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
                   }
                 />
               </Field>
-              <Field label="Gender">
+              <Field label={t("form.gender")}>
                 <select
                   className={inputCls}
                   value={basics.gender}
                   onChange={(e) => setBasics({ ...basics, gender: e.target.value })}
                 >
-                  <option value="">Select…</option>
+                  <option value="">{t("form.genderSelect")}</option>
                   {GENDER_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>
-                      {o.label}
+                      {t(`genders.${o.value}`)}
                     </option>
                   ))}
                 </select>
               </Field>
             </div>
-            <Field label="Home city">
+            <Field label={t("form.homeCity")}>
               <CityAutocomplete
                 className={inputCls}
                 value={basics.home_city}
                 onChange={(v) => setBasics({ ...basics, home_city: v })}
-                placeholder="e.g. Lisbon"
+                placeholder={t("form.cityPlaceholder")}
               />
             </Field>
-            <Field label="A little about you (optional)">
+            <Field label={t("form.bioLabel")}>
               <textarea
                 rows={4}
                 maxLength={300}
                 className="w-full rounded-2xl border-2 border-navy bg-cream px-4 py-3 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue"
                 value={basics.bio}
                 onChange={(e) => setBasics({ ...basics, bio: e.target.value })}
-                placeholder="What should people know about you?"
+                placeholder={t("form.bioPlaceholder")}
               />
               <p className="mt-1 text-right font-nunito text-xs font-semibold text-navy/50">
                 {basics.bio.length}/300
@@ -227,32 +229,32 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
         <section>
           <SectionHeader
             id="sec-verifications"
-            title="Verifications"
-            subtitle="Link your handles so matches can check you out (optional)."
+            title={t("form.verificationsTitle")}
+            subtitle={t("form.verificationsSubtitle")}
           />
           <div className="mt-5 space-y-3">
-            <Field label="Instagram">
+            <Field label={t("form.instagram")}>
               <input
                 className={inputCls}
                 value={basics.instagram}
                 onChange={(e) => setBasics({ ...basics, instagram: e.target.value })}
-                placeholder="@yourhandle"
+                placeholder={t("form.handlePlaceholder")}
               />
             </Field>
-            <Field label="X (Twitter)">
+            <Field label={t("form.xTwitter")}>
               <input
                 className={inputCls}
                 value={basics.x_handle}
                 onChange={(e) => setBasics({ ...basics, x_handle: e.target.value })}
-                placeholder="@yourhandle"
+                placeholder={t("form.handlePlaceholder")}
               />
             </Field>
-            <Field label="TikTok">
+            <Field label={t("form.tiktok")}>
               <input
                 className={inputCls}
                 value={basics.tiktok}
                 onChange={(e) => setBasics({ ...basics, tiktok: e.target.value })}
-                placeholder="@yourhandle"
+                placeholder={t("form.handlePlaceholder")}
               />
             </Field>
           </div>
@@ -266,7 +268,7 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
         disabled={saving || uploading}
         className="mt-8 w-full rounded-full border-2 border-navy bg-flockie-coral py-3.5 font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] disabled:opacity-50"
       >
-        {saving ? "Saving…" : "Save profile"}
+        {saving ? t("form.saving") : t("form.save")}
       </button>
 
       {pendingFile && (

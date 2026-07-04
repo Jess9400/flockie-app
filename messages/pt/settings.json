@@ -1,1 +1,48 @@
-{}
+{
+  "backToProfile": "Perfil",
+  "title": "Configurações",
+  "saveError": "Não foi possível salvar — verifique sua conexão e tente de novo.",
+  "account": {
+    "title": "Conta",
+    "signOut": "Sair"
+  },
+  "notifications": {
+    "title": "Notificações",
+    "description": "Convites, confirmações e novidades."
+  },
+  "location": {
+    "title": "Manter minha localização atualizada",
+    "description": "Deixe o Flockie encontrar Vibes, viagens e pessoas perto de você — e atualizar sua cidade automaticamente quando você viaja, para você nunca precisar definir na mão."
+  },
+  "discovery": {
+    "title": "Aberto a ser descoberto",
+    "description": "Deixe as pessoas da sua cidade te encontrarem para uma atividade. Se alguém curtir seu vibe, você recebe um aviso para dar match de volta."
+  },
+  "socialVisibility": {
+    "title": "Quem pode ver minhas redes?",
+    "subtitle": "Seus perfis de Instagram, X e TikTok nunca afetam o match.",
+    "saveError": "Não foi possível atualizar a visibilidade das suas redes. Tente de novo.",
+    "options": {
+      "connections": {
+        "label": "Conexões",
+        "description": "Pessoas com quem você compartilha um plano confirmado ou um match de buddy."
+      },
+      "members": {
+        "label": "Todos os membros",
+        "description": "Qualquer membro do Flockie com login que veja seu perfil."
+      },
+      "private": {
+        "label": "Só eu",
+        "description": "Suas redes ficam escondidas de todos os outros."
+      }
+    }
+  },
+  "deleteAccount": {
+    "confirmTitle": "Excluir sua conta?",
+    "confirmMessage": "Isso remove permanentemente seu perfil, fotos, vibe check e matches. Não dá para desfazer.",
+    "confirmLabel": "Excluir conta",
+    "mediaError": "Não foi possível remover seus arquivos — tente de novo. ",
+    "deleting": "Excluindo…",
+    "button": "Excluir conta"
+  }
+}

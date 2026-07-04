@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 
 export default function DiscoveryToggle({
@@ -10,6 +11,7 @@ export default function DiscoveryToggle({
   userId: string;
   initial: boolean;
 }) {
+  const t = useTranslations("settings");
   const supabase = createClient();
   const [on, setOn] = useState(initial);
   const [busy, setBusy] = useState(false);
@@ -35,10 +37,9 @@ export default function DiscoveryToggle({
     <div className="rounded-2xl border-2 border-ink bg-white p-4 font-nunito">
       <div className="flex items-center justify-between">
         <div className="pr-3">
-          <p className="text-sm font-extrabold text-navy">Open to discovery</p>
+          <p className="text-sm font-extrabold text-navy">{t("discovery.title")}</p>
           <p className="text-xs font-medium text-navy/60">
-            Let people in your city find you for an activity. If someone likes your vibe,
-            you&rsquo;ll get a heads-up to match back.
+            {t("discovery.description")}
           </p>
         </div>
         <button
@@ -57,9 +58,7 @@ export default function DiscoveryToggle({
         </button>
       </div>
       {err && (
-        <p className="mt-2 text-xs font-bold text-red-700">
-          Couldn&rsquo;t save — check your connection and try again.
-        </p>
+        <p className="mt-2 text-xs font-bold text-red-700">{t("saveError")}</p>
       )}
     </div>
   );

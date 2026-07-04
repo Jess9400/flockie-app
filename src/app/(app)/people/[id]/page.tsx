@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import PublicProfileDashboard from "@/components/PublicProfileDashboard";
@@ -14,6 +15,7 @@ export default async function PersonPage({
   params: { id: string };
 }) {
   const supabase = await createClient();
+  const t = await getTranslations("profile");
 
   // Profile, viewer, reviews, and the two social-proof RPCs are independent —
   // everything except the reviewer/like follow-ups keys on params.id alone.
@@ -83,7 +85,7 @@ export default async function PersonPage({
     rating: r.rating,
     comment: r.comment,
     created_at: r.created_at,
-    reviewerName: (reviewers[r.reviewer_id]?.display_name || "A flockie").split(" ")[0],
+    reviewerName: (reviewers[r.reviewer_id]?.display_name || t("reviewerFallback")).split(" ")[0],
     reviewerPhoto: reviewers[r.reviewer_id]?.photos?.[0] ?? null,
   }));
 
@@ -93,7 +95,7 @@ export default async function PersonPage({
   return (
     <main className="mx-auto w-full max-w-[1180px] px-4 pb-28 pt-6 font-nunito sm:px-6 sm:pb-12">
       <Link href="/match" className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted">
-        <ChevronLeft size={16} /> Back
+        <ChevronLeft size={16} /> {t("page.back")}
       </Link>
 
       <PublicProfileDashboard

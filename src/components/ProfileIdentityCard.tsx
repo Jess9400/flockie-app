@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Pencil, Settings, Share2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import ProfileSocials from "@/components/ProfileSocials";
 import { ARCHETYPES } from "@/lib/onboarding/archetypes";
 import type { VibeDimension } from "@/lib/onboarding/types";
@@ -27,6 +28,7 @@ export default function ProfileIdentityCard({
   onShare?: () => void;
   mode?: "owner" | "public";
 }) {
+  const t = useTranslations("profile");
   const isOwner = mode === "owner";
   const photo = profile.photos?.[0];
   const nameAge = [profile.display_name?.trim(), profile.age ? String(profile.age) : null]
@@ -60,7 +62,7 @@ export default function ProfileIdentityCard({
               <button
                 type="button"
                 onClick={onShare}
-                aria-label="Share profile"
+                aria-label={t("identity.shareAria")}
                 className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink bg-white/95 text-navy shadow-[0_3px_0_0_#10233d]"
               >
                 <Share2 size={17} />
@@ -68,7 +70,7 @@ export default function ProfileIdentityCard({
             )}
             <Link
               href="/settings"
-              aria-label="Settings"
+              aria-label={t("identity.settingsAria")}
               className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink bg-white/95 text-navy shadow-[0_3px_0_0_#10233d]"
             >
               <Settings size={17} />
@@ -78,7 +80,7 @@ export default function ProfileIdentityCard({
 
         <div className="absolute inset-x-5 bottom-5 text-white">
           <h1 className="font-fredoka text-4xl font-bold leading-none">
-            {nameAge || "Your profile"}
+            {nameAge || t("identity.titleFallback")}
           </h1>
           {(profile.home_city || archetype) && (
             <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-bold text-white/90">
@@ -101,7 +103,7 @@ export default function ProfileIdentityCard({
           </p>
         ) : isOwner ? (
           <p className="text-sm font-medium text-muted">
-            Add a short bio so people understand what it feels like to hang out with you.
+            {t("identity.bioPrompt")}
           </p>
         ) : null}
 
@@ -127,9 +129,9 @@ export default function ProfileIdentityCard({
         </div>
 
         <div className="mt-4 grid grid-cols-3 gap-2">
-          <TrustItem value={reviewCount} label="Reviews" />
-          <TrustItem value={stats?.vibes_attended ?? 0} label="Vibes joined" />
-          <TrustItem value={stats?.vibes_hosted ?? 0} label="Hosted" />
+          <TrustItem value={reviewCount} label={t("identity.reviews")} />
+          <TrustItem value={stats?.vibes_attended ?? 0} label={t("identity.vibesJoined")} />
+          <TrustItem value={stats?.vibes_hosted ?? 0} label={t("identity.hosted")} />
         </div>
 
         {isOwner && onEdit && (
@@ -138,7 +140,7 @@ export default function ProfileIdentityCard({
             onClick={onEdit}
             className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-coral px-5 py-2.5 font-fredoka text-sm font-semibold text-white shadow-[0_3px_0_0_#10233d]"
           >
-            <Pencil size={15} /> Edit public profile
+            <Pencil size={15} /> {t("identity.editPublic")}
           </button>
         )}
       </div>

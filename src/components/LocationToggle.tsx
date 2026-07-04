@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { captureAndStoreLocation } from "@/lib/location";
 
@@ -11,6 +12,7 @@ export default function LocationToggle({
   userId: string;
   initial: boolean;
 }) {
+  const t = useTranslations("settings");
   const supabase = createClient();
   const [on, setOn] = useState(initial);
   const [busy, setBusy] = useState(false);
@@ -48,10 +50,9 @@ export default function LocationToggle({
     <div className="rounded-2xl border-2 border-ink bg-white p-4 font-nunito">
       <div className="flex items-center justify-between">
         <div className="pr-3">
-          <p className="text-sm font-extrabold text-navy">Keep my location current</p>
+          <p className="text-sm font-extrabold text-navy">{t("location.title")}</p>
           <p className="text-xs font-medium text-navy/60">
-            Let Flockie find Vibes, trips and people near you — and update your city
-            automatically when you travel, so you never set it by hand.
+            {t("location.description")}
           </p>
         </div>
         <button
@@ -70,9 +71,7 @@ export default function LocationToggle({
         </button>
       </div>
       {err && (
-        <p className="mt-2 text-xs font-bold text-red-700">
-          Couldn&rsquo;t save — check your connection and try again.
-        </p>
+        <p className="mt-2 text-xs font-bold text-red-700">{t("saveError")}</p>
       )}
     </div>
   );

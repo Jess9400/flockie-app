@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { format } from "date-fns";
+import { useTranslations } from "next-intl";
 import {
   ArrowRight,
   Check,
@@ -56,6 +57,7 @@ export default function OwnerProfileDashboard({
   onEditProfile: () => void;
   onShare: () => void;
 }) {
+  const t = useTranslations("profile");
   const router = useRouter();
   const confirm = useConfirm();
   const toast = useToast();
@@ -86,10 +88,9 @@ export default function OwnerProfileDashboard({
   async function redoQuiz() {
     if (
       !(await confirm({
-        title: "Retake your vibe quiz?",
-        message:
-          "You'll answer the whole quiz again from question 1 — there's no saving halfway. Your current vibe stays active until you finish.",
-        confirmLabel: "Start the quiz",
+        title: t("dashboard.redoConfirm.title"),
+        message: t("dashboard.redoConfirm.message"),
+        confirmLabel: t("dashboard.redoConfirm.confirmLabel"),
       }))
     ) {
       return;
@@ -100,7 +101,7 @@ export default function OwnerProfileDashboard({
       router.push("/onboarding/vibe-check?returnTo=%2Fprofile");
     } catch {
       setRedoing(false);
-      toast("Couldn't reset the quiz — try again.", "error");
+      toast(t("dashboard.redoError"), "error");
     }
   }
 
@@ -121,10 +122,10 @@ export default function OwnerProfileDashboard({
           <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <h2 className="font-fredoka text-3xl font-bold leading-none text-navy">
-                Profile dashboard
+                {t("dashboard.heading")}
               </h2>
               <p className="mt-1.5 text-sm font-medium text-muted">
-                Manage what people see and what Flockie uses for matching.
+                {t("dashboard.subheading")}
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -132,30 +133,30 @@ export default function OwnerProfileDashboard({
                 href={`/people/${userId}`}
                 className="inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-white px-3 py-2 text-xs font-extrabold text-navy shadow-[0_3px_0_0_#10233d]"
               >
-                <Eye size={14} /> Public profile
+                <Eye size={14} /> {t("dashboard.publicProfile")}
               </Link>
               <button
                 type="button"
                 onClick={onShare}
                 className="inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-white px-3 py-2 text-xs font-extrabold text-navy shadow-[0_3px_0_0_#10233d]"
               >
-                <Share2 size={14} /> Share
+                <Share2 size={14} /> {t("dashboard.share")}
               </button>
               <Link
                 href="/settings"
                 className="inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-white px-3 py-2 text-xs font-extrabold text-navy shadow-[0_3px_0_0_#10233d]"
               >
-                <Settings size={14} /> Settings
+                <Settings size={14} /> {t("dashboard.settings")}
               </Link>
             </div>
           </header>
 
           <Panel
-            title="Match setup"
-            description="Private inputs used by Flockie. Other users never see your raw preferences or dealbreakers."
+            title={t("dashboard.matchSetup.title")}
+            description={t("dashboard.matchSetup.description")}
             badge={
               <span className="rounded-full bg-flockie-coral/15 px-2.5 py-1 text-[10px] font-extrabold text-flockie-coral">
-                Private
+                {t("dashboard.matchSetup.privateBadge")}
               </span>
             }
           >
@@ -171,18 +172,18 @@ export default function OwnerProfileDashboard({
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-[10px] font-extrabold uppercase tracking-wide text-muted">
-                    Your vibe
+                    {t("dashboard.yourVibe")}
                   </span>
                   <span className="block font-fredoka text-base font-semibold text-navy">
                     {vibeArchetype.name}
                   </span>
                   {vibeRetaking ? (
                     <span className="block text-[10.5px] font-bold text-flockie-coral">
-                      Updates when you finish your quiz
+                      {t("dashboard.vibeUpdatesWhenDone")}
                     </span>
                   ) : (
                     <span className="block text-[10.5px] font-semibold text-muted">
-                      Built from your answers below
+                      {t("dashboard.vibeBuiltFromAnswers")}
                     </span>
                   )}
                 </span>
@@ -190,7 +191,7 @@ export default function OwnerProfileDashboard({
                   href="/onboarding/vibe-check/reveal?returnTo=%2Fprofile"
                   className="shrink-0 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-extrabold text-navy"
                 >
-                  View
+                  {t("dashboard.view")}
                 </Link>
               </div>
             )}
@@ -198,15 +199,15 @@ export default function OwnerProfileDashboard({
             <div className="space-y-2.5">
               <SetupCard
                 emoji="🧬"
-                title="Vibe quiz"
-                description="Your global personality read. Retaking restarts the whole quiz."
+                title={t("dashboard.vibeQuiz.title")}
+                description={t("dashboard.vibeQuiz.description")}
                 complete={vibeComplete}
                 completionLabel={
                   vibeComplete
-                    ? "Complete"
+                    ? t("dashboard.vibeQuiz.complete")
                     : vibeRetaking
-                      ? "Finish your quiz"
-                      : "Not started"
+                      ? t("dashboard.vibeQuiz.finishYourQuiz")
+                      : t("dashboard.vibeQuiz.notStarted")
                 }
                 actions={
                   vibeComplete ? (
@@ -216,21 +217,22 @@ export default function OwnerProfileDashboard({
                       disabled={redoing}
                       className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-extrabold text-navy disabled:opacity-50"
                     >
-                      <RefreshCw size={12} /> {redoing ? "Starting…" : "Retake"}
+                      <RefreshCw size={12} />{" "}
+                      {redoing ? t("dashboard.vibeQuiz.starting") : t("dashboard.vibeQuiz.retake")}
                     </button>
                   ) : vibeRetaking ? (
                     <Link
                       href="/onboarding/vibe-check?returnTo=%2Fprofile"
                       className="rounded-full border-2 border-ink bg-flockie-coral px-3 py-1.5 text-xs font-extrabold text-white"
                     >
-                      Finish quiz
+                      {t("dashboard.vibeQuiz.finishQuiz")}
                     </Link>
                   ) : (
                     <Link
                       href="/onboarding/vibe-check?returnTo=%2Fprofile"
                       className="rounded-full border-2 border-ink bg-flockie-coral px-3 py-1.5 text-xs font-extrabold text-white"
                     >
-                      Start
+                      {t("dashboard.vibeQuiz.start")}
                     </Link>
                   )
                 }
@@ -238,10 +240,14 @@ export default function OwnerProfileDashboard({
 
               <SetupCard
                 emoji="🧳"
-                title="Trip vibe"
-                description="Pace, budget, planning, nightlife, travel style, and trip dealbreakers."
+                title={t("dashboard.tripVibe.title")}
+                description={t("dashboard.tripVibe.description")}
                 complete={tripComplete}
-                completionLabel={tripComplete ? "Complete" : "Add preferences"}
+                completionLabel={
+                  tripComplete
+                    ? t("dashboard.tripVibe.complete")
+                    : t("dashboard.tripVibe.addPreferences")
+                }
                 actions={
                   <button
                     type="button"
@@ -252,17 +258,21 @@ export default function OwnerProfileDashboard({
                         : "rounded-full border-2 border-ink bg-flockie-coral px-3 py-1.5 text-xs font-extrabold text-white"
                     }
                   >
-                    {tripComplete ? "Retake" : "Start"}
+                    {tripComplete ? t("dashboard.tripVibe.retake") : t("dashboard.tripVibe.start")}
                   </button>
                 }
               />
 
               <SetupCard
                 emoji="🎯"
-                title="Activity vibe"
-                description="Activities, skill levels, intensity, group size, and activity dealbreakers."
+                title={t("dashboard.activityVibe.title")}
+                description={t("dashboard.activityVibe.description")}
                 complete={activityComplete}
-                completionLabel={activityComplete ? "Complete" : "Add preferences"}
+                completionLabel={
+                  activityComplete
+                    ? t("dashboard.activityVibe.complete")
+                    : t("dashboard.activityVibe.addPreferences")
+                }
                 actions={
                   <button
                     type="button"
@@ -273,75 +283,77 @@ export default function OwnerProfileDashboard({
                         : "rounded-full border-2 border-ink bg-flockie-coral px-3 py-1.5 text-xs font-extrabold text-white"
                     }
                   >
-                    {activityComplete ? "Retake" : "Start"}
+                    {activityComplete
+                      ? t("dashboard.activityVibe.retake")
+                      : t("dashboard.activityVibe.start")}
                   </button>
                 }
               />
             </div>
 
             <p className="mt-3 rounded-2xl bg-cream px-3 py-2.5 text-xs font-medium leading-relaxed text-navy/70">
-              Soft preferences improve ranking. Dealbreakers strictly filter. Interest,
-              Not for me, invitation responses, attendance, and reviews also teach the
-              algorithm.
+              {t("dashboard.matchSetupNote")}
             </p>
           </Panel>
 
           <Panel
-            title="Visibility summary"
-            description="These rules are enforced by the profile privacy layer."
+            title={t("dashboard.visibility.title")}
+            description={t("dashboard.visibility.description")}
             badge={
               <Link
                 href="/settings"
                 className="text-xs font-extrabold text-flockie-coral"
               >
-                Settings →
+                {t("dashboard.visibility.settingsLink")}
               </Link>
             }
           >
             <VisibilityRow
               icon="👤"
-              title="Public profile"
-              description="Photo, name, age, city, bio, public interests, qualitative reviews, and completed public history."
-              label="Visible"
+              title={t("dashboard.visibility.publicProfileTitle")}
+              description={t("dashboard.visibility.publicProfileDesc")}
+              label={t("dashboard.visibility.labelVisible")}
             />
             <VisibilityRow
               icon="🔗"
-              title="Social accounts"
+              title={t("dashboard.visibility.socialAccountsTitle")}
               description={
                 socialVisibility === "members"
-                  ? "Visible to signed-in Flockie members."
+                  ? t("dashboard.visibility.socialMembersDesc")
                   : socialVisibility === "private"
-                    ? "Hidden from everyone else."
-                    : "Visible after you share a confirmed plan or buddy match."
+                    ? t("dashboard.visibility.socialPrivateDesc")
+                    : t("dashboard.visibility.socialConnectionsDesc")
               }
               label={
                 socialVisibility === "members"
-                  ? "Members"
+                  ? t("dashboard.visibility.labelMembers")
                   : socialVisibility === "private"
-                    ? "Only you"
-                    : "Connections"
+                    ? t("dashboard.visibility.labelOnlyYou")
+                    : t("dashboard.visibility.labelConnections")
               }
+              locked={socialVisibility === "private"}
             />
             <VisibilityRow
               icon="🔒"
-              title="Match setup"
-              description="Raw quiz answers, preferences, dealbreakers, and behavioral signals."
-              label="Only you"
+              title={t("dashboard.visibility.matchSetupTitle")}
+              description={t("dashboard.visibility.matchSetupDesc")}
+              label={t("dashboard.visibility.labelOnlyYou")}
+              locked
             />
             <VisibilityRow
               icon="📅"
-              title="Plan visibility"
-              description="Upcoming plans stay on your owner dashboard; completed public Vibes and flocks can appear on your public profile."
-              label="Profile display"
+              title={t("dashboard.visibility.planVisibilityTitle")}
+              description={t("dashboard.visibility.planVisibilityDesc")}
+              label={t("dashboard.visibility.labelProfileDisplay")}
             />
           </Panel>
 
           <Panel
-            title="My upcoming plans"
-            description="A private management preview on your owner dashboard."
+            title={t("dashboard.upcoming.title")}
+            description={t("dashboard.upcoming.description")}
             badge={
               <Link href="/my-vibes" className="text-xs font-extrabold text-flockie-coral">
-                See all →
+                {t("dashboard.upcoming.seeAll")}
               </Link>
             }
           >
@@ -353,20 +365,20 @@ export default function OwnerProfileDashboard({
               </div>
             ) : (
               <div className="rounded-2xl border-2 border-dashed border-ink/15 bg-[#FCF9F4] p-5 text-center">
-                <p className="text-sm font-bold text-navy">No upcoming plans yet.</p>
+                <p className="text-sm font-bold text-navy">{t("dashboard.upcoming.empty")}</p>
                 <Link
                   href="/vibes"
                   className="mt-3 inline-flex items-center gap-1 text-sm font-extrabold text-flockie-coral"
                 >
-                  Explore Vibes <ArrowRight size={14} />
+                  {t("dashboard.upcoming.exploreVibes")} <ArrowRight size={14} />
                 </Link>
               </div>
             )}
           </Panel>
 
           <Panel
-            title="Reviews"
-            description="Verified feedback from completed Flockie interactions."
+            title={t("dashboard.reviews.title")}
+            description={t("dashboard.reviews.description")}
             badge={
               reviewItems.length > 2 ? (
                 <button
@@ -374,7 +386,10 @@ export default function OwnerProfileDashboard({
                   onClick={() => setShowAllReviews((value) => !value)}
                   className="text-xs font-extrabold text-flockie-coral"
                 >
-                  {showAllReviews ? "Show less" : `See all ${reviewCount}`} →
+                  {showAllReviews
+                    ? t("dashboard.reviews.showLess")
+                    : t("dashboard.reviews.seeAllCount", { count: reviewCount })}{" "}
+                  →
                 </button>
               ) : undefined
             }
@@ -387,7 +402,7 @@ export default function OwnerProfileDashboard({
               </div>
             ) : (
               <p className="rounded-2xl bg-[#FCF9F4] p-4 text-sm font-medium text-muted">
-                No reviews yet — reviews appear after you travel together, do an activity, or share a Flock.
+                {t("dashboard.reviews.empty")}
               </p>
             )}
           </Panel>
@@ -486,13 +501,15 @@ function VisibilityRow({
   title,
   description,
   label,
+  locked = false,
 }: {
   icon: string;
   title: string;
   description: string;
   label: string;
+  locked?: boolean;
 }) {
-  const VisibilityIcon = label === "Only you" ? LockKeyhole : Eye;
+  const VisibilityIcon = locked ? LockKeyhole : Eye;
 
   return (
     <div className="flex items-start gap-3 border-t border-ink/10 py-3 first:border-t-0 first:pt-0 last:pb-0">
@@ -529,7 +546,7 @@ function buildUpcoming(events?: EventsData): UpcomingItem[] {
         key: `vibe-${item.id}-${index}`,
         title: item.title,
         subtitle: formatVibeWhen(item.starts_at),
-        role: item.role === "host" ? "Host" : "Going",
+        role: item.role === "host" ? "host" : "going",
         photo: item.photo,
         emoji: "🎟️",
         href: `/vibes/${item.id}`,
@@ -540,7 +557,7 @@ function buildUpcoming(events?: EventsData): UpcomingItem[] {
       key: `flock-${item.id}-${index}`,
       title: item.destination || "Flock",
       subtitle: item.start_date,
-      role: item.role === "host" ? "Host" : "Going",
+      role: item.role === "host" ? "host" : "going",
       photo: item.photo,
       emoji: "🧳",
       href: "/my-trips",
@@ -551,7 +568,7 @@ function buildUpcoming(events?: EventsData): UpcomingItem[] {
       key: `activity-${item.id}-${index}`,
       title: item.title || "Activity",
       subtitle: item.start_date,
-      role: "Plan",
+      role: "plan",
       photo: item.photo,
       emoji: "🎯",
       href: "/my-trips",
@@ -562,7 +579,7 @@ function buildUpcoming(events?: EventsData): UpcomingItem[] {
       key: `trip-${item.id}-${index}`,
       title: item.destination || "Trip",
       subtitle: item.start_date,
-      role: "Trip",
+      role: "trip",
       photo: item.photo,
       emoji: "✈️",
       href: "/my-trips",
@@ -577,6 +594,7 @@ function buildUpcoming(events?: EventsData): UpcomingItem[] {
 }
 
 function UpcomingRow({ item }: { item: UpcomingItem }) {
+  const t = useTranslations("profile");
   return (
     <Link
       href={item.href}
@@ -599,7 +617,7 @@ function UpcomingRow({ item }: { item: UpcomingItem }) {
       </span>
       {item.role && (
         <span className="rounded-full bg-cream px-2 py-1 text-[10px] font-extrabold uppercase text-muted">
-          {item.role}
+          {t(`dashboard.roles.${item.role}`)}
         </span>
       )}
     </Link>
@@ -607,6 +625,7 @@ function UpcomingRow({ item }: { item: UpcomingItem }) {
 }
 
 function ReviewRow({ review }: { review: ReviewItem }) {
+  const t = useTranslations("profile");
   return (
     <article className="rounded-2xl border-2 border-ink/10 bg-[#FCF9F4] p-3">
       <div className="flex items-center gap-2">
@@ -625,7 +644,7 @@ function ReviewRow({ review }: { review: ReviewItem }) {
         )}
         <p className="text-sm font-extrabold text-navy">{review.reviewerName}</p>
         <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-extrabold text-emerald-700">
-          Verified interaction
+          {t("dashboard.reviews.verified")}
         </span>
         <time className="ml-auto text-[10px] font-medium text-muted">
           {format(new Date(review.created_at), "MMM yyyy")}

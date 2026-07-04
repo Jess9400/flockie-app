@@ -1,1 +1,48 @@
-{}
+{
+  "backToProfile": "Profile",
+  "title": "Settings",
+  "saveError": "Couldn’t save — check your connection and try again.",
+  "account": {
+    "title": "Account",
+    "signOut": "Sign out"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "description": "Invitations, confirmations, and updates."
+  },
+  "location": {
+    "title": "Keep my location current",
+    "description": "Let Flockie find Vibes, trips and people near you — and update your city automatically when you travel, so you never set it by hand."
+  },
+  "discovery": {
+    "title": "Open to discovery",
+    "description": "Let people in your city find you for an activity. If someone likes your vibe, you’ll get a heads-up to match back."
+  },
+  "socialVisibility": {
+    "title": "Who can see my socials?",
+    "subtitle": "Your Instagram, X, and TikTok handles never affect matching.",
+    "saveError": "Couldn’t update social visibility. Please try again.",
+    "options": {
+      "connections": {
+        "label": "Connections",
+        "description": "People sharing a confirmed plan or buddy match with you."
+      },
+      "members": {
+        "label": "All members",
+        "description": "Any signed-in Flockie member viewing your profile."
+      },
+      "private": {
+        "label": "Only me",
+        "description": "Social links stay hidden from everyone else."
+      }
+    }
+  },
+  "deleteAccount": {
+    "confirmTitle": "Delete your account?",
+    "confirmMessage": "This permanently removes your profile, photos, vibe check, and matches. This can’t be undone.",
+    "confirmLabel": "Delete account",
+    "mediaError": "Couldn’t remove your media — please try again. ",
+    "deleting": "Deleting…",
+    "button": "Delete account"
+  }
+}
