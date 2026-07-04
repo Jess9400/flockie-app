@@ -1,17 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Plus, Users, RefreshCw } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import ShareVibeButton from "@/components/ShareVibeButton";
 import PageTabs from "@/components/PageTabs";
 import Pagination from "@/components/Pagination";
 import { formatVibeWhen } from "@/lib/vibes";
-
-const VIBE_TABS = [
-  { href: "/vibes", label: "Vibes" },
-  { href: "/my-vibes", label: "My Vibes" },
-];
 
 const PAGE_SIZE = 5;
 
@@ -24,12 +20,6 @@ const STATUS_STYLE: Record<string, string> = {
 };
 
 // Participant-side interest states shown in "In the running".
-const INTEREST_LABEL: Record<string, string> = {
-  interested: "Interested",
-  shortlisted: "Shortlisted",
-  invited: "You're invited",
-  confirmed: "Confirmed",
-};
 const INTEREST_STYLE: Record<string, string> = {
   interested: "bg-flockie-blue text-white",
   shortlisted: "bg-flockie-orange text-white",
@@ -57,6 +47,12 @@ export default async function MyVibesPage({
 }) {
   const supabase = await createClient();
   const user = await getSessionUser();
+  const t = await getTranslations("myVibes");
+
+  const VIBE_TABS = [
+    { href: "/vibes", label: t("tabVibes") },
+    { href: "/my-vibes", label: t("tabMyVibes") },
+  ];
 
   const { data: vibes } = await supabase
     .from("vibes")
@@ -162,7 +158,11 @@ export default async function MyVibesPage({
                   : STATUS_STYLE[v.status] ?? "bg-cream text-ink"
               }`}
             >
-              {faded ? (v.status === "cancelled" ? "Cancelled" : "Completed") : v.status}
+              {faded
+                ? v.status === "cancelled"
+                  ? t("status.cancelled")
+                  : t("status.completed")
+                : t(`status.${v.status}`)}
             </span>
             <span className="flex items-center gap-1 text-xs font-bold text-muted">
               <Users size={13} /> {counts[v.id] ?? 0}/{v.capacity}
@@ -171,7 +171,7 @@ export default async function MyVibesPage({
         </Link>
         {!faded && v.status === "open" && (
           <div className="mt-3 flex items-center justify-between gap-2 border-t-2 border-ink/10 pt-3">
-            <p className="text-xs font-medium text-muted">Share to fill your room faster 🚀</p>
+            <p className="text-xs font-medium text-muted">{t("shareToFill")}</p>
             <ShareVibeButton vibeId={v.id} />
           </div>
         )}
@@ -181,7 +181,7 @@ export default async function MyVibesPage({
               href={`/vibes/new?from=${v.id}`}
               className="flex items-center justify-center gap-1 rounded-full border-2 border-ink bg-flockie-orange py-2 text-xs font-bold text-white shadow-[0_2px_0_0_#E0512C]"
             >
-              <RefreshCw size={13} /> Run it again
+              <RefreshCw size={13} /> {t("runAgain")}
             </Link>
           </div>
         )}
@@ -193,23 +193,23 @@ export default async function MyVibesPage({
     <main className="px-5 pb-10 pt-6">
       <PageTabs tabs={VIBE_TABS} />
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-black">My Vibes</h1>
+        <h1 className="text-2xl font-black">{t("title")}</h1>
         <Link
           href="/vibes/new"
           className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
         >
-          <Plus size={16} /> Create
+          <Plus size={16} /> {t("create")}
         </Link>
       </div>
       <p className="mt-1 text-sm font-medium text-muted">
-        Vibes you&rsquo;re hosting and the ones you&rsquo;ve joined.
+        {t("subtitle")}
       </p>
 
       {running.length > 0 && (
         <section className="mt-6">
-          <h2 className="text-lg font-extrabold">In the running</h2>
+          <h2 className="text-lg font-extrabold">{t("inTheRunning")}</h2>
           <p className="mt-0.5 text-xs font-medium text-muted">
-            Vibes you&rsquo;ve joined — we&rsquo;ll let you know as the host picks their group.
+            {t("inTheRunningHelp")}
           </p>
           <div className="mt-3 space-y-3">
             {running.map((v) => (
@@ -236,7 +236,7 @@ export default async function MyVibesPage({
                     INTEREST_STYLE[interestStatus[v.id]] ?? "bg-cream text-ink"
                   }`}
                 >
-                  {INTEREST_LABEL[interestStatus[v.id]] ?? interestStatus[v.id]}
+                  {t(`interest.${interestStatus[v.id]}`)}
                 </span>
               </Link>
             ))}
@@ -245,12 +245,12 @@ export default async function MyVibesPage({
       )}
 
       {(running.length > 0 || activeList.length > 0) && (
-        <h2 className="mt-8 text-lg font-extrabold">Hosting</h2>
+        <h2 className="mt-8 text-lg font-extrabold">{t("hosting")}</h2>
       )}
       <div className="mt-3 space-y-3">
         {activeList.length === 0 ? (
           <div className="rounded-3xl border-2 border-dashed border-ink/30 py-16 text-center font-medium text-muted">
-            You haven&rsquo;t hosted an upcoming Vibe. Create your first one.
+            {t("emptyHosting")}
           </div>
         ) : (
           pageList.map((v) => <VibeRowCard key={v.id} v={v} />)
@@ -260,7 +260,7 @@ export default async function MyVibesPage({
 
       {pastList.length > 0 && (
         <>
-          <h2 className="mt-8 text-lg font-extrabold text-muted">Past Vibes</h2>
+          <h2 className="mt-8 text-lg font-extrabold text-muted">{t("pastVibes")}</h2>
           <div className="mt-3 space-y-3">
             {pastPageList.map((v) => (
               <VibeRowCard key={v.id} v={v} faded />

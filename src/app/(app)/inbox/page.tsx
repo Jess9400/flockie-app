@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import InboxList, { type Notif } from "@/components/InboxList";
@@ -12,6 +13,7 @@ export default async function InboxPage({
 }) {
   const supabase = await createClient();
   const user = await getSessionUser();
+  const t = await getTranslations("inbox");
 
   const page = Math.max(1, Number(searchParams.page) || 1);
   const from = (page - 1) * PAGE_SIZE;
@@ -26,9 +28,9 @@ export default async function InboxPage({
 
   return (
     <main className="px-5 pt-6">
-      <h1 className="text-2xl font-black">Inbox</h1>
+      <h1 className="text-2xl font-black">{t("title")}</h1>
       <p className="mt-1 text-sm font-medium text-muted">
-        Invitations, confirmations, and updates.
+        {t("subtitle")}
       </p>
       <div className="mt-6">
         <InboxList notifications={(notifications ?? []) as Notif[]} />

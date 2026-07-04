@@ -3,11 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { VIBE_REVIEW_TAGS } from "@/lib/vibes";
 import { Chip } from "@/components/profileControls";
-
-const RATING_LABELS = ["", "Not for me", "Meh", "Good", "Great", "Loved it"];
 
 export default function VibeReviewForm({
   vibeId,
@@ -22,6 +21,7 @@ export default function VibeReviewForm({
 }) {
   const router = useRouter();
   const supabase = createClient();
+  const t = useTranslations("review");
   const [rating, setRating] = useState<number>(initialRating ?? 0);
   const [hover, setHover] = useState(0);
   const [tags, setTags] = useState<string[]>(initialTags);
@@ -35,7 +35,7 @@ export default function VibeReviewForm({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (rating < 1) return setErr("Tap a star to rate this Vibe.");
+    if (rating < 1) return setErr(t("tapStar"));
     setSaving(true);
     setErr(null);
     const { error } = await supabase.rpc("submit_vibe_review", {
@@ -54,7 +54,7 @@ export default function VibeReviewForm({
 
   return (
     <form onSubmit={submit} className="font-nunito">
-      <p className="font-nunito text-sm font-semibold text-navy">How was it?</p>
+      <p className="font-nunito text-sm font-semibold text-navy">{t("howWasIt")}</p>
       <div className="mt-2 flex items-center gap-1">
         {[1, 2, 3, 4, 5].map((i) => (
           <button
@@ -63,7 +63,7 @@ export default function VibeReviewForm({
             onClick={() => setRating(i)}
             onMouseEnter={() => setHover(i)}
             onMouseLeave={() => setHover(0)}
-            aria-label={`${i} star${i > 1 ? "s" : ""}`}
+            aria-label={t("star", { count: i })}
             className="p-0.5"
           >
             <Star
@@ -73,16 +73,21 @@ export default function VibeReviewForm({
           </button>
         ))}
         {shown > 0 && (
-          <span className="ml-2 font-nunito text-sm font-bold text-navy/60">{RATING_LABELS[shown]}</span>
+          <span className="ml-2 font-nunito text-sm font-bold text-navy/60">{t(`ratingLabels.${shown}`)}</span>
         )}
       </div>
 
       <p className="mt-6 font-nunito text-sm font-semibold text-navy">
-        What was it like? <span className="font-normal text-navy/50">(pick any)</span>
+        {t("whatWasItLike")} <span className="font-normal text-navy/50">{t("pickAny")}</span>
       </p>
       <div className="mt-2 flex flex-wrap gap-2">
-        {VIBE_REVIEW_TAGS.map((t) => (
-          <Chip key={t} label={t} selected={tags.includes(t)} onClick={() => toggleTag(t)} />
+        {VIBE_REVIEW_TAGS.map((tag) => (
+          <Chip
+            key={tag}
+            label={t(`tags.${tag}`)}
+            selected={tags.includes(tag)}
+            onClick={() => toggleTag(tag)}
+          />
         ))}
       </div>
 
@@ -90,7 +95,7 @@ export default function VibeReviewForm({
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         maxLength={500}
-        placeholder="Anything else? (optional)"
+        placeholder={t("vibeCommentPlaceholder")}
         className="mt-6 h-28 w-full resize-none rounded-2xl border-2 border-navy bg-cream px-4 py-3 font-nunito text-[15px] font-medium text-navy outline-none focus:border-flockie-blue"
       />
 
@@ -101,7 +106,7 @@ export default function VibeReviewForm({
         disabled={saving}
         className="mt-4 w-full rounded-full border-2 border-navy bg-flockie-coral py-3.5 font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] disabled:opacity-50"
       >
-        {saving ? "Saving…" : "Submit review"}
+        {saving ? t("saving") : t("submit")}
       </button>
     </form>
   );

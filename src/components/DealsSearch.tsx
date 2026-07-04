@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Hotel, Plane, Ticket, Search, Users, MapPin, Car, LifeBuoy } from "lucide-react";
 
 // Travelpayouts affiliate marker (tracks commission on Hotellook / Aviasales).
@@ -51,6 +52,7 @@ export default function DealsSearch({
   defaultCity: string;
   plans?: Plan[];
 }) {
+  const t = useTranslations("deals");
   const [city, setCity] = useState(defaultCity ?? "");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
@@ -69,7 +71,7 @@ export default function DealsSearch({
       {plans.length > 0 && (
         <div className="space-y-3">
           <h2 className="text-sm font-extrabold uppercase tracking-wide text-muted">
-            For your upcoming trips
+            {t("forUpcomingTrips")}
           </h2>
           {plans.map((p) => (
             <div
@@ -80,7 +82,7 @@ export default function DealsSearch({
                 <MapPin size={15} className="shrink-0 text-flockie-orange" /> {p.label}
               </p>
               <p className="mt-0.5 text-xs font-medium text-muted">
-                {[fmtDates(p.checkIn, p.checkOut), `${p.guests} ${p.guests === 1 ? "traveler" : "travelers"}`]
+                {[fmtDates(p.checkIn, p.checkOut), t("travelers", { count: p.guests })]
                   .filter(Boolean)
                   .join(" · ")}
               </p>
@@ -89,7 +91,7 @@ export default function DealsSearch({
                   onClick={() => open(hotelsUrl(p.city, p.checkIn, p.checkOut, p.guests))}
                   className="flex flex-col items-center gap-1 rounded-2xl border-2 border-ink bg-flockie-orange py-2.5 text-xs font-bold text-white shadow-[0_3px_0_0_#E0512C]"
                 >
-                  <Hotel size={16} /> Stays
+                  <Hotel size={16} /> {t("stays")}
                 </button>
                 <a
                   href={klookUrl(p.city)}
@@ -97,17 +99,17 @@ export default function DealsSearch({
                   rel="noopener"
                   className="flex flex-col items-center gap-1 rounded-2xl border-2 border-ink bg-white py-2.5 text-xs font-bold text-ink"
                 >
-                  <Ticket size={16} /> Activities
+                  <Ticket size={16} /> {t("activities")}
                 </a>
                 <button
                   onClick={() => open(`https://www.aviasales.com/?marker=${MARKER}&locale=en`)}
                   className="flex flex-col items-center gap-1 rounded-2xl border-2 border-ink bg-white py-2.5 text-xs font-bold text-ink"
                 >
-                  <Plane size={16} /> Flights
+                  <Plane size={16} /> {t("flights")}
                 </button>
               </div>
               <p className="mt-2 text-center text-[11px] font-medium text-muted">
-                Split a stay with your flock — pre-filled for {p.guests} travelers.
+                {t("splitStay", { count: p.guests })}
               </p>
             </div>
           ))}
@@ -118,18 +120,18 @@ export default function DealsSearch({
       <div className="rounded-3xl border-2 border-ink bg-white p-5 shadow-[0_5px_0_0_rgba(26,26,26,1)]">
         <div className="flex items-center gap-2">
           <Hotel size={20} className="text-flockie-orange" />
-          <h2 className="text-lg font-extrabold">{plans.length > 0 ? "Search anywhere" : "Stays"}</h2>
+          <h2 className="text-lg font-extrabold">{plans.length > 0 ? t("searchAnywhere") : t("staysHeading")}</h2>
         </div>
         <p className="mt-1 text-sm font-medium text-muted">
-          Hotel deals booked through Flockie.
+          {t("staysSubtitle")}
         </p>
 
         <label className="mt-4 block">
-          <span className="mb-1 block text-sm font-bold">Where to?</span>
+          <span className="mb-1 block text-sm font-bold">{t("whereTo")}</span>
           <input
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            placeholder="City"
+            placeholder={t("cityPlaceholder")}
             className="w-full rounded-2xl border-2 border-ink bg-white px-4 py-2.5 font-medium outline-none"
           />
         </label>
@@ -151,7 +153,7 @@ export default function DealsSearch({
 
         <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <label className="block">
-            <span className="mb-1 block text-sm font-bold">Check-in</span>
+            <span className="mb-1 block text-sm font-bold">{t("checkIn")}</span>
             <input
               type="date"
               value={checkIn}
@@ -160,7 +162,7 @@ export default function DealsSearch({
             />
           </label>
           <label className="block">
-            <span className="mb-1 block text-sm font-bold">Check-out</span>
+            <span className="mb-1 block text-sm font-bold">{t("checkOut")}</span>
             <input
               type="date"
               value={checkOut}
@@ -171,7 +173,7 @@ export default function DealsSearch({
         </div>
 
         <label className="mt-3 block">
-          <span className="mb-1 block text-sm font-bold">Guests: {guests}</span>
+          <span className="mb-1 block text-sm font-bold">{t("guests", { count: guests })}</span>
           <input
             type="range"
             min={1}
@@ -187,7 +189,7 @@ export default function DealsSearch({
           disabled={!city.trim()}
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3.5 font-bold text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50"
         >
-          <Search size={18} /> Search stays{city.trim() ? ` in ${city.trim()}` : ""}
+          <Search size={18} /> {city.trim() ? t("searchStaysIn", { city: city.trim() }) : t("searchStays")}
         </button>
         <a
           href={KKDAY}
@@ -195,7 +197,7 @@ export default function DealsSearch({
           rel="noopener"
           className="mt-2 block text-center text-xs font-bold text-flockie-blue underline underline-offset-2"
         >
-          Or browse stays &amp; tours on KKday →
+          {t("browseKKday")}
         </a>
       </div>
 
@@ -203,10 +205,10 @@ export default function DealsSearch({
       <div className="rounded-3xl border-2 border-ink bg-white p-5 shadow-[0_5px_0_0_rgba(26,26,26,1)]">
         <div className="flex items-center gap-2">
           <Ticket size={20} className="text-flockie-orange" />
-          <h2 className="text-lg font-extrabold">Activities</h2>
+          <h2 className="text-lg font-extrabold">{t("activitiesHeading")}</h2>
         </div>
         <p className="mt-1 text-sm font-medium text-muted">
-          Tours and experiences via Klook. Find one, then match with someone to do it together.
+          {t("activitiesSubtitle")}
         </p>
         <a
           href={klookUrl(city)}
@@ -214,7 +216,7 @@ export default function DealsSearch({
           rel="noopener"
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
         >
-          <Search size={18} /> Browse activities{city.trim() ? ` in ${city.trim()}` : " on Klook"}
+          <Search size={18} /> {city.trim() ? t("browseActivitiesIn", { city: city.trim() }) : t("browseActivities")}
         </a>
         <a
           href={KKDAY}
@@ -222,13 +224,13 @@ export default function DealsSearch({
           rel="noopener"
           className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-3 font-bold text-ink"
         >
-          <Ticket size={18} /> Tours &amp; experiences on KKday
+          <Ticket size={18} /> {t("toursKKday")}
         </a>
         <Link
           href={`/vibes/new?city=${encodeURIComponent(city.trim())}`}
           className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-3 font-bold text-ink"
         >
-          <Users size={18} /> Find a buddy for an activity
+          <Users size={18} /> {t("findBuddyActivity")}
         </Link>
       </div>
 
@@ -236,16 +238,16 @@ export default function DealsSearch({
       <div className="rounded-3xl border-2 border-ink bg-flockie-blue p-5 text-white shadow-[0_5px_0_0_rgba(26,26,26,1)]">
         <div className="flex items-center gap-2">
           <Plane size={20} />
-          <h2 className="text-lg font-extrabold">Flights</h2>
+          <h2 className="text-lg font-extrabold">{t("flightsHeading")}</h2>
         </div>
         <p className="mt-1 text-sm font-medium text-white/90">
-          Compare flight deals across hundreds of airlines.
+          {t("flightsSubtitle")}
         </p>
         <button
           onClick={() => open(`https://www.aviasales.com/?marker=${MARKER}&locale=en`)}
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-2.5 font-bold text-ink"
         >
-          <Search size={16} /> Search flights
+          <Search size={16} /> {t("searchFlights")}
         </button>
         <a
           href={AIRHELP}
@@ -254,10 +256,10 @@ export default function DealsSearch({
           className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white px-4 py-2.5 text-center font-bold text-ink"
         >
           <LifeBuoy size={16} className="shrink-0" />
-          <span>Check flight compensation</span>
+          <span>{t("checkCompensation")}</span>
         </a>
         <p className="mt-1.5 text-center text-[11px] font-medium text-white/80">
-          via AirHelp · external partner
+          {t("viaAirHelp")}
         </p>
       </div>
 
@@ -265,10 +267,10 @@ export default function DealsSearch({
       <div className="rounded-3xl border-2 border-ink bg-white p-5 shadow-[0_5px_0_0_rgba(26,26,26,1)]">
         <div className="flex items-center gap-2">
           <Car size={20} className="text-flockie-orange" />
-          <h2 className="text-lg font-extrabold">Car rentals</h2>
+          <h2 className="text-lg font-extrabold">{t("carRentals")}</h2>
         </div>
         <p className="mt-1 text-sm font-medium text-muted">
-          Rent a car for your trip — compare deals worldwide.
+          {t("carRentalsSubtitle")}
         </p>
         <a
           href={ECONOMYBOOKINGS}
@@ -276,12 +278,12 @@ export default function DealsSearch({
           rel="noopener"
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
         >
-          <Car size={18} /> Find a rental car
+          <Car size={18} /> {t("findRental")}
         </a>
       </div>
 
       <p className="text-center text-xs font-medium text-muted">
-        Some links are affiliate links. Booking through them helps support the flock.
+        {t("affiliateNote")}
       </p>
     </div>
   );

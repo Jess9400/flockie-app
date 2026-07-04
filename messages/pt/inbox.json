@@ -1,1 +1,12 @@
-{}
+{
+  "title": "Caixa de entrada",
+  "subtitle": "Convites, confirmações e novidades.",
+  "empty": "Nada por aqui ainda. Convites e novidades vão aparecer aqui.",
+  "dismiss": "Dispensar notificação",
+  "openFlockChat": "Abrir chat do Flock →",
+  "findAnotherFlock": "Encontrar outro Flock →",
+  "viewConfirm": "Ver e confirmar →",
+  "sayHi": "Diga oi no chat do grupo →",
+  "openMyTrips": "Abrir Minhas viagens →",
+  "open": "Abrir →"
+}
