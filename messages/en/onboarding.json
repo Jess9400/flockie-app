@@ -1,0 +1,184 @@
+{
+  "profile": {
+    "title": "A couple basics",
+    "subtitle": "Pre-filled where we could.",
+    "photo": {
+      "add": "Add a photo",
+      "uploading": "Uploading…",
+      "change": "Tap to change",
+      "required": "Add a photo (required)",
+      "moreLater": "You can add more photos later"
+    },
+    "firstName": "First name",
+    "firstNamePlaceholder": "Your name",
+    "fromGoogle": "from Google",
+    "birthday": "Birthday",
+    "birthdayHelp": "Keeps your age accurate — only the number shows.",
+    "gender": "Gender",
+    "city": "Your city right now",
+    "cityPlaceholder": "e.g. Lisbon",
+    "cityHelp": "Powers who's nearby — update anytime.",
+    "genders": {
+      "woman": "Woman",
+      "man": "Man",
+      "nonBinary": "Non-binary",
+      "preferNotToSay": "Prefer not to say"
+    },
+    "nextUp": "<b>Up next: your vibe check.</b> Five quick questions so we can start finding your people.",
+    "continue": "Continue to your vibe check →",
+    "errors": {
+      "signIn": "Please sign in again",
+      "photoUpload": "Photo upload failed.",
+      "generic": "Something went wrong. Try again."
+    }
+  },
+  "vibeCheck": {
+    "questionProgress": "Question {current} of {total}",
+    "saveError": "Could not save your answer. Try again.",
+    "continue": "Continue →",
+    "back": "Back",
+    "pause": "Pause",
+    "paused": {
+      "title": "Paused, not skipped",
+      "body": "Your answers are saved. We'll bring you back to question {number}.",
+      "continueNow": "Continue now →"
+    },
+    "lockHint": "Finish the quiz to lock in your new vibe",
+    "exitSheet": {
+      "title": "Pause here?",
+      "body": "Your completed answers are already saved. Jump back in whenever.",
+      "keepGoing": "Keep going",
+      "pauseForNow": "Pause for now"
+    },
+    "questions": {
+      "qmood": {
+        "mechanicLabel": "Tap one",
+        "text": "No overthinking — which pulls you in?",
+        "options": [
+          "Small group, good conversation",
+          "Loud, energetic, up till late",
+          "Quiet corner, just me"
+        ]
+      },
+      "qswipe": {
+        "mechanicLabel": "Tap a side",
+        "text": "A plan falls through last minute. Be honest:",
+        "left": "Ugh, was looking forward to it",
+        "right": "Secretly relieved, more time for me"
+      },
+      "qgrid": {
+        "mechanicLabel": "Tap up to 3",
+        "text": "Pick what pulls you in:",
+        "options": [
+          "Museums & culture",
+          "Food & local spots",
+          "Nature & outdoors",
+          "Live events & shows",
+          "Sports & games",
+          "Wellness & calm",
+          "Nightlife & bars",
+          "Books & quiet time"
+        ]
+      },
+      "qslider": {
+        "mechanicLabel": "Drag the slider",
+        "text": "How spontaneous are you, really?",
+        "leftLabel": "Need the plan",
+        "rightLabel": "Make it up as I go"
+      },
+      "qtap": {
+        "mechanicLabel": "Tap one",
+        "text": "Walking into a room where you don't know anyone. What instantly makes you feel less out of place?",
+        "options": [
+          "Someone says hi first",
+          "Finding a drink, giving myself something to do",
+          "Scoping the room before committing to anyone",
+          "Hanging back at the edges till I find my person"
+        ]
+      }
+    }
+  },
+  "reveal": {
+    "confident": "≈{percent}% confident",
+    "earlyRead": "· early read, 5 answers",
+    "secondLean": "Could also be leaning {emoji} {name} — a few more signals will tell us for sure.",
+    "sections": {
+      "wired": "How you're wired",
+      "matching": "What this means for matching",
+      "clickWith": "You'd click with",
+      "nearby": "People near you with this vibe"
+    },
+    "traits": {
+      "spontaneous": "Spontaneous",
+      "planner": "Planner",
+      "social": "Social",
+      "solo": "Solo",
+      "highEnergy": "High-energy",
+      "calm": "Calm"
+    },
+    "matchingIntro": "{name}s get matched differently.",
+    "emptyNearby": {
+      "title": "Nobody's matched this vibe here yet",
+      "body": "Will your BFF match your vibe? Invite them and find out!",
+      "invite": "Invite your BFF"
+    },
+    "flockieFallback": "A flockie",
+    "ctaContinue": "Continue where you left off →",
+    "ctaExplore": "Explore Vibes near you →",
+    "archetypes": {
+      "culture": {
+        "description": "You go deep, not wide. You're in the museum before it opens and the local spot after it closes.",
+        "insight": "You don't just visit places — you actually learn them. Pair you with someone who matches that pace, not someone who wants to rush you through."
+      },
+      "social": {
+        "description": "You came for one thing and stayed for the people. You know everyone's name by day two.",
+        "insight": "A room of strangers doesn't scare you — it's basically an invitation. We'll keep your feed full of people and plans, not just places."
+      },
+      "night": {
+        "description": "Things reveal themselves after dark and you know it. Mornings are for recovery.",
+        "insight": "We'll weight your matches toward people who don't expect a reply before noon."
+      },
+      "food": {
+        "description": "You plan your days around meals, and you'll take the long way for the right place.",
+        "insight": "Your matches will skew toward people who treat a good meal as the whole point of the day, not a pit stop."
+      },
+      "adventure": {
+        "description": "No plan is the plan. You decide late, travel light, and somehow always find the right people.",
+        "insight": "Rigid itineraries make you twitchy. We'll surface the loose, see-where-it-goes plans first."
+      },
+      "wellness": {
+        "description": "Slow, intentional, unbothered. You need at least one afternoon with absolutely nothing planned.",
+        "insight": "You recharge in quiet, not chaos. We'll lean your matches toward people who won't fill every hour."
+      }
+    }
+  },
+  "completeCard": {
+    "completeTitle": "Your vibe's complete 🎉",
+    "almostTitle": "You're almost there",
+    "completeBody": "All three pieces are in — your matches are as sharp as they get.",
+    "almostBody": "Each piece makes your matches sharper. Add them now, or they fill in as you travel and join things.",
+    "travelTitle": "Travel Vibe",
+    "travelDesc": "Pace, budget, how you travel — sharpens trip matches",
+    "eventTitle": "Event Vibe",
+    "eventDesc": "What you want from a night out, group size — sharpens local plans",
+    "seeReading": "See your full reading →",
+    "unlockTitle": "Your full reading unlocks at 100%",
+    "unlockBody": "Finish all three to get the complete read on who you are.",
+    "questionsBadge": "{count} q",
+    "complete": "Complete"
+  },
+  "compat": {
+    "heading": "How compatible are you with <highlight>{name}</highlight>?",
+    "subheading": "Take Flockie's quick vibe check and find out your travel-buddy match.",
+    "friendFallback": "your friend",
+    "takeCheck": "Take the 60-sec vibe check",
+    "signupHint": "Sign up with Google, answer a few questions, see your score.",
+    "ownLink": "This is your own link — share it with friends to see your match %.",
+    "takeCheckReveal": "Take the 60-sec vibe check to reveal your score",
+    "resultGreat": "You and {name} are a great match 🎉",
+    "resultCompatible": "You and {name} are compatible 🎉",
+    "youBothLove": "You both love",
+    "exploreNearby": "Explore Vibes near you",
+    "compareAnother": "Compare with another friend"
+  }
+}
