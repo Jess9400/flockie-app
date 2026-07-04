@@ -1,0 +1,11 @@
+{
+  "greeting": {
+    "morning": "Buenos días",
+    "afternoon": "Buenas tardes",
+    "evening": "Buenas noches"
+  },
+  "homeSubline": "¿Qué quieres hacer hoy?",
+  "findBuddyHeading": "Encuentra un buddy para una actividad",
+  "language": "Idioma",
+  "saving": "Guardando…"
+}
