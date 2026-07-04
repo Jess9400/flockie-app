@@ -33,6 +33,7 @@ export const NAMESPACES = [
   "review",
   "activities",
   "myVibes",
+  "vibeCheck",
 ] as const;
 
 export default getRequestConfig(async () => {

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import Wizard, { type WizardAnswers, type WizardPage } from "@/components/Wizard";
 import { useToast } from "@/components/ui/feedback";
@@ -20,6 +21,7 @@ import {
   SOCIAL_STYLE_CHOICES,
   MOTIVATION_CHOICES,
   INITIATOR_CHOICES,
+  type Choice,
 } from "@/lib/vibe-check";
 
 const ACTIVITY_VIBE_EMOJI: Record<string, string> = {
@@ -37,81 +39,6 @@ const INT_KEYS = ["activity_social", "activity_intensity", "social_style"] as co
 // Category-token columns stored as text.
 const TEXT_KEYS = ["activity_motivation", "initiator"] as const;
 
-const PAGES: WizardPage[] = [
-  {
-    title: "",
-    fields: [
-      {
-        type: "multi",
-        key: "activities",
-        label: "What do you actually do?",
-        hint: "Your top few — no need to pick everything.",
-        max: 6,
-        required: true,
-        options: ACTIVITY_CATEGORIES.flatMap((cat) =>
-          cat.items.map((a) => ({ value: a, label: a, group: cat.group })),
-        ),
-      },
-    ],
-  },
-  {
-    title: "",
-    fields: [
-      {
-        type: "select",
-        key: "activity_motivation",
-        label: "What pulls you out of the house?",
-        hint: "The thing you're really after when you go to a local plan.",
-        required: true,
-        options: MOTIVATION_CHOICES,
-      },
-    ],
-  },
-  { title: "", fields: [{ type: "select", key: "activity_social", label: "Ideal group size for a meetup?", required: true, options: ACTIVITY_SOCIAL_CHOICES }] },
-  { title: "", fields: [{ type: "select", key: "social_style", label: "Walking into a room of strangers, you…", required: true, options: SOCIAL_STYLE_CHOICES }] },
-  { title: "", fields: [{ type: "select", key: "activity_intensity", label: "How hard do you want to push?", required: true, options: ACTIVITY_INTENSITY_CHOICES }] },
-  { title: "", fields: [{ type: "select", key: "initiator", label: "Are you more the one who…", required: true, options: INITIATOR_CHOICES }] },
-  {
-    title: "",
-    fields: [
-      {
-        type: "multi",
-        key: "activity_vibe",
-        label: "Ideal experience vibe",
-        hint: `Pick up to ${ACTIVITY_VIBE_MAX}.`,
-        max: ACTIVITY_VIBE_MAX,
-        options: ACTIVITY_VIBES.map((v) => ({ value: v, label: v, emoji: ACTIVITY_VIBE_EMOJI[v] })),
-      },
-    ],
-  },
-  {
-    title: "",
-    fields: [
-      {
-        type: "multi",
-        key: "activity_dealbreakers",
-        label: "Any hard preferences?",
-        hint: "Used as filters. Skip if none.",
-        options: ACTIVITY_DEALBREAKERS.map((v) => ({ value: v, label: v })),
-      },
-    ],
-  },
-  {
-    title: "",
-    fields: [
-      {
-        type: "multi",
-        key: "activity_priorities",
-        label: "For a meetup, what matters most?",
-        hint: `Pick up to ${ACTIVITY_PRIORITY_MAX}.`,
-        max: ACTIVITY_PRIORITY_MAX,
-        required: true,
-        options: ACTIVITY_PRIORITIES,
-      },
-    ],
-  },
-];
-
 export default function ActivityVibeForm({
   userId,
   redirectAfter,
@@ -126,9 +53,95 @@ export default function ActivityVibeForm({
   const supabase = createClient();
   const router = useRouter();
   const toast = useToast();
+  const t = useTranslations("vibeCheck");
   const [initial, setInitial] = useState<WizardAnswers | null>(null);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+
+  // Resolve a data-driven label, falling back to the lib's raw English text so
+  // any unmapped/custom value still renders.
+  const has = (key: string) => t.has(key);
+  const localizeChoices = (set: string, choices: Choice[]) =>
+    choices.map((o) => ({ ...o, label: has(`choices.${set}.${o.value}`) ? t(`choices.${set}.${o.value}`) : o.label }));
+
+  const pages: WizardPage[] = [
+    {
+      title: "",
+      fields: [
+        {
+          type: "multi",
+          key: "activities",
+          label: t("forms.activity.activitiesLabel"),
+          hint: t("forms.activity.activitiesHint"),
+          max: 6,
+          required: true,
+          options: ACTIVITY_CATEGORIES.flatMap((cat) =>
+            cat.items.map((a) => ({
+              value: a,
+              label: has(`activities.${a}`) ? t(`activities.${a}`) : a,
+              group: has(`activityGroups.${cat.group}`) ? t(`activityGroups.${cat.group}`) : cat.group,
+            })),
+          ),
+        },
+      ],
+    },
+    {
+      title: "",
+      fields: [
+        {
+          type: "select",
+          key: "activity_motivation",
+          label: t("forms.activity.motivationLabel"),
+          hint: t("forms.activity.motivationHint"),
+          required: true,
+          options: localizeChoices("motivation", MOTIVATION_CHOICES),
+        },
+      ],
+    },
+    { title: "", fields: [{ type: "select", key: "activity_social", label: t("forms.activity.social"), required: true, options: localizeChoices("activitySocial", ACTIVITY_SOCIAL_CHOICES) }] },
+    { title: "", fields: [{ type: "select", key: "social_style", label: t("forms.activity.socialStyle"), required: true, options: localizeChoices("socialStyle", SOCIAL_STYLE_CHOICES) }] },
+    { title: "", fields: [{ type: "select", key: "activity_intensity", label: t("forms.activity.intensity"), required: true, options: localizeChoices("activityIntensity", ACTIVITY_INTENSITY_CHOICES) }] },
+    { title: "", fields: [{ type: "select", key: "initiator", label: t("forms.activity.initiator"), required: true, options: localizeChoices("initiator", INITIATOR_CHOICES) }] },
+    {
+      title: "",
+      fields: [
+        {
+          type: "multi",
+          key: "activity_vibe",
+          label: t("forms.activity.vibeLabel"),
+          hint: t("forms.activity.vibeHint", { max: ACTIVITY_VIBE_MAX }),
+          max: ACTIVITY_VIBE_MAX,
+          options: ACTIVITY_VIBES.map((v) => ({ value: v, label: has(`activityVibes.${v}`) ? t(`activityVibes.${v}`) : v, emoji: ACTIVITY_VIBE_EMOJI[v] })),
+        },
+      ],
+    },
+    {
+      title: "",
+      fields: [
+        {
+          type: "multi",
+          key: "activity_dealbreakers",
+          label: t("forms.activity.dealbreakersLabel"),
+          hint: t("forms.activity.dealbreakersHint"),
+          options: ACTIVITY_DEALBREAKERS.map((v) => ({ value: v, label: has(`activityDealbreakers.${v}`) ? t(`activityDealbreakers.${v}`) : v })),
+        },
+      ],
+    },
+    {
+      title: "",
+      fields: [
+        {
+          type: "multi",
+          key: "activity_priorities",
+          label: t("forms.activity.prioritiesLabel"),
+          hint: t("forms.activity.prioritiesHint", { max: ACTIVITY_PRIORITY_MAX }),
+          max: ACTIVITY_PRIORITY_MAX,
+          required: true,
+          options: ACTIVITY_PRIORITIES.map((o) => ({ ...o, label: has(`activityPriorities.${o.value}`) ? t(`activityPriorities.${o.value}`) : o.label })),
+        },
+      ],
+    },
+  ];
 
   useEffect(() => {
     supabase
@@ -183,7 +196,7 @@ export default function ActivityVibeForm({
       const evolved = res.changed
         ? ARCHETYPES[res.archetype as VibeDimension]
         : null;
-      if (evolved) toast(`Your vibe evolved — you're now ${evolved.name} ${evolved.emoji}`, "success");
+      if (evolved) toast(t("forms.activity.evolvedToast", { name: evolved.name, emoji: evolved.emoji }), "success");
     } catch {}
     setSaving(false);
     if (onDone) onDone();
@@ -196,11 +209,11 @@ export default function ActivityVibeForm({
   return (
     <>
       <Wizard
-        title="Event vibe"
-        pages={PAGES}
+        title={t("forms.activity.title")}
+        pages={pages}
         initial={initial}
         submitting={saving}
-        finishLabel="Save event vibe"
+        finishLabel={t("forms.activity.finish")}
         flat
         onComplete={complete}
         onClose={onClose}

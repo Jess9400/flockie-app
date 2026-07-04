@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   SLIDERS,
   TRIP_VIBES,
@@ -19,6 +20,12 @@ type Props = {
 };
 
 export default function VibeQuestions({ answers, onChange, oneLinerPrompt }: Props) {
+  const t = useTranslations("vibeCheck");
+  const tc = useTranslations("components");
+  // Data-driven labels with a raw-text fallback for any unmapped value.
+  const tripVibeLabel = (v: string) => (tc.has(`tripTypes.${v}`) ? tc(`tripTypes.${v}`) : v);
+  const travelStyleLabel = (v: string) => (t.has(`travelStyles.${v}`) ? t(`travelStyles.${v}`) : v);
+
   function toggleTag(key: "trip_vibe" | "travel_style", value: string) {
     const list = answers[key];
     if (list.includes(value)) {
@@ -40,27 +47,33 @@ export default function VibeQuestions({ answers, onChange, oneLinerPrompt }: Pro
   return (
     <div className="space-y-9">
       {/* 6 sliders */}
-      {SLIDERS.map((s, i) => (
-        <div key={s.key}>
-          <p className="font-nunito text-[15px] font-semibold text-navy">
-            {i + 1}. {s.label}
-          </p>
-          <p className="mb-3 font-nunito text-sm font-normal text-navy/60">{s.prompt}</p>
-          <RangeSlider
-            value={answers[s.key]}
-            onChange={(v) => onChange({ [s.key]: v } as Partial<VibeAnswers>)}
-            scale={s.scale}
-            label={s.label}
-          />
-        </div>
-      ))}
+      {SLIDERS.map((s, i) => {
+        const label = t.has(`sliders.${s.key}.label`) ? t(`sliders.${s.key}.label`) : s.label;
+        const prompt = t.has(`sliders.${s.key}.prompt`) ? t(`sliders.${s.key}.prompt`) : s.prompt;
+        const scale = (t.has(`sliders.${s.key}.scale`) ? (t.raw(`sliders.${s.key}.scale`) as string[]) : s.scale) as typeof s.scale;
+        return (
+          <div key={s.key}>
+            <p className="font-nunito text-[15px] font-semibold text-navy">
+              {i + 1}. {label}
+            </p>
+            <p className="mb-3 font-nunito text-sm font-normal text-navy/60">{prompt}</p>
+            <RangeSlider
+              value={answers[s.key]}
+              onChange={(v) => onChange({ [s.key]: v } as Partial<VibeAnswers>)}
+              scale={scale}
+              label={label}
+            />
+          </div>
+        );
+      })}
 
       {/* Trip vibe — max 3 */}
       <TagGroup
         n={7}
-        title="Trip vibe"
-        hint={`What kind of trip are you usually after? Pick up to ${MAX_TAGS}.`}
+        title={t("forms.questions.tripVibeTitle")}
+        hint={t("forms.questions.tripVibeHint", { max: MAX_TAGS })}
         options={TRIP_VIBES}
+        labelFor={tripVibeLabel}
         selected={answers.trip_vibe}
         onToggle={(v) => toggleTag("trip_vibe", v)}
       />
@@ -68,24 +81,25 @@ export default function VibeQuestions({ answers, onChange, oneLinerPrompt }: Pro
       {/* Travel style — max 3 */}
       <TagGroup
         n={8}
-        title="Travel style"
-        hint={`Which sound most like you? Pick up to ${MAX_TAGS}.`}
+        title={t("forms.questions.travelStyleTitle")}
+        hint={t("forms.questions.travelStyleHint", { max: MAX_TAGS })}
         options={TRAVEL_STYLES}
+        labelFor={travelStyleLabel}
         selected={answers.travel_style}
         onToggle={(v) => toggleTag("travel_style", v)}
       />
 
       {/* Dealbreakers — toggle pills */}
       <div>
-        <p className="font-nunito text-[15px] font-semibold text-navy">9. Hard preferences</p>
+        <p className="font-nunito text-[15px] font-semibold text-navy">9. {t("forms.questions.hardPrefsTitle")}</p>
         <p className="mb-3 font-nunito text-sm font-normal text-navy/60">
-          Tick what applies. These are used as hard filters.
+          {t("forms.questions.hardPrefsHint")}
         </p>
         <div className="space-y-3">
           {DEALBREAKERS.map((d) => (
             <TogglePill
               key={d}
-              label={d}
+              label={t.has(`dealbreakers.${d}`) ? t(`dealbreakers.${d}`) : d}
               selected={answers.dealbreakers.includes(d)}
               onClick={() => toggleDealbreaker(d)}
             />
@@ -95,7 +109,7 @@ export default function VibeQuestions({ answers, onChange, oneLinerPrompt }: Pro
 
       {/* One-liner */}
       <div>
-        <p className="font-nunito text-[15px] font-semibold text-navy">10. One-liner</p>
+        <p className="font-nunito text-[15px] font-semibold text-navy">10. {t("forms.questions.oneLinerTitle")}</p>
         <p className="mb-3 font-nunito text-sm font-normal text-navy/60">{oneLinerPrompt}</p>
         <input
           maxLength={ONE_LINER_MAX}
@@ -117,6 +131,7 @@ function TagGroup({
   title,
   hint,
   options,
+  labelFor,
   selected,
   onToggle,
 }: {
@@ -124,6 +139,7 @@ function TagGroup({
   title: string;
   hint: string;
   options: readonly string[];
+  labelFor: (v: string) => string;
   selected: string[];
   onToggle: (v: string) => void;
 }) {
@@ -138,7 +154,7 @@ function TagGroup({
         {options.map((o) => (
           <Chip
             key={o}
-            label={o}
+            label={labelFor(o)}
             selected={selected.includes(o)}
             disabled={full}
             onClick={() => onToggle(o)}

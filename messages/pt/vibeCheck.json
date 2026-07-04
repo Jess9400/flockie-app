@@ -1,0 +1,311 @@
+{
+  "sliders": {
+    "planning": {
+      "label": "Estilo de planejamento",
+      "prompt": "Numa viagem, você planeja cada hora ou vai improvisando?",
+      "scale": [
+        "Roteiro detalhado, reservado com semanas de antecedência",
+        "Planejo o principal, o resto fica em aberto",
+        "Alguns pontos fixos e depois deixo rolar",
+        "Chego e vou resolvendo",
+        "Não sei em que cidade vou dormir amanhã"
+      ]
+    },
+    "pace": {
+      "label": "Ritmo do dia",
+      "prompt": "Como é o seu dia de viagem ideal?",
+      "scale": [
+        "Manhãs devagar, uma atividade, bastante descanso",
+        "Duas coisas por dia, sem pressa",
+        "Dias ativos, noites livres",
+        "Roteiro cheio, do nascer ao pôr do sol",
+        "Não durmo quando viajo, tem coisa demais para fazer"
+      ]
+    },
+    "social_energy": {
+      "label": "Energia social",
+      "prompt": "De quanto tempo sozinho você precisa numa viagem?",
+      "scale": [
+        "4+ horas sozinho por dia ou eu surto",
+        "Algumas horas de sossego",
+        "Flexível, depende do dia",
+        "Rodeado de gente na maior parte do tempo",
+        "Por que alguém iria querer ficar sozinho?"
+      ]
+    },
+    "budget": {
+      "label": "Orçamento",
+      "prompt": "Como é o seu estilo de gastos quando viaja?",
+      "scale": [
+        "Hostels, comida de rua, cada centavo conta",
+        "Econômico, mas confortável",
+        "Meio-termo, com um luxo de vez em quando",
+        "Hotéis boutique, bons restaurantes",
+        "Luxo, viajo para relaxar, não para economizar"
+      ]
+    },
+    "nightlife": {
+      "label": "Vida noturna",
+      "prompt": "Qual é a sua vibe à noite?",
+      "scale": [
+        "Dormindo às 22h, o nascer do sol é sagrado",
+        "Jantar e um drink, em casa até a meia-noite",
+        "Noites longas, mas não todas",
+        "Na rua até as 2h quase toda noite",
+        "Vou dormir quando morrer"
+      ]
+    },
+    "adventurousness": {
+      "label": "Conforto com o desconhecido",
+      "prompt": "Comida estranha, bairros diferentes, se perder de propósito…",
+      "scale": [
+        "Quero saber o que estou comendo e para onde estou indo",
+        "Testo coisas novas se alguém já aprovou",
+        "Topo uma aventura, dentro do razoável",
+        "Se perder é metade da graça",
+        "Se não é desconfortável, qual é a graça?"
+      ]
+    }
+  },
+  "travelStyles": {
+    "I love photographing and documenting the trip": "Adoro fotografar e registrar a viagem",
+    "I want to talk to locals more than tourists": "Prefiro conversar com os locais do que com turistas",
+    "I'm here for the food first": "Estou aqui pela comida em primeiro lugar",
+    "I want to disconnect from work": "Quero desligar do trabalho",
+    "I want to keep working remotely": "Quero continuar trabalhando remoto",
+    "I like guided tours and structured activities": "Gosto de passeios guiados e atividades organizadas",
+    "I prefer wandering with no plan": "Prefiro perambular sem plano",
+    "I'm into wellness, yoga, fitness while traveling": "Curto bem-estar, yoga e treino enquanto viajo",
+    "I want to make new friends along the way": "Quero fazer novos amigos pelo caminho",
+    "I want a quiet, restorative trip": "Quero uma viagem tranquila e revigorante"
+  },
+  "dealbreakers": {
+    "I smoke (or am OK with someone who does)": "Eu fumo (ou não me incomodo com quem fuma)",
+    "I drink regularly when traveling": "Bebo com regularidade quando viajo",
+    "I'm vegetarian / vegan / have dietary needs": "Sou vegetariano / vegano / tenho restrições alimentares",
+    "I prefer same-gender travel partners": "Prefiro companhias de viagem do mesmo gênero",
+    "I need accommodation with a private bathroom": "Preciso de hospedagem com banheiro privativo",
+    "I'm comfortable with last-minute plan changes": "Não me incomodo com mudanças de plano de última hora",
+    "I need quiet sleeping conditions": "Preciso de silêncio para dormir"
+  },
+  "activityGroups": {
+    "Physical / Outdoor": "Físico / Ar livre",
+    "Creative / Cultural": "Criativo / Cultural",
+    "Social / Lifestyle": "Social / Estilo de vida",
+    "Wellness / Self-improvement": "Bem-estar / Desenvolvimento pessoal",
+    "Work / Professional": "Trabalho / Profissional"
+  },
+  "activities": {
+    "Surf": "Surf",
+    "Yoga": "Yoga",
+    "Hiking / trekking": "Trilha / trekking",
+    "Rock climbing": "Escalada",
+    "Running": "Corrida",
+    "Cycling": "Ciclismo",
+    "Skiing / snowboarding": "Esqui / snowboard",
+    "Diving / snorkeling": "Mergulho / snorkeling",
+    "Tennis / padel": "Tênis / padel",
+    "Pilates / barre": "Pilates / barre",
+    "Martial arts": "Artes marciais",
+    "Dancing": "Dança",
+    "Painting / drawing": "Pintura / desenho",
+    "Photography": "Fotografia",
+    "Writing / journaling": "Escrita / diário",
+    "Music (playing)": "Música (tocar)",
+    "Film / cinema": "Cinema",
+    "Theater": "Teatro",
+    "Museum visits": "Visitas a museus",
+    "Architecture / design": "Arquitetura / design",
+    "Pottery / crafts": "Cerâmica / artesanato",
+    "Cooking / food experiences": "Culinária / experiências gastronômicas",
+    "Bar hopping / nightlife": "Rolê de bar / vida noturna",
+    "Live music / concerts": "Música ao vivo / shows",
+    "Coffee culture / café-hopping": "Cultura do café / rolê de cafeteria",
+    "Wine tasting": "Degustação de vinhos",
+    "Board games": "Jogos de tabuleiro",
+    "Reading / book clubs": "Leitura / clubes do livro",
+    "Language exchanges": "Intercâmbio de idiomas",
+    "Volunteering": "Voluntariado",
+    "Meditation / mindfulness": "Meditação / mindfulness",
+    "Breathwork": "Respiração consciente",
+    "Sound baths": "Banhos de som",
+    "Cold plunges / ice baths": "Imersão no frio / banho de gelo",
+    "Saunas": "Saunas",
+    "Sober events": "Eventos sem álcool",
+    "Plant medicine ceremonies": "Cerimônias com medicina ancestral",
+    "Spa days": "Dias de spa",
+    "Coworking": "Coworking",
+    "Networking / business events": "Networking / eventos de negócios",
+    "Conferences / meetups": "Conferências / meetups",
+    "Skill-share workshops": "Workshops para trocar habilidades",
+    "Investor / startup events": "Eventos de investidores / startups"
+  },
+  "activityVibes": {
+    "Quiet, focused, no chitchat": "Quieto, concentrado, sem papo",
+    "Social, lots of conversation": "Social, muita conversa",
+    "Competitive / goal-oriented": "Competitivo / focado em metas",
+    "Creative / open-ended": "Criativo / sem roteiro",
+    "Spiritual / contemplative": "Espiritual / contemplativo",
+    "Party / energetic / loud": "Festa / animado / barulhento",
+    "Educational / structured": "Educativo / estruturado"
+  },
+  "activityDealbreakers": {
+    "Sober events only": "Só eventos sem álcool",
+    "Drinking is fine": "Beber tudo bem",
+    "Smoke-free": "Sem cigarro",
+    "Vegetarian / vegan": "Vegetariano / vegano",
+    "Same-gender preferred": "Prefiro o mesmo gênero",
+    "Beginner-friendly required": "Precisa receber bem iniciantes",
+    "LGBTQ+ friendly required": "Precisa ser LGBTQ+ friendly",
+    "Quiet / no party energy": "Tranquilo / sem clima de festa",
+    "Accessibility needs": "Necessidades de acessibilidade"
+  },
+  "skillScale": [
+    "Iniciante curioso",
+    "Iniciante",
+    "Intermediário",
+    "Avançado",
+    "Expert / profissional"
+  ],
+  "skillCategories": {
+    "Sports & outdoors": "Esportes e ar livre",
+    "Arts & creative": "Arte e criatividade",
+    "Social & nightlife": "Social e vida noturna",
+    "Wellness": "Bem-estar",
+    "Work": "Trabalho"
+  },
+  "activitySocialScale": [
+    "Sozinho, concentrado, no meu flow",
+    "Com 1 ou 2 amigos próximos",
+    "Grupo pequeno (3-5)",
+    "Grupo maior (6-10)",
+    "Quanto maior, melhor"
+  ],
+  "intensityScale": [
+    "Puro lazer, vim aproveitar",
+    "De boa / esforço leve",
+    "Equilibrado, entre trabalho e diversão",
+    "Bastante esforço, me desafia",
+    "Com tudo, na versão mais difícil"
+  ],
+  "choices": {
+    "pace": {
+      "1": "Um lugar só, a fundo",
+      "3": "Um pouco de cada",
+      "5": "Muitos lugares, no ritmo acelerado"
+    },
+    "budget": {
+      "1": "Esticar cada centavo",
+      "2": "Confortável, sem ostentação",
+      "4": "Me dar um mimo",
+      "5": "O melhor de tudo"
+    },
+    "socialTravel": {
+      "1": "Com uma pessoa só, de verdade",
+      "3": "Um grupinho",
+      "5": "Quanto mais, melhor"
+    },
+    "planning": {
+      "1": "Improvisar",
+      "3": "Alguns pontos fixos, o resto solto",
+      "5": "Planejar tudo"
+    },
+    "nightlife": {
+      "1": "Noites tranquilas",
+      "3": "Jantar e um drink",
+      "5": "Na rua até tarde"
+    },
+    "adventure": {
+      "1": "Manter no familiar",
+      "3": "Aventureiro com bom senso",
+      "5": "Quanto mais diferente, melhor"
+    },
+    "activitySocial": {
+      "2": "Um grupo pequeno e íntimo",
+      "3": "Um punhado de gente",
+      "5": "Grande e agitado"
+    },
+    "activityIntensity": {
+      "1": "Puro lazer",
+      "3": "Equilibrado",
+      "5": "Com tudo"
+    },
+    "socialStyle": {
+      "5": "Circulo pela sala toda",
+      "3": "Encontro uma ou duas pessoas",
+      "1": "Fico mais na minha, esquento aos poucos"
+    },
+    "motivation": {
+      "people": "Conhecer gente nova",
+      "activity": "A atividade em si",
+      "company": "Só não querer ficar sozinho"
+    },
+    "initiator": {
+      "starter": "Puxa o plano",
+      "joiner": "Entra no plano numa boa"
+    }
+  },
+  "tripPriorities": {
+    "pace": "Mesmo ritmo diário",
+    "budget": "Orçamento parecido",
+    "planning": "Planejado vs. espontâneo",
+    "social_energy": "Energia social",
+    "nightlife": "Notívago / madrugador",
+    "adventurousness": "Espírito aventureiro",
+    "interests": "Interesses em comum"
+  },
+  "activityPriorities": {
+    "interests": "Atividades em comum",
+    "vibe": "A vibe da experiência",
+    "social": "Tamanho do grupo",
+    "intensity": "Nível de esforço"
+  },
+  "activityOneLinerPrompt": "Complete: “Numa atividade, sou o tipo de pessoa que…”",
+  "forms": {
+    "trip": {
+      "title": "Vibe de viagem",
+      "finish": "Salvar vibe de viagem",
+      "evolvedToast": "Sua vibe evoluiu — agora você é {name} {emoji}",
+      "pace": "Seu ritmo natural de viagem?",
+      "budget": "Sua vibe de orçamento numa viagem?",
+      "socialTravel": "Com quem você mais quer viajar?",
+      "planning": "Numa viagem, você é do tipo que planeja?",
+      "nightlife": "Suas noites numa viagem?",
+      "adventure": "Comida estranha, se perder de propósito?",
+      "tripVibeLabel": "Do que a viagem é de verdade?",
+      "tripVibeHint": "Escolha até {max}.",
+      "dealbreakersLabel": "Alguma preferência inegociável?",
+      "dealbreakersHint": "São usadas como filtros, não só enfeite. Pule se não houver nenhuma.",
+      "prioritiesLabel": "Quando a gente fizer seu match, o que mais importa?",
+      "prioritiesHint": "Escolha até {max}."
+    },
+    "activity": {
+      "title": "Vibe de evento",
+      "finish": "Salvar vibe de evento",
+      "evolvedToast": "Sua vibe evoluiu — agora você é {name} {emoji}",
+      "activitiesLabel": "O que você faz de verdade?",
+      "activitiesHint": "Suas favoritas — não precisa escolher tudo.",
+      "motivationLabel": "O que te tira de casa?",
+      "motivationHint": "O que você realmente busca quando vai a um rolê local.",
+      "social": "Tamanho de grupo ideal para um encontro?",
+      "socialStyle": "Ao entrar numa sala cheia de desconhecidos, você…",
+      "intensity": "Quanto você quer se esforçar?",
+      "initiator": "Você é mais do tipo que…",
+      "vibeLabel": "A vibe ideal da experiência",
+      "vibeHint": "Escolha até {max}.",
+      "dealbreakersLabel": "Alguma preferência inegociável?",
+      "dealbreakersHint": "São usadas como filtros. Pule se não houver nenhuma.",
+      "prioritiesLabel": "Para um encontro, o que mais importa?",
+      "prioritiesHint": "Escolha até {max}."
+    },
+    "questions": {
+      "tripVibeTitle": "Vibe de viagem",
+      "tripVibeHint": "Que tipo de viagem você costuma buscar? Escolha até {max}.",
+      "travelStyleTitle": "Estilo de viagem",
+      "travelStyleHint": "Quais mais têm a ver com você? Escolha até {max}.",
+      "hardPrefsTitle": "Preferências inegociáveis",
+      "hardPrefsHint": "Marque o que se aplica. São usadas como filtros rígidos.",
+      "oneLinerTitle": "Uma frase"
+    }
+  }
+}
