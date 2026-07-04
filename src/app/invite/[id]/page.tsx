@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MapPin, CalendarClock, Users } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { formatVibeWhen } from "@/lib/vibes";
 import { formatApproximateVibeLocation } from "@/lib/vibe-location";
@@ -52,12 +53,12 @@ export default async function InvitePage({
   params: { id: string };
   searchParams: { via?: string; code?: string };
 }) {
+  const [t, v] = await Promise.all([getTranslations("components"), getVibe(params.id)]);
+  if (!v) notFound();
   const viaHost = searchParams.via === "host";
   const hostCode = searchParams.code?.trim() || "";
-  const v = await getVibe(params.id);
-  if (!v) notFound();
   const approximateLocation =
-    formatApproximateVibeLocation(v) || "Location shared after confirmation";
+    formatApproximateVibeLocation(v) || t("invite.locationFallback");
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-lg px-5 py-8 font-nunito">
@@ -78,13 +79,13 @@ export default async function InvitePage({
         </div>
 
         <div className="p-5">
-          <p className="font-nunito text-sm font-semibold text-flockie-coral">You&rsquo;re invited to a Vibe</p>
+          <p className="font-nunito text-sm font-semibold text-flockie-coral">{t("invite.eyebrow")}</p>
           <h1 className="mt-1 font-fredoka text-3xl font-bold leading-tight text-navy">{v.title}</h1>
 
           <div className="mt-3 space-y-1.5 font-nunito text-sm font-medium text-navy">
             <p className="flex items-center gap-2"><CalendarClock size={16} className="text-flockie-coral" /> {formatVibeWhen(v.starts_at)}</p>
             <p className="flex items-center gap-2"><MapPin size={16} className="text-flockie-coral" /> {approximateLocation}</p>
-            <p className="flex items-center gap-2"><Users size={16} className="text-flockie-coral" /> {v.confirmed_count}/{v.capacity} going</p>
+            <p className="flex items-center gap-2"><Users size={16} className="text-flockie-coral" /> {v.confirmed_count}/{v.capacity} {t("invite.going")}</p>
           </div>
 
           {v.description && (
@@ -93,8 +94,8 @@ export default async function InvitePage({
 
           {(v.event_vibe_tags?.length ?? 0) > 0 && (
             <div className="mt-3 flex flex-wrap gap-1.5">
-              {v.event_vibe_tags!.map((t) => (
-                <span key={t} className="rounded-full bg-cream px-3 py-1 font-nunito text-xs font-bold text-navy">{t}</span>
+              {v.event_vibe_tags!.map((tag) => (
+                <span key={tag} className="rounded-full bg-cream px-3 py-1 font-nunito text-xs font-bold text-navy">{tag}</span>
               ))}
             </div>
           )}
@@ -108,46 +109,46 @@ export default async function InvitePage({
                   {v.host_name[0]}
                 </span>
               )}
-              Hosted by {v.host_name}
+              {t("invite.hostedBy", { name: v.host_name })}
             </p>
           )}
 
           {v.status === "cancelled" ? (
             <div className="mt-6 rounded-full border-2 border-navy bg-cream py-3.5 text-center font-fredoka text-sm font-semibold text-navy/60">
-              Sign-ups for this Vibe are closed.
+              {t("invite.closed")}
             </div>
           ) : hostCode ? (
             <Link
               href={`/vibes/${v.id}?code=${encodeURIComponent(hostCode)}`}
               className="mt-6 block rounded-full border-2 border-navy bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
             >
-              Join with host code
+              {t("invite.joinWithCode")}
             </Link>
           ) : viaHost ? (
             <Link
               href={`/vibes/${v.id}?request=1`}
               className="mt-6 block rounded-full border-2 border-navy bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
             >
-              Request to join
+              {t("invite.requestToJoin")}
             </Link>
           ) : v.status === "open" ? (
             <Link
               href={`/vibes/${v.id}?interested=1`}
               className="mt-6 block rounded-full border-2 border-navy bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
             >
-              I&rsquo;m interested
+              {t("invite.interested")}
             </Link>
           ) : (
             <div className="mt-6 rounded-full border-2 border-navy bg-cream py-3.5 text-center font-fredoka text-sm font-semibold text-navy/60">
-              Sign-ups for this Vibe are closed.
+              {t("invite.closed")}
             </div>
           )}
           <p className="mt-2 text-center font-nunito text-xs font-medium text-navy/50">
             {hostCode
-              ? "You have a host invite code — tap to join one of the host's spots, confirmed instantly."
+              ? t("invite.helperCode")
               : viaHost
-                ? "The host invited you directly — a quick vibe check, then they add you to their spots."
-                : "Tap interested — a quick vibe check, then the host’s algorithm picks the most compatible people."}
+                ? t("invite.helperHost")
+                : t("invite.helperPublic")}
           </p>
         </div>
       </div>

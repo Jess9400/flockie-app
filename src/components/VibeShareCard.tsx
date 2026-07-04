@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import CompatShareButton from "@/components/CompatShareButton";
 import { ARCHETYPES } from "@/lib/onboarding/archetypes";
 import type { VibeDimension } from "@/lib/onboarding/types";
+import { useTranslations } from "next-intl";
 
 // Generates a branded vibe card on a canvas the user can share. Includes the
 // personality archetype (name + description) plus travel/activity tags.
@@ -20,6 +21,7 @@ export default function VibeShareCard({
   archetypeKey?: string | null;
   onClose: () => void;
 }) {
+  const t = useTranslations("components");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const W = 1080;
   const H = 1080;
@@ -155,8 +157,8 @@ export default function VibeShareCard({
       const file = new File([blob], "flockie-vibe.png", { type: "image/png" });
       const data = {
         files: [file],
-        title: "My travel vibe",
-        text: "Found my travel vibe on Flockie — find yours: https://findflockie.com",
+        title: t("vibeShareCard.shareTitle"),
+        text: t("vibeShareCard.shareText"),
       };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const nav = navigator as any;
@@ -178,9 +180,9 @@ export default function VibeShareCard({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy/60 p-5 font-nunito">
       <div className="w-full max-w-sm rounded-3xl border-2 border-navy bg-cream p-5 text-center">
-        <p className="font-fredoka text-xl font-bold text-navy">Your vibe is set 🎉</p>
+        <p className="font-fredoka text-xl font-bold text-navy">{t("vibeShareCard.heading")}</p>
         <p className="mt-1 font-nunito text-sm font-medium text-navy/60">
-          Share it and pull your friends in.
+          {t("vibeShareCard.subtext")}
         </p>
         <canvas
           ref={canvasRef}
@@ -193,14 +195,14 @@ export default function VibeShareCard({
           onClick={share}
           className="mt-4 w-full rounded-full border-2 border-navy bg-flockie-coral py-3 font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
         >
-          Share my vibe
+          {t("vibeShareCard.shareMyVibe")}
         </button>
         {userId && (
           <div className="mt-2 flex justify-center">
             <CompatShareButton
               userId={userId}
               variant="primary"
-              label="Will your BFF match your vibe? Invite them and find out!"
+              label={t("vibeShareCard.compatLabel")}
             />
           </div>
         )}
@@ -209,7 +211,7 @@ export default function VibeShareCard({
           onClick={onClose}
           className="mt-2 w-full py-2 font-nunito text-sm font-bold text-navy/60"
         >
-          Done
+          {t("vibeShareCard.done")}
         </button>
       </div>
     </div>

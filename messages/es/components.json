@@ -1,1 +1,332 @@
-{}
+{
+  "activityVibePopup": {
+    "addFirstName": "Agrega tu nombre.",
+    "addPhoto": "Agrega al menos una foto.",
+    "close": "Cerrar",
+    "firstNameLabel": "Nombre",
+    "firstNamePlaceholder": "Tu nombre",
+    "photoUploadFailed": "Error al subir la foto.",
+    "photosLabel": "Fotos (hasta 3)",
+    "pickActivity": "Elige al menos una actividad.",
+    "quickVibeCheck": "Rápido vibe check",
+    "remove": "Eliminar",
+    "saving": "Guardando…",
+    "submit": "Guardar y expresar interés",
+    "subtitle": "Para que el algoritmo del host pueda hacerte match. Tarda un minuto.",
+    "uploading": "Subiendo…"
+  },
+  "appShell": {
+    "beta": "Beta",
+    "home": "Inicio de Flockie",
+    "menu": "Menú",
+    "notifications": "Notificaciones",
+    "primaryNav": "Principal",
+    "profile": "Perfil",
+    "you": "Tú"
+  },
+  "brandedMap": {
+    "eventLocation": "Ubicación del evento",
+    "loadingMap": "Cargando mapa…"
+  },
+  "compatShare": {
+    "copied": "¡Link copiado!",
+    "defaultLabel": "Ve tu % de match con un amigo",
+    "shareText": "Mira qué tan compatibles seríamos como compañeros de viaje — haz el vibe check de 60 seg:",
+    "shareTitle": "¿Qué tan compatibles somos?"
+  },
+  "confirm": {
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "notePlaceholder": "Agrega una nota (opcional)…"
+  },
+  "continents": {
+    "Africa": "África",
+    "Antarctica": "Antártida",
+    "Asia": "Asia",
+    "Europe": "Europa",
+    "North America": "América del Norte",
+    "Oceania": "Oceanía",
+    "South America": "América del Sur"
+  },
+  "cookie": {
+    "accept": "Aceptar",
+    "aria": "Consentimiento de cookies",
+    "body": "Usamos cookies opcionales para analíticas. Tú decides.",
+    "decline": "Rechazar",
+    "privacy": "Política de Privacidad"
+  },
+  "createFab": {
+    "closeAriaLabel": "Cerrar menú de creación",
+    "createActivity": "🧭 Crear una actividad",
+    "createVibe": "🎟️ Crear una Vibe",
+    "openAriaLabel": "Crear"
+  },
+  "deleteTrip": {
+    "confirm": "Eliminar",
+    "defaultTarget": "esto",
+    "message": "Esto no se puede deshacer.",
+    "title": "¿Eliminar {label}?"
+  },
+  "earlyCity": {
+    "body": "Flockie apenas está comenzando aquí — así que puedes darle forma tú. Trae a uno o dos amigos y tendrás gente con quien explorar en poco tiempo.",
+    "exploreWorld": "Mientras tanto, explora por el mundo",
+    "heading": "Llegaste temprano a {city}",
+    "invite": "Invita a amigos"
+  },
+  "filterSheet": {
+    "close": "Cerrar",
+    "filters": "Filtros",
+    "resetAll": "Borrar todo",
+    "showResults": "Ver resultados"
+  },
+  "flockRequest": {
+    "completePrefsCompact": "Completar prefs",
+    "completePrefsFull": "Completar Preferencias de Viaje",
+    "completePrefsTip": "Completa tus preferencias de viaje para pedir unirte a Flocks",
+    "errTip": "No se pudo enviar tu solicitud — toca para intentar de nuevo",
+    "requestToJoin": "Pedir unirse",
+    "requested": "Solicitado",
+    "tryAgain": "Intentar de nuevo"
+  },
+  "flockReview": {
+    "back": "Atrás",
+    "badgeReview": "Calificar",
+    "badgeReviewed": "Calificado",
+    "descBold": "cada persona individualmente",
+    "descPrefix": "{dest} — califica a ",
+    "descSuffix": " y deja una nota breve. Ayuda a destacar a los mejores compañeros de viaje.",
+    "empty": "Todavía no hay nadie para calificar aquí.",
+    "flockFallback": "tu Flock",
+    "flockieFallback": "Un flockie",
+    "title": "Califica a tus flockmates"
+  },
+  "footer": {
+    "beta": "Beta",
+    "copyright": "© 2026 Flockie. Hecho para viajeros y hacedores.",
+    "privacy": "Política de Privacidad",
+    "safety": "Seguridad",
+    "tagline": "Encuentra tu flock.",
+    "terms": "Términos y Condiciones"
+  },
+  "generateCover": {
+    "busy": "Generando portada…",
+    "button": "Generar portada con IA",
+    "errCredits": "Los créditos de imagen con IA se agotaron por ahora.",
+    "errGeneric": "No se pudo generar la portada.",
+    "errNoTitle": "Agrega un título primero para saber qué dibujar.",
+    "errTooMany": "Demasiados intentos — espera un momento.",
+    "helper": "Crea una portada ilustrada desde tu título — no es una foto de personas."
+  },
+  "groupGenders": {
+    "any": "Todos",
+    "men": "Solo hombres",
+    "women": "Solo mujeres"
+  },
+  "invite": {
+    "closed": "Las inscripciones para esta Vibe están cerradas.",
+    "eyebrow": "Estás invitado a una Vibe",
+    "going": "confirmados",
+    "helperCode": "Tienes un código de anfitrión — toca para unirte a uno de sus cupos, confirmado al instante.",
+    "helperHost": "El anfitrión te invitó directamente — un rápido vibe check y te agrega a sus cupos.",
+    "helperPublic": "Toca interesado — un rápido vibe check y el algoritmo del anfitrión elige a las personas más compatibles.",
+    "hostedBy": "Organizado por {name}",
+    "interested": "Me interesa",
+    "joinWithCode": "Unirse con código de anfitrión",
+    "locationFallback": "Ubicación compartida tras la confirmación",
+    "requestToJoin": "Solicitar unirse"
+  },
+  "join": {
+    "body": "Encuentra personas para una cena espontánea, un viaje de fin de semana o la actividad que siempre quisiste hacer.",
+    "cta": "Únete a {name} en Flockie",
+    "eyebrow": "Una invitación personal",
+    "friendFallback": "Un amigo",
+    "headline": "{name} te invitó a Flockie",
+    "helper": "Inicia sesión con Google y luego completa un rápido vibe check."
+  },
+  "languages": {
+    "Arabic": "Árabe",
+    "English": "Inglés",
+    "French": "Francés",
+    "German": "Alemán",
+    "Hindi": "Hindi",
+    "Italian": "Italiano",
+    "Japanese": "Japonés",
+    "Mandarin": "Mandarín",
+    "Other": "Otro",
+    "Portuguese": "Portugués",
+    "Russian": "Ruso",
+    "Spanish": "Español"
+  },
+  "legalShell": {
+    "lastUpdated": "Última actualización: {updated}"
+  },
+  "locationPrompt": {
+    "body": "Comparte tu ubicación para mostrarte Vibes y personas cerca de ti. Puedes cambiar esto en cualquier momento.",
+    "heading": "Activar ubicación",
+    "notNow": "Ahora no",
+    "turnOn": "Activar"
+  },
+  "login": {
+    "connecting": "Conectando…",
+    "consentAnd": " y la ",
+    "consentPrefix": "Tengo 18 años o más y acepto los ",
+    "continueGoogle": "Continuar con Google",
+    "headline": "Encuentra a alguien con quien ir.",
+    "headlineAccent": "A donde sea.",
+    "privacy": "Política de Privacidad de Flockie",
+    "subheading": "Una cena esta noche, un viaje de fin de semana o simplemente alguien con quien ir al museo. 5 preguntas rápidas y encontramos a tu gente.",
+    "terms": "Términos"
+  },
+  "matchBack": {
+    "button": "Match back & chat",
+    "errConflict": "Tienen preferencias de match conflictantes.",
+    "errFailed": "No se pudo hacer el match back — inténtalo de nuevo.",
+    "prompt": "{name} quiere hacer algo contigo 👋",
+    "subprompt": "Sus vibes coinciden. Haz match back para abrir un chat."
+  },
+  "matchKeyTip": {
+    "explanation": "— qué tan alineado está una persona o plan con tu vibe. A mayor %, más es lo tuyo.",
+    "gotIt": "Entendido",
+    "isYour": "es tu",
+    "that": "Ese",
+    "vibeMatch": "vibe match"
+  },
+  "pagination": {
+    "ariaLabel": "Paginación",
+    "nextPage": "Página siguiente",
+    "prevPage": "Página anterior"
+  },
+  "photoCropper": {
+    "cancel": "Cancelar",
+    "heading": "Reposiciona tu foto",
+    "subtitle": "Arrastra para mover, desliza para ampliar.",
+    "uploading": "Subiendo…",
+    "usePhoto": "Usar foto"
+  },
+  "photoGrid": {
+    "addPhoto": "Agregar foto",
+    "primary": "Principal",
+    "removePhoto": "Eliminar foto",
+    "removeVideo": "Eliminar video",
+    "uploading": "Subiendo…",
+    "video": "Video",
+    "videoOptional": "Video (opcional)"
+  },
+  "profileProgress": {
+    "complete": "Perfil {pct}% completo — termínalo para mejores matches."
+  },
+  "profileStats": {
+    "activities": "Actividades",
+    "flocksHosted": "Flocks organizados",
+    "flocksJoined": "Flocks a los que fui",
+    "onFlockie": "En Flockie",
+    "travelBuddies": "buddies de viaje",
+    "trips": "Viajes",
+    "vibesHosted": "Vibes organizadas",
+    "vibesJoined": "Vibes a las que fui"
+  },
+  "quickAction": {
+    "chip": {
+      "coffee": "café",
+      "coworking": "coworking",
+      "dinner": "cena",
+      "hike": "senderismo",
+      "surf": "surf",
+      "yoga": "yoga"
+    },
+    "createButton": "Crear una Vibe",
+    "greeting": "¡Hola, {name}! 👋",
+    "placeholder": "Surf en Bali, cena en Lisboa, café mañana…",
+    "subheading": "¿Qué quieres hacer hoy?"
+  },
+  "rangeSlider": {
+    "slideToAnswer": "Desliza para responder"
+  },
+  "revealActions": {
+    "checkFriendMatch": "¿Tu amigo/a haría match con tu vibe?",
+    "linkCopied": "¡Enlace copiado!",
+    "shareText": "Mira qué tan compatibles somos — haz el vibe check de 60 seg:",
+    "shareTitle": "¿Qué tan compatibles somos?",
+    "shareYourVibe": "Compartir mi vibe"
+  },
+  "reviewsBanner": {
+    "cta": "Tienes {count, plural, one {# reseña} other {# reseñas}} por dejar — ayuda a otros a encontrar a su gente ⭐",
+    "dismiss": "Descartar recordatorio de reseñas",
+    "leaveMany": "Déjalas",
+    "leaveOne": "Déjala"
+  },
+  "runMatching": {
+    "host": "Eres el host",
+    "matched": "¡Match hecho! Invitados: {invited}, en espera: {standby}.",
+    "openChat": "Abrir Vibing Chat",
+    "reRun": "Volver a ejecutar matching",
+    "runNow": "Ejecutar matching ahora",
+    "running": "Ejecutando…"
+  },
+  "tripPicker": {
+    "findingMatchesFor": "Buscando matches para"
+  },
+  "tripTypes": {
+    "Adventure / outdoors / active": "Aventura / aire libre / activo",
+    "Beach / coast": "Playa / costa",
+    "Chill / wellness / recharge": "Relax / bienestar / recargar",
+    "City exploration": "Explorar la ciudad",
+    "Cultural / history / museums": "Cultura / historia / museos",
+    "Foodie / culinary": "Gastronomía / culinario",
+    "Mountains / nature": "Montañas / naturaleza",
+    "Party / nightlife": "Fiesta / vida nocturna",
+    "Spiritual / retreat": "Espiritual / retiro",
+    "Work-friendly / coworking": "Apto para trabajar / coworking"
+  },
+  "vibeSearch": {
+    "clearAriaLabel": "Limpiar",
+    "placeholderActivity": "Actividad (surf, cena, yoga…)",
+    "placeholderCity": "Ubicación (ciudad)",
+    "searchButton": "Buscar"
+  },
+  "vibeShareCard": {
+    "compatLabel": "¿Tu BFF hará match con tu vibe? ¡Invítalo/a y descúbrelo!",
+    "done": "Listo",
+    "heading": "Tu vibe está listo 🎉",
+    "shareMyVibe": "Compartir mi vibe",
+    "shareText": "Encontré mi vibe de viaje en Flockie — encuentra el tuyo: https://findflockie.com",
+    "shareTitle": "Mi vibe de viaje",
+    "subtext": "Compártelo y suma a tus amigos."
+  },
+  "vouchForm": {
+    "defaultWho": "tu amigo/a",
+    "errorGeneric": "Algo salió mal. Revisa el enlace e inténtalo de nuevo.",
+    "extraLabel": "¿Algo que un futuro buddy de viaje debería saber? (opcional)",
+    "extraPlaceholder": "Lo útil y honesto",
+    "legalText": "La participación es voluntaria. Tus respuestas sobre {who} ayudan con su matching y serán visibles para otros miembros a través de los resultados de matching de {who}. Puedes pedirnos que eliminemos tu respuesta en cualquier momento en ",
+    "linkNotFoundBody": "Este enlace de vouch es inválido o ha expirado.",
+    "linkNotFoundHeading": "Enlace no encontrado",
+    "loading": "Cargando…",
+    "nameLabel": "Tu nombre (opcional)",
+    "namePlaceholder": "Para que sepa quién lo avaló",
+    "oneLinerPrompt": "Completa: “De viaje, {who} es el tipo de persona que…”",
+    "planningBody": "Sé honesto/a — te lo agradecerán. Las mismas preguntas, pero sobre {who}.",
+    "planningHeading": "¿Planeando un viaje con {who}?",
+    "sending": "Enviando…",
+    "thankYouBody": "Tu opinión honesta ayuda a {name} a encontrar los buddies de viaje ideales.",
+    "thankYouHeading": "¡Gracias! 🕊️",
+    "vouchFor": "Avalar a {who}"
+  },
+  "wizard": {
+    "back": "Atrás",
+    "close": "Cerrar",
+    "continue": "Continuar →",
+    "dragSlider": "Desliza el control",
+    "finish": "Finalizar",
+    "newToIt": "Principiante",
+    "of": "{current} de {total}",
+    "oneLine": "Una línea",
+    "pickAllThatApply": "Elige todos los que apliquen",
+    "pickUpTo": "Elige hasta {max}",
+    "pro": "Pro",
+    "rateSelf": "Califícate por categoría",
+    "saving": "Guardando…",
+    "stepOf": "Paso {current} de {total}",
+    "tapOne": "Elige uno"
+  }
+}

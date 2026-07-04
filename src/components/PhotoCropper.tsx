@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 
 // Lightweight, dependency-free square cropper: drag to reposition, slider to
 // zoom, outputs a 1080×1080 JPEG blob. Used before uploading profile photos.
@@ -18,6 +19,7 @@ export default function PhotoCropper({
   onCropped: (blob: Blob) => void;
   busy?: boolean;
 }) {
+  const t = useTranslations("components");
   const [img, setImg] = useState<HTMLImageElement | null>(null);
   const [zoom, setZoom] = useState(1);
   const [off, setOff] = useState({ x: 0, y: 0 });
@@ -81,8 +83,8 @@ export default function PhotoCropper({
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-navy/60 p-5 font-nunito">
       <div className="w-full max-w-sm rounded-3xl border-2 border-navy bg-cream p-5 text-center">
-        <p className="font-fredoka text-lg font-bold text-navy">Reposition your photo</p>
-        <p className="mt-1 text-sm font-medium text-navy/60">Drag to move, slide to zoom.</p>
+        <p className="font-fredoka text-lg font-bold text-navy">{t("photoCropper.heading")}</p>
+        <p className="mt-1 text-sm font-medium text-navy/60">{t("photoCropper.subtitle")}</p>
 
         <div
           className="relative mx-auto mt-4 touch-none select-none overflow-hidden rounded-2xl border-2 border-navy bg-navy"
@@ -119,7 +121,7 @@ export default function PhotoCropper({
           disabled={busy || !img}
           className="mt-4 w-full rounded-full border-2 border-navy bg-flockie-coral py-3 font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] disabled:opacity-50"
         >
-          {busy ? "Uploading…" : "Use photo"}
+          {busy ? t("photoCropper.uploading") : t("photoCropper.usePhoto")}
         </button>
         <button
           type="button"
@@ -127,7 +129,7 @@ export default function PhotoCropper({
           disabled={busy}
           className="mt-2 w-full py-2 text-sm font-bold text-navy/60"
         >
-          Cancel
+          {t("photoCropper.cancel")}
         </button>
       </div>
     </div>

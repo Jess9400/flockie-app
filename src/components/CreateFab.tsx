@@ -3,9 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Plus, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 // Always-reachable Create action. Expands to vibe / activity choices.
 export default function CreateFab() {
+  const t = useTranslations("components");
   const [open, setOpen] = useState(false);
 
   // Sits above the mobile bottom tab bar; back to bottom-5 at sm+ where the bar is hidden.
@@ -21,21 +23,21 @@ export default function CreateFab() {
           onClick={() => setOpen(false)}
           className="flex items-center gap-2 rounded-full border-[3px] border-ink bg-flockie-coral px-4 py-2.5 text-sm font-extrabold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
         >
-          🎟️ Create a vibe
+          {t("createFab.createVibe")}
         </Link>
         <Link
           href="/match/trip?kind=activity"
           onClick={() => setOpen(false)}
           className="flex items-center gap-2 rounded-full border-[3px] border-ink bg-flockie-blue px-4 py-2.5 text-sm font-extrabold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
         >
-          🧭 Create an activity
+          {t("createFab.createActivity")}
         </Link>
       </div>
 
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        aria-label={open ? "Close create menu" : "Create"}
+        aria-label={open ? t("createFab.closeAriaLabel") : t("createFab.openAriaLabel")}
         className="flex h-14 w-14 items-center justify-center rounded-full border-[3px] border-ink bg-flockie-coral text-white shadow-[0_5px_0_0_rgba(10,37,69,1)] transition-all active:translate-y-[3px] active:shadow-[0_2px_0_0_rgba(10,37,69,1)]"
       >
         <span className={`transition-transform duration-200 ${open ? "rotate-90" : ""}`}>

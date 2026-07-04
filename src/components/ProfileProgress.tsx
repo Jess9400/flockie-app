@@ -1,6 +1,7 @@
 "use client";
 
 import { Check } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export type ProgressSegment = { label: string; pct: number; anchor: string };
 
@@ -11,6 +12,7 @@ export default function ProfileProgress({
   segments: ProgressSegment[];
   overall: number;
 }) {
+  const t = useTranslations("components");
   function jump(anchor: string) {
     document.getElementById(anchor)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -45,7 +47,7 @@ export default function ProfileProgress({
         })}
       </div>
       <p className="mt-2 font-nunito text-sm font-medium text-navy">
-        Profile {overall}% complete — finish for better matches.
+        {t("profileProgress.complete", { pct: overall })}
       </p>
     </div>
   );

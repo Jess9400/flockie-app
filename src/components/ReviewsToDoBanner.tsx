@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Star, X } from "lucide-react";
 
 const KEY = "flockie_reviews_banner_dismissed";
@@ -17,6 +18,7 @@ export default function ReviewsToDoBanner({
   count: number;
   href: string;
 }) {
+  const t = useTranslations("components");
   // Start hidden; a matching effect reveals it so we never flash on a dismissed
   // session or when SSR count is stale.
   const [show, setShow] = useState(false);
@@ -51,19 +53,18 @@ export default function ReviewsToDoBanner({
         <Star size={16} className="fill-flockie-coral text-flockie-coral" />
       </span>
       <p className="flex-1 text-sm font-extrabold leading-snug">
-        You have {count} review{count === 1 ? "" : "s"} to leave — help others find
-        their people ⭐
+        {t("reviewsBanner.cta", { count })}
       </p>
       <Link
         href={href}
         className="shrink-0 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-extrabold text-ink"
       >
-        {count === 1 ? "Leave it" : "Leave them"}
+        {count === 1 ? t("reviewsBanner.leaveOne") : t("reviewsBanner.leaveMany")}
       </Link>
       <button
         type="button"
         onClick={dismiss}
-        aria-label="Dismiss review reminder"
+        aria-label={t("reviewsBanner.dismiss")}
         className="shrink-0 rounded-full p-1.5 text-white/80 transition-colors hover:bg-white/15 hover:text-white"
       >
         <X size={16} />

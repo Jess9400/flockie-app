@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const CHIPS = ["coffee", "surf", "yoga", "dinner", "coworking", "hike"];
 
 export default function QuickAction({ firstName }: { firstName: string }) {
+  const t = useTranslations("components");
   const router = useRouter();
   const [text, setText] = useState("");
 
@@ -18,24 +20,24 @@ export default function QuickAction({ firstName }: { firstName: string }) {
   return (
     <section className="px-5 py-10 text-center sm:py-16">
       <h1 className="text-[32px] font-black leading-tight sm:text-5xl">
-        Hey {firstName} 👋
+        {t("quickAction.greeting", { name: firstName })}
       </h1>
       <p className="mt-2 text-lg font-bold text-ink/70">
-        What do you want to do today?
+        {t("quickAction.subheading")}
       </p>
 
       <form onSubmit={submit} className="mx-auto mt-6 flex max-w-2xl flex-col gap-2 sm:flex-row">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Surf in Bali, dinner in Lisbon, coffee tomorrow…"
+          placeholder={t("quickAction.placeholder")}
           className="h-14 w-full rounded-2xl border-[3px] border-ink bg-cream px-5 font-medium outline-none transition-colors focus:border-flockie-blue sm:h-16"
         />
         <button
           type="submit"
           className="h-14 shrink-0 rounded-full border-[3px] border-ink bg-flockie-coral px-7 font-bold text-white transition-transform hover:scale-[1.02] sm:h-16"
         >
-          Create a Vibe
+          {t("quickAction.createButton")}
         </button>
       </form>
 
@@ -47,7 +49,7 @@ export default function QuickAction({ firstName }: { firstName: string }) {
             onClick={() => setText(c)}
             className="rounded-full border-2 border-ink bg-white px-3 py-1 text-sm font-bold hover:bg-cream"
           >
-            {c}
+            {t(`quickAction.chip.${c}`)}
           </button>
         ))}
       </div>

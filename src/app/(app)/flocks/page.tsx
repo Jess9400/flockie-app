@@ -22,12 +22,13 @@ export default async function FlocksPage({
   const supabase = await createClient();
   const user = await getSessionUser();
   const tr = await getTranslations("flocks");
+  const tc = await getTranslations("components");
 
   const FLOCK_FILTER_SECTIONS = [
-    { key: "continent", title: tr("filters.continent"), multi: true, options: CONTINENTS.map((c) => ({ value: c, label: c })) },
-    { key: "gender", title: tr("filters.openTo"), options: GROUP_GENDERS.map((g) => ({ value: g.value, label: g.label })) },
+    { key: "continent", title: tr("filters.continent"), multi: true, options: CONTINENTS.map((c) => ({ value: c, label: tc(`continents.${c}`) })) },
+    { key: "gender", title: tr("filters.openTo"), options: GROUP_GENDERS.map((g) => ({ value: g.value, label: tc(`groupGenders.${g.value}`) })) },
     { key: "size", title: tr("filters.groupSize"), options: GROUP_SIZE_BUCKETS.map((b) => ({ value: b.value, label: tr("filters.sizePeople", { label: b.label }) })) },
-    { key: "language", title: tr("filters.language"), multi: true, options: FLOCK_LANGUAGES.map((l) => ({ value: l, label: l })) },
+    { key: "language", title: tr("filters.language"), multi: true, options: FLOCK_LANGUAGES.map((l) => ({ value: l, label: tc(`languages.${l}`) })) },
   ];
 
   const page = Math.max(1, Number(searchParams.page) || 1);

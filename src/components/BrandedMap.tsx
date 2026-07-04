@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 
 // Loads the Google Maps JS API once (module-level promise).
 let gmapsPromise: Promise<void> | null = null;
@@ -43,6 +44,7 @@ export default function BrandedMap({
   location: string;
   fallbackSrc: string;
 }) {
+  const t = useTranslations("components");
   const ref = useRef<HTMLDivElement>(null);
   const [mode, setMode] = useState<"loading" | "map" | "fallback">("loading");
 
@@ -97,7 +99,7 @@ export default function BrandedMap({
   if (mode === "fallback") {
     return (
       <iframe
-        title="Event location"
+        title={t("brandedMap.eventLocation")}
         src={fallbackSrc}
         loading="lazy"
         className="h-[250px] w-full rounded-2xl border-2 border-navy"
@@ -111,7 +113,7 @@ export default function BrandedMap({
       <div ref={ref} className="h-full w-full" />
       {mode === "loading" && (
         <div className="absolute inset-0 flex items-center justify-center bg-cream font-nunito text-sm font-medium text-navy/50">
-          Loading map…
+          {t("brandedMap.loadingMap")}
         </div>
       )}
     </div>

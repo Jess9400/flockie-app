@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 export default function LegalShell({
   title,
@@ -10,6 +11,7 @@ export default function LegalShell({
   updated: string;
   children: React.ReactNode;
 }) {
+  const t = useTranslations("components");
   return (
     <main className="min-h-screen bg-cream font-dm">
       <div className="mx-auto max-w-2xl px-6 py-10">
@@ -17,7 +19,7 @@ export default function LegalShell({
           <Image src="/logo.svg" alt="Flockie" width={120} height={40} className="h-8 w-auto" />
         </Link>
         <h1 className="mt-8 text-3xl font-black tracking-tight">{title}</h1>
-        <p className="mt-2 text-sm font-semibold text-muted">Last updated: {updated}</p>
+        <p className="mt-2 text-sm font-semibold text-muted">{t("legalShell.lastUpdated", { updated })}</p>
         <div className="mt-8 space-y-6 text-[15px] font-medium text-ink/80">{children}</div>
       </div>
     </main>

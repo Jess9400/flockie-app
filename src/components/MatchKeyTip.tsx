@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const KEY = "flockie_match_key_dismissed";
 
 // One-line legend explaining the % shown on people / vibes / flocks.
 // Dismissible and remembered, so it only teaches once.
 export default function MatchKeyTip() {
+  const t = useTranslations("components");
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -35,13 +37,13 @@ export default function MatchKeyTip() {
         72%
       </span>
       <p className="flex-1 text-xs font-bold text-ink/80">
-        That <span className="text-ink">%</span> is your <span className="text-flockie-coral">vibe match</span>{" "}
-        — how aligned a person or plan is with your vibe. Higher = more your kind of thing.
+        {t("matchKeyTip.that")} <span className="text-ink">%</span> {t("matchKeyTip.isYour")} <span className="text-flockie-coral">{t("matchKeyTip.vibeMatch")}</span>{" "}
+        {t("matchKeyTip.explanation")}
       </p>
       <button
         type="button"
         onClick={dismiss}
-        aria-label="Got it"
+        aria-label={t("matchKeyTip.gotIt")}
         className="shrink-0 rounded-full p-2 text-muted transition-colors hover:bg-cream hover:text-ink"
       >
         <X size={16} />

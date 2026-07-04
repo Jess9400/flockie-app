@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import ArchetypeBadge from "@/components/ArchetypeBadge";
 import { ARCHETYPES } from "@/lib/onboarding/archetypes";
 import type { VibeDimension } from "@/lib/onboarding/types";
@@ -41,10 +42,13 @@ export async function generateMetadata({
 }
 
 export default async function JoinPage({ params }: { params: { inviterId: string } }) {
-  const target = await getReferralTarget(params.inviterId);
+  const [t, target] = await Promise.all([
+    getTranslations("components"),
+    getReferralTarget(params.inviterId),
+  ]);
   if (!target) notFound();
 
-  const firstName = target.name?.split(" ")[0] || "A friend";
+  const firstName = target.name?.split(" ")[0] || t("join.friendFallback");
   const archetype = target.archetype
     ? ARCHETYPES[target.archetype as VibeDimension]
     : null;
@@ -81,14 +85,13 @@ export default async function JoinPage({ params }: { params: { inviterId: string
           </div>
 
           <p className="mt-4 text-sm font-extrabold uppercase tracking-wide text-flockie-coral">
-            A personal invite
+            {t("join.eyebrow")}
           </p>
           <h1 className="mt-1 font-fredoka text-3xl font-bold leading-tight text-navy">
-            {firstName} invited you to Flockie
+            {t("join.headline", { name: firstName })}
           </h1>
           <p className="mt-3 text-sm font-semibold leading-relaxed text-navy/70">
-            Find people for a spontaneous dinner, a weekend trip, or the activity you keep
-            meaning to try.
+            {t("join.body")}
           </p>
 
           {(target.city || archetype) && (
@@ -111,10 +114,10 @@ export default async function JoinPage({ params }: { params: { inviterId: string
             href={`/join/${target.id}/accept`}
             className="mt-6 block rounded-full border-2 border-ink bg-flockie-coral py-3.5 font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_#0A2545]"
           >
-            Join {firstName} on Flockie
+            {t("join.cta", { name: firstName })}
           </Link>
           <p className="mt-3 text-xs font-semibold text-navy/50">
-            Sign in with Google, then take a quick vibe check.
+            {t("join.helper")}
           </p>
         </section>
       </div>

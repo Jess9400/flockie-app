@@ -89,6 +89,7 @@ export default function CreateVibeForm({
 }) {
   const supabase = createClient();
   const t = useTranslations("vibes");
+  const tc = useTranslations("components");
   const catLabel = (c: string) =>
     t.has(`categories.${c}`) ? t(`categories.${c}`) : formatActivityLabel(c);
   const tagLabel = (tag: string) => (t.has(`eventTags.${tag}`) ? t(`eventTags.${tag}`) : tag);
@@ -777,7 +778,7 @@ export default function CreateVibeForm({
             <option value="">{t("create.selectPlaceholder")}</option>
             {FLOCK_LANGUAGES.map((l) => (
               <option key={l} value={l}>
-                {l}
+                {tc(`languages.${l}`)}
               </option>
             ))}
           </select>

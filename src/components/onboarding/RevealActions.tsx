@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Share2, Sparkles } from "lucide-react";
 import VibeShareCard from "@/components/VibeShareCard";
+import { useTranslations } from "next-intl";
 
 // Reveal-screen actions: post the vibe card, or invite a friend. Same wiring as
 // the rest of the app (Web Share + clipboard fallback / canvas vibe card),
@@ -18,16 +19,17 @@ export default function RevealActions({
   tags: string[];
   archetypeKey?: string | null;
 }) {
+  const t = useTranslations("components");
   const [showCard, setShowCard] = useState(false);
   const [copied, setCopied] = useState(false);
 
   // Share a "how compatible are we?" link — the friend takes the vibe check.
   async function checkMatch() {
     const url = `https://app.findflockie.com/compat/${userId}`;
-    const text = "See how compatible we'd be — take the 60-sec vibe check:";
+    const text = t("revealActions.shareText");
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
-        await navigator.share({ title: "How compatible are we?", text, url });
+        await navigator.share({ title: t("revealActions.shareTitle"), text, url });
         return;
       } catch {
         // cancelled — fall through to copy
@@ -47,14 +49,14 @@ export default function RevealActions({
         onClick={() => setShowCard(true)}
         className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-ink border-b-[5px] bg-navy py-3.5 text-[14.5px] font-extrabold text-white"
       >
-        <Share2 size={17} /> Share your vibe
+        <Share2 size={17} /> {t("revealActions.shareYourVibe")}
       </button>
       <button
         type="button"
         onClick={checkMatch}
         className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-ink border-b-[5px] bg-flockie-coral py-3.5 text-[14.5px] font-extrabold text-white"
       >
-        <Sparkles size={17} /> {copied ? "Link copied!" : "Check if your friend would match your vibe"}
+        <Sparkles size={17} /> {copied ? t("revealActions.linkCopied") : t("revealActions.checkFriendMatch")}
       </button>
 
       {showCard && (

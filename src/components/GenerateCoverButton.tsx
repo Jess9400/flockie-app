@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslations } from "next-intl";
 
 // "Generate a cover" — asks the AI Gateway for a stylized cover image, uploads
 // the result to the avatars bucket (same place uploaded covers go), and hands
@@ -18,12 +19,13 @@ export default function GenerateCoverButton({
   disabled?: boolean;
   onUploaded: (url: string) => void;
 }) {
+  const t = useTranslations("components");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   async function generate() {
     if (!prompt.trim()) {
-      setErr("Add a title first so we know what to draw.");
+      setErr(t("generateCover.errNoTitle"));
       return;
     }
     setLoading(true);
@@ -38,10 +40,10 @@ export default function GenerateCoverButton({
         const j = await res.json().catch(() => ({}));
         throw new Error(
           res.status === 402
-            ? "AI image credits are used up for now."
+            ? t("generateCover.errCredits")
             : res.status === 429
-              ? "Too many tries — give it a sec."
-              : (j as { error?: string }).error || "Couldn't generate a cover.",
+              ? t("generateCover.errTooMany")
+              : (j as { error?: string }).error || t("generateCover.errGeneric"),
         );
       }
       const { base64, mediaType } = (await res.json()) as { base64: string; mediaType: string };
@@ -54,7 +56,7 @@ export default function GenerateCoverButton({
       if (error) throw error;
       onUploaded(supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl);
     } catch (e) {
-      setErr((e as Error).message ?? "Couldn't generate a cover.");
+      setErr((e as Error).message ?? t("generateCover.errGeneric"));
     } finally {
       setLoading(false);
     }
@@ -69,10 +71,10 @@ export default function GenerateCoverButton({
         className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-ink bg-white py-2.5 text-sm font-bold text-ink disabled:opacity-50"
       >
         <Sparkles size={16} className="text-flockie-orange" />
-        {loading ? "Generating cover…" : "Generate a cover with AI"}
+        {loading ? t("generateCover.busy") : t("generateCover.button")}
       </button>
       <p className="mt-1 text-xs font-medium text-muted">
-        Makes an illustrated cover from your title — not a photo of people.
+        {t("generateCover.helper")}
       </p>
       {err && <p className="mt-1 text-xs font-bold text-flockie-orange">{err}</p>}
     </div>

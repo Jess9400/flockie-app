@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function TripPicker({
   options,
@@ -12,12 +13,13 @@ export default function TripPicker({
   value: string;
   mode: string;
 }) {
+  const t = useTranslations("components");
   const router = useRouter();
   if (options.length === 0) return null;
   return (
     <label className="block">
       <span className="mb-1 block text-xs font-bold uppercase tracking-wide text-muted">
-        Finding matches for
+        {t("tripPicker.findingMatchesFor")}
       </span>
       <div className="relative">
         <select
