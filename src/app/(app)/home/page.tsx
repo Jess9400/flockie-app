@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 import { ArrowRight, MapPin, Plus, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
@@ -79,6 +80,9 @@ export default async function HomePage({
   const supabase = await createClient();
   const user = await getSessionUser();
   const nowIso = new Date().toISOString();
+  // Server-side translations (locale from the NEXT_LOCALE cookie) for the
+  // internationalized home header — see messages/*.json `common` namespace.
+  const t = await getTranslations("common");
 
   const [
     { data: profile },
@@ -239,7 +243,17 @@ export default async function HomePage({
   return (
     <div className="home-stagger pb-24">
       {/* ── Welcome ─────────────────────────────────────────────────────── */}
-      <HomeHero firstName={firstName} homeCity={homeCity} liveCount={liveCount ?? 0} />
+      <HomeHero
+        firstName={firstName}
+        homeCity={homeCity}
+        liveCount={liveCount ?? 0}
+        greetings={{
+          morning: t("greeting.morning"),
+          afternoon: t("greeting.afternoon"),
+          evening: t("greeting.evening"),
+        }}
+        subline={t("homeSubline")}
+      />
 
       {/* What does the % mean? (dismissible legend) */}
       <MatchKeyTip />
@@ -264,7 +278,7 @@ export default async function HomePage({
         <div className="flex items-end justify-between gap-3 px-1">
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-[22px] font-extrabold sm:text-[28px]">Find a buddy for an activity</h2>
+              <h2 className="text-[22px] font-extrabold sm:text-[28px]">{t("findBuddyHeading")}</h2>
               <span className="-rotate-6 rounded-full border-2 border-ink bg-flockie-coral px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-white shadow-[0_2px_0_0_rgba(10,37,69,1)]">
                 ✨ Top picks
               </span>
