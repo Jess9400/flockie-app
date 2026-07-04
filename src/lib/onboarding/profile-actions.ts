@@ -1,7 +1,9 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { locales } from "@/i18n/request";
 
 export interface ProfileInput {
   firstName: string;
@@ -40,6 +42,15 @@ export async function saveOnboardingProfile(input: ProfileInput) {
 
   const photos = input.photoUrl ? [input.photoUrl] : [];
   if (!photos.length) throw new Error("Add a profile photo to continue");
+
+  // Seed the persisted language from the UI locale cookie at profile creation
+  // (the auth trigger creates the bare row with the 'en' default). Drives
+  // localized transactional emails; the user can change it later in Settings.
+  const cookieLocale = (await cookies()).get("NEXT_LOCALE")?.value;
+  const locale = (locales as readonly string[]).includes(cookieLocale ?? "")
+    ? cookieLocale
+    : "en";
+
   const { error } = await supabase.from("profiles").upsert({
     id: user.id,
     display_name: input.firstName,
@@ -48,6 +59,7 @@ export async function saveOnboardingProfile(input: ProfileInput) {
     gender: input.gender === "prefer_not_to_say" ? null : input.gender,
     home_city: input.city,
     photos,
+    locale,
     onboarding_complete: true,
   });
 

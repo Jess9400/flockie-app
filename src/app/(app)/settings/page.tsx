@@ -7,6 +7,7 @@ import NotificationsToggle from "@/components/NotificationsToggle";
 import LocationToggle from "@/components/LocationToggle";
 import DiscoveryToggle from "@/components/DiscoveryToggle";
 import SocialVisibilityControl from "@/components/SocialVisibilityControl";
+import LanguageSetting from "@/components/LanguageSetting";
 import SignOutButton from "@/components/SignOutButton";
 import DeleteAccountButton from "@/components/DeleteAccountButton";
 
@@ -50,6 +51,7 @@ export default async function SettingsPage() {
       <h1 className="font-fredoka text-3xl font-bold text-navy">{t("title")}</h1>
 
       <section className="mt-8 space-y-3">
+        <LanguageSetting />
         <SocialVisibilityControl
           userId={user!.id}
           initial={

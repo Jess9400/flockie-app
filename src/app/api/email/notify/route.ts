@@ -45,6 +45,14 @@ export async function POST(req: Request) {
   if (prof?.email_notifications === false) {
     return NextResponse.json({ ok: true, skipped: "opted-out" });
   }
+  // Separate (migration-safe) query — `locale` is added by user-locale.sql.
+  // Kept apart so this route still works BEFORE that migration runs on prod;
+  // buildEmail defaults to English when it's null/missing.
+  const { data: loc } = await admin
+    .from("profiles")
+    .select("locale")
+    .eq("id", record.user_id)
+    .maybeSingle();
   const { data: u } = await admin.auth.admin.getUserById(record.user_id);
   const to = u?.user?.email;
   if (!to) return NextResponse.json({ ok: true, skipped: "no-email" });
@@ -52,7 +60,9 @@ export async function POST(req: Request) {
   // 4. Build (Tier-1 only) + send.
   const site = process.env.NEXT_PUBLIC_SITE_URL || "https://app.findflockie.com";
   const unsubUrl = `${site}/api/email/unsubscribe?token=${prof?.email_unsubscribe_token ?? ""}`;
-  const email = buildEmail(record, unsubUrl);
+  // Emails render in the RECIPIENT's persisted language. Default to English so
+  // this is safe BEFORE the locale column migration is run on prod (null/missing).
+  const email = buildEmail(record, unsubUrl, loc?.locale ?? "en");
   if (!email) return NextResponse.json({ ok: true, skipped: "type-not-emailable" });
 
   try {
