@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import PhotoCropper from "@/components/PhotoCropper";
 import CityAutocomplete from "@/components/CityAutocomplete";
@@ -11,11 +12,11 @@ import {
 } from "@/lib/onboarding/profile-actions";
 import { withReturnTo } from "@/lib/redirects";
 
-const GENDERS: { value: ProfileInput["gender"]; label: string }[] = [
-  { value: "woman", label: "Woman" },
-  { value: "man", label: "Man" },
-  { value: "non_binary", label: "Non-binary" },
-  { value: "prefer_not_to_say", label: "Prefer not to say" },
+const GENDERS: { value: ProfileInput["gender"]; labelKey: string }[] = [
+  { value: "woman", labelKey: "woman" },
+  { value: "man", labelKey: "man" },
+  { value: "non_binary", labelKey: "nonBinary" },
+  { value: "prefer_not_to_say", labelKey: "preferNotToSay" },
 ];
 
 interface ProfileFormProps {
@@ -33,6 +34,8 @@ interface ProfileFormProps {
 export function ProfileForm({ defaults, returnTo, quick }: ProfileFormProps) {
   const router = useRouter();
   const supabase = createClient();
+  const t = useTranslations("onboarding.profile");
+  const tc = useTranslations("common");
   const [firstName, setFirstName] = useState(defaults.firstName);
   const [photoUrl, setPhotoUrl] = useState<string | null>(defaults.photoUrl);
   const [uploading, setUploading] = useState(false);
@@ -62,7 +65,7 @@ export function ProfileForm({ defaults, returnTo, quick }: ProfileFormProps) {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) throw new Error("Please sign in again");
+      if (!user) throw new Error(t("errors.signIn"));
       const path = `${user.id}/onboarding-${crypto.randomUUID()}.jpg`;
       const { error: uploadError } = await supabase.storage
         .from("avatars")
@@ -71,7 +74,7 @@ export function ProfileForm({ defaults, returnTo, quick }: ProfileFormProps) {
       setPhotoUrl(supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl);
       setPendingFile(null);
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Photo upload failed.");
+      setError(caught instanceof Error ? caught.message : t("errors.photoUpload"));
     } finally {
       setUploading(false);
     }
@@ -95,7 +98,7 @@ export function ProfileForm({ defaults, returnTo, quick }: ProfileFormProps) {
       );
     } catch (caught) {
       setError(
-        caught instanceof Error ? caught.message : "Something went wrong. Try again."
+        caught instanceof Error ? caught.message : t("errors.generic")
       );
       setSubmitting(false);
     }
@@ -105,15 +108,15 @@ export function ProfileForm({ defaults, returnTo, quick }: ProfileFormProps) {
     <div className="flex min-h-dvh flex-col bg-cream font-nunito">
       <div className="flex-1 overflow-y-auto px-6 pb-4 pt-6">
         <div className="mb-4 text-[17px] font-extrabold text-navy">Flockie</div>
-        <h1 className="mb-1 text-[25px] font-black leading-tight">A couple basics</h1>
-        <p className="mb-5 text-[13px] font-semibold text-muted">Pre-filled where we could.</p>
+        <h1 className="mb-1 text-[25px] font-black leading-tight">{t("title")}</h1>
+        <p className="mb-5 text-[13px] font-semibold text-muted">{t("subtitle")}</p>
 
         <div className="mb-5 flex flex-col items-center">
           <button
             type="button"
             onClick={() => photoInput.current?.click()}
             className="flex h-[78px] w-[78px] items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-flockie-blue bg-white text-[24px] font-extrabold text-flockie-blue"
-            aria-label="Add a photo"
+            aria-label={t("photo.add")}
           >
             {photoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -124,24 +127,24 @@ export function ProfileForm({ defaults, returnTo, quick }: ProfileFormProps) {
           </button>
           <input ref={photoInput} type="file" accept="image/*" hidden onChange={onPhotoSelected} />
           <div className="mt-2 text-[11.5px] font-bold text-navy">
-            {uploading ? "Uploading…" : photoUrl ? "Tap to change" : "Add a photo (required)"}
+            {uploading ? t("photo.uploading") : photoUrl ? t("photo.change") : t("photo.required")}
           </div>
           <div className="mt-1 text-[11px] font-semibold text-muted">
-            You can add more photos later
+            {t("photo.moreLater")}
           </div>
         </div>
 
-        <Field label="First name" sourceTag={defaults.firstName ? "from Google" : undefined}>
+        <Field label={t("firstName")} sourceTag={defaults.firstName ? t("fromGoogle") : undefined}>
           <input
             className="w-full rounded-xl border-2 border-ink/15 bg-white px-3.5 py-3 text-[15px] font-bold outline-none focus:border-flockie-blue"
             value={firstName}
             onChange={(event) => setFirstName(event.target.value)}
-            placeholder="Your name"
+            placeholder={t("firstNamePlaceholder")}
             autoComplete="given-name"
           />
         </Field>
 
-        <Field label="Birthday">
+        <Field label={t("birthday")}>
           <input
             type="date"
             className="w-full rounded-xl border-2 border-ink/15 bg-white px-3.5 py-3 text-[15px] font-bold outline-none focus:border-flockie-blue"
@@ -149,11 +152,11 @@ export function ProfileForm({ defaults, returnTo, quick }: ProfileFormProps) {
             onChange={(event) => setBirthday(event.target.value)}
           />
           <p className="mt-1.5 text-[11.5px] font-semibold text-muted">
-            Keeps your age accurate — only the number shows.
+            {t("birthdayHelp")}
           </p>
         </Field>
 
-        <Field label="Gender">
+        <Field label={t("gender")}>
           <div className="flex flex-wrap gap-1.5">
             {GENDERS.map((option) => (
               <button
@@ -166,21 +169,21 @@ export function ProfileForm({ defaults, returnTo, quick }: ProfileFormProps) {
                     : "border-ink/15 bg-white text-muted"
                 }`}
               >
-                {option.label}
+                {t(`genders.${option.labelKey}`)}
               </button>
             ))}
           </div>
         </Field>
 
-        <Field label="Your city right now">
+        <Field label={t("city")}>
           <CityAutocomplete
             className="w-full rounded-xl border-2 border-ink/15 bg-white px-3.5 py-3 text-[15px] font-bold outline-none focus:border-flockie-blue"
             value={city}
             onChange={setCity}
-            placeholder="e.g. Lisbon"
+            placeholder={t("cityPlaceholder")}
           />
           <p className="mt-1.5 text-[11.5px] font-semibold text-muted">
-            Powers who&apos;s nearby — update anytime.
+            {t("cityHelp")}
           </p>
         </Field>
       </div>
@@ -189,7 +192,7 @@ export function ProfileForm({ defaults, returnTo, quick }: ProfileFormProps) {
         <div className="mb-3 flex items-start gap-2.5 rounded-2xl border border-flockie-blue/30 bg-flockie-blue/10 p-3">
           <span className="text-[19px]">🎯</span>
           <p className="text-[12px] font-semibold leading-relaxed text-navy">
-            <b>Up next: your vibe check.</b> Five quick questions so we can start finding your people.
+            {t.rich("nextUp", { b: (chunks) => <b>{chunks}</b> })}
           </p>
         </div>
         {error && <p className="mb-2 text-[12px] font-semibold text-red-700">{error}</p>}
@@ -199,7 +202,7 @@ export function ProfileForm({ defaults, returnTo, quick }: ProfileFormProps) {
           disabled={!canSubmit || submitting || uploading}
           className="w-full rounded-2xl border-2 border-ink border-b-[5px] bg-flockie-coral py-3.5 text-[15.5px] font-extrabold text-white disabled:opacity-40"
         >
-          {submitting ? "Saving…" : "Continue to your vibe check →"}
+          {submitting ? tc("saving") : t("continue")}
         </button>
       </div>
 

@@ -16,6 +16,191 @@
     },
     "homeSubline": "O que você quer fazer hoje?",
     "findBuddyHeading": "Encontre um buddy para uma atividade",
-    "language": "Idioma"
+    "language": "Idioma",
+    "saving": "Salvando…"
+  },
+  "onboarding": {
+    "profile": {
+      "title": "Uns dados básicos",
+      "subtitle": "Preenchemos o que deu.",
+      "photo": {
+        "add": "Adicionar uma foto",
+        "uploading": "Enviando…",
+        "change": "Toque para trocar",
+        "required": "Adicione uma foto (obrigatório)",
+        "moreLater": "Você pode adicionar mais fotos depois"
+      },
+      "firstName": "Nome",
+      "firstNamePlaceholder": "Seu nome",
+      "fromGoogle": "do Google",
+      "birthday": "Aniversário",
+      "birthdayHelp": "Mantém sua idade certa — só o número aparece.",
+      "gender": "Gênero",
+      "city": "Sua cidade agora",
+      "cityPlaceholder": "ex. Lisboa",
+      "cityHelp": "Define quem está por perto — atualize quando quiser.",
+      "genders": {
+        "woman": "Mulher",
+        "man": "Homem",
+        "nonBinary": "Não binário",
+        "preferNotToSay": "Prefiro não dizer"
+      },
+      "nextUp": "<b>A seguir: seu vibe check.</b> Cinco perguntas rápidas para a gente começar a encontrar a sua turma.",
+      "continue": "Continuar para o seu vibe check →",
+      "errors": {
+        "signIn": "Entre novamente",
+        "photoUpload": "Não foi possível enviar a foto.",
+        "generic": "Algo deu errado. Tente de novo."
+      }
+    },
+    "vibeCheck": {
+      "questionProgress": "Pergunta {current} de {total}",
+      "saveError": "Não foi possível salvar sua resposta. Tente de novo.",
+      "continue": "Continuar →",
+      "back": "Voltar",
+      "pause": "Pausar",
+      "paused": {
+        "title": "Pausado, não pulado",
+        "body": "Suas respostas estão salvas. A gente traz você de volta para a pergunta {number}.",
+        "continueNow": "Continuar agora →"
+      },
+      "lockHint": "Termine o quiz para fixar o seu novo vibe",
+      "exitSheet": {
+        "title": "Pausar aqui?",
+        "body": "Suas respostas concluídas já estão salvas. Volte quando quiser.",
+        "keepGoing": "Continuar",
+        "pauseForNow": "Pausar por enquanto"
+      },
+      "questions": {
+        "qmood": {
+          "mechanicLabel": "Toque em uma",
+          "text": "Sem pensar muito — qual te atrai?",
+          "options": [
+            "Grupo pequeno, boa conversa",
+            "Barulhento, animado, até tarde",
+            "Um canto tranquilo, só eu"
+          ]
+        },
+        "qswipe": {
+          "mechanicLabel": "Toque em um lado",
+          "text": "Um plano cai por terra de última hora. Seja sincero:",
+          "left": "Ah, eu estava animado para ir",
+          "right": "Secretamente aliviado: mais tempo para mim"
+        },
+        "qgrid": {
+          "mechanicLabel": "Toque em até 3",
+          "text": "Escolha o que te atrai:",
+          "options": [
+            "Museus e cultura",
+            "Comida e lugares locais",
+            "Natureza e ar livre",
+            "Eventos e shows ao vivo",
+            "Esportes e jogos",
+            "Bem-estar e calma",
+            "Vida noturna e bares",
+            "Livros e tempo tranquilo"
+          ]
+        },
+        "qslider": {
+          "mechanicLabel": "Arraste o controle",
+          "text": "O quão espontâneo você é, de verdade?",
+          "leftLabel": "Preciso do plano",
+          "rightLabel": "Vou inventando no caminho"
+        },
+        "qtap": {
+          "mechanicLabel": "Toque em uma",
+          "text": "Você entra numa sala onde não conhece ninguém. O que te faz sentir menos deslocado na hora?",
+          "options": [
+            "Alguém dar oi primeiro",
+            "Pegar uma bebida, me dar algo para fazer",
+            "Observar a sala antes de me aproximar de alguém",
+            "Ficar mais nas bordas até achar a minha turma"
+          ]
+        }
+      }
+    },
+    "reveal": {
+      "confident": "≈{percent}% de certeza",
+      "earlyRead": "· leitura inicial, 5 respostas",
+      "secondLean": "Também pode puxar para {emoji} {name} — mais alguns sinais e a gente confirma.",
+      "sections": {
+        "wired": "Como você funciona",
+        "matching": "O que isso significa para os seus matches",
+        "clickWith": "Você combinaria com",
+        "nearby": "Gente perto de você com esse vibe"
+      },
+      "traits": {
+        "spontaneous": "Espontâneo",
+        "planner": "Planejador",
+        "social": "Social",
+        "solo": "Sozinho",
+        "highEnergy": "Muita energia",
+        "calm": "Tranquilo"
+      },
+      "matchingIntro": "Os {name} dão match de um jeito diferente.",
+      "emptyNearby": {
+        "title": "Ninguém combinou com esse vibe por aqui ainda",
+        "body": "Será que seu BFF tem o mesmo vibe? Convide e descubra!",
+        "invite": "Convide seu BFF"
+      },
+      "flockieFallback": "Um flockie",
+      "ctaContinue": "Continue de onde parou →",
+      "ctaExplore": "Explore Vibes perto de você →",
+      "archetypes": {
+        "culture": {
+          "description": "Você vai fundo, não a esmo. Está no museu antes de abrir e no lugar local depois de fechar.",
+          "insight": "Você não só visita lugares — você realmente os conhece. A gente combina você com alguém no mesmo ritmo, não com quem quer te apressar."
+        },
+        "social": {
+          "description": "Você veio por uma coisa e ficou pelas pessoas. No segundo dia já sabe o nome de todo mundo.",
+          "insight": "Uma sala cheia de desconhecidos não te assusta — é praticamente um convite. A gente mantém seu feed cheio de gente e planos, não só lugares."
+        },
+        "night": {
+          "description": "As coisas se revelam depois do escuro e você sabe disso. As manhãs são para se recuperar.",
+          "insight": "A gente vai puxar seus matches para gente que não espera resposta antes do meio-dia."
+        },
+        "food": {
+          "description": "Você planeja seus dias em torno das refeições e faz o caminho mais longo pelo lugar certo.",
+          "insight": "Seus matches vão puxar para gente que trata uma boa refeição como o ponto alto do dia, não como uma parada rápida."
+        },
+        "adventure": {
+          "description": "O plano é não ter plano. Você decide em cima da hora, viaja leve e de algum jeito sempre acha a galera certa.",
+          "insight": "Roteiros rígidos te deixam inquieto. A gente mostra primeiro os planos soltos, do tipo vamos-ver-no-que-dá."
+        },
+        "wellness": {
+          "description": "Devagar, com intenção, de boa. Você precisa de pelo menos uma tarde sem absolutamente nada marcado.",
+          "insight": "Você recarrega na calma, não no caos. A gente puxa seus matches para gente que não lota cada hora do dia."
+        }
+      }
+    },
+    "completeCard": {
+      "completeTitle": "Seu vibe está completo 🎉",
+      "almostTitle": "Você está quase lá",
+      "completeBody": "As três partes estão prontas — seus matches ficaram o mais certeiros possível.",
+      "almostBody": "Cada parte deixa seus matches mais certeiros. Adicione agora, ou elas vão se preenchendo enquanto você viaja e entra em coisas.",
+      "travelTitle": "Vibe de viagem",
+      "travelDesc": "Ritmo, orçamento, como você viaja — afina os matches de viagem",
+      "eventTitle": "Vibe de evento",
+      "eventDesc": "O que você quer de uma saída, tamanho do grupo — afina os planos locais",
+      "seeReading": "Ver sua leitura completa →",
+      "unlockTitle": "Sua leitura completa é liberada em 100%",
+      "unlockBody": "Termine as três para ter a leitura completa de quem você é.",
+      "questionsBadge": "{count} p",
+      "complete": "Completo"
+    },
+    "compat": {
+      "heading": "O quanto você combina com <highlight>{name}</highlight>?",
+      "subheading": "Faça o vibe check rápido da Flockie e descubra seu match de companheiro de viagem.",
+      "friendFallback": "seu amigo",
+      "takeCheck": "Faça o vibe check de 60 seg",
+      "signupHint": "Cadastre-se com o Google, responda umas perguntas e veja sua pontuação.",
+      "ownLink": "Este é o seu próprio link — compartilhe com amigos para ver seu % de match.",
+      "takeCheckReveal": "Faça o vibe check de 60 seg para revelar sua pontuação",
+      "resultGreat": "Você e {name} são um ótimo match 🎉",
+      "resultCompatible": "Você e {name} são compatíveis 🎉",
+      "youBothLove": "Vocês dois curtem",
+      "exploreNearby": "Explore Vibes perto de você",
+      "compareAnother": "Compare com outro amigo"
+    }
   }
 }

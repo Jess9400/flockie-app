@@ -1,32 +1,32 @@
 import Link from "next/link";
 import { Compass, PartyPopper, ChevronRight, Check, Lock } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 // "Complete your vibe" hub shown on the reveal screen. The personality vibe
 // check counts as the first of three pieces (the user just took it), so
 // progress = personality + trip + activity. Each card links to the matching
 // form; a filled one shows a check instead of its question-count badge.
-export default function CompleteVibeCard({
+export default async function CompleteVibeCard({
   tripDone,
   activityDone,
 }: {
   tripDone: boolean;
   activityDone: boolean;
 }) {
+  const t = await getTranslations("onboarding.completeCard");
   const done = 1 + (tripDone ? 1 : 0) + (activityDone ? 1 : 0);
   const percent = Math.round((done / 3) * 100);
   const all = done === 3;
 
   return (
     <section className="rounded-3xl border-2 border-ink/10 bg-white p-5 shadow-[0_4px_0_0_rgba(26,26,26,0.06)]">
-      <Ring percent={percent} />
+      <Ring percent={percent} label={t("complete")} />
 
       <h2 className="mt-4 text-center text-[20px] font-black leading-tight text-ink">
-        {all ? "Your vibe's complete 🎉" : "You're almost there"}
+        {all ? t("completeTitle") : t("almostTitle")}
       </h2>
       <p className="mx-auto mt-1.5 max-w-[300px] text-center text-[12.5px] font-medium leading-relaxed text-muted">
-        {all
-          ? "All three pieces are in — your matches are as sharp as they get."
-          : "Each piece makes your matches sharper. Add them now, or they fill in as you travel and join things."}
+        {all ? t("completeBody") : t("almostBody")}
       </p>
 
       <div className="mt-4 flex flex-col gap-2.5">
@@ -34,18 +34,18 @@ export default function CompleteVibeCard({
           href="/onboarding/trip-vibe"
           icon={<Compass size={20} />}
           iconClass="bg-flockie-blue/15 text-flockie-blue"
-          title="Travel Vibe"
-          desc="Pace, budget, how you travel — sharpens trip matches"
-          questions={9}
+          title={t("travelTitle")}
+          desc={t("travelDesc")}
+          badge={t("questionsBadge", { count: 9 })}
           done={tripDone}
         />
         <VibeRow
           href="/onboarding/activity-vibe"
           icon={<PartyPopper size={20} />}
           iconClass="bg-flockie-coral/15 text-flockie-coral"
-          title="Event Vibe"
-          desc="What you want from a night out, group size — sharpens local plans"
-          questions={9}
+          title={t("eventTitle")}
+          desc={t("eventDesc")}
+          badge={t("questionsBadge", { count: 9 })}
           done={activityDone}
         />
       </div>
@@ -55,14 +55,14 @@ export default function CompleteVibeCard({
           href="/profile?vibe_done=1"
           className="mt-4 block w-full rounded-2xl border-2 border-ink border-b-[5px] bg-flockie-coral py-3.5 text-center text-[15px] font-extrabold text-white"
         >
-          See your full reading →
+          {t("seeReading")}
         </Link>
       ) : (
         <div className="mt-4 rounded-2xl border border-ink/10 bg-cream/60 p-4 text-center">
           <Lock size={18} className="mx-auto mb-1.5 text-muted" />
-          <p className="text-[13px] font-extrabold text-ink">Your full reading unlocks at 100%</p>
+          <p className="text-[13px] font-extrabold text-ink">{t("unlockTitle")}</p>
           <p className="mt-1 text-[11.5px] font-semibold leading-relaxed text-muted">
-            Finish all three to get the complete read on who you are.
+            {t("unlockBody")}
           </p>
         </div>
       )}
@@ -71,7 +71,7 @@ export default function CompleteVibeCard({
 }
 
 // Circular progress ring with the percentage in the middle.
-function Ring({ percent }: { percent: number }) {
+function Ring({ percent, label }: { percent: number; label: string }) {
   return (
     <div className="relative mx-auto h-28 w-28">
       <svg viewBox="0 0 36 36" className="h-28 w-28 -rotate-90">
@@ -89,7 +89,7 @@ function Ring({ percent }: { percent: number }) {
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-[24px] font-black leading-none text-ink">{percent}%</span>
-        <span className="mt-0.5 text-[9px] font-extrabold uppercase tracking-wide text-muted">Complete</span>
+        <span className="mt-0.5 text-[9px] font-extrabold uppercase tracking-wide text-muted">{label}</span>
       </div>
     </div>
   );
@@ -101,7 +101,7 @@ function VibeRow({
   iconClass,
   title,
   desc,
-  questions,
+  badge,
   done,
 }: {
   href: string;
@@ -109,7 +109,7 @@ function VibeRow({
   iconClass: string;
   title: string;
   desc: string;
-  questions: number;
+  badge: string;
   done: boolean;
 }) {
   return (
@@ -128,7 +128,7 @@ function VibeRow({
         </span>
       ) : (
         <span className="shrink-0 rounded-full bg-flockie-coral/15 px-2 py-0.5 text-[11px] font-extrabold text-flockie-coral">
-          {questions} q
+          {badge}
         </span>
       )}
       <ChevronRight size={18} className="shrink-0 text-muted" />
