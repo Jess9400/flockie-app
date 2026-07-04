@@ -89,7 +89,7 @@
     },
     "matchSetupNote": "Preferências flexíveis melhoram o ranking. Pontos inegociáveis filtram de forma rígida. Interesse, Não é para mim, respostas a convites, presença e avaliações também ensinam o algoritmo.",
     "redoConfirm": {
-      "title": "Refazer seu vibe quiz?",
+      "title": "Refazer sua Vibe quiz?",
       "message": "Você vai responder o quiz inteiro de novo a partir da pergunta 1 — não dá para salvar pela metade. Seu vibe atual continua ativo até você terminar.",
       "confirmLabel": "Começar o quiz"
     },
@@ -140,7 +140,7 @@
     "nameFallback": "essa pessoa",
     "about": "Sobre {name}",
     "aboutDescription": "O lado público do perfil dela no Flockie.",
-    "theirVibe": "O vibe dela",
+    "theirVibe": "A Vibe dela",
     "likesDoing": "Gosta de fazer",
     "theirKindOfVibe": "O tipo de vibe dela",
     "morePhotos": "Mais fotos",
@@ -165,7 +165,7 @@
     }
   },
   "view": {
-    "theirVibe": "O vibe dela",
+    "theirVibe": "A Vibe dela",
     "tripVibe": "Trip vibe",
     "travelStyle": "Estilo de viagem",
     "activities": "Atividades",
