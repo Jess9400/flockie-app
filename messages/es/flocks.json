@@ -7,11 +7,11 @@
     "sizePeople": "{label} personas"
   },
   "browse": {
-    "heading": "Find a Flock",
+    "heading": "Encuentra un Flock",
     "create": "Crear",
     "subtitle": "Viajes <b>en grupo</b> abiertos a los que puedes pedir unirte.",
-    "tabFindBuddy": "Find a Buddy",
-    "tabFindFlock": "Find a Flock",
+    "tabFindBuddy": "Encuentra un Buddy",
+    "tabFindFlock": "Encuentra un Flock",
     "emptyFiltered": "Ningún Flock coincide con estos filtros. Prueba a ampliarlos.",
     "emptyNone": "Aún no hay viajes abiertos. Publica un viaje y ponlo en Público para empezar un Flock.",
     "womenOnly": "Solo mujeres",
