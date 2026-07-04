@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
 import CookieConsent from "@/components/CookieConsent";
 
@@ -40,14 +42,20 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Locale + messages come from the NEXT_LOCALE cookie (see src/i18n/request.ts).
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en" className={nunito.variable}>
+    <html lang={locale} className={nunito.variable}>
       <body className="font-nunito">
-        {children}
-        <CookieConsent />
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          {children}
+          <CookieConsent />
+        </NextIntlClientProvider>
       </body>
     </html>
   );
