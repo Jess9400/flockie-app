@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { X, Heart, MapPin, CalendarClock, ChevronLeft, ChevronRight, ChevronsUpDown } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import Stars from "@/components/Stars";
 
@@ -34,6 +35,7 @@ export default function SwipeDeck({
   activityTitle?: string | null;
 }) {
   const supabase = createClient();
+  const t = useTranslations("match.deck");
   const [i, setI] = useState(0);
   const [busy, setBusy] = useState(false);
   const [media, setMedia] = useState(0);
@@ -104,14 +106,14 @@ export default function SwipeDeck({
     if (error) {
       setActionError(
         error.message.includes("blocked_by_preferences")
-          ? "You two have conflicting match preferences."
-          : "We couldn’t save that choice. Please try again."
+          ? t("errBlocked")
+          : t("errGeneric")
       );
       return;
     }
     const res = data as { matched: boolean; chat_id?: string } | null;
     if (liked && res?.matched && res.chat_id) {
-      setMatch({ name: c.display_name || "this flockie", chatId: res.chat_id });
+      setMatch({ name: c.display_name || t("matchNameFallback"), chatId: res.chat_id });
     }
     setMedia(0);
     setI((n) => n + 1);
@@ -120,9 +122,7 @@ export default function SwipeDeck({
   if (!c) {
     return (
       <div className="mt-6 flex h-[55vh] items-center justify-center rounded-3xl border-2 border-dashed border-ink/30 px-8 text-center font-medium text-muted">
-        {activityTitle
-          ? "You've seen everyone in your city for now. As soon as someone else here is open to matching, they'll show up — you can match or invite them to do something."
-          : "You're all caught up. Check back as more travelers post this trip."}
+        {activityTitle ? t("emptyActivity") : t("emptyTrip")}
       </div>
     );
   }
@@ -150,7 +150,7 @@ export default function SwipeDeck({
             style={{ opacity: Math.min(drag / SWIPE_THRESHOLD, 1) }}
             className="absolute left-4 top-4 z-20 -rotate-12 rounded-xl border-4 border-[#06D6A0] px-3 py-1 text-2xl font-black text-[#06D6A0]"
           >
-            LIKE
+            {t("like")}
           </span>
         )}
         {drag < 0 && (
@@ -158,7 +158,7 @@ export default function SwipeDeck({
             style={{ opacity: Math.min(-drag / SWIPE_THRESHOLD, 1) }}
             className="absolute right-4 top-4 z-20 rotate-12 rounded-xl border-4 border-flockie-orange px-3 py-1 text-2xl font-black text-flockie-orange"
           >
-            NOPE
+            {t("nope")}
           </span>
         )}
         {cur?.type === "video" ? (
@@ -186,14 +186,14 @@ export default function SwipeDeck({
           <>
             <button
               onClick={() => setMedia((m) => (m - 1 + items.length) % items.length)}
-              aria-label="Previous"
+              aria-label={t("previous")}
               className="absolute left-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-2 border-ink bg-white/85 text-ink"
             >
               <ChevronLeft size={18} />
             </button>
             <button
               onClick={() => setMedia((m) => (m + 1) % items.length)}
-              aria-label="Next"
+              aria-label={t("next")}
               className="absolute right-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-2 border-ink bg-white/85 text-ink"
             >
               <ChevronRight size={18} />
@@ -212,14 +212,14 @@ export default function SwipeDeck({
           className="absolute inset-x-0 bottom-0 p-5 text-white"
         >
           <p className="flex items-center gap-1.5 text-2xl font-black">
-            {c.display_name || "Flockie"}
+            {c.display_name || t("flockieFallback")}
             {c.age ? `, ${c.age}` : ""}
             <ChevronsUpDown size={18} className="rotate-90 opacity-80" />
           </p>
           <div className="mt-1 flex flex-wrap items-center gap-2">
             {typeof c.score === "number" && (
               <span className="rounded-full bg-flockie-blue px-2.5 py-0.5 text-xs font-bold text-white">
-                ✨ {Math.round(c.score)}% match
+                ✨ {t("scoreMatch", { pct: Math.round(c.score) })}
               </span>
             )}
             {typeof c.rating === "number" && (c.review_count ?? 0) > 0 && (
@@ -243,17 +243,17 @@ export default function SwipeDeck({
           )}
           {c.one_liner && <p className="mt-1 text-sm font-medium text-white/90">{c.one_liner}</p>}
           <span className="mt-2 inline-block rounded-full bg-white/25 px-3 py-1 text-xs font-bold backdrop-blur-sm">
-            Tap to view full profile
+            {t("tapProfile")}
           </span>
         </Link>
       </div>
 
       <div className="mt-4 flex items-center justify-center gap-6">
-        <button onClick={() => act(false)} disabled={busy} aria-label="Pass"
+        <button onClick={() => act(false)} disabled={busy} aria-label={t("pass")}
           className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-ink bg-white text-ink disabled:opacity-50">
           <X size={26} />
         </button>
-        <button onClick={() => act(true)} disabled={busy} aria-label="Like"
+        <button onClick={() => act(true)} disabled={busy} aria-label={t("likeAria")}
           className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-ink bg-flockie-orange text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50">
           <Heart size={28} fill="currentColor" />
         </button>
@@ -267,16 +267,16 @@ export default function SwipeDeck({
       {match && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-6">
           <div className="w-full max-w-sm rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_8px_0_0_rgba(26,26,26,1)]">
-            <p className="text-3xl font-black">It&rsquo;s a match! 🎉</p>
+            <p className="text-3xl font-black">{t("itsAMatch")}</p>
             <p className="mt-2 font-medium text-ink/70">
-              You and {match.name} both want to go. Say hi and plan it.
+              {t("matchBody", { name: match.name })}
             </p>
             <Link href={`/buddies/${match.chatId}`}
               className="mt-5 block rounded-full border-2 border-ink bg-flockie-orange py-3 font-bold text-white shadow-[0_4px_0_0_#E0512C]">
-              Say hi 👋
+              {t("sayHiPlan")}
             </Link>
             <button onClick={() => setMatch(null)} className="mt-2 w-full py-2 text-center text-sm font-bold text-muted">
-              Keep swiping
+              {t("keepSwiping")}
             </button>
           </div>
         </div>

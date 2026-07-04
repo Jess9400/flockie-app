@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, Star, ArrowRight } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import TripForm from "@/components/TripForm";
@@ -16,6 +17,7 @@ export default async function TripPage({
 }) {
   const supabase = await createClient();
   const user = await getSessionUser();
+  const t = await getTranslations("match.create");
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -97,28 +99,27 @@ export default async function TripPage({
   return (
     <main className="px-5 pb-10 pt-6">
       <Link href={isFlock ? "/flocks" : `/match?mode=${kind}`} className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted">
-        <ChevronLeft size={16} /> Back
+        <ChevronLeft size={16} /> {t("back")}
       </Link>
       <h1 className="text-2xl font-black">
         {trip
-          ? isActivity ? "Edit your activity" : isFlock ? "Edit your Flock" : "Edit your trip"
-          : isActivity ? "Post an activity" : isFlock ? "Create a Flock" : "Post a trip"}
+          ? isActivity ? t("editHeadingActivity") : isFlock ? t("editHeadingFlock") : t("editHeadingTrip")
+          : isActivity ? t("newHeadingActivity") : isFlock ? t("newHeadingFlock") : t("newHeadingTrip")}
       </h1>
       <p className="mt-1 text-sm font-medium text-muted">
         {isActivity
-          ? "Find people to do something with in your city."
+          ? t("subActivity")
           : isFlock
-            ? "A group trip others can request to join."
-            : "Find one travel buddy heading the same way."}
+            ? t("subFlock")
+            : t("subTrip")}
       </p>
       {showReviewGate ? (
         <div className="mt-6 rounded-3xl border-2 border-ink bg-white p-5 shadow-[0_5px_0_0_rgba(26,26,26,1)]">
           <p className="flex items-center gap-2 text-lg font-extrabold">
-            <Star size={18} className="text-flockie-orange" /> Review first
+            <Star size={18} className="text-flockie-orange" /> {t("reviewFirstTitle")}
           </p>
           <p className="mt-1 text-sm font-medium text-muted">
-            You travelled with these buddies — leave a quick review before posting your
-            next {isActivity ? "activity" : "trip"}. It keeps Flockie honest.
+            {isActivity ? t("reviewBodyActivity") : t("reviewBodyTrip")}
           </p>
           <ul className="mt-4 space-y-2">
             {pendingList.map((b) => (
@@ -135,13 +136,13 @@ export default async function TripPage({
                     </span>
                   )}
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-bold">{b.display_name || "Your buddy"}</span>
+                    <span className="block truncate font-bold">{b.display_name || t("buddyFallback")}</span>
                     {b.destination && (
                       <span className="block truncate text-xs font-medium text-muted">{b.destination}</span>
                     )}
                   </span>
                   <span className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-orange">
-                    Review <ArrowRight size={15} />
+                    {t("review")} <ArrowRight size={15} />
                   </span>
                 </Link>
               </li>
@@ -151,16 +152,15 @@ export default async function TripPage({
       ) : showCapGate ? (
         <div className="mt-6 rounded-3xl border-2 border-ink bg-white p-8 text-center shadow-[0_5px_0_0_rgba(26,26,26,1)]">
           <p className="text-3xl">🧳</p>
-          <p className="mt-3 text-lg font-extrabold">You&rsquo;ve got 10 active trips</p>
+          <p className="mt-3 text-lg font-extrabold">{t("capTitle")}</p>
           <p className="mt-2 font-medium text-ink/70">
-            That&rsquo;s the max. Complete or close one before posting another. (Activities
-            have no limit.)
+            {t("capBody")}
           </p>
           <Link
             href="/my-trips"
             className="mt-5 inline-block rounded-full border-2 border-ink bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
           >
-            Manage my trips
+            {t("manageTrips")}
           </Link>
         </div>
       ) : (
