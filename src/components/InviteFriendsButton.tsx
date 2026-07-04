@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Share2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function InviteFriendsButton({
   inviterId,
@@ -14,17 +15,22 @@ export default function InviteFriendsButton({
   city?: string;
   label?: string;
 }) {
+  const t = useTranslations("match.invite");
   const [copied, setCopied] = useState(false);
   const url = `https://app.findflockie.com/join/${inviterId}`;
   const firstName = inviterName?.split(" ")[0];
   const text = city
-    ? `${firstName ? `${firstName} invited you` : "You're invited"} to Flockie — join me and find people for trips and activities in ${city}!`
-    : `${firstName ? `${firstName} invited you` : "You're invited"} to Flockie — find people to travel and do things with!`;
+    ? firstName
+      ? t("invitedByCity", { name: firstName, city })
+      : t("invitedGenericCity", { city })
+    : firstName
+      ? t("invitedByNoCity", { name: firstName })
+      : t("invitedGenericNoCity");
 
   async function invite() {
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
-        await navigator.share({ title: "Join me on Flockie", text, url });
+        await navigator.share({ title: t("shareTitle"), text, url });
         return;
       } catch {
         // cancelled / unsupported — fall through to copy
@@ -43,7 +49,7 @@ export default function InviteFriendsButton({
       onClick={invite}
       className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
     >
-      <Share2 size={16} /> {copied ? "Copied!" : label ?? "Invite friends to unlock"}
+      <Share2 size={16} /> {copied ? t("copied") : label ?? t("defaultLabel")}
     </button>
   );
 }

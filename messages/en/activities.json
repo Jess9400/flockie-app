@@ -1,1 +1,15 @@
-{}
+{
+  "tabTrips": "My Trips",
+  "tabActivities": "My Activities",
+  "tabDeals": "Deals",
+  "heading": "My Activities",
+  "new": "New",
+  "subtitle": "1:1 things to do in your city — manage your activity posts.",
+  "badge": "Activity",
+  "statusCancelled": "Cancelled",
+  "statusCompleted": "Completed",
+  "edit": "Edit",
+  "deleteLabel": "this activity",
+  "emptyActive": "No upcoming activities. Post one to find a buddy to do it with.",
+  "pastHeading": "Past activities"
+}

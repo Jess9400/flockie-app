@@ -1,1 +1,15 @@
-{}
+{
+  "tabTrips": "Mis viajes",
+  "tabActivities": "Mis actividades",
+  "tabDeals": "Deals",
+  "heading": "Mis actividades",
+  "new": "Nueva",
+  "subtitle": "Cosas 1:1 para hacer en tu ciudad — gestiona tus actividades publicadas.",
+  "badge": "Actividad",
+  "statusCancelled": "Cancelada",
+  "statusCompleted": "Completada",
+  "edit": "Editar",
+  "deleteLabel": "esta actividad",
+  "emptyActive": "No tienes actividades próximas. Publica una para encontrar un buddy con quien hacerla.",
+  "pastHeading": "Actividades pasadas"
+}

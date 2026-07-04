@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import SwipeDeck from "@/components/SwipeDeck";
@@ -16,6 +17,7 @@ export default async function MatchPage({
 }) {
   const supabase = await createClient();
   const user = await getSessionUser();
+  const t = await getTranslations("match.find");
 
   const mode = searchParams.mode === "activity" ? "activity" : "trip";
   const isActivity = mode === "activity";
@@ -43,41 +45,37 @@ export default async function MatchPage({
   const subToggle = (
     <div className="mt-3 inline-flex gap-1 rounded-full border-2 border-ink bg-cream p-1 text-xs font-bold">
       <Link href="/match?mode=trip" className={`rounded-full px-4 py-1 ${!isActivity ? "bg-ink text-white" : "text-ink"}`}>
-        Trip
+        {t("toggleTrip")}
       </Link>
       <Link href="/match?mode=activity" className={`rounded-full px-4 py-1 ${isActivity ? "bg-ink text-white" : "text-ink"}`}>
-        Activity
+        {t("toggleActivity")}
       </Link>
     </div>
   );
 
   const header = (
     <>
-      <h1 className="text-2xl font-black">Find a Buddy</h1>
+      <h1 className="text-2xl font-black">{t("heading")}</h1>
       <p className="mt-1 text-sm font-medium text-muted">
-        {isActivity ? (
-          <>
-            1:1 matching — you both swipe, mutual likes connect to do an activity in your
-            city. Want a group event?{" "}
-            <Link href="/vibes/new" className="font-bold text-flockie-orange underline">
-              Create a Vibe
-            </Link>
-            .
-          </>
-        ) : (
-          <>
-            1:1 matching buddy travel — you both swipe, mutual likes connect. Want a travel
-            group?{" "}
-            <Link href="/match/trip?kind=flock" className="font-bold text-flockie-orange underline">
-              Create a Flock
-            </Link>
-            .
-          </>
-        )}
+        {isActivity
+          ? t.rich("introActivity", {
+              link: (chunks) => (
+                <Link href="/vibes/new" className="font-bold text-flockie-orange underline">
+                  {chunks}
+                </Link>
+              ),
+            })
+          : t.rich("introTrip", {
+              link: (chunks) => (
+                <Link href="/match/trip?kind=flock" className="font-bold text-flockie-orange underline">
+                  {chunks}
+                </Link>
+              ),
+            })}
       </p>
       <div className="mt-4 grid grid-cols-2 gap-2 rounded-full border-2 border-ink bg-white p-1 text-sm font-bold">
-        <span className="rounded-full bg-flockie-orange py-2 text-center text-white">Find a Buddy</span>
-        <Link href="/flocks" className="rounded-full py-2 text-center text-ink">Find a Flock</Link>
+        <span className="rounded-full bg-flockie-orange py-2 text-center text-white">{t("tabBuddy")}</span>
+        <Link href="/flocks" className="rounded-full py-2 text-center text-ink">{t("tabFlock")}</Link>
       </div>
       {subToggle}
     </>
@@ -88,12 +86,8 @@ export default async function MatchPage({
       <main className="px-5 pb-10 pt-6">
         {header}
         <Gate
-          text={
-            isActivity
-              ? "Complete your vibe check to start matching."
-              : "Complete your travel preferences to start matching."
-          }
-          cta={isActivity ? "Complete my vibe check" : "Complete Travel Preferences"}
+          text={isActivity ? t("gateVibeCheckText") : t("gateTravelPrefsText")}
+          cta={isActivity ? t("gateVibeCheckCta") : t("gateTravelPrefsCta")}
           href={`/match/trip?kind=${mode}`}
         />
       </main>
@@ -123,7 +117,7 @@ export default async function MatchPage({
     label:
       (isActivity && p.title ? p.title : null) ||
       (p.destinations ?? [p.destination]).filter(Boolean).join(" · ") ||
-      "Untitled",
+      t("pickerUntitled"),
   }));
 
   if (!post) {
@@ -131,10 +125,8 @@ export default async function MatchPage({
       <main className="px-5 pb-10 pt-6">
         {header}
         <Gate
-          text={isActivity
-            ? "Post an activity to find people to do it with in your city."
-            : "Post a trip to find buddies heading to the same place."}
-          cta={isActivity ? "Post an activity" : "Post a trip"}
+          text={isActivity ? t("gatePostActivityText") : t("gatePostTripText")}
+          cta={isActivity ? t("gatePostActivityCta") : t("gatePostTripCta")}
           href={`/match/trip?kind=${mode}`}
         />
       </main>
@@ -184,10 +176,9 @@ export default async function MatchPage({
       body = (
         <div className="mt-6 rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_5px_0_0_rgba(26,26,26,1)]">
           <p className="text-3xl">🚀</p>
-          <p className="mt-3 text-lg font-extrabold">You&rsquo;re on the list for {label}</p>
+          <p className="mt-3 text-lg font-extrabold">{t("onListTitle", { label })}</p>
           <p className="mt-1 text-sm font-medium text-ink/70">
-            Buddy matching unlocks as more travelers join {label} — invite friends to make it
-            happen faster.
+            {t("onListBody", { label })}
           </p>
           <div className="mt-5 flex flex-col gap-2">
             <InviteFriendsButton
@@ -196,7 +187,7 @@ export default async function MatchPage({
               city={label}
             />
             <Link href="/vibes" className="rounded-full border-2 border-ink bg-white px-5 py-2.5 font-bold text-ink">
-              Meanwhile, explore Vibes
+              {t("exploreVibesMeanwhile")}
             </Link>
           </div>
         </div>
@@ -222,7 +213,7 @@ export default async function MatchPage({
           href={`/match/trip?kind=${mode}`}
           className="flex shrink-0 items-center gap-1 rounded-2xl border-2 border-ink bg-flockie-orange px-4 py-2.5 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
         >
-          <Plus size={16} /> New {isActivity ? "activity" : "trip"}
+          <Plus size={16} /> {isActivity ? t("newActivity") : t("newTrip")}
         </Link>
       </div>
 
@@ -242,7 +233,7 @@ function Gate({ text, cta, href }: { text: string; cta: string; href: string }) 
   );
 }
 
-function ActivityEmptyState({
+async function ActivityEmptyState({
   userId,
   userName,
   city,
@@ -251,27 +242,26 @@ function ActivityEmptyState({
   userName?: string;
   city: string;
 }) {
+  const t = await getTranslations("match.find");
   return (
     <div className="mt-6 rounded-3xl border-2 border-dashed border-ink/30 bg-white p-7 text-center">
       <p className="text-3xl">👋</p>
-      <p className="mt-3 text-lg font-extrabold">Your activity is saved</p>
+      <p className="mt-3 text-lg font-extrabold">{t("emptyActivityTitle")}</p>
       <p className="mt-1 text-sm font-medium leading-relaxed text-muted">
-        There are no new compatible people in {city || "your city"} right now.
-        Posting saves what you want to do, but it cannot create a match until
-        someone compatible is available.
+        {t("emptyActivityBody", { city: city || t("cityFallback") })}
       </p>
       <div className="mt-5 flex flex-col justify-center gap-2 sm:flex-row">
         <InviteFriendsButton
           inviterId={userId}
           inviterName={userName}
           city={city || undefined}
-          label="Invite a friend"
+          label={t("inviteFriend")}
         />
         <Link
           href="/vibes"
           className="inline-flex items-center justify-center rounded-full border-2 border-ink bg-white px-5 py-2.5 font-bold text-ink"
         >
-          Explore Vibes
+          {t("exploreVibes")}
         </Link>
       </div>
     </div>

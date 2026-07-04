@@ -1,17 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Plus, Pencil, MapPin, CalendarClock } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import DeleteTripButton from "@/components/DeleteTripButton";
 import PageTabs from "@/components/PageTabs";
 import Pagination from "@/components/Pagination";
-
-const TRIP_TABS = [
-  { href: "/my-trips", label: "My Trips" },
-  { href: "/my-activities", label: "My Activities" },
-  { href: "/deals", label: "Deals" },
-];
 
 const PAGE_SIZE = 5;
 
@@ -34,6 +29,13 @@ export default async function MyActivitiesPage({
 }) {
   const supabase = await createClient();
   const user = await getSessionUser();
+  const t = await getTranslations("activities");
+
+  const TRIP_TABS = [
+    { href: "/my-trips", label: t("tabTrips") },
+    { href: "/my-activities", label: t("tabActivities") },
+    { href: "/deals", label: t("tabDeals") },
+  ];
 
   const { data: activities } = await supabase
     .from("trips")
@@ -44,58 +46,58 @@ export default async function MyActivitiesPage({
 
   const all = (activities ?? []) as ActivityRow[];
   const todayStr = new Date().toISOString().slice(0, 10);
-  const isPast = (t: ActivityRow) =>
-    t.status === "completed" || t.status === "cancelled" || (!!t.end_date && t.end_date < todayStr);
-  const activeList = all.filter((t) => !isPast(t));
+  const isPast = (a: ActivityRow) =>
+    a.status === "completed" || a.status === "cancelled" || (!!a.end_date && a.end_date < todayStr);
+  const activeList = all.filter((a) => !isPast(a));
   const pastList = all.filter(isPast);
 
   const page = Math.max(1, Number(searchParams.page) || 1);
   const totalPages = Math.max(1, Math.ceil(activeList.length / PAGE_SIZE));
   const pageList = activeList.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  function ActivityCard({ t, faded }: { t: ActivityRow; faded?: boolean }) {
+  function ActivityCard({ row, faded }: { row: ActivityRow; faded?: boolean }) {
     return (
       <div
         className={`rounded-2xl border-2 border-ink bg-white p-4 shadow-[0_3px_0_0_rgba(26,26,26,1)] ${faded ? "opacity-60" : ""}`}
       >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
           <div className="flex min-w-0 flex-1 items-start gap-3">
-            {t.cover_photo && (
+            {row.cover_photo && (
               <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 border-ink bg-cream">
-                <Image src={t.cover_photo} alt="" fill sizes="64px" className="object-cover" />
+                <Image src={row.cover_photo} alt="" fill sizes="64px" className="object-cover" />
               </div>
             )}
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <span className="rounded-full border-2 border-ink bg-flockie-blue px-2 py-0.5 text-[10px] font-extrabold uppercase text-white">
-                  Activity
+                  {t("badge")}
                 </span>
                 {faded ? (
                   <span
                     className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase ${
-                      t.status === "cancelled" ? "bg-ink text-white" : "bg-[#06D6A0] text-white"
+                      row.status === "cancelled" ? "bg-ink text-white" : "bg-[#06D6A0] text-white"
                     }`}
                   >
-                    {t.status === "cancelled" ? "Cancelled" : "Completed"}
+                    {row.status === "cancelled" ? t("statusCancelled") : t("statusCompleted")}
                   </span>
                 ) : (
-                  t.status !== "active" && (
-                    <span className="text-[10px] font-bold uppercase text-muted">{t.status}</span>
+                  row.status !== "active" && (
+                    <span className="text-[10px] font-bold uppercase text-muted">{row.status}</span>
                   )
                 )}
               </div>
               <p className="mt-1 flex items-center gap-1.5 font-extrabold">
                 <MapPin size={15} className="shrink-0 text-flockie-orange" />{" "}
                 <span className="min-w-0 break-words">
-                  {t.title || (t.destinations ?? [t.destination]).filter(Boolean).join(" · ")}
+                  {row.title || (row.destinations ?? [row.destination]).filter(Boolean).join(" · ")}
                 </span>
               </p>
               <p className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-muted">
-                <CalendarClock size={13} className="shrink-0" /> {t.start_date} → {t.end_date}
+                <CalendarClock size={13} className="shrink-0" /> {row.start_date} → {row.end_date}
               </p>
-              {(t.trip_type?.length ?? 0) > 0 && (
+              {(row.trip_type?.length ?? 0) > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1.5">
-                  {t.trip_type!.map((tag) => (
+                  {row.trip_type!.map((tag) => (
                     <span key={tag} className="rounded-full bg-cream px-2 py-0.5 text-[11px] font-bold">
                       {tag}
                     </span>
@@ -107,13 +109,13 @@ export default async function MyActivitiesPage({
           <div className="flex shrink-0 items-center justify-end gap-2 sm:ml-auto">
             {!faded && (
               <Link
-                href={`/match/trip?id=${t.id}`}
+                href={`/match/trip?id=${row.id}`}
                 className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-sm font-bold"
               >
-                <Pencil size={14} /> Edit
+                <Pencil size={14} /> {t("edit")}
               </Link>
             )}
-            <DeleteTripButton tripId={t.id} label={t.title ? `"${t.title}"` : "this activity"} />
+            <DeleteTripButton tripId={row.id} label={row.title ? `"${row.title}"` : t("deleteLabel")} />
           </div>
         </div>
       </div>
@@ -124,35 +126,35 @@ export default async function MyActivitiesPage({
     <main className="px-5 pb-10 pt-6">
       <PageTabs tabs={TRIP_TABS} />
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-black">My Activities</h1>
+        <h1 className="text-2xl font-black">{t("heading")}</h1>
         <Link
           href="/match/trip?kind=activity"
           className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
         >
-          <Plus size={16} /> New
+          <Plus size={16} /> {t("new")}
         </Link>
       </div>
       <p className="mt-1 text-sm font-medium text-muted">
-        1:1 things to do in your city — manage your activity posts.
+        {t("subtitle")}
       </p>
 
       <div className="mt-6 space-y-3">
         {activeList.length === 0 ? (
           <div className="rounded-3xl border-2 border-dashed border-ink/30 py-12 text-center font-medium text-muted">
-            No upcoming activities. Post one to find a buddy to do it with.
+            {t("emptyActive")}
           </div>
         ) : (
-          pageList.map((t) => <ActivityCard key={t.id} t={t} />)
+          pageList.map((row) => <ActivityCard key={row.id} row={row} />)
         )}
       </div>
       <Pagination page={page} totalPages={totalPages} hrefFor={(p) => (p > 1 ? `/my-activities?page=${p}` : "/my-activities")} />
 
       {pastList.length > 0 && (
         <>
-          <h2 className="mt-8 text-lg font-extrabold text-muted">Past activities</h2>
+          <h2 className="mt-8 text-lg font-extrabold text-muted">{t("pastHeading")}</h2>
           <div className="mt-3 space-y-3">
-            {pastList.map((t) => (
-              <ActivityCard key={t.id} t={t} faded />
+            {pastList.map((row) => (
+              <ActivityCard key={row.id} row={row} faded />
             ))}
           </div>
         </>
