@@ -56,7 +56,7 @@
       "description": "Informações privadas usadas pelo Flockie. As outras pessoas nunca veem suas preferências nem seus pontos inegociáveis.",
       "privateBadge": "Privado"
     },
-    "yourVibe": "Seu vibe",
+    "yourVibe": "Sua vibe",
     "vibeUpdatesWhenDone": "Atualiza quando você terminar seu quiz",
     "vibeBuiltFromAnswers": "Criado a partir das suas respostas abaixo",
     "view": "Ver",
@@ -90,7 +90,7 @@
     "matchSetupNote": "Preferências flexíveis melhoram o ranking. Pontos inegociáveis filtram de forma rígida. Interesse, Não é para mim, respostas a convites, presença e avaliações também ensinam o algoritmo.",
     "redoConfirm": {
       "title": "Refazer sua Vibe quiz?",
-      "message": "Você vai responder o quiz inteiro de novo a partir da pergunta 1 — não dá para salvar pela metade. Seu vibe atual continua ativo até você terminar.",
+      "message": "Você vai responder o quiz inteiro de novo a partir da pergunta 1 — não dá para salvar pela metade. Sua vibe atual continua ativa até você terminar.",
       "confirmLabel": "Começar o quiz"
     },
     "redoError": "Não foi possível reiniciar o quiz — tente de novo.",
@@ -188,7 +188,7 @@
     "going": "Vou"
   },
   "completePopup": {
-    "title": "Seu vibe está completo!",
+    "title": "Sua vibe está completa!",
     "body": "Os três formulários prontos. Agora atraia a sua galera.",
     "done": "Pronto"
   },
