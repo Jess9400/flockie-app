@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import ShareVibeButton from "@/components/ShareVibeButton";
 import GenerateCoverButton from "@/components/GenerateCoverButton";
@@ -87,6 +88,14 @@ export default function CreateVibeForm({
   clone?: VibeClone;
 }) {
   const supabase = createClient();
+  const t = useTranslations("vibes");
+  const catLabel = (c: string) =>
+    t.has(`categories.${c}`) ? t(`categories.${c}`) : formatActivityLabel(c);
+  const tagLabel = (tag: string) => (t.has(`eventTags.${tag}`) ? t(`eventTags.${tag}`) : tag);
+  const skillLabel = (value: number | null, fallback: string) => {
+    const key = value === null ? "any" : value === 1 ? "beginner" : value === 3 ? "intermediate" : value === 4 ? "advanced" : null;
+    return key && t.has(`skill.${key}`) ? t(`skill.${key}`) : fallback;
+  };
 
   const [createdId, setCreatedId] = useState<string | null>(null);
   const [title, setTitle] = useState(clone?.title ?? defaultTitle);
@@ -152,7 +161,7 @@ export default function CreateVibeForm({
       }
       setPhotos((p) => [...p, ...urls]);
     } catch {
-      setErr("Photo upload failed.");
+      setErr(t("create.errPhotoUpload"));
     } finally {
       setUploading(false);
       if (photoInput.current) photoInput.current.value = "";
@@ -205,16 +214,16 @@ export default function CreateVibeForm({
       const data = await res.json();
       if (!res.ok) {
         setResolvedLocation(null);
-        setLocationMsg("Couldn’t find a clear pin. Try adding a street, area, or venue name.");
+        setLocationMsg(t("create.locationMsgNoPin"));
         return;
       }
       setResolvedLocation(data as ResolvedLocation);
       setLocationLat(data.lat);
       setLocationLng(data.lng);
-      setLocationMsg("Found a likely exact pin. Use it if the address looks right.");
+      setLocationMsg(t("create.locationMsgFound"));
     } catch {
       setResolvedLocation(null);
-      setLocationMsg("Map lookup failed. You can still type the location manually.");
+      setLocationMsg(t("create.locationMsgFailed"));
     } finally {
       setResolvingLocation(false);
     }
@@ -228,7 +237,7 @@ export default function CreateVibeForm({
     if (resolvedLocation.city) setCity(resolvedLocation.city);
     if (resolvedLocation.area) setArea(resolvedLocation.area);
     if (resolvedLocation.country) setCountry(resolvedLocation.country);
-    setLocationMsg("Exact address added to the location line.");
+    setLocationMsg(t("create.locationMsgAdded"));
   }
 
   function activeDurationMinutes(option = durationOption, custom = customDurationMinutes) {
@@ -279,28 +288,28 @@ export default function CreateVibeForm({
     setErr(null);
 
     if (!title || !description || !category || !startsAt || !endsAt || !deadline || !city || !country) {
-      return setErr("Please fill in all required fields.");
+      return setErr(t("create.errFillRequired"));
     }
     if (!locationName.trim()) {
-      return setErr("A location is required — it's sent to attendees and pinned in the chat.");
+      return setErr(t("create.errLocationRequired"));
     }
     if (photos.length === 0) {
-      return setErr("Add at least one cover photo — upload one or generate it.");
+      return setErr(t("create.errPhotoRequired"));
     }
     if (tags.length === 0) {
-      return setErr("Pick at least one event vibe tag — it powers the matching.");
+      return setErr(t("create.errTagRequired"));
     }
     if (new Date(deadline) >= new Date(startsAt)) {
-      return setErr("Signup deadline must be before the start time.");
+      return setErr(t("create.errDeadlineBeforeStart"));
     }
     if (new Date(endsAt) <= new Date(startsAt)) {
-      return setErr("End time must be after the start time.");
+      return setErr(t("create.errEndAfterStart"));
     }
     if (!language) {
-      return setErr("Pick the event's main language.");
+      return setErr(t("create.errPickLanguage"));
     }
     if (ageMin > ageMax) {
-      return setErr("Minimum age can't be greater than the maximum age.");
+      return setErr(t("create.errAgeOrder"));
     }
 
     setSaving(true);
@@ -356,10 +365,9 @@ export default function CreateVibeForm({
     return (
       <div className="rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_6px_0_0_rgba(10,37,69,1)]">
         <p className="text-4xl">🎉</p>
-        <h2 className="mt-2 font-fredoka text-2xl font-bold text-ink">Your Vibe is live!</h2>
+        <h2 className="mt-2 font-fredoka text-2xl font-bold text-ink">{t("create.successTitle")}</h2>
         <p className="mt-1 font-nunito text-sm font-medium text-muted">
-          Share it to invite people. They tap &ldquo;I&rsquo;m interested&rdquo; and the
-          algorithm builds the room from the most compatible.
+          {t("create.successBody")}
         </p>
         <div className="mt-5 flex justify-center">
           <ShareVibeButton vibeId={createdId} />
@@ -369,13 +377,13 @@ export default function CreateVibeForm({
             href={`/vibes/${createdId}`}
             className="rounded-full border-2 border-ink bg-flockie-blue py-2.5 font-fredoka text-sm font-semibold text-white"
           >
-            View your Vibe
+            {t("create.viewYourVibe")}
           </Link>
           <Link
             href="/vibes"
             className="rounded-full border-2 border-ink bg-white py-2.5 font-fredoka text-sm font-semibold text-ink"
           >
-            Back to Vibes
+            {t("create.backToVibes")}
           </Link>
         </div>
       </div>
@@ -386,18 +394,18 @@ export default function CreateVibeForm({
     <form onSubmit={submit} className="space-y-8 pb-8">
       {/* Basics */}
       <section className="space-y-3">
-        <h2 className="text-lg font-extrabold">Basics</h2>
-        <Field label="Title">
+        <h2 className="text-lg font-extrabold">{t("create.sectionBasics")}</h2>
+        <Field label={t("create.fieldTitle")}>
           <input
             className={inputCls}
             maxLength={60}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Sunset surf + tacos"
+            placeholder={t("create.titlePlaceholder")}
           />
         </Field>
 
-        <Field label="Cover photos (required · up to 5)">
+        <Field label={t("create.fieldPhotos")}>
           <div className="flex flex-wrap justify-center gap-2">
             {photos.map((url, i) => (
               <div
@@ -410,7 +418,7 @@ export default function CreateVibeForm({
                   type="button"
                   onClick={() => setPhotos(photos.filter((_, idx) => idx !== i))}
                   className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-ink text-xs font-bold text-white"
-                  aria-label="Remove"
+                  aria-label={t("create.removePhoto")}
                 >
                   ✕
                 </button>
@@ -428,7 +436,7 @@ export default function CreateVibeForm({
           </div>
           <input ref={photoInput} type="file" accept="image/*" multiple hidden onChange={onPhotos} />
           {uploading && (
-            <p className="mt-1 text-sm font-semibold text-flockie-orange">Uploading…</p>
+            <p className="mt-1 text-sm font-semibold text-flockie-orange">{t("create.uploading")}</p>
           )}
           {photos.length < MAX_PHOTOS && (
             <GenerateCoverButton
@@ -440,25 +448,25 @@ export default function CreateVibeForm({
           )}
         </Field>
 
-        <Field label="Description">
+        <Field label={t("create.fieldDescription")}>
           <textarea
             className={`${inputCls} h-28 resize-none`}
             maxLength={500}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="What's the plan, the vibe, who it's for…"
+            placeholder={t("create.descriptionPlaceholder")}
           />
         </Field>
-        <Field label="What to bring / cost split (optional)">
+        <Field label={t("create.fieldWhatToBring")}>
           <textarea
             className={`${inputCls} h-20 resize-none`}
             maxLength={300}
             value={whatToBring}
             onChange={(e) => setWhatToBring(e.target.value)}
-            placeholder="e.g. Bring a towel & $10 for the boards — we split the taco bill."
+            placeholder={t("create.whatToBringPlaceholder")}
           />
         </Field>
-        <Field label="What are you doing?">
+        <Field label={t("create.fieldActivity")}>
           <div className="grid grid-cols-2 gap-2">
             {VIBE_CATEGORIES.filter((c) => c !== "other").map((c) => (
               <button
@@ -469,7 +477,7 @@ export default function CreateVibeForm({
                   categories.includes(c) ? "bg-flockie-blue text-white" : "bg-white"
                 }`}
               >
-                {formatActivityLabel(c)}
+                {catLabel(c)}
               </button>
             ))}
           </div>
@@ -485,14 +493,14 @@ export default function CreateVibeForm({
                   useCustomActivity();
                 }
               }}
-              placeholder="Write your own: pottery, karaoke, book swap..."
+              placeholder={t("create.customActivityPlaceholder")}
             />
             <button
               type="button"
               onClick={useCustomActivity}
               className="rounded-2xl border-2 border-ink bg-white px-4 text-sm font-bold"
             >
-              Use
+              {t("create.use")}
             </button>
           </div>
           {categories.length > 0 && (
@@ -504,51 +512,50 @@ export default function CreateVibeForm({
                   onClick={() => seedActivity(c)}
                   className="flex items-center gap-1 rounded-full border-2 border-ink bg-flockie-blue px-2.5 py-1 text-xs font-bold text-white"
                 >
-                  {formatActivityLabel(c)} <span aria-hidden>×</span>
+                  {catLabel(c)} <span aria-hidden>×</span>
                 </button>
               ))}
             </div>
           )}
           <p className="mt-1 text-xs font-medium text-muted">
-            Pick one or more — tap to add, tap a chip to remove. Flockie pre-fills the likely vibe
-            tags from your first pick, and you can swap them below.
+            {t("create.activityHelp")}
           </p>
         </Field>
-        <Field label="Activity link (optional)">
+        <Field label={t("create.fieldActivityLink")}>
           <input
             className={inputCls}
             value={activityUrl}
             onChange={(e) => setActivityUrl(e.target.value)}
-            placeholder="Paste a GetYourGuide (or any) activity link"
+            placeholder={t("create.activityLinkPlaceholder")}
           />
           <p className="mt-1 text-xs font-medium text-muted">
-            Everyone who gets in receives this link, on the Vibe and in the chat.
+            {t("create.activityLinkHelp")}
           </p>
         </Field>
       </section>
 
       {/* When & where */}
       <section className="space-y-3">
-        <h2 className="text-lg font-extrabold">When &amp; where</h2>
-        <Field label="Start date & time">
+        <h2 className="text-lg font-extrabold">{t("create.sectionWhen")}</h2>
+        <Field label={t("create.fieldStart")}>
           <div className="grid gap-2 sm:grid-cols-2">
             <input
               type="date"
               className={inputCls}
               value={datePart(startsAt)}
               onChange={(e) => onStartDateChange(e.target.value)}
-              aria-label="Start date"
+              aria-label={t("create.startDateAria")}
             />
             <input
               type="time"
               className={inputCls}
               value={timePart(startsAt)}
               onChange={(e) => onStartTimeChange(e.target.value)}
-              aria-label="Start time"
+              aria-label={t("create.startTimeAria")}
             />
           </div>
         </Field>
-        <Field label="How long is it?">
+        <Field label={t("create.fieldDuration")}>
           <div className="flex flex-wrap gap-2">
             {DURATION_OPTIONS.map((o) => (
               <button
@@ -569,7 +576,7 @@ export default function CreateVibeForm({
                 durationOption === "custom" ? "bg-flockie-blue text-white" : "bg-white"
               }`}
             >
-              Custom
+              {t("create.custom")}
             </button>
           </div>
           {durationOption === "custom" && (
@@ -582,42 +589,39 @@ export default function CreateVibeForm({
                 className={inputCls}
                 value={customDurationMinutes / 60}
                 onChange={(e) => changeCustomDuration(e.target.value)}
-                aria-label="Custom duration in hours (1 to 24)"
+                aria-label={t("create.customDurationAria")}
               />
-              <p className="mt-1 text-xs font-medium text-muted">How many hours the Vibe runs (1–24).</p>
+              <p className="mt-1 text-xs font-medium text-muted">{t("create.customDurationHelp")}</p>
             </div>
           )}
           <div className="mt-3 rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-bold">
             <p className="text-xs font-extrabold uppercase tracking-wide text-muted">
-              Preview
+              {t("create.preview")}
             </p>
             <div className="mt-2 grid gap-1 text-ink/80">
               <p>
-                <span className="text-muted">Starts:</span>{" "}
-                {startsAt ? prettyDateTime(startsAt) : "Choose date + time"}
+                <span className="text-muted">{t("create.starts")}</span>{" "}
+                {startsAt ? prettyDateTime(startsAt) : t("create.chooseDateTime")}
               </p>
               <p>
-                <span className="text-muted">Ends:</span>{" "}
-                {endsAt ? prettyDateTime(endsAt) : "Calculated from duration"}
+                <span className="text-muted">{t("create.ends")}</span>{" "}
+                {endsAt ? prettyDateTime(endsAt) : t("create.calculatedFromDuration")}
               </p>
             </div>
           </div>
         </Field>
-        <Field label="Interest window — when matching runs">
+        <Field label={t("create.fieldInterestWindow")}>
           <div className="flex flex-wrap gap-2">
-            {[
-              { h: 24, l: "In 24h" },
-              { h: 48, l: "In 48h" },
-            ].map((o) => (
+            {[24, 48].map((h) => (
               <button
-                key={o.h}
+                key={h}
                 type="button"
-                onClick={() => setWindow(o.h)}
+                onClick={() => setWindow(h)}
                 className={`rounded-full border-2 border-ink px-4 py-2 text-sm font-bold ${
-                  interestWindow === o.h ? "bg-flockie-blue text-white" : "bg-white"
+                  interestWindow === h ? "bg-flockie-blue text-white" : "bg-white"
                 }`}
               >
-                {o.l}
+                {t("create.windowIn", { hours: h })}
               </button>
             ))}
           </div>
@@ -631,46 +635,46 @@ export default function CreateVibeForm({
             }}
           />
           <p className="mt-1 text-xs font-medium text-muted">
-            Interest stays open until this time, then the algorithm ranks everyone and builds your list.
+            {t("create.interestWindowHelp")}
           </p>
         </Field>
         <div className="grid gap-3 sm:grid-cols-3">
-          <Field label="Country (public)">
+          <Field label={t("create.fieldCountry")}>
             <input
               className={inputCls}
               value={country}
               onChange={(e) => setCountry(e.target.value)}
-              placeholder="Portugal"
+              placeholder={t("create.countryPlaceholder")}
               required
             />
           </Field>
-          <Field label="City (public)">
+          <Field label={t("create.fieldCity")}>
             <input
               className={inputCls}
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              placeholder="Lisbon"
+              placeholder={t("create.cityPlaceholder")}
               required
             />
           </Field>
-          <Field label="Area (public · optional)">
+          <Field label={t("create.fieldArea")}>
             <input
               className={inputCls}
               value={area}
               onChange={(e) => setArea(e.target.value)}
-              placeholder="Alfama"
+              placeholder={t("create.areaPlaceholder")}
             />
           </Field>
         </div>
         <p className="-mt-1 text-xs font-medium text-muted">
-          Everyone sees only this approximate location until they confirm.
+          {t("create.approxHelp")}
         </p>
-        <Field label="Exact venue or address (confirmed attendees only)">
+        <Field label={t("create.fieldExactLocation")}>
           <input
             className={inputCls}
             value={locationName}
             onChange={(e) => onLocationChange(e.target.value)}
-            placeholder="Venue name, street, or Google Maps address"
+            placeholder={t("create.exactLocationPlaceholder")}
             required
           />
           <button
@@ -679,24 +683,24 @@ export default function CreateVibeForm({
             disabled={resolvingLocation || locationName.trim().length < 3}
             className="mt-2 rounded-full border-2 border-ink bg-white px-4 py-2 text-sm font-bold disabled:opacity-50"
           >
-            {resolvingLocation ? "Finding pin…" : "Find exact pin"}
+            {resolvingLocation ? t("create.findingPin") : t("create.findExactPin")}
           </button>
           {resolvedLocation && (
             <div className="mt-2 rounded-2xl border-2 border-ink bg-cream p-3">
-              <p className="text-xs font-extrabold text-muted">Suggested exact address</p>
+              <p className="text-xs font-extrabold text-muted">{t("create.suggestedAddress")}</p>
               <p className="mt-1 text-sm font-bold text-ink">{resolvedLocation.label}</p>
               <button
                 type="button"
                 onClick={useResolvedLocation}
                 className="mt-2 rounded-full border-2 border-ink bg-flockie-blue px-4 py-2 text-xs font-bold text-white"
               >
-                Use this address
+                {t("create.useThisAddress")}
               </button>
             </div>
           )}
           {locationName.trim().length > 2 && (
             <iframe
-              title="Location preview"
+              title={t("create.locationPreviewTitle")}
               src={`https://maps.google.com/maps?q=${encodeURIComponent(
                 resolvedLocation?.lat != null && resolvedLocation?.lng != null
                   ? `${resolvedLocation.lat},${resolvedLocation.lng}`
@@ -711,15 +715,15 @@ export default function CreateVibeForm({
             <p className="mt-1 text-xs font-bold text-flockie-orange">{locationMsg}</p>
           )}
           <p className="mt-1 text-xs font-medium text-muted">
-            Check the pin is right. The host always sees it; attendees unlock it only after confirming.
+            {t("create.exactLocationHelp")}
           </p>
         </Field>
       </section>
 
       {/* Who's invited */}
       <section className="space-y-3">
-        <h2 className="text-lg font-extrabold">Who&rsquo;s invited</h2>
-        <Field label={`Capacity: ${capacity}`}>
+        <h2 className="text-lg font-extrabold">{t("create.sectionWho")}</h2>
+        <Field label={t("create.capacity", { count: capacity })}>
           <input
             type="range"
             min={3}
@@ -729,28 +733,24 @@ export default function CreateVibeForm({
             className="w-full accent-flockie-orange"
           />
         </Field>
-        <Field label="Open to">
+        <Field label={t("create.openTo")}>
           <div className="grid grid-cols-3 gap-2">
-            {[
-              { v: "any", l: "Everyone" },
-              { v: "women", l: "Women only" },
-              { v: "men", l: "Men only" },
-            ].map((o) => (
+            {["any", "women", "men"].map((v) => (
               <button
-                key={o.v}
+                key={v}
                 type="button"
-                onClick={() => setGenderPref(o.v)}
+                onClick={() => setGenderPref(v)}
                 className={`rounded-full border-2 border-ink py-2 text-sm font-bold ${
-                  genderPref === o.v ? "bg-flockie-blue text-white" : "bg-white"
+                  genderPref === v ? "bg-flockie-blue text-white" : "bg-white"
                 }`}
               >
-                {o.l}
+                {t(`genderPref.${v}`)}
               </button>
             ))}
           </div>
         </Field>
 
-        <Field label="How much should the algorithm fill?">
+        <Field label={t("create.algoFill")}>
           <div className="grid grid-cols-3 gap-2">
             {[50, 75, 100].map((p) => (
               <button
@@ -767,14 +767,14 @@ export default function CreateVibeForm({
           </div>
           <p className="mt-1 text-xs font-medium text-muted">
             {algoShare === 100
-              ? "The algorithm fills the whole room."
-              : `The algorithm fills ${algoShare}% — the rest are yours to invite via your private link.`}
+              ? t("create.algoFillFull")
+              : t("create.algoFillPartial", { pct: algoShare })}
           </p>
         </Field>
 
-        <Field label="Event language">
+        <Field label={t("create.eventLanguage")}>
           <select className={inputCls} value={language} onChange={(e) => setLanguage(e.target.value)}>
-            <option value="">Select…</option>
+            <option value="">{t("create.selectPlaceholder")}</option>
             {FLOCK_LANGUAGES.map((l) => (
               <option key={l} value={l}>
                 {l}
@@ -783,7 +783,7 @@ export default function CreateVibeForm({
           </select>
         </Field>
 
-        <Field label="Age range">
+        <Field label={t("create.ageRange")}>
           <div className="flex items-center gap-3">
             <input
               type="number"
@@ -792,9 +792,9 @@ export default function CreateVibeForm({
               value={ageMin}
               onChange={(e) => setAgeMin(Number(e.target.value))}
               className={inputCls}
-              aria-label="Minimum age"
+              aria-label={t("create.ageMinAria")}
             />
-            <span className="font-bold text-muted">to</span>
+            <span className="font-bold text-muted">{t("create.to")}</span>
             <input
               type="number"
               min={16}
@@ -802,13 +802,13 @@ export default function CreateVibeForm({
               value={ageMax}
               onChange={(e) => setAgeMax(Number(e.target.value))}
               className={inputCls}
-              aria-label="Maximum age"
+              aria-label={t("create.ageMaxAria")}
             />
           </div>
-          <p className="mt-1 text-xs font-medium text-muted">Leave 18–99 for any age.</p>
+          <p className="mt-1 text-xs font-medium text-muted">{t("create.ageHelp")}</p>
         </Field>
 
-        <Field label="Required skill level">
+        <Field label={t("create.requiredSkill")}>
           <select
             className={inputCls}
             value={skill === null ? "" : skill}
@@ -816,21 +816,21 @@ export default function CreateVibeForm({
           >
             {SKILL_REQUIREMENTS.map((s) => (
               <option key={s.label} value={s.value === null ? "" : s.value}>
-                {s.label}
+                {skillLabel(s.value, s.label)}
               </option>
             ))}
           </select>
         </Field>
-        <Field label={`Event vibe tags (${tags.length}/${EVENT_VIBE_TAGS_MAX})`}>
+        <Field label={t("create.eventVibeTags", { count: tags.length, max: EVENT_VIBE_TAGS_MAX })}>
           <div className="flex flex-wrap gap-2">
-            {EVENT_VIBE_TAGS.map((t) => {
-              const on = tags.includes(t);
-              const suggested = suggestedTags.includes(t);
+            {EVENT_VIBE_TAGS.map((tag) => {
+              const on = tags.includes(tag);
+              const suggested = suggestedTags.includes(tag);
               return (
                 <button
-                  key={t}
+                  key={tag}
                   type="button"
-                  onClick={() => toggleTag(t)}
+                  onClick={() => toggleTag(tag)}
                   className={`rounded-full border-2 px-3 py-1 text-xs font-bold ${
                     on
                       ? suggested
@@ -842,17 +842,17 @@ export default function CreateVibeForm({
                   }`}
                 >
                   {suggested && !on ? "+ " : ""}
-                  {t}
-                  {suggested && on ? " · suggested" : ""}
+                  {tagLabel(tag)}
+                  {suggested && on ? ` · ${t("create.suggested")}` : ""}
                 </button>
               );
             })}
           </div>
           <p className="mt-1 text-xs font-medium text-muted">
-            We pre-fill these from your activity so the algorithm always has a signal. Tap to swap.
+            {t("create.eventVibeTagsHelp")}
           </p>
         </Field>
-        <Field label="Dealbreaker rules (optional)">
+        <Field label={t("create.dealbreakerRules")}>
           <div className="flex flex-wrap gap-2">
             {DEALBREAKER_RULES.map((r) => {
               const on = !!rules[r.key];
@@ -865,7 +865,7 @@ export default function CreateVibeForm({
                     on ? "bg-ink text-white" : "bg-white"
                   }`}
                 >
-                  {r.label}
+                  {t.has(`rules.${r.key}`) ? t(`rules.${r.key}`) : r.label}
                 </button>
               );
             })}
@@ -879,7 +879,7 @@ export default function CreateVibeForm({
             onClick={() => setShowAdvanced((v) => !v)}
             className="flex w-full items-center justify-between text-sm font-extrabold"
           >
-            Advanced settings
+            {t("create.advancedSettings")}
             <span className="text-xl leading-none">{showAdvanced ? "−" : "+"}</span>
           </button>
           {showAdvanced && (
@@ -891,14 +891,13 @@ export default function CreateVibeForm({
                 className="mt-1 h-5 w-5 accent-flockie-orange"
               />
               <span className="text-sm font-medium text-ink/80">
-                <span className="font-bold">Diversity floor</span> — reserves a
-                few spots for outliers so the room isn&rsquo;t an echo chamber.
+                {t.rich("create.diversityFloor", { b: (chunks) => <span className="font-bold">{chunks}</span> })}
               </span>
             </label>
           )}
         </div>
         <p className="text-xs font-medium text-muted">
-          Host&rsquo;s pinned picks (bypass the algorithm) coming next.
+          {t("create.pinnedComing")}
         </p>
       </section>
 
@@ -909,7 +908,7 @@ export default function CreateVibeForm({
         disabled={saving || uploading}
         className="w-full rounded-full border-2 border-ink bg-flockie-orange py-3.5 font-bold text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50"
       >
-        {saving ? "Creating…" : "Create Vibe"}
+        {saving ? t("create.creating") : t("create.createVibe")}
       </button>
     </form>
   );

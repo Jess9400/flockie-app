@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Settings, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 
 function toLocalInput(iso?: string | null) {
@@ -11,11 +12,7 @@ function toLocalInput(iso?: string | null) {
   return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
 }
 
-const DEADLINE_PRESETS = [
-  { label: "48h before", hours: 48 },
-  { label: "24h before", hours: 24 },
-  { label: "6h before", hours: 6 },
-];
+const DEADLINE_PRESETS = [48, 24, 6];
 
 // Gear button (top-right of the Vibe info) that opens a Manage sheet: edit
 // date/time (with relative signup-deadline presets) and cancel the Vibe.
@@ -32,6 +29,7 @@ export default function VibeSettingsButton({
 }) {
   const router = useRouter();
   const supabase = createClient();
+  const t = useTranslations("vibes");
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
@@ -57,12 +55,12 @@ export default function VibeSettingsButton({
     });
     setBusy(false);
     if (error) return setMsg(error.message);
-    setMsg("Updated — everyone in was notified.");
+    setMsg(t("settings.updated"));
     router.refresh();
   }
 
   async function del() {
-    if (!confirm("Cancel this Vibe? Attendees are notified and the chat becomes inactive.")) return;
+    if (!confirm(t("settings.cancelConfirm"))) return;
     setBusy(true);
     const { error } = await supabase.rpc("cancel_vibe", { p_vibe: vibeId });
     setBusy(false);
@@ -78,7 +76,7 @@ export default function VibeSettingsButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="Manage Vibe"
+        aria-label={t("settings.manageVibeAria")}
         className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-white text-ink"
       >
         <Settings size={18} />
@@ -94,34 +92,34 @@ export default function VibeSettingsButton({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b-2 border-ink/10 px-5 py-4">
-              <button type="button" onClick={() => setOpen(false)} aria-label="Close">
+              <button type="button" onClick={() => setOpen(false)} aria-label={t("settings.closeAria")}>
                 <X size={22} className="text-ink" />
               </button>
-              <p className="font-fredoka text-lg font-bold text-ink">Manage Vibe</p>
+              <p className="font-fredoka text-lg font-bold text-ink">{t("settings.manageVibe")}</p>
               <span className="w-[22px]" />
             </div>
 
             <div className="flex-1 space-y-3 overflow-y-auto px-5 py-5">
               <label className="block text-sm font-bold">
-                Starts
+                {t("settings.starts")}
                 <input type="datetime-local" value={starts} onChange={(e) => setStarts(e.target.value)} className={fieldCls} />
               </label>
               <label className="block text-sm font-bold">
-                Ends (optional)
+                {t("settings.endsOptional")}
                 <input type="datetime-local" value={ends} onChange={(e) => setEnds(e.target.value)} className={fieldCls} />
               </label>
 
               <div>
-                <p className="text-sm font-bold">Signup deadline</p>
+                <p className="text-sm font-bold">{t("settings.signupDeadline")}</p>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {DEADLINE_PRESETS.map((p) => (
+                  {DEADLINE_PRESETS.map((hours) => (
                     <button
-                      key={p.hours}
+                      key={hours}
                       type="button"
-                      onClick={() => setDeadlineBefore(p.hours)}
+                      onClick={() => setDeadlineBefore(hours)}
                       className="rounded-full border-2 border-ink/15 bg-white px-3 py-1.5 text-xs font-bold text-ink hover:bg-cream"
                     >
-                      {p.label}
+                      {t("settings.deadlineBefore", { hours })}
                     </button>
                   ))}
                 </div>
@@ -132,7 +130,7 @@ export default function VibeSettingsButton({
                   className={fieldCls}
                 />
                 <p className="mt-1 text-xs font-medium text-muted">
-                  Matching runs at the deadline. Pick a preset before the event or set a custom time.
+                  {t("settings.deadlineHelp")}
                 </p>
               </div>
 
@@ -141,7 +139,7 @@ export default function VibeSettingsButton({
                 disabled={busy}
                 className="w-full rounded-full border-2 border-ink bg-flockie-orange py-2.5 font-bold text-white shadow-[0_3px_0_0_#E0512C] disabled:opacity-50"
               >
-                Save &amp; notify everyone
+                {t("settings.saveNotify")}
               </button>
 
               <button
@@ -149,7 +147,7 @@ export default function VibeSettingsButton({
                 disabled={busy}
                 className="w-full rounded-full border-2 border-ink bg-white py-2.5 font-bold text-ink/70"
               >
-                Delete Vibe
+                {t("settings.deleteVibe")}
               </button>
 
               {msg && <p className="text-center text-sm font-bold text-flockie-blue">{msg}</p>}

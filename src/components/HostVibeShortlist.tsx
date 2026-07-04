@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Send, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { useConfirm } from "@/components/ui/feedback";
 
@@ -32,6 +33,7 @@ export default function HostVibeShortlist({
   const router = useRouter();
   const supabase = createClient();
   const confirm = useConfirm();
+  const t = useTranslations("vibes");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const left = Math.max(0, rejectCap - rejectsUsed);
@@ -48,9 +50,9 @@ export default function HostVibeShortlist({
   async function sendInvites() {
     if (
       !(await confirm({
-        title: "Send invites now?",
-        message: "Invited people can no longer be rejected here.",
-        confirmLabel: "Send invites",
+        title: t("host.sendInvitesTitle"),
+        message: t("host.sendInvitesMessage"),
+        confirmLabel: t("host.sendInvitesConfirm"),
       }))
     )
       return;
@@ -65,20 +67,19 @@ export default function HostVibeShortlist({
   return (
     <div className="mt-6 rounded-2xl border-2 border-ink bg-white p-4">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-extrabold">Review your matched list</p>
+        <p className="text-sm font-extrabold">{t("host.reviewMatched")}</p>
         <span className="rounded-full bg-cream px-2.5 py-1 text-[11px] font-bold text-muted">
-          {left} remove{left === 1 ? "" : "s"} left
+          {t("host.removesLeft", { count: left })}
         </span>
       </div>
       <p className="mt-0.5 text-xs font-medium text-muted">
-        The algorithm ranked these by match. Remove up to {rejectCap}, then send — or it auto-sends soon.
-        Removed people aren&rsquo;t notified.
+        {t("host.shortlistHelp", { cap: rejectCap })}
       </p>
 
       <div className="mt-3 space-y-2">
         {candidates.length === 0 ? (
           <p className="rounded-xl bg-cream p-3 text-center text-sm font-bold text-muted">
-            No one to review yet.
+            {t("host.noOneYet")}
           </p>
         ) : (
           candidates.map((c) => (
@@ -93,9 +94,9 @@ export default function HostVibeShortlist({
                 )}
               </Link>
               <Link href={`/people/${c.id}`} className="min-w-0 flex-1">
-                <p className="truncate text-sm font-extrabold">{c.name || "A flockie"}</p>
+                <p className="truncate text-sm font-extrabold">{c.name || t("host.flockieFallback")}</p>
                 {c.score != null && (
-                  <p className="text-xs font-bold text-flockie-orange">{Math.round(c.score)}% match</p>
+                  <p className="text-xs font-bold text-flockie-orange">{t("host.matchPct", { pct: Math.round(c.score) })}</p>
                 )}
               </Link>
               <button
@@ -104,7 +105,7 @@ export default function HostVibeShortlist({
                 disabled={busy || left <= 0}
                 className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-bold text-ink/70 disabled:opacity-40"
               >
-                <X size={14} /> Remove
+                <X size={14} /> {t("host.remove")}
               </button>
             </div>
           ))
@@ -117,7 +118,7 @@ export default function HostVibeShortlist({
         disabled={busy || candidates.length === 0}
         className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3 font-bold text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50"
       >
-        <Send size={16} /> Send invites now
+        <Send size={16} /> {t("host.sendInvitesNow")}
       </button>
 
       {msg && <p className="mt-2 text-center text-sm font-bold text-flockie-blue">{msg}</p>}

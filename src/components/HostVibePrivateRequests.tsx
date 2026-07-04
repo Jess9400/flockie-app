@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Link2, Check, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 
 export type PrivateRequest = { id: string; name: string | null; photo: string | null };
@@ -30,6 +31,7 @@ export default function HostVibePrivateRequests({
 }) {
   const router = useRouter();
   const supabase = createClient();
+  const t = useTranslations("vibes");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -43,7 +45,7 @@ export default function HostVibePrivateRequests({
       : `${window.location.origin}/invite/${vibeId}?via=host`;
     try {
       if (navigator.share) {
-        await navigator.share({ title: "Join my Vibe", url });
+        await navigator.share({ title: t("host.shareVibeTitle"), url });
         return;
       }
       await navigator.clipboard.writeText(url);
@@ -67,20 +69,21 @@ export default function HostVibePrivateRequests({
   return (
     <div className="mt-6 rounded-2xl border-2 border-ink bg-white p-4">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-extrabold">Private invites</p>
+        <p className="text-sm font-extrabold">{t("host.privateInvites")}</p>
         <span className="rounded-full bg-cream px-2.5 py-1 text-[11px] font-bold text-muted">
-          {filled}/{capacity} filled
+          {t("host.filled", { filled, capacity })}
         </span>
       </div>
       <p className="mt-0.5 text-xs font-medium text-muted">
-        Share your link or code (e.g. on Twitter). Anyone who uses your code is{" "}
-        <span className="font-bold">instantly confirmed</span>; link requests you approve below — as
-        long as the Vibe has room. ({left} {left === 1 ? "seat" : "seats"} left)
+        {t.rich("host.privateHelp", {
+          b: (chunks) => <span className="font-bold">{chunks}</span>,
+          seatsLeft: t("host.seatsLeft", { count: left }),
+        })}
       </p>
 
       {code && (
         <div className="mt-3 flex items-center justify-between gap-2 rounded-2xl border-2 border-dashed border-ink/40 bg-cream px-4 py-2.5">
-          <span className="text-[11px] font-bold uppercase tracking-wide text-muted">Invite code</span>
+          <span className="text-[11px] font-bold uppercase tracking-wide text-muted">{t("host.inviteCode")}</span>
           <span className="font-fredoka text-xl font-extrabold tracking-[0.2em] text-ink">{code}</span>
         </div>
       )}
@@ -90,12 +93,12 @@ export default function HostVibePrivateRequests({
         onClick={copyLink}
         className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-coral py-2.5 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
       >
-        <Link2 size={16} /> {copied ? "Link copied!" : "Share invite link"}
+        <Link2 size={16} /> {copied ? t("host.linkCopied") : t("host.shareInviteLink")}
       </button>
 
       {requests.length > 0 && (
         <div className="mt-3 space-y-2">
-          <p className="text-xs font-extrabold uppercase tracking-wide text-muted">Pending requests</p>
+          <p className="text-xs font-extrabold uppercase tracking-wide text-muted">{t("host.pendingRequests")}</p>
           {requests.map((r) => (
             <div key={r.id} className="flex items-center gap-3 rounded-2xl border border-ink/10 bg-cream/50 p-2.5">
               <Link href={`/people/${r.id}`} className="shrink-0">
@@ -108,7 +111,7 @@ export default function HostVibePrivateRequests({
                 )}
               </Link>
               <Link href={`/people/${r.id}`} className="min-w-0 flex-1 truncate text-sm font-extrabold">
-                {r.name || "A flockie"}
+                {r.name || t("host.flockieFallback")}
               </Link>
               <button
                 type="button"
@@ -116,7 +119,7 @@ export default function HostVibePrivateRequests({
                 disabled={busy || left <= 0}
                 className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-flockie-orange px-3 py-1.5 text-xs font-extrabold text-white disabled:opacity-40"
               >
-                <Check size={14} /> Add
+                <Check size={14} /> {t("host.add")}
               </button>
               <button
                 type="button"

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Sparkles, MessageCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import ShareVibeButton from "@/components/ShareVibeButton";
 
@@ -16,13 +17,14 @@ export default function HostVibeControls({
 }) {
   const router = useRouter();
   const supabase = createClient();
+  const t = useTranslations("vibes");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
   if (status === "cancelled") {
     return (
       <div className="rounded-full border-2 border-ink bg-cream py-3 text-center font-bold text-muted">
-        You cancelled this Vibe.
+        {t("host.youCancelled")}
       </div>
     );
   }
@@ -34,7 +36,7 @@ export default function HostVibeControls({
     setBusy(false);
     if (error) return setMsg(error.message);
     const r = data as { shortlisted?: number; standby?: number };
-    setMsg(`Shortlist ready — ${r.shortlisted ?? 0} to review, ${r.standby ?? 0} on standby.`);
+    setMsg(t("host.shortlistReady", { shortlisted: r.shortlisted ?? 0, standby: r.standby ?? 0 }));
     router.refresh();
   }
 
@@ -44,15 +46,15 @@ export default function HostVibeControls({
     <div className="space-y-2">
       <div className="grid grid-cols-3 gap-2">
         <button onClick={run} disabled={busy} className={`${tile} bg-flockie-orange text-white`}>
-          <Sparkles size={18} /> {busy ? "Running…" : "Run Matching"}
+          <Sparkles size={18} /> {busy ? t("host.running") : t("host.runMatching")}
         </button>
         <ShareVibeButton vibeId={vibeId} tile />
         <Link href={`/vibes/${vibeId}/chat`} className={`${tile} bg-flockie-blue text-white`}>
-          <MessageCircle size={18} /> Open Chat
+          <MessageCircle size={18} /> {t("host.openChat")}
         </Link>
       </div>
       <p className="px-2 text-center text-xs font-medium text-muted">
-        If you don&rsquo;t run matching, invitations are sent automatically at your deadline.
+        {t("host.autoInviteNote")}
       </p>
       {msg && <p className="text-center text-sm font-bold text-flockie-blue">{msg}</p>}
     </div>

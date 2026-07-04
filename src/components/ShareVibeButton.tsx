@@ -2,15 +2,17 @@
 
 import { useState } from "react";
 import { Share2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function ShareVibeButton({ vibeId, tile }: { vibeId: string; tile?: boolean }) {
+  const t = useTranslations("vibes");
   const [copied, setCopied] = useState(false);
 
   async function share() {
     const url = `${window.location.origin}/invite/${vibeId}`;
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
-        await navigator.share({ title: "Join my Vibe on Flockie", url });
+        await navigator.share({ title: t("share.shareTitle"), url });
         return;
       } catch {
         // user cancelled or unsupported — fall through to copy
@@ -31,7 +33,7 @@ export default function ShareVibeButton({ vibeId, tile }: { vibeId: string; tile
         onClick={share}
         className="flex flex-col items-center justify-center gap-1 rounded-2xl border-2 border-ink bg-white py-3 text-[11px] font-bold text-ink"
       >
-        <Share2 size={18} /> {copied ? "Copied!" : "Share"}
+        <Share2 size={18} /> {copied ? t("share.copiedTile") : t("share.share")}
       </button>
     );
   }
@@ -42,7 +44,7 @@ export default function ShareVibeButton({ vibeId, tile }: { vibeId: string; tile
       onClick={share}
       className="inline-flex items-center gap-2 rounded-full border-2 border-ink bg-white px-4 py-2 text-sm font-bold text-ink"
     >
-      <Share2 size={15} /> {copied ? "Link copied!" : "Share"}
+      <Share2 size={15} /> {copied ? t("share.linkCopied") : t("share.share")}
     </button>
   );
 }
