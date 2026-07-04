@@ -1,15 +1,17 @@
 import Link from "next/link";
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 
-// Chat type → pill label + colors.
-const KIND_TAG: Record<string, { label: string; cls: string }> = {
-  travel_buddy: { label: "Travel Buddy", cls: "bg-flockie-blue/15 text-flockie-blue" },
-  activity_buddy: { label: "Activity Buddy", cls: "bg-flockie-coral/15 text-flockie-coral" },
-  flock: { label: "Flock", cls: "bg-onboarding-green/15 text-onboarding-green" },
-  vibe: { label: "Vibes Buddy", cls: "bg-flockie-orange/15 text-flockie-orange" },
+// Chat type → pill colors. The label is resolved from the `buddies.list.tags`
+// namespace keyed on the same `kind` value.
+const KIND_CLS: Record<string, string> = {
+  travel_buddy: "bg-flockie-blue/15 text-flockie-blue",
+  activity_buddy: "bg-flockie-coral/15 text-flockie-coral",
+  flock: "bg-onboarding-green/15 text-onboarding-green",
+  vibe: "bg-flockie-orange/15 text-flockie-orange",
 };
 
-export default function ChatRow({
+export default async function ChatRow({
   href,
   photo,
   title,
@@ -30,7 +32,8 @@ export default function ChatRow({
   fallbackTone?: "blue" | "cream";
   kind?: string;
 }) {
-  const tag = kind ? KIND_TAG[kind] : undefined;
+  const t = await getTranslations("buddies");
+  const tagCls = kind ? KIND_CLS[kind] : undefined;
   return (
     <Link
       href={href}
@@ -55,9 +58,9 @@ export default function ChatRow({
       <div className="min-w-0 flex-1 px-1">
         <div className="flex items-center gap-1.5">
           <p className="truncate font-fredoka text-[17px] font-semibold text-navy">{title}</p>
-          {tag && (
-            <span className={`shrink-0 rounded-full px-1.5 py-0.5 font-nunito text-[10px] font-extrabold ${tag.cls}`}>
-              {tag.label}
+          {tagCls && kind && (
+            <span className={`shrink-0 rounded-full px-1.5 py-0.5 font-nunito text-[10px] font-extrabold ${tagCls}`}>
+              {t(`list.tags.${kind}`)}
             </span>
           )}
         </div>

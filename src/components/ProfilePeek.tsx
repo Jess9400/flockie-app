@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useEsc } from "@/lib/use-esc";
 
 export type PeekData = {
@@ -24,6 +25,7 @@ export default function ProfilePeek({
   data: PeekData;
   onClose: () => void;
 }) {
+  const t = useTranslations("buddies");
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   useEsc(onClose);
@@ -34,7 +36,7 @@ export default function ProfilePeek({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label={`${data.name}'s profile`}
+        aria-label={t("peek.profileAria", { name: data.name })}
         className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-3xl border-t-2 border-navy bg-cream p-5 font-nunito"
       >
         <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-navy/20" />
@@ -95,14 +97,14 @@ export default function ProfilePeek({
             href={`/people/${data.id}`}
             className="flex-1 rounded-full border-2 border-navy bg-flockie-blue py-2.5 text-center font-fredoka text-sm font-semibold text-white"
           >
-            View full profile
+            {t("peek.viewFullProfile")}
           </Link>
           <button
             type="button"
             onClick={onClose}
             className="rounded-full border-2 border-navy bg-white px-5 font-fredoka text-sm font-semibold text-navy"
           >
-            Close
+            {t("peek.close")}
           </button>
         </div>
       </div>
