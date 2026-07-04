@@ -1,1 +1,71 @@
-{}
+{
+  "seeAll": "Ver tudo",
+  "hero": {
+    "liveVibes": "{count, plural, one {# vibe ativa} other {# vibes ativas}} em {city} esta semana",
+    "yourArea": "sua região"
+  },
+  "buddies": {
+    "topPicks": "✨ Destaques",
+    "subtitle": "Pessoas em {city} a fim de fazer algo — mande um oi.",
+    "yourCity": "sua cidade",
+    "swipeMore": "Deslizar mais",
+    "emptyTitle": "Nenhum buddy novo para atividades em {city} agora.",
+    "emptyBody": "Criar uma atividade não vai gerar um match até que alguém compatível esteja disponível. Convide um amigo ou explore Vibes enquanto o grupo local cresce.",
+    "inviteFriend": "Convidar um amigo",
+    "exploreVibes": "Explorar Vibes",
+    "someone": "Alguém"
+  },
+  "joinVibe": {
+    "heading": "Entre em um vibe",
+    "subtitle": "Planos em grupo por toda parte — entre em um."
+  },
+  "nearYou": {
+    "liveNow": "ao vivo",
+    "nearYouFallback": "Perto de você",
+    "heading": "Acontecendo perto de você",
+    "filterAny": "Qualquer hora",
+    "filter24": "24h",
+    "filter48": "48h",
+    "createVibe": "Criar um Vibe",
+    "subtitle": {
+      "all": { "withCity": "Em breve em {city}", "noCity": "Próximos Vibes" },
+      "24": { "withCity": "Nas próximas 24 horas em {city}", "noCity": "Vibes nas próximas 24 horas" },
+      "48": { "withCity": "Nas próximas 48 horas em {city}", "noCity": "Vibes nas próximas 48 horas" }
+    },
+    "empty": {
+      "all": {
+        "withCity": "Ainda não há Vibes em breve em {city}. Dê o primeiro passo 👇",
+        "noCity": "Ainda não há Vibes em breve. Dê o primeiro passo 👇"
+      },
+      "24": {
+        "withCity": "Ainda não há Vibes nas próximas 24 horas em {city}. Dê o primeiro passo 👇",
+        "noCity": "Ainda não há Vibes nas próximas 24 horas. Dê o primeiro passo 👇"
+      },
+      "48": {
+        "withCity": "Ainda não há Vibes nas próximas 48 horas em {city}. Dê o primeiro passo 👇",
+        "noCity": "Ainda não há Vibes nas próximas 48 horas. Dê o primeiro passo 👇"
+      }
+    }
+  },
+  "explore": {
+    "heading": "Explore Vibes pelo mundo",
+    "subtitle": "Explorando planos em grupo em outras cidades — entre em um."
+  },
+  "flocks": {
+    "heading": "Flocks para você entrar, em qualquer lugar",
+    "subtitle": "As viagens em grupo mais recentes do mundo todo — peça para entrar.",
+    "emptyTitle": "Nenhum flock aberto agora.",
+    "emptyBody": "Crie um e deixe outros viajantes pedirem para entrar.",
+    "createFlock": "Criar um flock",
+    "tripFallback": "Viagem",
+    "hostFallback": "Anfitrião"
+  },
+  "notFound": {
+    "heading": "Não encontrou o que procurava?",
+    "subtitleDone": "Crie o seu e deixe as pessoas virem até você.",
+    "subtitleTodo": "Termine seu vibe check e vamos te conectar com as pessoas e Vibes certas.",
+    "completeVibeCheck": "✨ Complete seu vibe check",
+    "createVibe": "Criar um vibe",
+    "createActivity": "Criar uma atividade"
+  }
+}

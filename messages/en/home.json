@@ -1,1 +1,71 @@
-{}
+{
+  "seeAll": "See all",
+  "hero": {
+    "liveVibes": "{count, plural, one {# vibe} other {# vibes}} live in {city} this week",
+    "yourArea": "your area"
+  },
+  "buddies": {
+    "topPicks": "✨ Top picks",
+    "subtitle": "People in {city} up for doing something — say hi.",
+    "yourCity": "your city",
+    "swipeMore": "Swipe more",
+    "emptyTitle": "No new activity buddies in {city} right now.",
+    "emptyBody": "Creating an activity won’t produce a match until someone compatible is available. Invite a friend or explore Vibes while the local pool grows.",
+    "inviteFriend": "Invite a friend",
+    "exploreVibes": "Explore Vibes",
+    "someone": "Someone"
+  },
+  "joinVibe": {
+    "heading": "Join a vibe",
+    "subtitle": "Group plans everywhere — jump into one."
+  },
+  "nearYou": {
+    "liveNow": "live now",
+    "nearYouFallback": "Near you",
+    "heading": "Happening near you",
+    "filterAny": "Any time",
+    "filter24": "24h",
+    "filter48": "48h",
+    "createVibe": "Create a Vibe",
+    "subtitle": {
+      "all": { "withCity": "Upcoming in {city}", "noCity": "Upcoming Vibes" },
+      "24": { "withCity": "In the next 24 hours in {city}", "noCity": "Vibes in the next 24 hours" },
+      "48": { "withCity": "In the next 48 hours in {city}", "noCity": "Vibes in the next 48 hours" }
+    },
+    "empty": {
+      "all": {
+        "withCity": "No upcoming Vibes in {city} yet. Make the first move 👇",
+        "noCity": "No upcoming Vibes yet. Make the first move 👇"
+      },
+      "24": {
+        "withCity": "No Vibes in the next 24 hours in {city} yet. Make the first move 👇",
+        "noCity": "No Vibes in the next 24 hours yet. Make the first move 👇"
+      },
+      "48": {
+        "withCity": "No Vibes in the next 48 hours in {city} yet. Make the first move 👇",
+        "noCity": "No Vibes in the next 48 hours yet. Make the first move 👇"
+      }
+    }
+  },
+  "explore": {
+    "heading": "Explore Vibes around the world",
+    "subtitle": "Browsing group plans in other cities — jump into one."
+  },
+  "flocks": {
+    "heading": "Flocks you can join, anywhere",
+    "subtitle": "Newest open group trips worldwide — request in.",
+    "emptyTitle": "No open flocks right now.",
+    "emptyBody": "Start one and let travelers request in.",
+    "createFlock": "Create a flock",
+    "tripFallback": "Trip",
+    "hostFallback": "Host"
+  },
+  "notFound": {
+    "heading": "Didn’t find what you’re looking for?",
+    "subtitleDone": "Start your own and let your people come to you.",
+    "subtitleTodo": "Finish your vibe check and we’ll match you to the right people and Vibes.",
+    "completeVibeCheck": "✨ Complete your vibe check",
+    "createVibe": "Create a vibe",
+    "createActivity": "Create an activity"
+  }
+}

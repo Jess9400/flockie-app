@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 // Time-aware greeting with a waving accent + a live "what's happening" line.
 // The greeting variants + subline are translated on the server (getTranslations
@@ -19,6 +20,7 @@ export default function HomeHero({
   greetings: { morning: string; afternoon: string; evening: string };
   subline: string;
 }) {
+  const t = useTranslations("home");
   const [greeting, setGreeting] = useState(greetings.morning);
   const [emoji, setEmoji] = useState("👋");
 
@@ -54,7 +56,7 @@ export default function HomeHero({
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-flockie-coral opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-flockie-coral" />
           </span>
-          {liveCount} {liveCount === 1 ? "vibe" : "vibes"} live in {homeCity ?? "your area"} this week
+          {t("hero.liveVibes", { count: liveCount, city: homeCity ?? t("hero.yourArea") })}
         </p>
       )}
     </section>

@@ -83,6 +83,7 @@ export default async function HomePage({
   // Server-side translations (locale from the NEXT_LOCALE cookie) for the
   // internationalized home header — see messages/*.json `common` namespace.
   const t = await getTranslations("common");
+  const th = await getTranslations("home");
 
   const [
     { data: profile },
@@ -107,8 +108,9 @@ export default async function HomePage({
   const vibeFormDone = !!profile?.vibe_completed_at;
   const timing = searchParams.when === "24" ? "24" : searchParams.when === "48" ? "48" : "all";
   const cutoffHours = timing === "24" ? 24 : timing === "48" ? 48 : null;
-  const timingLabel =
-    timing === "24" ? "in the next 24 hours" : timing === "48" ? "in the next 48 hours" : "upcoming";
+  // Which localized `nearYou.*` phrase set to use (see messages/*/home.json).
+  const timingKey = timing === "24" ? "24" : timing === "48" ? "48" : "all";
+  const cityVariant = homeCity ? "withCity" : "noCity";
   const hiddenVibeIds = Array.from(new Set((hiddenRows ?? []).map((r) => r.vibe_id)));
 
   // ── Vibes: "near you" (same city + timing filter) and "all cities" ─────
@@ -280,11 +282,11 @@ export default async function HomePage({
             <div className="flex items-center gap-2">
               <h2 className="text-[22px] font-extrabold sm:text-[28px]">{t("findBuddyHeading")}</h2>
               <span className="-rotate-6 rounded-full border-2 border-ink bg-flockie-coral px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-white shadow-[0_2px_0_0_rgba(10,37,69,1)]">
-                ✨ Top picks
+                {th("buddies.topPicks")}
               </span>
             </div>
             <p className="mt-0.5 font-bold text-navy/60">
-              People in {homeCity ?? "your city"} up for doing something — say hi.
+              {th("buddies.subtitle", { city: homeCity ?? th("buddies.yourCity") })}
             </p>
           </div>
           {people.length > 0 && (
@@ -292,7 +294,7 @@ export default async function HomePage({
               href="/match?mode=activity"
               className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
             >
-              Swipe more <ArrowRight size={15} />
+              {th("buddies.swipeMore")} <ArrowRight size={15} />
             </Link>
           )}
         </div>
@@ -300,31 +302,30 @@ export default async function HomePage({
         {people.length === 0 ? (
           <div className="mt-4 rounded-3xl border-2 border-dashed border-ink/25 bg-white p-6 text-center">
             <p className="font-bold">
-              No new activity buddies in {homeCity ?? "your city"} right now.
+              {th("buddies.emptyTitle", { city: homeCity ?? th("buddies.yourCity") })}
             </p>
             <p className="mx-auto mt-1 max-w-xl text-sm font-medium leading-relaxed text-muted">
-              Creating an activity won’t produce a match until someone compatible
-              is available. Invite a friend or explore Vibes while the local pool grows.
+              {th("buddies.emptyBody")}
             </p>
             <div className="mt-4 flex flex-col justify-center gap-2 sm:flex-row">
               <InviteFriendsButton
                 inviterId={user!.id}
                 inviterName={profile?.display_name ?? undefined}
                 city={homeCity ?? undefined}
-                label="Invite a friend"
+                label={th("buddies.inviteFriend")}
               />
               <Link
                 href="/vibes"
                 className="inline-flex items-center justify-center rounded-full border-2 border-ink bg-white px-5 py-2.5 text-sm font-bold text-ink"
               >
-                Explore Vibes
+                {th("buddies.exploreVibes")}
               </Link>
             </div>
           </div>
         ) : (
           <div className="carousel-fade mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {people.map((p) => {
-              const name = (p.display_name ?? "Someone").split(" ")[0];
+              const name = (p.display_name ?? th("buddies.someone")).split(" ")[0];
               const photo = p.photos?.[0] ?? null;
               return (
                 <div
@@ -376,8 +377,8 @@ export default async function HomePage({
 
       {/* ── Join a vibe (all cities) ────────────────────────────────────── */}
       <section className="mx-4 mt-8 px-1">
-        <h2 className="text-[22px] font-extrabold sm:text-[28px]">Join a vibe</h2>
-        <p className="mt-0.5 font-bold text-navy/60">Group plans everywhere — jump into one.</p>
+        <h2 className="text-[22px] font-extrabold sm:text-[28px]">{th("joinVibe.heading")}</h2>
+        <p className="mt-0.5 font-bold text-navy/60">{th("joinVibe.subtitle")}</p>
       </section>
 
       {/* ── Happening near you (same city + filters) ────────────────────── */}
@@ -388,26 +389,26 @@ export default async function HomePage({
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-flockie-coral opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-flockie-coral" />
             </span>
-            {homeCity ?? "Near you"} · live now
+            {homeCity ?? th("nearYou.nearYouFallback")} · {th("nearYou.liveNow")}
           </span>
           <Link
             href="/vibes"
             className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-sm font-bold text-ink"
           >
-            See all <ArrowRight size={15} />
+            {th("seeAll")} <ArrowRight size={15} />
           </Link>
         </div>
 
-        <h2 className="mt-3 text-[22px] font-extrabold sm:text-[28px]">Happening near you</h2>
+        <h2 className="mt-3 text-[22px] font-extrabold sm:text-[28px]">{th("nearYou.heading")}</h2>
         <p className="mt-0.5 font-bold text-white/80">
-          {homeCity ? `${timingLabel} in ${homeCity}` : `${timingLabel} Vibes`}
+          {th(`nearYou.subtitle.${timingKey}.${cityVariant}`, { city: homeCity ?? "" })}
         </p>
 
         <div className="mt-3 inline-flex gap-1 rounded-full border-2 border-ink bg-white/15 p-0.5 text-xs font-bold">
           {[
-            { value: "all", label: "Any time", href: "/home" },
-            { value: "24", label: "24h", href: "/home?when=24" },
-            { value: "48", label: "48h", href: "/home?when=48" },
+            { value: "all", label: th("nearYou.filterAny"), href: "/home" },
+            { value: "24", label: th("nearYou.filter24"), href: "/home?when=24" },
+            { value: "48", label: th("nearYou.filter48"), href: "/home?when=48" },
           ].map((option) => (
             <Link
               key={option.value}
@@ -424,14 +425,13 @@ export default async function HomePage({
         {near.length === 0 ? (
           <div className="mt-3 flex flex-col items-center gap-2 rounded-2xl border-2 border-white/40 bg-white/10 p-4 text-center sm:flex-row sm:justify-between sm:text-left">
             <p className="text-sm font-bold">
-              No Vibes {timingLabel}
-              {homeCity ? ` in ${homeCity}` : ""} yet. Make the first move 👇
+              {th(`nearYou.empty.${timingKey}.${cityVariant}`, { city: homeCity ?? "" })}
             </p>
             <Link
               href="/vibes/new"
               className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-coral px-4 py-1.5 text-sm font-bold text-white"
             >
-              <Plus size={14} /> Create a Vibe
+              <Plus size={14} /> {th("nearYou.createVibe")}
             </Link>
           </div>
         ) : (
@@ -446,16 +446,16 @@ export default async function HomePage({
         <section id="explore-world" className="mx-4 mt-8 scroll-mt-4">
           <div className="flex items-end justify-between gap-3 px-1">
             <div>
-              <h2 className="text-[22px] font-extrabold sm:text-[28px]">Explore Vibes around the world</h2>
+              <h2 className="text-[22px] font-extrabold sm:text-[28px]">{th("explore.heading")}</h2>
               <p className="mt-0.5 font-bold text-navy/60">
-                Browsing group plans in other cities — jump into one.
+                {th("explore.subtitle")}
               </p>
             </div>
             <Link
               href="/vibes"
               className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
             >
-              See all <ArrowRight size={15} />
+              {th("seeAll")} <ArrowRight size={15} />
             </Link>
           </div>
           <div className="carousel-fade mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -468,33 +468,33 @@ export default async function HomePage({
       <section className="mx-4 mt-8">
         <div className="flex items-end justify-between gap-3 px-1">
           <div>
-            <h2 className="text-[22px] font-extrabold sm:text-[28px]">Flocks you can join, anywhere</h2>
-            <p className="mt-0.5 font-bold text-navy/60">Newest open group trips worldwide — request in.</p>
+            <h2 className="text-[22px] font-extrabold sm:text-[28px]">{th("flocks.heading")}</h2>
+            <p className="mt-0.5 font-bold text-navy/60">{th("flocks.subtitle")}</p>
           </div>
           <Link
             href="/flocks"
             className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
           >
-            See all <ArrowRight size={15} />
+            {th("seeAll")} <ArrowRight size={15} />
           </Link>
         </div>
 
         {flocks.length === 0 ? (
           <div className="mt-4 rounded-3xl border-2 border-dashed border-ink/25 bg-white p-6 text-center">
-            <p className="font-bold">No open flocks right now.</p>
-            <p className="mt-1 text-sm font-medium text-muted">Start one and let travelers request in.</p>
+            <p className="font-bold">{th("flocks.emptyTitle")}</p>
+            <p className="mt-1 text-sm font-medium text-muted">{th("flocks.emptyBody")}</p>
             <Link
               href="/match/trip?kind=flock"
               className="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-flockie-blue px-5 py-2 text-sm font-bold text-white"
             >
-              Create a flock <ArrowRight size={15} />
+              {th("flocks.createFlock")} <ArrowRight size={15} />
             </Link>
           </div>
         ) : (
           <div className="carousel-fade mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {flocks.map((f) => {
-              const dest = (f.destinations ?? [f.destination]).filter(Boolean).join(" · ") || "Trip";
-              const hostName = f.host_name || "Host";
+              const dest = (f.destinations ?? [f.destination]).filter(Boolean).join(" · ") || th("flocks.tripFallback");
+              const hostName = f.host_name || th("flocks.hostFallback");
               return (
                 <div
                   key={f.id}
@@ -532,12 +532,10 @@ export default async function HomePage({
       {/* ── Didn't find what you're looking for? ────────────────────────── */}
       <section className="mx-4 mt-8 rounded-3xl border-[3px] border-ink bg-cream p-5 sm:p-6">
         <h2 className="text-[22px] font-extrabold sm:text-[26px]">
-          Didn&rsquo;t find what you&rsquo;re looking for?
+          {th("notFound.heading")}
         </h2>
         <p className="mt-0.5 font-bold text-ink/60">
-          {vibeFormDone
-            ? "Start your own and let your people come to you."
-            : "Finish your vibe check and we’ll match you to the right people and Vibes."}
+          {vibeFormDone ? th("notFound.subtitleDone") : th("notFound.subtitleTodo")}
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {!vibeFormDone && (
@@ -545,20 +543,20 @@ export default async function HomePage({
               href="/onboarding/vibe-check"
               className="flex items-center justify-center gap-2 rounded-2xl border-[3px] border-ink bg-ink px-5 py-3 font-bold text-white shadow-[0_4px_0_0_rgba(10,37,69,0.45)] transition-transform hover:-translate-y-0.5 sm:col-span-2"
             >
-              ✨ Complete your vibe check
+              {th("notFound.completeVibeCheck")}
             </Link>
           )}
           <Link
             href="/vibes/new"
             className="flex items-center justify-center gap-2 rounded-2xl border-[3px] border-ink bg-flockie-coral px-5 py-3 font-bold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-0.5"
           >
-            <Plus size={18} /> Create a vibe
+            <Plus size={18} /> {th("notFound.createVibe")}
           </Link>
           <Link
             href="/match/trip?kind=activity"
             className="flex items-center justify-center gap-2 rounded-2xl border-[3px] border-ink bg-flockie-blue px-5 py-3 font-bold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-0.5"
           >
-            <Plus size={18} /> Create an activity
+            <Plus size={18} /> {th("notFound.createActivity")}
           </Link>
         </div>
       </section>
