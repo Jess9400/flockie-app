@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MapPin, Users, Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { formatVibeWhen, type InterestStatus } from "@/lib/vibes";
 import { formatApproximateVibeLocation } from "@/lib/vibe-location";
@@ -23,13 +24,8 @@ export type VibeCardData = {
   host: { display_name: string | null; photos: string[] | null } | null;
 };
 
-const STATUS_LABEL: Record<string, string> = {
-  interested: "Interested",
-  invited: "Invited",
-  confirmed: "Confirmed",
-  standby: "Standby",
-  removed: "Removed",
-};
+// Statuses that render a chip on the card (others show none).
+const STATUS_CHIP = ["interested", "invited", "confirmed", "standby", "removed"];
 
 // Compact "trading card" — square full-display artwork on top, title + meta below.
 // Sized to fill its grid cell (3-up on the Vibes page) or carousel slot on Home.
@@ -51,6 +47,7 @@ export default function VibeCard({
   canDismiss?: boolean;
 }) {
   const supabase = createClient();
+  const t = useTranslations("vibes");
   const [hidden, setHidden] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -61,10 +58,11 @@ export default function VibeCard({
   ).filter(Boolean);
   const shownCategories = allCategories.slice(0, 3);
   const extraCategories = allCategories.length - shownCategories.length;
-  const hostName = vibe.host?.display_name || "A flockie";
+  const hostName = vibe.host?.display_name || t("card.hostFallback");
   const hostAvatar = vibe.host?.photos?.[0];
   const approximateLocation =
-    formatApproximateVibeLocation(vibe) || "Location shared after confirmation";
+    formatApproximateVibeLocation(vibe) || t("card.locationTbd");
+  const catLabel = (c: string) => (t.has(`categories.${c}`) ? t(`categories.${c}`) : c);
 
   useEffect(() => {
     if (!hidden) return;
@@ -97,15 +95,15 @@ export default function VibeCard({
   if (hidden) {
     return (
       <div className="flex min-h-28 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-ink/25 bg-white/70 p-4 text-center">
-        <p className="text-sm font-extrabold text-ink">Hidden</p>
-        <p className="mt-0.5 text-xs font-medium text-muted">We&rsquo;ll tune your future picks.</p>
+        <p className="text-sm font-extrabold text-ink">{t("card.hidden")}</p>
+        <p className="mt-0.5 text-xs font-medium text-muted">{t("card.hiddenBody")}</p>
         <button
           type="button"
           onClick={undoNotForMe}
           disabled={busy}
           className="mt-1 text-sm font-bold text-flockie-orange underline disabled:opacity-50"
         >
-          Undo
+          {t("card.undo")}
         </button>
       </div>
     );
@@ -122,7 +120,7 @@ export default function VibeCard({
           type="button"
           onClick={markNotForMe}
           disabled={busy}
-          aria-label="Not for me"
+          aria-label={t("card.notForMe")}
           className="absolute right-1.5 top-1.5 z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-ink bg-white text-lg font-black leading-none text-ink shadow-[0_2px_0_0_rgba(26,26,26,1)] hover:bg-cream disabled:opacity-50"
         >
           ×
@@ -143,7 +141,7 @@ export default function VibeCard({
             <div className="flex h-full items-center justify-center text-3xl">🎟️</div>
           )}
           <span className="absolute left-1.5 top-1.5 rounded-full border-2 border-ink bg-white px-1.5 py-0.5 text-[9px] font-extrabold lowercase leading-none text-ink">
-            {vibe.category}
+            {catLabel(vibe.category)}
           </span>
           {faded ? (
             typeof rating === "number" && rating > 0 && (
@@ -151,9 +149,9 @@ export default function VibeCard({
                 <Star size={9} className="fill-flockie-coral text-flockie-coral" /> {rating.toFixed(1)}
               </span>
             )
-          ) : myStatus && STATUS_LABEL[myStatus] ? (
+          ) : myStatus && STATUS_CHIP.includes(myStatus) ? (
             <span className="absolute right-1.5 top-1.5 rounded-full border-2 border-ink bg-flockie-orange px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-white">
-              {STATUS_LABEL[myStatus]}
+              {t(`status.${myStatus}`)}
             </span>
           ) : null}
         </div>
@@ -178,7 +176,7 @@ export default function VibeCard({
                   key={c}
                   className="rounded-full border-2 border-ink bg-cream px-1.5 py-0.5 text-[9px] font-extrabold lowercase leading-none text-ink"
                 >
-                  {c}
+                  {catLabel(c)}
                 </span>
               ))}
               {extraCategories > 0 && (
@@ -208,12 +206,12 @@ export default function VibeCard({
                 <span className="truncate">{hostName}</span>
               </span>
               <span className="flex shrink-0 items-center gap-0.5 text-[11px] font-bold text-muted">
-                <Users size={11} /> {faded ? `${confirmedCount} went` : `${confirmedCount}/${vibe.capacity}`}
+                <Users size={11} /> {faded ? t("card.went", { count: confirmedCount }) : `${confirmedCount}/${vibe.capacity}`}
               </span>
             </div>
             {!faded && typeof matchPct === "number" && (
               <span className="mt-2 block w-fit rounded-full border-2 border-ink bg-flockie-coral px-2 py-0.5 text-[10px] font-extrabold leading-none text-white">
-                {matchPct}% match
+                {t("card.match", { pct: matchPct })}
               </span>
             )}
           </div>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
@@ -13,17 +14,17 @@ import type { InterestStatus } from "@/lib/vibes";
 
 const PAGE_SIZE = 6;
 
-const VIBE_TABS = [
-  { href: "/vibes", label: "Vibes" },
-  { href: "/my-vibes", label: "My Vibes" },
-];
-
 export default async function VibesPage({
   searchParams,
 }: {
   searchParams: { q?: string; city?: string; page?: string; when?: string; view?: string };
 }) {
   const supabase = await createClient();
+  const t = await getTranslations("vibes");
+  const VIBE_TABS = [
+    { href: "/vibes", label: t("list.tabVibes") },
+    { href: "/my-vibes", label: t("list.tabMyVibes") },
+  ];
   const q = searchParams.q?.trim() ?? "";
   const city = searchParams.city?.trim() ?? "";
   const when = searchParams.when === "today" || searchParams.when === "48" ? searchParams.when : "all";
@@ -146,19 +147,16 @@ export default async function VibesPage({
     <main className="px-5 pt-6">
       <PageTabs tabs={VIBE_TABS} />
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-black">Vibes</h1>
+        <h1 className="text-2xl font-black">{t("list.heading")}</h1>
         <Link
           href="/vibes/new"
           className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
         >
-          <Plus size={16} /> Create
+          <Plus size={16} /> {t("list.create")}
         </Link>
       </div>
       <p className="mt-3 max-w-xl text-sm font-medium text-muted">
-        Curated <span className="font-bold">group</span> activities &amp; events —
-        no swiping. Tap &ldquo;I&rsquo;m interested&rdquo; and the host&rsquo;s
-        algorithm builds the room from the most compatible people, up to capacity.
-        (Want 1:1? Find a Buddy.)
+        {t.rich("list.intro", { b: (chunks) => <span className="font-bold">{chunks}</span> })}
       </p>
 
       <VibeSearch q={q} city={city} />
@@ -171,11 +169,11 @@ export default async function VibesPage({
             sections={[
               {
                 key: "when",
-                title: "When",
+                title: t("list.filterWhen"),
                 options: [
-                  { value: "", label: "Anytime" },
-                  { value: "today", label: "Today" },
-                  { value: "48", label: "Next 48h" },
+                  { value: "", label: t("list.whenAnytime") },
+                  { value: "today", label: t("list.whenToday") },
+                  { value: "48", label: t("list.when48") },
                 ],
               },
             ]}
@@ -188,13 +186,13 @@ export default async function VibesPage({
             href="/vibes"
             className={`rounded-full px-4 py-1.5 ${!isPast ? "bg-ink text-white" : "text-ink hover:bg-navy/5"}`}
           >
-            Upcoming
+            {t("list.upcoming")}
           </Link>
           <Link
             href="/vibes?view=past"
             className={`rounded-full px-4 py-1.5 ${isPast ? "bg-ink text-white" : "text-ink hover:bg-navy/5"}`}
           >
-            Past
+            {t("list.past")}
           </Link>
         </div>
       </div>
@@ -204,17 +202,17 @@ export default async function VibesPage({
           href="/profile"
           className="mt-4 block rounded-2xl border-2 border-ink bg-flockie-blue p-3 text-sm font-bold text-white"
         >
-          Complete your activity vibe check to unlock smart matching →
+          {t("list.completeCheck")}
         </Link>
       )}
 
       {list.length === 0 ? (
         <div className="mt-6 rounded-3xl border-2 border-dashed border-ink/30 py-16 text-center font-medium text-muted">
           {isPast
-            ? "No past Vibes in the last 45 days yet."
+            ? t("list.emptyPast")
             : q || city
-              ? "No Vibes match your search. Try a different activity or city."
-              : "No Vibes yet. Be the first to create one."}
+              ? t("list.emptySearch")
+              : t("list.emptyNone")}
         </div>
       ) : (
         <>

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, MapPin, Users, CalendarClock, RefreshCw } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import InterestButton from "@/components/InterestButton";
@@ -24,6 +25,7 @@ export default async function VibeDetailPage({
   searchParams: { interested?: string; request?: string; code?: string };
 }) {
   const supabase = await createClient();
+  const t = await getTranslations("vibes");
   // The vibe lookup only needs params.id — fetch it alongside the user.
   const [user, { data: vibe }] = await Promise.all([
     getSessionUser(),
@@ -34,13 +36,13 @@ export default async function VibeDetailPage({
     return (
       <main className="mx-auto w-full max-w-md px-5 pt-16 text-center font-nunito">
         <p className="text-4xl">🤔</p>
-        <h1 className="mt-3 text-xl font-black">This Vibe isn&rsquo;t available</h1>
-        <p className="mt-1 font-medium text-muted">It may have been cancelled or removed.</p>
+        <h1 className="mt-3 text-xl font-black">{t("detail.notFoundTitle")}</h1>
+        <p className="mt-1 font-medium text-muted">{t("detail.notFoundBody")}</p>
         <Link
           href="/vibes"
           className="mt-6 inline-block rounded-full border-2 border-ink bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
         >
-          Explore Vibes
+          {t("detail.exploreVibes")}
         </Link>
       </main>
     );
@@ -127,7 +129,7 @@ export default async function VibeDetailPage({
 
   const eventStarted = new Date(vibe.starts_at) <= new Date();
   const approximateLocation =
-    formatApproximateVibeLocation(vibe) || "Location shared after confirmation";
+    formatApproximateVibeLocation(vibe) || t("card.locationTbd");
   const locationLabel = privateLogistics?.location_name
     ? privateLogistics.location_name
     : approximateLocation;
@@ -276,12 +278,12 @@ export default async function VibeDetailPage({
         href="/vibes"
         className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted"
       >
-        <ChevronLeft size={16} /> Back
+        <ChevronLeft size={16} /> {t("detail.back")}
       </Link>
 
       {vibe.status === "cancelled" && (
         <div className="mt-4 rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-bold text-muted">
-          This Vibe was cancelled by the host. The chat is now inactive.
+          {t("detail.cancelledBanner")}
         </div>
       )}
 
@@ -294,7 +296,7 @@ export default async function VibeDetailPage({
                 key={c}
                 className="inline-block rounded-full border-2 border-ink bg-white px-3 py-0.5 text-xs font-extrabold lowercase"
               >
-                {c}
+                {t.has(`categories.${c}`) ? t(`categories.${c}`) : c}
               </span>
             ))}
         </div>
@@ -336,12 +338,12 @@ export default async function VibeDetailPage({
             </p>
             {!privateLogistics && (
               <p className="pl-[23px] text-xs font-medium text-muted">
-                Approximate area · exact location unlocks after confirmation
+                {t("detail.approxArea")}
               </p>
             )}
             <p className="flex items-center gap-2">
               <Users size={15} className="shrink-0 text-flockie-orange" />
-              {confirmedCount ?? 0}/{vibe.capacity} going
+              {t("detail.going", { count: confirmedCount ?? 0, capacity: vibe.capacity })}
             </p>
           </div>
           <p className="mt-3 whitespace-pre-wrap text-[15px] font-medium text-ink/80">
@@ -357,13 +359,13 @@ export default async function VibeDetailPage({
           rel="noopener noreferrer"
           className="mt-4 flex w-fit items-center gap-2 rounded-full border-2 border-ink bg-flockie-blue px-4 py-2 text-sm font-bold text-white"
         >
-          🎟️ View activity ↗
+          {t("detail.viewActivity")}
         </a>
       )}
 
       {vibe.what_to_bring && (
         <div className="mt-4 rounded-2xl border-2 border-ink bg-cream p-3">
-          <p className="text-xs font-extrabold uppercase tracking-wide text-muted">What to bring / cost</p>
+          <p className="text-xs font-extrabold uppercase tracking-wide text-muted">{t("detail.whatToBring")}</p>
           <p className="mt-1 whitespace-pre-wrap text-sm font-medium text-ink">{vibe.what_to_bring}</p>
         </div>
       )}
@@ -387,7 +389,7 @@ export default async function VibeDetailPage({
               {(host.display_name || "F")[0]}
             </span>
           )}
-          <span className="text-xs font-bold">Hosted by {host.display_name || "a flockie"}</span>
+          <span className="text-xs font-bold">{t("detail.hostedBy", { name: host.display_name || t("detail.hostFallback") })}</span>
         </Link>
       )}
 
@@ -399,9 +401,9 @@ export default async function VibeDetailPage({
         (vibe.age_max != null && vibe.age_max < 99) ||
         (vibe.gender_pref && vibe.gender_pref !== "any")) && (
         <div className="mt-4 flex flex-wrap gap-2">
-          {vibe.event_vibe_tags?.map((t: string) => (
-            <span key={t} className="rounded-full bg-cream px-3 py-1 text-xs font-bold text-ink">
-              {t}
+          {vibe.event_vibe_tags?.map((tag: string) => (
+            <span key={tag} className="rounded-full bg-cream px-3 py-1 text-xs font-bold text-ink">
+              {t.has(`eventTags.${tag}`) ? t(`eventTags.${tag}`) : tag}
             </span>
           ))}
           {vibe.language && (
@@ -411,17 +413,17 @@ export default async function VibeDetailPage({
           )}
           {((vibe.age_min != null && vibe.age_min > 18) || (vibe.age_max != null && vibe.age_max < 99)) && (
             <span className="rounded-full border-2 border-ink px-3 py-1 text-xs font-bold">
-              Ages {vibe.age_min ?? 18}–{vibe.age_max ?? 99}
+              {t("detail.ages", { min: vibe.age_min ?? 18, max: vibe.age_max ?? 99 })}
             </span>
           )}
           {activeRules.map((r) => (
             <span key={r.key} className="rounded-full border-2 border-ink px-3 py-1 text-xs font-bold">
-              {r.label}
+              {t.has(`rules.${r.key}`) ? t(`rules.${r.key}`) : r.label}
             </span>
           ))}
           {vibe.gender_pref && vibe.gender_pref !== "any" && (
             <span className="rounded-full border-2 border-ink bg-ink px-3 py-1 text-xs font-bold text-white">
-              {vibe.gender_pref === "women" ? "Women only" : "Men only"}
+              {vibe.gender_pref === "women" ? t("detail.womenOnly") : t("detail.menOnly")}
             </span>
           )}
         </div>
@@ -431,7 +433,7 @@ export default async function VibeDetailPage({
       {(confirmedCount ?? 0) > 0 && (
         <div className="mt-5">
           <p className="text-sm font-bold">
-            Going{(confirmedCount ?? 0) > 0 ? ` · ${confirmedCount}` : ""}
+            {t("detail.goingWithCount", { count: confirmedCount ?? 0 })}
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
             {attendees.map((a) => (
@@ -453,12 +455,12 @@ export default async function VibeDetailPage({
                     {(a.display_name || "F")[0]}
                   </span>
                 )}
-                <span className="text-xs font-bold">{a.display_name || "Flockie"}</span>
+                <span className="text-xs font-bold">{a.display_name || t("detail.attendeeFallback")}</span>
               </Link>
             ))}
             {(confirmedCount ?? 0) > attendees.length && (
               <span className="flex items-center rounded-full bg-cream px-3 py-1 text-xs font-bold text-muted">
-                +{(confirmedCount ?? 0) - attendees.length} more
+                {t("detail.moreAttendees", { count: (confirmedCount ?? 0) - attendees.length })}
               </span>
             )}
           </div>
@@ -471,7 +473,7 @@ export default async function VibeDetailPage({
           <Stars value={avgRating} size={18} />
           <span className="text-sm font-bold text-ink">{avgRating.toFixed(1)}</span>
           <span className="text-sm font-medium text-muted">
-            ({ratedReviews.length} review{ratedReviews.length > 1 ? "s" : ""})
+            {t("detail.reviewsCount", { count: ratedReviews.length })}
           </span>
         </div>
       )}
@@ -481,22 +483,22 @@ export default async function VibeDetailPage({
           href={`/vibes/${vibe.id}/review`}
           className="mt-4 flex w-fit items-center gap-2 rounded-full border-2 border-ink bg-flockie-orange px-5 py-2.5 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
         >
-          ⭐ How was it? Review this Vibe
+          {t("detail.reviewCta")}
         </Link>
       )}
 
       {isHost && !ended && (
         <div className="mt-6 rounded-2xl border-2 border-ink bg-white p-4">
-          <p className="text-sm font-extrabold">Matching results (host only)</p>
+          <p className="text-sm font-extrabold">{t("detail.matchingResults")}</p>
           <p className="mt-0.5 text-xs font-medium text-muted">
-            The algorithm ranks and invites — no host approval needed.
+            {t("detail.matchingSubtitle")}
           </p>
           <div className="mt-3 grid grid-cols-4 gap-2 text-center">
             {[
-              { k: "interested", label: "Interested" },
-              { k: "invited", label: "Invited" },
-              { k: "confirmed", label: "Going" },
-              { k: "standby", label: "Standby" },
+              { k: "interested", label: t("detail.tallyInterested") },
+              { k: "invited", label: t("detail.tallyInvited") },
+              { k: "confirmed", label: t("detail.tallyGoing") },
+              { k: "standby", label: t("detail.tallyStandby") },
             ].map((s) => (
               <div key={s.k} className="rounded-xl bg-cream py-2">
                 <p className="text-xl font-black">{tally[s.k] ?? 0}</p>
@@ -545,7 +547,7 @@ export default async function VibeDetailPage({
               href={`/vibes/new?from=${vibe.id}`}
               className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3.5 text-center font-bold text-white shadow-[0_4px_0_0_#E0512C]"
             >
-              <RefreshCw size={18} /> Re-run Vibe
+              <RefreshCw size={18} /> {t("detail.reRun")}
             </Link>
           ) : (
             <HostVibeControls vibeId={vibe.id} status={vibe.status} />
@@ -556,9 +558,10 @@ export default async function VibeDetailPage({
               <div className="mb-2 flex items-start gap-2 rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-bold text-ink">
                 <span className="text-base leading-none">📍</span>
                 <span>
-                  Heads up — this Vibe is in{" "}
-                  <span className="text-flockie-coral">{vibe.city}</span>, not your home city.
-                  You can still join if you&rsquo;ll be there.
+                  {t.rich("detail.differentCity", {
+                    city: vibe.city,
+                    hl: (chunks) => <span className="text-flockie-coral">{chunks}</span>,
+                  })}
                 </span>
               </div>
             )}
@@ -588,9 +591,9 @@ export default async function VibeDetailPage({
 
       {suggestions.length > 0 && (
         <div className="mt-8">
-          <p className="text-sm font-extrabold">Vibes that match you more</p>
+          <p className="text-sm font-extrabold">{t("detail.suggestionsHeading")}</p>
           <p className="mt-0.5 text-xs font-medium text-muted">
-            This one filled up — here&rsquo;s what fits your vibe better.
+            {t("detail.suggestionsSubtitle")}
           </p>
           <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
             {suggestions.map((s) => (

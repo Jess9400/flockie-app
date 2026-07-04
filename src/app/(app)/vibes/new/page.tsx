@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import CreateVibeForm from "@/components/CreateVibeForm";
@@ -12,6 +13,7 @@ export default async function NewVibePage({
 }) {
   const supabase = await createClient();
   const user = await getSessionUser();
+  const t = await getTranslations("vibes");
 
   // "Run it again": pre-fill from one of my past vibes (dates left blank to re-set).
   let clone: Parameters<typeof CreateVibeForm>[0]["clone"];
@@ -71,13 +73,11 @@ export default async function NewVibePage({
         href="/vibes"
         className="mb-3 inline-flex items-center gap-1 text-sm font-bold text-muted"
       >
-        <ChevronLeft size={16} /> Back
+        <ChevronLeft size={16} /> {t("create.back")}
       </Link>
-      <h1 className="text-2xl font-black">{clone ? "Run it again" : "Create a Vibe"}</h1>
+      <h1 className="text-2xl font-black">{clone ? t("create.titleRunAgain") : t("create.titleCreate")}</h1>
       <p className="mt-1 text-sm font-medium text-muted">
-        {clone
-          ? "Same details, fresh date — set a new start, deadline and spots, then publish."
-          : "A curated group room — attendees are matched by vibe, not first-come. No swiping."}
+        {clone ? t("create.subtitleRunAgain") : t("create.subtitleCreate")}
       </p>
       <div className="mt-6">
         <CreateVibeForm

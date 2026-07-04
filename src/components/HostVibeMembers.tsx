@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { useConfirm } from "@/components/ui/feedback";
 
@@ -21,13 +22,7 @@ type Props = {
   normalRemovalUsed: number;
 };
 
-const reasonLabels = {
-  known_conflict: "Known conflict",
-  other: "Other",
-  safety: "Safety concern",
-} as const;
-
-type RemovalReason = keyof typeof reasonLabels;
+type RemovalReason = "known_conflict" | "other" | "safety";
 
 export default function HostVibeMembers({
   vibeId,
@@ -39,29 +34,30 @@ export default function HostVibeMembers({
   const router = useRouter();
   const supabase = createClient();
   const confirm = useConfirm();
+  const t = useTranslations("vibes");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
   async function removeMember(member: HostVibeMember) {
     // After the event starts, only safety removals are allowed.
     const reasonChoices = eventStarted
-      ? [{ value: "safety", label: reasonLabels.safety }]
+      ? [{ value: "safety", label: t("host.reasonSafety") }]
       : [
-          { value: "known_conflict", label: reasonLabels.known_conflict },
-          { value: "other", label: reasonLabels.other },
-          { value: "safety", label: reasonLabels.safety },
+          { value: "known_conflict", label: t("host.reasonKnownConflict") },
+          { value: "other", label: t("host.reasonOther") },
+          { value: "safety", label: t("host.reasonSafety") },
         ];
 
     const res = await confirm({
-      title: `Remove ${member.display_name || "this person"}?`,
+      title: t("host.removeTitle", { name: member.display_name || t("host.removePersonFallback") }),
       message: eventStarted
-        ? "After the Vibe starts, only safety removals are available."
-        : "Pick a reason. This is private to Flockie.",
+        ? t("host.removeMsgStarted")
+        : t("host.removeMsgPick"),
       reasons: reasonChoices,
       reasonRequired: true,
       allowFreeText: true,
-      freeTextPlaceholder: "Private note (required for Other / Safety)",
-      confirmLabel: "Remove",
+      freeTextPlaceholder: t("host.removeNotePlaceholder"),
+      confirmLabel: t("host.remove"),
       destructive: true,
     });
     if (!res) return;
@@ -70,7 +66,7 @@ export default function HostVibeMembers({
     const note = res.note || null;
     // Other / Safety removals require a private note for Flockie.
     if ((reason === "other" || reason === "safety") && !note) {
-      setMessage("Please add a short private note for that reason.");
+      setMessage(t("host.noteRequired"));
       return;
     }
 
@@ -89,7 +85,7 @@ export default function HostVibeMembers({
       return;
     }
 
-    setMessage(`${member.display_name || "Member"} was removed. Flockie will backfill if possible.`);
+    setMessage(t("host.removedResult", { name: member.display_name || t("host.memberFallback") }));
     router.refresh();
   }
 
@@ -99,9 +95,9 @@ export default function HostVibeMembers({
     <div className="mt-6 rounded-2xl border-2 border-ink bg-white p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-extrabold">Invited &amp; going</p>
+          <p className="text-sm font-extrabold">{t("host.invitedGoing")}</p>
           <p className="mt-0.5 text-xs font-medium text-muted">
-            Normal removals: {normalRemovalUsed}/{normalRemovalLimit}. Safety removals require a note and don&rsquo;t count.
+            {t("host.removalsCount", { used: normalRemovalUsed, limit: normalRemovalLimit })}
           </p>
         </div>
       </div>
@@ -124,9 +120,9 @@ export default function HostVibeMembers({
                 </span>
               )}
               <div className="min-w-0">
-                <p className="truncate text-sm font-extrabold">{member.display_name || "Flockie"}</p>
+                <p className="truncate text-sm font-extrabold">{member.display_name || t("host.attendeeFallback")}</p>
                 <p className="text-[11px] font-bold text-muted">
-                  {member.status === "confirmed" ? "Going" : "Invited"}
+                  {member.status === "confirmed" ? t("host.statusGoing") : t("host.statusInvited")}
                 </p>
               </div>
             </div>
@@ -136,7 +132,7 @@ export default function HostVibeMembers({
               disabled={busyId === member.id}
               className="rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-extrabold disabled:opacity-50"
             >
-              {busyId === member.id ? "Removing…" : "Remove"}
+              {busyId === member.id ? t("host.removing") : t("host.remove")}
             </button>
           </div>
         ))}
