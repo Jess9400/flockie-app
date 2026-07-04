@@ -33,16 +33,27 @@ export default async function PublicProfileDashboard({
   incomingLike: boolean;
 }) {
   const t = await getTranslations("profile");
+  const tvc = await getTranslations("vibeCheck");
+  const tc = await getTranslations("components");
   const firstName = (profile.display_name || t("public.nameFallback")).split(" ")[0];
   const archetype = profile.archetype
     ? ARCHETYPES[profile.archetype as VibeDimension]
     : null;
   const photos = profile.photos?.slice(1) ?? [];
+  // Stored vibe values are the lib's English phrases; resolve to the locale with
+  // a raw-text fallback so custom/unmapped values still render.
+  const activityLabel = (a: string) => (tvc.has(`activities.${a}`) ? tvc(`activities.${a}`) : a);
+  const vibeTagLabel = (v: string) =>
+    tvc.has(`activityVibes.${v}`)
+      ? tvc(`activityVibes.${v}`)
+      : tc.has(`tripTypes.${v}`)
+        ? tc(`tripTypes.${v}`)
+        : v;
   const vibeTags = uniqueItems([
     ...(profile.activity_vibe ?? []),
     ...(profile.trip_vibe ?? []),
-  ]);
-  const activities = uniqueItems(profile.activities ?? []);
+  ]).map((v) => ({ key: v, label: vibeTagLabel(v) }));
+  const activities = uniqueItems(profile.activities ?? []).map((a) => ({ key: a, label: activityLabel(a) }));
   const history = buildHistory(events);
   const roleLabel = (role: string) => t(`public.roles.${role}`);
 
@@ -213,7 +224,7 @@ function Panel({
   );
 }
 
-function ChipGroup({ title, items }: { title: string; items: string[] }) {
+function ChipGroup({ title, items }: { title: string; items: { key: string; label: string }[] }) {
   return (
     <div className="mt-4">
       <p className="text-xs font-extrabold uppercase tracking-wide text-muted">
@@ -222,10 +233,10 @@ function ChipGroup({ title, items }: { title: string; items: string[] }) {
       <div className="mt-2 flex flex-wrap gap-1.5">
         {items.map((item) => (
           <span
-            key={item}
+            key={item.key}
             className="rounded-full border-2 border-ink/10 bg-[#FCF9F4] px-3 py-1.5 text-xs font-extrabold text-navy"
           >
-            {item}
+            {item.label}
           </span>
         ))}
       </div>

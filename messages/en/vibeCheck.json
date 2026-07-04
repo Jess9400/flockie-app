@@ -1,0 +1,311 @@
+{
+  "sliders": {
+    "planning": {
+      "label": "Planning style",
+      "prompt": "On a trip, do you plan every hour, or wing it?",
+      "scale": [
+        "Detailed itinerary booked weeks ahead",
+        "Plan the big things, the rest stays loose",
+        "A few anchors, then go with the flow",
+        "Show up and figure it out",
+        "I don't know what city I'll sleep in tomorrow"
+      ]
+    },
+    "pace": {
+      "label": "Daily pace",
+      "prompt": "What does your ideal travel day look like?",
+      "scale": [
+        "Slow mornings, one activity, lots of rest",
+        "Two things a day, leisurely",
+        "Active days, evenings off",
+        "Packed itinerary, sunrise to sunset",
+        "I don't sleep when I travel, too much to do"
+      ]
+    },
+    "social_energy": {
+      "label": "Social energy",
+      "prompt": "How much alone time do you need on a trip?",
+      "scale": [
+        "4+ hours alone every day or I lose it",
+        "A few hours of quiet time",
+        "Flexible, depends on the day",
+        "Around people most of the time",
+        "Why would anyone want to be alone?"
+      ]
+    },
+    "budget": {
+      "label": "Budget",
+      "prompt": "What's your spending style when you travel?",
+      "scale": [
+        "Hostels, street food, every dollar counts",
+        "Budget but comfortable",
+        "Mid-range, occasional splurges",
+        "Boutique hotels, good restaurants",
+        "Luxury, I travel to relax not to save"
+      ]
+    },
+    "nightlife": {
+      "label": "Nightlife",
+      "prompt": "What's your evening vibe?",
+      "scale": [
+        "Asleep by 10pm, sunrise is sacred",
+        "Dinner and a drink, home by midnight",
+        "Late nights, but not every night",
+        "Out until 2am most nights",
+        "I sleep when I'm dead"
+      ]
+    },
+    "adventurousness": {
+      "label": "Comfort with the unfamiliar",
+      "prompt": "Weird food, strange neighborhoods, getting lost on purpose…",
+      "scale": [
+        "I want to know what I'm eating and where I'm going",
+        "I'll try new things if someone vetted them",
+        "Up for an adventure, within reason",
+        "Getting lost is half the point",
+        "If it's not uncomfortable, what's the point?"
+      ]
+    }
+  },
+  "travelStyles": {
+    "I love photographing and documenting the trip": "I love photographing and documenting the trip",
+    "I want to talk to locals more than tourists": "I want to talk to locals more than tourists",
+    "I'm here for the food first": "I'm here for the food first",
+    "I want to disconnect from work": "I want to disconnect from work",
+    "I want to keep working remotely": "I want to keep working remotely",
+    "I like guided tours and structured activities": "I like guided tours and structured activities",
+    "I prefer wandering with no plan": "I prefer wandering with no plan",
+    "I'm into wellness, yoga, fitness while traveling": "I'm into wellness, yoga, fitness while traveling",
+    "I want to make new friends along the way": "I want to make new friends along the way",
+    "I want a quiet, restorative trip": "I want a quiet, restorative trip"
+  },
+  "dealbreakers": {
+    "I smoke (or am OK with someone who does)": "I smoke (or am OK with someone who does)",
+    "I drink regularly when traveling": "I drink regularly when traveling",
+    "I'm vegetarian / vegan / have dietary needs": "I'm vegetarian / vegan / have dietary needs",
+    "I prefer same-gender travel partners": "I prefer same-gender travel partners",
+    "I need accommodation with a private bathroom": "I need accommodation with a private bathroom",
+    "I'm comfortable with last-minute plan changes": "I'm comfortable with last-minute plan changes",
+    "I need quiet sleeping conditions": "I need quiet sleeping conditions"
+  },
+  "activityGroups": {
+    "Physical / Outdoor": "Physical / Outdoor",
+    "Creative / Cultural": "Creative / Cultural",
+    "Social / Lifestyle": "Social / Lifestyle",
+    "Wellness / Self-improvement": "Wellness / Self-improvement",
+    "Work / Professional": "Work / Professional"
+  },
+  "activities": {
+    "Surf": "Surf",
+    "Yoga": "Yoga",
+    "Hiking / trekking": "Hiking / trekking",
+    "Rock climbing": "Rock climbing",
+    "Running": "Running",
+    "Cycling": "Cycling",
+    "Skiing / snowboarding": "Skiing / snowboarding",
+    "Diving / snorkeling": "Diving / snorkeling",
+    "Tennis / padel": "Tennis / padel",
+    "Pilates / barre": "Pilates / barre",
+    "Martial arts": "Martial arts",
+    "Dancing": "Dancing",
+    "Painting / drawing": "Painting / drawing",
+    "Photography": "Photography",
+    "Writing / journaling": "Writing / journaling",
+    "Music (playing)": "Music (playing)",
+    "Film / cinema": "Film / cinema",
+    "Theater": "Theater",
+    "Museum visits": "Museum visits",
+    "Architecture / design": "Architecture / design",
+    "Pottery / crafts": "Pottery / crafts",
+    "Cooking / food experiences": "Cooking / food experiences",
+    "Bar hopping / nightlife": "Bar hopping / nightlife",
+    "Live music / concerts": "Live music / concerts",
+    "Coffee culture / café-hopping": "Coffee culture / café-hopping",
+    "Wine tasting": "Wine tasting",
+    "Board games": "Board games",
+    "Reading / book clubs": "Reading / book clubs",
+    "Language exchanges": "Language exchanges",
+    "Volunteering": "Volunteering",
+    "Meditation / mindfulness": "Meditation / mindfulness",
+    "Breathwork": "Breathwork",
+    "Sound baths": "Sound baths",
+    "Cold plunges / ice baths": "Cold plunges / ice baths",
+    "Saunas": "Saunas",
+    "Sober events": "Sober events",
+    "Plant medicine ceremonies": "Plant medicine ceremonies",
+    "Spa days": "Spa days",
+    "Coworking": "Coworking",
+    "Networking / business events": "Networking / business events",
+    "Conferences / meetups": "Conferences / meetups",
+    "Skill-share workshops": "Skill-share workshops",
+    "Investor / startup events": "Investor / startup events"
+  },
+  "activityVibes": {
+    "Quiet, focused, no chitchat": "Quiet, focused, no chitchat",
+    "Social, lots of conversation": "Social, lots of conversation",
+    "Competitive / goal-oriented": "Competitive / goal-oriented",
+    "Creative / open-ended": "Creative / open-ended",
+    "Spiritual / contemplative": "Spiritual / contemplative",
+    "Party / energetic / loud": "Party / energetic / loud",
+    "Educational / structured": "Educational / structured"
+  },
+  "activityDealbreakers": {
+    "Sober events only": "Sober events only",
+    "Drinking is fine": "Drinking is fine",
+    "Smoke-free": "Smoke-free",
+    "Vegetarian / vegan": "Vegetarian / vegan",
+    "Same-gender preferred": "Same-gender preferred",
+    "Beginner-friendly required": "Beginner-friendly required",
+    "LGBTQ+ friendly required": "LGBTQ+ friendly required",
+    "Quiet / no party energy": "Quiet / no party energy",
+    "Accessibility needs": "Accessibility needs"
+  },
+  "skillScale": [
+    "Curious beginner",
+    "Beginner",
+    "Intermediate",
+    "Advanced",
+    "Expert / pro"
+  ],
+  "skillCategories": {
+    "Sports & outdoors": "Sports & outdoors",
+    "Arts & creative": "Arts & creative",
+    "Social & nightlife": "Social & nightlife",
+    "Wellness": "Wellness",
+    "Work": "Work"
+  },
+  "activitySocialScale": [
+    "Alone, focused, in flow",
+    "With 1-2 close friends",
+    "Small group (3-5)",
+    "Bigger group (6-10)",
+    "The bigger the better"
+  ],
+  "intensityScale": [
+    "Pure leisure, here to enjoy",
+    "Casual / light effort",
+    "Balanced, work and play",
+    "High effort, challenge me",
+    "All in, hardest version"
+  ],
+  "choices": {
+    "pace": {
+      "1": "One place, go deep",
+      "3": "A bit of both",
+      "5": "Many places, move fast"
+    },
+    "budget": {
+      "1": "Stretch every dollar",
+      "2": "Comfortable, not flashy",
+      "4": "Treat myself",
+      "5": "Best of everything"
+    },
+    "socialTravel": {
+      "1": "Just one person, properly",
+      "3": "A small handful",
+      "5": "The more the merrier"
+    },
+    "planning": {
+      "1": "Wing it",
+      "3": "A few anchors, rest loose",
+      "5": "Plan it all out"
+    },
+    "nightlife": {
+      "1": "Early nights",
+      "3": "Dinner and a drink",
+      "5": "Out till late"
+    },
+    "adventure": {
+      "1": "Keep it familiar",
+      "3": "Adventurous within reason",
+      "5": "The weirder the better"
+    },
+    "activitySocial": {
+      "2": "An intimate few",
+      "3": "A handful",
+      "5": "Big and buzzy"
+    },
+    "activityIntensity": {
+      "1": "Pure leisure",
+      "3": "Balanced",
+      "5": "All in"
+    },
+    "socialStyle": {
+      "5": "Work the room",
+      "3": "Find one or two people",
+      "1": "Hang back, warm up slowly"
+    },
+    "motivation": {
+      "people": "Meeting new people",
+      "activity": "The actual thing we're doing",
+      "company": "Just not wanting to be alone"
+    },
+    "initiator": {
+      "starter": "Starts the plan",
+      "joiner": "Happily joins the plan"
+    }
+  },
+  "tripPriorities": {
+    "pace": "Same daily pace",
+    "budget": "Similar budget",
+    "planning": "Plan vs. spontaneous",
+    "social_energy": "Social energy",
+    "nightlife": "Night owl / early bird",
+    "adventurousness": "Adventurousness",
+    "interests": "Shared interests"
+  },
+  "activityPriorities": {
+    "interests": "Shared activities",
+    "vibe": "Experience vibe",
+    "social": "Group size",
+    "intensity": "Effort level"
+  },
+  "activityOneLinerPrompt": "Finish: “At an activity, I'm the kind of person who…”",
+  "forms": {
+    "trip": {
+      "title": "Travel vibe",
+      "finish": "Save travel vibe",
+      "evolvedToast": "Your vibe evolved — you're now {name} {emoji}",
+      "pace": "Your natural trip pace?",
+      "budget": "Your budget vibe on a trip?",
+      "socialTravel": "Who do you most want to travel with?",
+      "planning": "On a trip, are you a planner?",
+      "nightlife": "Your evenings on a trip?",
+      "adventure": "Weird food, getting lost on purpose?",
+      "tripVibeLabel": "What's the trip really about?",
+      "tripVibeHint": "Pick up to {max}.",
+      "dealbreakersLabel": "Any hard preferences?",
+      "dealbreakersHint": "Used as filters, not just flavor. Skip if none.",
+      "prioritiesLabel": "When we match you, what matters most?",
+      "prioritiesHint": "Pick up to {max}."
+    },
+    "activity": {
+      "title": "Event vibe",
+      "finish": "Save event vibe",
+      "evolvedToast": "Your vibe evolved — you're now {name} {emoji}",
+      "activitiesLabel": "What do you actually do?",
+      "activitiesHint": "Your top few — no need to pick everything.",
+      "motivationLabel": "What pulls you out of the house?",
+      "motivationHint": "The thing you're really after when you go to a local plan.",
+      "social": "Ideal group size for a meetup?",
+      "socialStyle": "Walking into a room of strangers, you…",
+      "intensity": "How hard do you want to push?",
+      "initiator": "Are you more the one who…",
+      "vibeLabel": "Ideal experience vibe",
+      "vibeHint": "Pick up to {max}.",
+      "dealbreakersLabel": "Any hard preferences?",
+      "dealbreakersHint": "Used as filters. Skip if none.",
+      "prioritiesLabel": "For a meetup, what matters most?",
+      "prioritiesHint": "Pick up to {max}."
+    },
+    "questions": {
+      "tripVibeTitle": "Trip vibe",
+      "tripVibeHint": "What kind of trip are you usually after? Pick up to {max}.",
+      "travelStyleTitle": "Travel style",
+      "travelStyleHint": "Which sound most like you? Pick up to {max}.",
+      "hardPrefsTitle": "Hard preferences",
+      "hardPrefsHint": "Tick what applies. These are used as hard filters.",
+      "oneLinerTitle": "One-liner"
+    }
+  }
+}

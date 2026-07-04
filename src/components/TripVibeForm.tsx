@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import Wizard, { type WizardAnswers, type WizardPage } from "@/components/Wizard";
 import { useToast } from "@/components/ui/feedback";
@@ -20,6 +21,7 @@ import {
   PLANNING_CHOICES,
   NIGHTLIFE_CHOICES,
   ADVENTURE_CHOICES,
+  type Choice,
 } from "@/lib/vibe-check";
 
 const TRIP_VIBE_EMOJI: Record<string, string> = {
@@ -38,55 +40,6 @@ const TRIP_VIBE_EMOJI: Record<string, string> = {
 // 1..5 scale columns answered via single-tap cards (stored as ints).
 const INT_KEYS = ["pace", "budget", "social_energy", "planning", "nightlife", "adventurousness"] as const;
 
-const PAGES: WizardPage[] = [
-  { title: "", fields: [{ type: "select", key: "pace", label: "Your natural trip pace?", required: true, options: PACE_CHOICES }] },
-  { title: "", fields: [{ type: "select", key: "budget", label: "Your budget vibe on a trip?", required: true, options: BUDGET_CHOICES }] },
-  { title: "", fields: [{ type: "select", key: "social_energy", label: "Who do you most want to travel with?", required: true, options: SOCIAL_TRAVEL_CHOICES }] },
-  { title: "", fields: [{ type: "select", key: "planning", label: "On a trip, are you a planner?", required: true, options: PLANNING_CHOICES }] },
-  { title: "", fields: [{ type: "select", key: "nightlife", label: "Your evenings on a trip?", required: true, options: NIGHTLIFE_CHOICES }] },
-  { title: "", fields: [{ type: "select", key: "adventurousness", label: "Weird food, getting lost on purpose?", required: true, options: ADVENTURE_CHOICES }] },
-  {
-    title: "",
-    fields: [
-      {
-        type: "multi",
-        key: "trip_vibe",
-        label: "What's the trip really about?",
-        hint: `Pick up to ${MAX_TAGS}.`,
-        max: MAX_TAGS,
-        required: true,
-        options: TRIP_VIBES.map((v) => ({ value: v, label: v, emoji: TRIP_VIBE_EMOJI[v] })),
-      },
-    ],
-  },
-  {
-    title: "",
-    fields: [
-      {
-        type: "multi",
-        key: "dealbreakers",
-        label: "Any hard preferences?",
-        hint: "Used as filters, not just flavor. Skip if none.",
-        options: DEALBREAKERS.map((v) => ({ value: v, label: v })),
-      },
-    ],
-  },
-  {
-    title: "",
-    fields: [
-      {
-        type: "multi",
-        key: "match_priorities",
-        label: "When we match you, what matters most?",
-        hint: `Pick up to ${PRIORITY_MAX}.`,
-        max: PRIORITY_MAX,
-        required: true,
-        options: TRIP_PRIORITIES,
-      },
-    ],
-  },
-];
-
 export default function TripVibeForm({
   userId,
   redirectAfter,
@@ -101,9 +54,66 @@ export default function TripVibeForm({
   const supabase = createClient();
   const router = useRouter();
   const toast = useToast();
+  const t = useTranslations("vibeCheck");
+  const tc = useTranslations("components");
   const [initial, setInitial] = useState<WizardAnswers | null>(null);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+
+  // Resolve a data-driven label, falling back to the lib's raw English text so
+  // any unmapped/custom value still renders.
+  const has = (key: string) => t.has(key);
+  const localizeChoices = (set: string, choices: Choice[]) =>
+    choices.map((o) => ({ ...o, label: has(`choices.${set}.${o.value}`) ? t(`choices.${set}.${o.value}`) : o.label }));
+
+  const pages: WizardPage[] = [
+    { title: "", fields: [{ type: "select", key: "pace", label: t("forms.trip.pace"), required: true, options: localizeChoices("pace", PACE_CHOICES) }] },
+    { title: "", fields: [{ type: "select", key: "budget", label: t("forms.trip.budget"), required: true, options: localizeChoices("budget", BUDGET_CHOICES) }] },
+    { title: "", fields: [{ type: "select", key: "social_energy", label: t("forms.trip.socialTravel"), required: true, options: localizeChoices("socialTravel", SOCIAL_TRAVEL_CHOICES) }] },
+    { title: "", fields: [{ type: "select", key: "planning", label: t("forms.trip.planning"), required: true, options: localizeChoices("planning", PLANNING_CHOICES) }] },
+    { title: "", fields: [{ type: "select", key: "nightlife", label: t("forms.trip.nightlife"), required: true, options: localizeChoices("nightlife", NIGHTLIFE_CHOICES) }] },
+    { title: "", fields: [{ type: "select", key: "adventurousness", label: t("forms.trip.adventure"), required: true, options: localizeChoices("adventure", ADVENTURE_CHOICES) }] },
+    {
+      title: "",
+      fields: [
+        {
+          type: "multi",
+          key: "trip_vibe",
+          label: t("forms.trip.tripVibeLabel"),
+          hint: t("forms.trip.tripVibeHint", { max: MAX_TAGS }),
+          max: MAX_TAGS,
+          required: true,
+          options: TRIP_VIBES.map((v) => ({ value: v, label: tc.has(`tripTypes.${v}`) ? tc(`tripTypes.${v}`) : v, emoji: TRIP_VIBE_EMOJI[v] })),
+        },
+      ],
+    },
+    {
+      title: "",
+      fields: [
+        {
+          type: "multi",
+          key: "dealbreakers",
+          label: t("forms.trip.dealbreakersLabel"),
+          hint: t("forms.trip.dealbreakersHint"),
+          options: DEALBREAKERS.map((v) => ({ value: v, label: has(`dealbreakers.${v}`) ? t(`dealbreakers.${v}`) : v })),
+        },
+      ],
+    },
+    {
+      title: "",
+      fields: [
+        {
+          type: "multi",
+          key: "match_priorities",
+          label: t("forms.trip.prioritiesLabel"),
+          hint: t("forms.trip.prioritiesHint", { max: PRIORITY_MAX }),
+          max: PRIORITY_MAX,
+          required: true,
+          options: TRIP_PRIORITIES.map((o) => ({ ...o, label: has(`tripPriorities.${o.value}`) ? t(`tripPriorities.${o.value}`) : o.label })),
+        },
+      ],
+    },
+  ];
 
   useEffect(() => {
     supabase
@@ -157,7 +167,7 @@ export default function TripVibeForm({
       const evolved = res.changed
         ? ARCHETYPES[res.archetype as VibeDimension]
         : null;
-      if (evolved) toast(`Your vibe evolved — you're now ${evolved.name} ${evolved.emoji}`, "success");
+      if (evolved) toast(t("forms.trip.evolvedToast", { name: evolved.name, emoji: evolved.emoji }), "success");
     } catch {}
     setSaving(false);
     if (onDone) onDone();
@@ -170,11 +180,11 @@ export default function TripVibeForm({
   return (
     <>
       <Wizard
-        title="Travel vibe"
-        pages={PAGES}
+        title={t("forms.trip.title")}
+        pages={pages}
         initial={initial}
         submitting={saving}
-        finishLabel="Save travel vibe"
+        finishLabel={t("forms.trip.finish")}
         flat
         onComplete={complete}
         onClose={onClose}
