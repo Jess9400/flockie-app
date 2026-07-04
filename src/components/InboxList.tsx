@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 
 export type Notif = {
@@ -29,6 +30,7 @@ const STYLE: Record<string, string> = {
 
 export default function InboxList({ notifications }: { notifications: Notif[] }) {
   const supabase = createClient();
+  const t = useTranslations("inbox");
   const [visibleNotifications, setVisibleNotifications] = useState(notifications);
 
   // Mark everything read when the inbox opens.
@@ -61,7 +63,7 @@ export default function InboxList({ notifications }: { notifications: Notif[] })
   if (visibleNotifications.length === 0) {
     return (
       <div className="rounded-3xl border-2 border-dashed border-ink/30 py-16 text-center font-medium text-muted">
-        Nothing yet. Invitations and updates will show up here.
+        {t("empty")}
       </div>
     );
   }
@@ -92,16 +94,16 @@ export default function InboxList({ notifications }: { notifications: Notif[] })
                         : null;
         const linkLabel =
           n.type === "flock_approved"
-            ? "Open Flock Chat →"
+            ? t("openFlockChat")
             : n.type === "flock_declined"
-              ? "Find another Flock →"
+              ? t("findAnotherFlock")
               : n.type === "vibe_invitation"
-                ? "View & confirm →"
+                ? t("viewConfirm")
                 : n.type === "vibe_confirmed"
-                  ? "Say hi in the group chat →"
+                  ? t("sayHi")
                   : tripId
-                    ? "Open My Trips →"
-                    : "Open →";
+                    ? t("openMyTrips")
+                    : t("open");
         const card = (
           <div
             className={`rounded-2xl border-2 p-4 ${STYLE[n.type] ?? "border-ink/15 bg-white"} ${
@@ -115,7 +117,7 @@ export default function InboxList({ notifications }: { notifications: Notif[] })
               </div>
               <button
                 type="button"
-                aria-label="Dismiss notification"
+                aria-label={t("dismiss")}
                 className="rounded-full px-2 py-0.5 text-lg font-black leading-none text-ink/45 hover:bg-white/70 hover:text-ink"
                 onClick={(event) => {
                   event.preventDefault();

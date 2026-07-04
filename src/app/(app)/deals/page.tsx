@@ -1,17 +1,19 @@
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import DealsSearch, { type Plan } from "@/components/DealsSearch";
 import PageTabs from "@/components/PageTabs";
 
-const TRIP_TABS = [
-  { href: "/my-trips", label: "My Trips" },
-  { href: "/my-activities", label: "My Activities" },
-  { href: "/deals", label: "Deals" },
-];
-
 export default async function DealsPage() {
   const supabase = await createClient();
   const user = await getSessionUser();
+  const t = await getTranslations("deals");
+
+  const TRIP_TABS = [
+    { href: "/my-trips", label: t("tabMyTrips") },
+    { href: "/my-activities", label: t("tabMyActivities") },
+    { href: "/deals", label: t("tabDeals") },
+  ];
 
   const [{ data: profile }, { data: trips }] = await Promise.all([
     supabase.from("profiles").select("home_city").eq("id", user!.id).maybeSingle(),
@@ -28,24 +30,24 @@ export default async function DealsPage() {
       .limit(8),
   ]);
 
-  const plans: Plan[] = (trips ?? []).map((t) => {
-    const dests = ((t.destinations as string[] | null) ?? [t.destination]).filter(Boolean) as string[];
+  const plans: Plan[] = (trips ?? []).map((trip) => {
+    const dests = ((trip.destinations as string[] | null) ?? [trip.destination]).filter(Boolean) as string[];
     return {
-      id: t.id as string,
-      label: dests.join(" · ") || "Trip",
+      id: trip.id as string,
+      label: dests.join(" · ") || t("tripFallback"),
       city: dests[0] ?? "",
-      checkIn: (t.start_date as string) ?? "",
-      checkOut: (t.end_date as string) ?? "",
-      guests: (t.group_size as number) ?? 2,
+      checkIn: (trip.start_date as string) ?? "",
+      checkOut: (trip.end_date as string) ?? "",
+      guests: (trip.group_size as number) ?? 2,
     };
   });
 
   return (
     <main className="px-5 pt-6">
       <PageTabs tabs={TRIP_TABS} />
-      <h1 className="text-2xl font-black">Deals</h1>
+      <h1 className="text-2xl font-black">{t("title")}</h1>
       <p className="mt-1 text-sm font-medium text-muted">
-        Best travel deals for your trips — or anywhere.
+        {t("subtitle")}
       </p>
       <div className="mt-6">
         <DealsSearch defaultCity={profile?.home_city ?? ""} plans={plans} />

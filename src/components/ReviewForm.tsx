@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 
 export default function ReviewForm({
@@ -18,6 +19,7 @@ export default function ReviewForm({
 }) {
   const router = useRouter();
   const supabase = createClient();
+  const t = useTranslations("review");
   const [rating, setRating] = useState(initialRating);
   const [hover, setHover] = useState(0);
   const [comment, setComment] = useState(initialComment);
@@ -26,7 +28,7 @@ export default function ReviewForm({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (rating < 1) return setErr("Pick a star rating.");
+    if (rating < 1) return setErr(t("pickStar"));
     setSaving(true);
     setErr(null);
     const { error } = await supabase.rpc("submit_review", {
@@ -50,7 +52,7 @@ export default function ReviewForm({
             onMouseEnter={() => setHover(i)}
             onMouseLeave={() => setHover(0)}
             onClick={() => setRating(i)}
-            aria-label={`${i} star${i > 1 ? "s" : ""}`}
+            aria-label={t("star", { count: i })}
           >
             <Star
               size={40}
@@ -68,7 +70,7 @@ export default function ReviewForm({
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         maxLength={500}
-        placeholder={`What were ${subjectName} like to travel with? (optional)`}
+        placeholder={t("commentPlaceholder", { name: subjectName })}
         className="h-32 w-full resize-none rounded-2xl border-2 border-navy bg-cream px-4 py-3 font-nunito text-[15px] font-medium text-navy outline-none focus:border-flockie-blue"
       />
 
@@ -79,7 +81,7 @@ export default function ReviewForm({
         disabled={saving}
         className="mt-4 w-full rounded-full border-2 border-navy bg-flockie-coral py-3.5 font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] disabled:opacity-50"
       >
-        {saving ? "Saving…" : "Submit review"}
+        {saving ? t("saving") : t("submit")}
       </button>
     </form>
   );

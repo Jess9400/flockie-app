@@ -1,1 +1,38 @@
-{}
+{
+  "backProfile": "{name}’s profile",
+  "buddyFallback": "your buddy",
+  "editReview": "Edit your review",
+  "reviewName": "Review {name}",
+  "intro": "Honest reviews keep Flockie safe and help great travel buddies stand out.",
+  "commentPlaceholder": "What was {name} like to travel with? (optional)",
+  "pickStar": "Pick a star rating.",
+  "star": "{count, plural, one {# star} other {# stars}}",
+  "saving": "Saving…",
+  "submit": "Submit review",
+  "backToVibe": "Back to Vibe",
+  "reviewVibe": "Review this Vibe",
+  "onlyConfirmed": "Only confirmed attendees can review this Vibe.",
+  "notStarted": "You can review this Vibe once it has started.",
+  "howWasIt": "How was it?",
+  "tapStar": "Tap a star to rate this Vibe.",
+  "whatWasItLike": "What was it like?",
+  "pickAny": "(pick any)",
+  "vibeCommentPlaceholder": "Anything else? (optional)",
+  "ratingLabels": {
+    "1": "Not for me",
+    "2": "Meh",
+    "3": "Good",
+    "4": "Great",
+    "5": "Loved it"
+  },
+  "tags": {
+    "Fun": "Fun",
+    "Good vibes": "Good vibes",
+    "Well organized": "Well organized",
+    "Met great people": "Met great people",
+    "Welcoming": "Welcoming",
+    "As described": "As described",
+    "On time": "On time",
+    "Would do again": "Would do again"
+  }
+}

@@ -1,1 +1,38 @@
-{}
+{
+  "backProfile": "Perfil de {name}",
+  "buddyFallback": "tu buddy",
+  "editReview": "Edita tu reseña",
+  "reviewName": "Reseña a {name}",
+  "intro": "Las reseñas honestas mantienen Flockie seguro y ayudan a que los buenos compañeros de viaje destaquen.",
+  "commentPlaceholder": "¿Cómo fue viajar con {name}? (opcional)",
+  "pickStar": "Elige una calificación con estrellas.",
+  "star": "{count, plural, one {# estrella} other {# estrellas}}",
+  "saving": "Guardando…",
+  "submit": "Enviar reseña",
+  "backToVibe": "Volver a la Vibe",
+  "reviewVibe": "Reseña esta Vibe",
+  "onlyConfirmed": "Solo los asistentes confirmados pueden reseñar esta Vibe.",
+  "notStarted": "Podrás reseñar esta Vibe una vez que haya empezado.",
+  "howWasIt": "¿Qué tal estuvo?",
+  "tapStar": "Toca una estrella para calificar esta Vibe.",
+  "whatWasItLike": "¿Cómo fue la experiencia?",
+  "pickAny": "(elige las que quieras)",
+  "vibeCommentPlaceholder": "¿Algo más? (opcional)",
+  "ratingLabels": {
+    "1": "No fue para mí",
+    "2": "Meh",
+    "3": "Bien",
+    "4": "Genial",
+    "5": "Me encantó"
+  },
+  "tags": {
+    "Fun": "Divertido",
+    "Good vibes": "Buena vibra",
+    "Well organized": "Bien organizado",
+    "Met great people": "Conocí gente genial",
+    "Welcoming": "Acogedor",
+    "As described": "Como se describió",
+    "On time": "Puntual",
+    "Would do again": "Lo repetiría"
+  }
+}

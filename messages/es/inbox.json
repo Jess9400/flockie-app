@@ -1,1 +1,12 @@
-{}
+{
+  "title": "Bandeja de entrada",
+  "subtitle": "Invitaciones, confirmaciones y novedades.",
+  "empty": "Nada por ahora. Las invitaciones y novedades aparecerán aquí.",
+  "dismiss": "Descartar notificación",
+  "openFlockChat": "Abrir chat del Flock →",
+  "findAnotherFlock": "Buscar otro Flock →",
+  "viewConfirm": "Ver y confirmar →",
+  "sayHi": "Saluda en el chat del grupo →",
+  "openMyTrips": "Abrir Mis viajes →",
+  "open": "Abrir →"
+}

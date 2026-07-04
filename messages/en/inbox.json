@@ -1,1 +1,12 @@
-{}
+{
+  "title": "Inbox",
+  "subtitle": "Invitations, confirmations, and updates.",
+  "empty": "Nothing yet. Invitations and updates will show up here.",
+  "dismiss": "Dismiss notification",
+  "openFlockChat": "Open Flock Chat →",
+  "findAnotherFlock": "Find another Flock →",
+  "viewConfirm": "View & confirm →",
+  "sayHi": "Say hi in the group chat →",
+  "openMyTrips": "Open My Trips →",
+  "open": "Open →"
+}

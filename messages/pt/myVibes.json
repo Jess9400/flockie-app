@@ -1,1 +1,27 @@
-{}
+{
+  "tabVibes": "Vibes",
+  "tabMyVibes": "Minhas Vibes",
+  "title": "Minhas Vibes",
+  "create": "Criar",
+  "subtitle": "As Vibes que você organiza e aquelas de que você participa.",
+  "inTheRunning": "Na disputa",
+  "inTheRunningHelp": "Vibes de que você participa — a gente avisa quando o anfitrião montar o grupo.",
+  "hosting": "Organizando",
+  "emptyHosting": "Você ainda não organizou nenhuma Vibe próxima. Crie a sua primeira.",
+  "shareToFill": "Compartilhe para lotar o seu grupo mais rápido 🚀",
+  "runAgain": "Fazer de novo",
+  "pastVibes": "Vibes anteriores",
+  "status": {
+    "open": "Aberta",
+    "ranking": "Classificando",
+    "finalized": "Finalizada",
+    "completed": "Concluída",
+    "cancelled": "Cancelada"
+  },
+  "interest": {
+    "interested": "Interessado",
+    "shortlisted": "Pré-selecionado",
+    "invited": "Você foi convidado",
+    "confirmed": "Confirmado"
+  }
+}

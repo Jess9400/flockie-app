@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import VibeReviewForm from "@/components/VibeReviewForm";
@@ -12,6 +13,7 @@ export default async function VibeReviewPage({
 }) {
   const supabase = await createClient();
   const user = await getSessionUser();
+  const t = await getTranslations("review");
 
   const { data: vibe } = await supabase
     .from("vibe_directory")
@@ -43,11 +45,11 @@ export default async function VibeReviewPage({
         href={`/vibes/${params.id}`}
         className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-navy/60 hover:text-navy"
       >
-        <ChevronLeft size={16} /> Back to Vibe
+        <ChevronLeft size={16} /> {t("backToVibe")}
       </Link>
 
       <h1 className="font-fredoka text-3xl font-bold text-navy">
-        {existing ? "Edit your review" : "Review this Vibe"}
+        {existing ? t("editReview") : t("reviewVibe")}
       </h1>
       <p className="mt-1 font-nunito text-sm font-normal text-navy/60">{vibe.title}</p>
 
@@ -62,9 +64,7 @@ export default async function VibeReviewPage({
         </div>
       ) : (
         <div className="mt-6 rounded-2xl border-2 border-navy bg-[#FCF9F4] p-6 text-center font-nunito text-sm font-medium text-navy/70">
-          {started
-            ? "Only confirmed attendees can review this Vibe."
-            : "You can review this Vibe once it has started."}
+          {started ? t("onlyConfirmed") : t("notStarted")}
         </div>
       )}
     </main>
