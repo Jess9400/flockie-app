@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, MapPin, CalendarClock, Users, Globe2, Wallet } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import FlockRequestButton from "@/components/FlockRequestButton";
@@ -12,17 +13,18 @@ import type { VibeDimension } from "@/lib/onboarding/types";
 
 // Friendly unavailable state — same graceful pattern as the Vibe detail page
 // (no hard 404: the Flock may simply be cancelled, deleted, or private).
-function Unavailable() {
+async function Unavailable() {
+  const tr = await getTranslations("flocks");
   return (
     <main className="mx-auto w-full max-w-md px-5 pt-16 text-center font-nunito">
       <p className="text-4xl">🧳</p>
-      <h1 className="mt-3 text-xl font-black">This Flock isn&rsquo;t available</h1>
-      <p className="mt-1 font-medium text-muted">It may have been cancelled, filled up, or made private.</p>
+      <h1 className="mt-3 text-xl font-black">{tr("detail.unavailableTitle")}</h1>
+      <p className="mt-1 font-medium text-muted">{tr("detail.unavailableBody")}</p>
       <Link
         href="/flocks"
         className="mt-6 inline-block rounded-full border-2 border-ink bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
       >
-        Explore Flocks
+        {tr("detail.exploreFlocks")}
       </Link>
     </main>
   );
@@ -35,6 +37,7 @@ export default async function FlockDetailPage({
 }) {
   const supabase = await createClient();
   const user = await getSessionUser();
+  const tr = await getTranslations("flocks");
 
   // Same table/columns the browse page reads; RLS (can_see_trip) already allows
   // owner / co-host / public / accepted member — see supabase/trips-rls.sql.
@@ -80,7 +83,7 @@ export default async function FlockDetailPage({
   const isFull = going >= trip.group_size;
   const days = tripDays(trip.start_date, trip.end_date);
   const destination = (trip.destinations ?? [trip.destination]).filter(Boolean).join(" · ");
-  const hostName = host?.display_name || "Host";
+  const hostName = host?.display_name || tr("browse.hostFallback");
   const archetype = host?.archetype ? ARCHETYPES[host.archetype as VibeDimension] : null;
 
   // Vibe-match % (viewer vs this Flock) — only meaningful for non-hosts.
@@ -111,16 +114,16 @@ export default async function FlockDetailPage({
   const budgetLabel =
     typeof trip.budget === "number"
       ? trip.budget <= 2
-        ? "Budget-friendly"
+        ? tr("budget.friendly")
         : trip.budget === 3
-          ? "Mid-range"
-          : "Comfort"
+          ? tr("budget.mid")
+          : tr("budget.comfort")
       : null;
 
   return (
     <main className="px-5 pb-10 pt-6">
       <Link href="/flocks" className="flex items-center gap-1 text-sm font-bold text-ink/60">
-        <ChevronLeft size={16} /> Flocks
+        <ChevronLeft size={16} /> {tr("detail.back")}
       </Link>
 
       {/* Cover */}
@@ -139,7 +142,7 @@ export default async function FlockDetailPage({
         )}
         {typeof pct === "number" && (
           <span className="absolute right-3 top-3 rounded-full border-2 border-ink bg-flockie-blue px-2.5 py-1 text-xs font-extrabold text-white">
-            ✨ {pct}% your vibe
+            ✨ {tr("detail.matchBadge", { pct })}
           </span>
         )}
       </div>
@@ -152,17 +155,17 @@ export default async function FlockDetailPage({
       <p className="mt-2 flex items-center gap-1.5 text-sm font-medium text-muted">
         <CalendarClock size={15} className="shrink-0" />
         {trip.start_date} → {trip.end_date}
-        {days > 0 && ` · ${days} days`}
+        {days > 0 && ` · ${tr("detail.days", { count: days })}`}
       </p>
       <p className="mt-1 flex items-center gap-1.5 text-sm font-bold text-ink">
-        <Users size={15} className="shrink-0" /> {going}/{trip.group_size} going
-        {isFull && <span className="text-muted">· Full</span>}
+        <Users size={15} className="shrink-0" /> {tr("detail.going", { going, capacity: trip.group_size })}
+        {isFull && <span className="text-muted">· {tr("detail.full")}</span>}
       </p>
 
       <div className="mt-3 flex flex-wrap gap-1.5">
         {trip.group_gender === "women" && (
           <span className="rounded-full border-2 border-ink bg-flockie-coral/15 px-2.5 py-1 text-xs font-bold text-flockie-coral">
-            Women only
+            {tr("detail.womenOnly")}
           </span>
         )}
         {trip.continent && (
@@ -190,7 +193,7 @@ export default async function FlockDetailPage({
       {/* Full description */}
       {trip.description && (
         <div className="mt-5 rounded-2xl border-2 border-ink bg-white p-4 shadow-[0_4px_0_0_rgba(26,26,26,1)]">
-          <p className="text-sm font-extrabold">About this Flock</p>
+          <p className="text-sm font-extrabold">{tr("detail.aboutHeading")}</p>
           <p className="mt-1.5 whitespace-pre-line text-sm font-medium leading-relaxed text-ink/80">
             {trip.description}
           </p>
@@ -217,7 +220,7 @@ export default async function FlockDetailPage({
           </span>
         )}
         <span className="min-w-0 flex-1">
-          <span className="block text-xs font-bold uppercase tracking-wide text-muted">Hosted by</span>
+          <span className="block text-xs font-bold uppercase tracking-wide text-muted">{tr("detail.hostedBy")}</span>
           <span className="block truncate text-base font-extrabold text-ink">{hostName}</span>
           {archetype ? (
             <span className="mt-0.5 flex items-center gap-1.5 text-xs font-bold text-ink/70">
@@ -229,7 +232,7 @@ export default async function FlockDetailPage({
             )
           )}
         </span>
-        <span className="shrink-0 text-sm font-bold text-flockie-blue">View →</span>
+        <span className="shrink-0 text-sm font-bold text-flockie-blue">{tr("detail.view")}</span>
       </Link>
 
       {/* Action area */}
@@ -237,35 +240,35 @@ export default async function FlockDetailPage({
         {isHost ? (
           <div className="rounded-2xl border-2 border-ink bg-cream p-4">
             <p className="text-sm font-extrabold">
-              You&rsquo;re hosting this Flock
-              {trip.status !== "active" && <span className="text-muted"> · no longer active</span>}
+              {tr("detail.hostingTitle")}
+              {trip.status !== "active" && <span className="text-muted"> {tr("detail.noLongerActive")}</span>}
             </p>
             <p className="mt-0.5 text-xs font-medium text-muted">
               {pendingCount > 0
-                ? `${pendingCount} join request${pendingCount === 1 ? "" : "s"} waiting for your review.`
-                : "No pending join requests right now."}
+                ? tr("detail.pendingRequests", { count: pendingCount })
+                : tr("detail.noPending")}
             </p>
             <Link
               href="/my-trips"
               className="mt-3 inline-block rounded-full border-2 border-ink bg-flockie-blue px-5 py-2.5 text-sm font-bold text-white"
             >
-              Manage in My Trips
+              {tr("detail.manageInMyTrips")}
             </Link>
           </div>
         ) : myReq?.status === "accepted" ? (
           <div className="rounded-2xl border-2 border-ink bg-[#06D6A0]/10 p-4 text-center">
-            <p className="font-extrabold text-ink">You&rsquo;re in this Flock 🎉</p>
+            <p className="font-extrabold text-ink">{tr("detail.inFlock")}</p>
             <Link href="/chats" className="mt-2 inline-block text-sm font-bold text-flockie-blue underline">
-              Open your chats
+              {tr("detail.openChats")}
             </Link>
           </div>
         ) : ended ? (
           <div className="rounded-2xl border-2 border-ink bg-cream p-4 text-center font-bold text-muted">
-            This Flock&rsquo;s dates have passed.
+            {tr("detail.datesPassed")}
           </div>
         ) : isFull && !myReq ? (
           <div className="rounded-2xl border-2 border-ink bg-cream p-4 text-center font-bold text-muted">
-            This Flock is full — someone&rsquo;s spot may still open up.
+            {tr("detail.flockFull")}
           </div>
         ) : (
           <FlockRequestButton

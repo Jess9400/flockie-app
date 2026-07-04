@@ -1,18 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Plus, Pencil, MapPin, CalendarClock, MessageCircle } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import FlockJoinRequests, { type JoinReq } from "@/components/FlockJoinRequests";
 import DeleteTripButton from "@/components/DeleteTripButton";
 import PageTabs from "@/components/PageTabs";
 import Pagination from "@/components/Pagination";
-
-const TRIP_TABS = [
-  { href: "/my-trips", label: "My Trips" },
-  { href: "/my-activities", label: "My Activities" },
-  { href: "/deals", label: "Deals" },
-];
 
 const PAGE_SIZE = 5;
 
@@ -38,6 +33,13 @@ export default async function MyTripsPage({
 }) {
   const supabase = await createClient();
   const user = await getSessionUser();
+  const tr = await getTranslations("trips");
+
+  const TRIP_TABS = [
+    { href: "/my-trips", label: tr("tabs.myTrips") },
+    { href: "/my-activities", label: tr("tabs.myActivities") },
+    { href: "/deals", label: tr("tabs.deals") },
+  ];
 
   const { data: trips } = await supabase
     .from("trips")
@@ -157,7 +159,7 @@ export default async function MyTripsPage({
                   t.visibility === "public" ? "bg-flockie-orange text-white" : "bg-navy text-white"
                 }`}
               >
-                {t.visibility === "public" ? "Flock" : "Trip"}
+                {t.visibility === "public" ? tr("list.badgeFlock") : tr("list.badgeTrip")}
               </span>
               {faded ? (
                 <span
@@ -165,7 +167,7 @@ export default async function MyTripsPage({
                     t.status === "cancelled" ? "bg-ink text-white" : "bg-[#06D6A0] text-white"
                   }`}
                 >
-                  {t.status === "cancelled" ? "Cancelled" : "Completed"}
+                  {t.status === "cancelled" ? tr("list.statusCancelled") : tr("list.statusCompleted")}
                 </span>
               ) : (
                 t.status !== "active" && (
@@ -178,7 +180,7 @@ export default async function MyTripsPage({
               {(t.destinations ?? [t.destination]).filter(Boolean).join(" · ")}
             </p>
             <p className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-muted">
-              <CalendarClock size={13} /> {t.start_date} → {t.end_date} · {t.group_size} people
+              <CalendarClock size={13} /> {t.start_date} → {t.end_date} · {tr("list.people", { count: t.group_size })}
             </p>
             {(t.trip_type?.length ?? 0) > 0 && (
               <div className="mt-2 flex flex-wrap gap-1.5">
@@ -196,7 +198,7 @@ export default async function MyTripsPage({
                 href={chatByTrip[t.id] ? `/buddies/${chatByTrip[t.id]}` : "/chats?tab=travel"}
                 className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-flockie-blue px-3 py-1.5 text-sm font-bold text-white"
               >
-                <MessageCircle size={14} /> {t.visibility === "public" ? "Flock Chat" : "Chat"}
+                <MessageCircle size={14} /> {t.visibility === "public" ? tr("list.flockChat") : tr("list.chat")}
               </Link>
             )}
             {!faded && (
@@ -204,10 +206,10 @@ export default async function MyTripsPage({
                 href={`/match/trip?id=${t.id}`}
                 className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-sm font-bold"
               >
-                <Pencil size={14} /> Edit
+                <Pencil size={14} /> {tr("list.edit")}
               </Link>
             )}
-            <DeleteTripButton tripId={t.id} label={t.visibility === "public" ? "this Flock" : "this trip"} />
+            <DeleteTripButton tripId={t.id} label={t.visibility === "public" ? tr("list.deleteFlock") : tr("list.deleteTrip")} />
           </div>
         </div>
         {!faded && reqByTrip[t.id]?.length ? (
@@ -221,20 +223,20 @@ export default async function MyTripsPage({
     <main className="px-5 pb-10 pt-6">
       <PageTabs tabs={TRIP_TABS} />
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-black">My Trips</h1>
+        <h1 className="text-2xl font-black">{tr("list.heading")}</h1>
         <Link
           href="/match/trip"
           className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
         >
-          <Plus size={16} /> New
+          <Plus size={16} /> {tr("list.new")}
         </Link>
       </div>
-      <p className="mt-1 text-sm font-medium text-muted">Manage your trips and Flocks.</p>
+      <p className="mt-1 text-sm font-medium text-muted">{tr("list.subtitle")}</p>
 
       <div className="mt-6 space-y-3">
         {activeTrips.length === 0 ? (
           <div className="rounded-3xl border-2 border-dashed border-ink/30 py-12 text-center font-medium text-muted">
-            No upcoming trips. Post one to start finding buddies.
+            {tr("list.emptyActive")}
           </div>
         ) : (
           pageTrips.map((t) => <TripCard key={t.id} t={t} />)
@@ -244,7 +246,7 @@ export default async function MyTripsPage({
 
       {pastTrips.length > 0 && (
         <>
-          <h2 className="mt-8 text-lg font-extrabold text-muted">Past trips &amp; Flocks</h2>
+          <h2 className="mt-8 text-lg font-extrabold text-muted">{tr("list.pastHeading")}</h2>
           <div className="mt-3 space-y-3">
             {pastTrips.map((t) => (
               <TripCard key={t.id} t={t} faded />

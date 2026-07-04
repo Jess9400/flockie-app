@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin, CalendarClock, Users, Plus } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import FlockRequestButton from "@/components/FlockRequestButton";
@@ -11,13 +12,6 @@ import { tripDays, GROUP_SIZE_BUCKETS, CONTINENTS, FLOCK_LANGUAGES, GROUP_GENDER
 
 const PAGE_SIZE = 6;
 
-const FLOCK_FILTER_SECTIONS = [
-  { key: "continent", title: "Continent", multi: true, options: CONTINENTS.map((c) => ({ value: c, label: c })) },
-  { key: "gender", title: "Open to", options: GROUP_GENDERS.map((g) => ({ value: g.value, label: g.label })) },
-  { key: "size", title: "Group size", options: GROUP_SIZE_BUCKETS.map((b) => ({ value: b.value, label: `${b.label} people` })) },
-  { key: "language", title: "Language", multi: true, options: FLOCK_LANGUAGES.map((l) => ({ value: l, label: l })) },
-];
-
 const toArray = (v?: string | string[]) => (Array.isArray(v) ? v : v ? [v] : []);
 
 export default async function FlocksPage({
@@ -27,6 +21,14 @@ export default async function FlocksPage({
 }) {
   const supabase = await createClient();
   const user = await getSessionUser();
+  const tr = await getTranslations("flocks");
+
+  const FLOCK_FILTER_SECTIONS = [
+    { key: "continent", title: tr("filters.continent"), multi: true, options: CONTINENTS.map((c) => ({ value: c, label: c })) },
+    { key: "gender", title: tr("filters.openTo"), options: GROUP_GENDERS.map((g) => ({ value: g.value, label: g.label })) },
+    { key: "size", title: tr("filters.groupSize"), options: GROUP_SIZE_BUCKETS.map((b) => ({ value: b.value, label: tr("filters.sizePeople", { label: b.label }) })) },
+    { key: "language", title: tr("filters.language"), multi: true, options: FLOCK_LANGUAGES.map((l) => ({ value: l, label: l })) },
+  ];
 
   const page = Math.max(1, Number(searchParams.page) || 1);
   const from = (page - 1) * PAGE_SIZE;
@@ -112,21 +114,21 @@ export default async function FlocksPage({
   return (
     <main className="px-5 pb-10 pt-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-black">Find a Flock</h1>
+        <h1 className="text-2xl font-black">{tr("browse.heading")}</h1>
         <Link
           href="/match/trip?kind=flock"
           className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
         >
-          <Plus size={16} /> Create
+          <Plus size={16} /> {tr("browse.create")}
         </Link>
       </div>
       <p className="mt-1 text-sm font-medium text-muted">
-        Open <span className="font-bold">group trips</span> you can request to join.
+        {tr.rich("browse.subtitle", { b: (chunks) => <span className="font-bold">{chunks}</span> })}
       </p>
 
       <div className="mt-4 grid grid-cols-2 gap-2 rounded-full border-2 border-ink bg-white p-1 text-sm font-bold">
-        <Link href="/match" className="rounded-full py-2 text-center text-ink">Find a Buddy</Link>
-        <span className="rounded-full bg-flockie-blue py-2 text-center text-white">Find a Flock</span>
+        <Link href="/match" className="rounded-full py-2 text-center text-ink">{tr("browse.tabFindBuddy")}</Link>
+        <span className="rounded-full bg-flockie-blue py-2 text-center text-white">{tr("browse.tabFindFlock")}</span>
       </div>
 
       <div className="mt-4">
@@ -136,8 +138,8 @@ export default async function FlocksPage({
       {cards.length === 0 ? (
         <div className="mt-6 rounded-3xl border-2 border-dashed border-ink/30 py-16 text-center font-medium text-muted">
           {continents.length || gender || languages.length || sizeBucket
-            ? "No Flocks match these filters. Try widening them."
-            : "No open trips yet. Post a trip and set it to Public to start a Flock."}
+            ? tr("browse.emptyFiltered")
+            : tr("browse.emptyNone")}
         </div>
       ) : (
         <>
@@ -147,7 +149,7 @@ export default async function FlocksPage({
               const pct = matches[t.id];
               const going = 1 + (acceptedCount[t.id] ?? 0);
               const host = profiles[t.user_id];
-              const hostName = host?.display_name || "Host";
+              const hostName = host?.display_name || tr("browse.hostFallback");
               const destination = (t.destinations ?? [t.destination]).filter(Boolean).join(" · ");
               return (
                 <div
@@ -187,7 +189,7 @@ export default async function FlocksPage({
                       <CalendarClock size={11} className="shrink-0" />
                       <span className="truncate">
                         {t.start_date} → {t.end_date}
-                        {days > 0 && ` · ${days}d`}
+                        {days > 0 && ` · ${tr("browse.daysShort", { count: days })}`}
                       </span>
                     </p>
 
@@ -195,7 +197,7 @@ export default async function FlocksPage({
                     <div className="mt-1.5 flex flex-wrap gap-1">
                       {t.group_gender === "women" && (
                         <span className="rounded-full bg-flockie-coral/15 px-1.5 py-0.5 text-[9px] font-bold text-flockie-coral">
-                          Women only
+                          {tr("browse.womenOnly")}
                         </span>
                       )}
                       {t.language && (
@@ -205,7 +207,7 @@ export default async function FlocksPage({
                       )}
                       {typeof t.budget === "number" && (
                         <span className="rounded-full bg-cream px-1.5 py-0.5 text-[9px] font-bold text-ink/70">
-                          {t.budget <= 2 ? "Budget-friendly" : t.budget === 3 ? "Mid-range" : "Comfort"}
+                          {t.budget <= 2 ? tr("budget.friendly") : t.budget === 3 ? tr("budget.mid") : tr("budget.comfort")}
                         </span>
                       )}
                       {t.trip_type?.[0] && (
