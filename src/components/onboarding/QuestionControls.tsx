@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   MoodQuestion,
   MultiQuestion,
@@ -44,11 +45,13 @@ export function QuestionControls({
 }
 
 function Mood({ question, current, disabled, onAnswer }: { question: MoodQuestion; current?: MoodAnswer; disabled: boolean; onAnswer: (answer: Answer) => void }) {
+  const t = useTranslations("onboarding.vibeCheck");
+  const labels = t.raw(`questions.${question.id}.options`) as string[];
   return (
     <div className="flex flex-1 flex-col gap-2.5">
       {question.options.map((option, index) => (
         <button
-          key={option.label}
+          key={index}
           type="button"
           disabled={disabled}
           onClick={() => onAnswer({ type: "mood", index })}
@@ -56,7 +59,7 @@ function Mood({ question, current, disabled, onAnswer }: { question: MoodQuestio
           className={`relative flex h-[88px] items-center gap-3.5 rounded-2xl border-[3px] px-4 text-left transition-transform disabled:opacity-60 ${current?.index === index ? "scale-[0.98] border-white" : "border-transparent"}`}
         >
           <EmojiBadge on size={48}>{option.emoji}</EmojiBadge>
-          <span className="text-[14.5px] font-extrabold leading-tight text-white">{option.label}</span>
+          <span className="text-[14.5px] font-extrabold leading-tight text-white">{labels[index]}</span>
         </button>
       ))}
     </div>
@@ -64,6 +67,7 @@ function Mood({ question, current, disabled, onAnswer }: { question: MoodQuestio
 }
 
 function Swipe({ question, disabled, onAnswer }: { question: SwipeQuestion; current?: SwipeAnswer; disabled: boolean; onAnswer: (answer: Answer) => void }) {
+  const t = useTranslations("onboarding.vibeCheck");
   function choose(side: "left" | "right") {
     onAnswer({ type: "swipe", side });
   }
@@ -75,7 +79,7 @@ function Swipe({ question, disabled, onAnswer }: { question: SwipeQuestion; curr
           const side = index === 0 ? "left" : "right";
           return (
             <button key={side} type="button" disabled={disabled} onClick={() => choose(side)} className={`flex flex-1 flex-col items-center gap-1.5 rounded-2xl border-2 border-b-4 py-3.5 text-[13.5px] font-extrabold disabled:opacity-60 ${side === "right" ? "border-flockie-coral bg-flockie-coral/10 text-red-700" : "border-ink/15 bg-white text-muted"}`}>
-              <EmojiBadge size={40}>{option.emoji}</EmojiBadge>{option.label}
+              <EmojiBadge size={40}>{option.emoji}</EmojiBadge>{t(`questions.${question.id}.${side}`)}
             </button>
           );
         })}
@@ -85,6 +89,8 @@ function Swipe({ question, disabled, onAnswer }: { question: SwipeQuestion; curr
 }
 
 function Multi({ question, current, disabled, onAnswer }: { question: MultiQuestion; current?: MultiAnswer; disabled: boolean; onAnswer: (answer: Answer) => void }) {
+  const t = useTranslations("onboarding.vibeCheck");
+  const labels = t.raw(`questions.${question.id}.options`) as string[];
   const [selected, setSelected] = useState<number[]>(current?.indices ?? []);
   function toggle(index: number) {
     setSelected((previous) => previous.includes(index) ? previous.filter((item) => item !== index) : previous.length < question.maxSelect ? [...previous, index] : previous);
@@ -94,7 +100,7 @@ function Multi({ question, current, disabled, onAnswer }: { question: MultiQuest
       <div className="grid flex-1 grid-cols-2 gap-2">
         {question.options.map((option, index) => {
           const active = selected.includes(index);
-          return <button key={option.label} type="button" disabled={disabled} onClick={() => toggle(index)} className={`flex flex-col items-center rounded-2xl border-2 border-b-4 px-2 py-3 text-center ${active ? "border-flockie-coral bg-flockie-coral/10" : "border-ink/15 bg-white"}`}><span className="mb-1.5"><EmojiBadge size={42}>{option.emoji}</EmojiBadge></span><span className="text-[12px] font-bold">{option.label}</span></button>;
+          return <button key={index} type="button" disabled={disabled} onClick={() => toggle(index)} className={`flex flex-col items-center rounded-2xl border-2 border-b-4 px-2 py-3 text-center ${active ? "border-flockie-coral bg-flockie-coral/10" : "border-ink/15 bg-white"}`}><span className="mb-1.5"><EmojiBadge size={42}>{option.emoji}</EmojiBadge></span><span className="text-[12px] font-bold">{labels[index]}</span></button>;
         })}
       </div>
       <Continue disabled={disabled || selected.length === 0} onClick={() => onAnswer({ type: "multi", indices: selected })} />
@@ -103,26 +109,30 @@ function Multi({ question, current, disabled, onAnswer }: { question: MultiQuest
 }
 
 function Slider({ question, current, disabled, onAnswer }: { question: SliderQuestion; current?: SliderAnswer; disabled: boolean; onAnswer: (answer: Answer) => void }) {
+  const t = useTranslations("onboarding.vibeCheck");
   const [value, setValue] = useState(current?.value ?? 50);
   return (
     <div className="flex flex-col pt-6">
       <input type="range" min={0} max={100} value={value} disabled={disabled} onChange={(event) => setValue(Number(event.target.value))} className="vibe-slider my-5" />
-      <div className="flex justify-between text-[12.5px] font-bold"><span className="text-navy">{question.leftLabel}</span><span className="text-red-700">{question.rightLabel}</span></div>
+      <div className="flex justify-between text-[12.5px] font-bold"><span className="text-navy">{t(`questions.${question.id}.leftLabel`)}</span><span className="text-red-700">{t(`questions.${question.id}.rightLabel`)}</span></div>
       <Continue disabled={disabled} onClick={() => onAnswer({ type: "slider", value })} />
     </div>
   );
 }
 
 function Tap({ question, current, disabled, onAnswer }: { question: TapQuestion; current?: TapAnswer; disabled: boolean; onAnswer: (answer: Answer) => void }) {
+  const t = useTranslations("onboarding.vibeCheck");
+  const labels = t.raw(`questions.${question.id}.options`) as string[];
   return (
     <div className="flex flex-1 flex-col gap-2.5">
-      {question.options.map((option, index) => <button key={option.label} type="button" disabled={disabled} onClick={() => onAnswer({ type: "tap", index })} className={`flex items-center gap-3 rounded-2xl border-2 border-b-4 px-4 py-3 text-left text-[14px] font-bold disabled:opacity-60 ${current?.index === index ? "border-flockie-coral bg-flockie-coral/10" : "border-ink/15 bg-white"}`}><EmojiBadge size={40}>{option.emoji}</EmojiBadge>{option.label}</button>)}
+      {question.options.map((option, index) => <button key={index} type="button" disabled={disabled} onClick={() => onAnswer({ type: "tap", index })} className={`flex items-center gap-3 rounded-2xl border-2 border-b-4 px-4 py-3 text-left text-[14px] font-bold disabled:opacity-60 ${current?.index === index ? "border-flockie-coral bg-flockie-coral/10" : "border-ink/15 bg-white"}`}><EmojiBadge size={40}>{option.emoji}</EmojiBadge>{labels[index]}</button>)}
     </div>
   );
 }
 
 function Continue({ disabled, onClick }: { disabled: boolean; onClick: () => void }) {
-  return <button type="button" disabled={disabled} onClick={onClick} className="mt-3.5 w-full rounded-2xl border-2 border-ink border-b-[5px] bg-navy py-3.5 text-[15px] font-extrabold text-white disabled:opacity-40">Continue →</button>;
+  const t = useTranslations("onboarding.vibeCheck");
+  return <button type="button" disabled={disabled} onClick={onClick} className="mt-3.5 w-full rounded-2xl border-2 border-ink border-b-[5px] bg-navy py-3.5 text-[15px] font-extrabold text-white disabled:opacity-40">{t("continue")}</button>;
 }
 
 // CSS-styled emoji medallion so options aren't bare platform glyphs.

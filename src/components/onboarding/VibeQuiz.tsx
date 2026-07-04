@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { QuestionControls } from "./QuestionControls";
 import { VIBE_QUESTIONS, TOTAL_QUESTIONS } from "@/lib/onboarding/questions";
 import { Answer } from "@/lib/onboarding/types";
@@ -20,6 +21,8 @@ export function VibeQuiz({
   lockExit?: boolean;
 }) {
   const router = useRouter();
+  const t = useTranslations("onboarding.vibeCheck");
+  const tc = useTranslations("common");
   const [answers, setAnswers] = useState(initialAnswers);
   const [questionIndex, setQuestionIndex] = useState(Math.max(0, Math.min(initialQuestionIndex, TOTAL_QUESTIONS - 1)));
   const [showExitSheet, setShowExitSheet] = useState(false);
@@ -43,7 +46,7 @@ export function VibeQuiz({
         router.push(withReturnTo("/onboarding/vibe-check/reveal", returnTo));
       }
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Could not save your answer. Try again.");
+      setError(caught instanceof Error ? caught.message : t("saveError"));
       setSaving(false);
     }
   }
@@ -52,9 +55,9 @@ export function VibeQuiz({
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center bg-cream px-7 text-center font-nunito">
         <div className="mb-4 flex h-[62px] w-[62px] items-center justify-center rounded-full bg-onboarding-green text-2xl text-white">✓</div>
-        <h2 className="mb-2 text-[23px] font-black">Paused, not skipped</h2>
-        <p className="mb-6 max-w-[260px] text-[13.5px] font-semibold leading-relaxed text-muted">Your answers are saved. We&apos;ll bring you back to question {questionIndex + 1}.</p>
-        <button type="button" onClick={() => setPaused(false)} className="rounded-2xl border-2 border-ink border-b-[5px] bg-flockie-coral px-8 py-3.5 text-[14.5px] font-extrabold text-white">Continue now →</button>
+        <h2 className="mb-2 text-[23px] font-black">{t("paused.title")}</h2>
+        <p className="mb-6 max-w-[260px] text-[13.5px] font-semibold leading-relaxed text-muted">{t("paused.body", { number: questionIndex + 1 })}</p>
+        <button type="button" onClick={() => setPaused(false)} className="rounded-2xl border-2 border-ink border-b-[5px] bg-flockie-coral px-8 py-3.5 text-[14.5px] font-extrabold text-white">{t("paused.continueNow")}</button>
       </div>
     );
   }
@@ -62,21 +65,21 @@ export function VibeQuiz({
   return (
     <div className="relative flex min-h-dvh flex-col bg-cream font-nunito">
       <div className="flex items-center gap-2.5 border-b border-ink/10 bg-white px-4 py-3">
-        <button type="button" onClick={() => setQuestionIndex((index) => Math.max(0, index - 1))} className={questionIndex === 0 ? "invisible" : ""} aria-label="Back"><span className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-cream">‹</span></button>
+        <button type="button" onClick={() => setQuestionIndex((index) => Math.max(0, index - 1))} className={questionIndex === 0 ? "invisible" : ""} aria-label={t("back")}><span className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-cream">‹</span></button>
         <div className="h-[5px] flex-1 overflow-hidden rounded-full bg-ink/10"><div className="h-full rounded-full bg-flockie-coral transition-all" style={{ width: `${((questionIndex + 1) / TOTAL_QUESTIONS) * 100}%` }} /></div>
         {lockExit ? (
-          <span title="Finish the quiz to lock in your new vibe" className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-cream">🔒</span>
+          <span title={t("lockHint")} className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-cream">🔒</span>
         ) : (
-          <button type="button" onClick={() => setShowExitSheet(true)} aria-label="Pause"><span className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-cream">✕</span></button>
+          <button type="button" onClick={() => setShowExitSheet(true)} aria-label={t("pause")}><span className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-cream">✕</span></button>
         )}
       </div>
 
       <div className="flex flex-1 flex-col px-5 pb-4 pt-5">
-        <p className="mb-1 text-[11px] font-extrabold uppercase tracking-wide text-flockie-coral">Question {questionIndex + 1} of {TOTAL_QUESTIONS}</p>
-        <p className="mb-3 text-[10px] font-bold text-muted">{question.mechanicLabel}</p>
-        <h1 className="mb-4 text-[21px] font-black leading-tight">{question.text}</h1>
+        <p className="mb-1 text-[11px] font-extrabold uppercase tracking-wide text-flockie-coral">{t("questionProgress", { current: questionIndex + 1, total: TOTAL_QUESTIONS })}</p>
+        <p className="mb-3 text-[10px] font-bold text-muted">{t(`questions.${question.id}.mechanicLabel`)}</p>
+        <h1 className="mb-4 text-[21px] font-black leading-tight">{t(`questions.${question.id}.text`)}</h1>
         <QuestionControls question={question} currentAnswer={answers[question.id]} disabled={saving} onAnswer={handleAnswer} />
-        {saving && <p className="mt-3 text-center text-xs font-semibold text-muted">Saving…</p>}
+        {saving && <p className="mt-3 text-center text-xs font-semibold text-muted">{tc("saving")}</p>}
         {error && <p className="mt-3 text-center text-xs font-semibold text-red-700">{error}</p>}
       </div>
 
@@ -84,10 +87,10 @@ export function VibeQuiz({
         <div className="absolute inset-0 z-50 flex items-end bg-ink/45">
           <div className="w-full rounded-t-3xl bg-white p-6 text-center">
             <div className="mb-2.5 text-4xl">⏸️</div>
-            <h2 className="mb-1.5 text-[19px] font-black">Pause here?</h2>
-            <p className="mb-5 text-[13px] font-semibold leading-relaxed text-muted">Your completed answers are already saved. Jump back in whenever.</p>
-            <button type="button" onClick={() => setShowExitSheet(false)} className="mb-2.5 w-full rounded-2xl border-2 border-ink border-b-[5px] bg-flockie-coral py-3.5 text-[14.5px] font-extrabold text-white">Keep going</button>
-            <button type="button" onClick={() => { setShowExitSheet(false); setPaused(true); }} className="w-full rounded-2xl border-2 border-ink/15 bg-cream py-3.5 text-[14.5px] font-extrabold">Pause for now</button>
+            <h2 className="mb-1.5 text-[19px] font-black">{t("exitSheet.title")}</h2>
+            <p className="mb-5 text-[13px] font-semibold leading-relaxed text-muted">{t("exitSheet.body")}</p>
+            <button type="button" onClick={() => setShowExitSheet(false)} className="mb-2.5 w-full rounded-2xl border-2 border-ink border-b-[5px] bg-flockie-coral py-3.5 text-[14.5px] font-extrabold text-white">{t("exitSheet.keepGoing")}</button>
+            <button type="button" onClick={() => { setShowExitSheet(false); setPaused(true); }} className="w-full rounded-2xl border-2 border-ink/15 bg-cream py-3.5 text-[14.5px] font-extrabold">{t("exitSheet.pauseForNow")}</button>
           </div>
         </div>
       )}

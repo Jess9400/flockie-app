@@ -1,11 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import CompatShareButton from "@/components/CompatShareButton";
 
 type Target = { id: string; name: string | null; photo: string | null };
 
 export default async function CompatPage({ params }: { params: { id: string } }) {
+  const tr = await getTranslations("onboarding.compat");
   const supabase = await createClient();
   const {
     data: { user },
@@ -23,7 +25,7 @@ export default async function CompatPage({ params }: { params: { id: string } })
   // flow still works.
   const { data: t } = await supabase.rpc("compat_target", { p_id: id });
   const target = (t?.[0] as Target) ?? null;
-  const name = target?.name ? target.name.split(" ")[0] : "your friend";
+  const name = target?.name ? target.name.split(" ")[0] : tr("friendFallback");
 
   let inner: React.ReactNode;
 
@@ -34,10 +36,10 @@ export default async function CompatPage({ params }: { params: { id: string } })
           href={`/login?redirect=${encodeURIComponent(`/compat/${id}`)}`}
           className="mt-6 block rounded-full border-2 border-ink bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
         >
-          Take the 60-sec vibe check
+          {tr("takeCheck")}
         </Link>
         <p className="mt-2 text-center text-xs font-medium text-white/60">
-          Sign up with Google, answer a few questions, see your score.
+          {tr("signupHint")}
         </p>
       </>
     );
@@ -45,7 +47,7 @@ export default async function CompatPage({ params }: { params: { id: string } })
     inner = (
       <div className="mt-6 text-center">
         <p className="font-nunito text-sm font-medium text-white/80">
-          This is your own link — share it with friends to see your match %.
+          {tr("ownLink")}
         </p>
         <div className="mt-3 flex justify-center">
           <CompatShareButton userId={user.id} />
@@ -65,7 +67,7 @@ export default async function CompatPage({ params }: { params: { id: string } })
           href={`/onboarding/profile?returnTo=${encodeURIComponent(`/compat/${id}`)}`}
           className="mt-6 block rounded-full border-2 border-ink bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
         >
-          Take the 60-sec vibe check to reveal your score
+          {tr("takeCheckReveal")}
         </Link>
       );
     } else {
@@ -76,12 +78,14 @@ export default async function CompatPage({ params }: { params: { id: string } })
         <div className="mt-6 text-center">
           <p className="font-fredoka text-6xl font-bold text-flockie-coral">{score ?? "—"}%</p>
           <p className="mt-1 font-nunito text-base font-semibold text-white">
-            You and {name} are {score != null && score >= 70 ? "a great match" : "compatible"} 🎉
+            {score != null && score >= 70
+              ? tr("resultGreat", { name })
+              : tr("resultCompatible", { name })}
           </p>
           {highlights.length > 0 && (
             <div className="mt-4">
               <p className="font-nunito text-xs font-bold uppercase tracking-wide text-white/55">
-                You both love
+                {tr("youBothLove")}
               </p>
               <div className="mt-2 flex flex-wrap justify-center gap-2">
                 {highlights.map((h) => (
@@ -97,13 +101,13 @@ export default async function CompatPage({ params }: { params: { id: string } })
               href="/vibes"
               className="rounded-full border-2 border-ink bg-flockie-coral py-3 text-center font-fredoka text-sm font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
             >
-              Explore Vibes near you
+              {tr("exploreNearby")}
             </Link>
             <div className="flex justify-center">
               <CompatShareButton
                 userId={user.id}
                 variant="ghost"
-                label="Compare with another friend"
+                label={tr("compareAnother")}
               />
             </div>
           </div>
@@ -128,10 +132,13 @@ export default async function CompatPage({ params }: { params: { id: string } })
             </span>
           )}
           <h1 className="mt-4 text-center font-fredoka text-3xl font-bold leading-tight text-white">
-            How compatible are you with <span className="text-flockie-coral">{name}</span>?
+            {tr.rich("heading", {
+              name,
+              highlight: (chunks) => <span className="text-flockie-coral">{chunks}</span>,
+            })}
           </h1>
           <p className="mt-2 text-center font-nunito text-sm font-medium text-white/70">
-            Take Flockie&rsquo;s quick vibe check and find out your travel-buddy match.
+            {tr("subheading")}
           </p>
         </div>
 
