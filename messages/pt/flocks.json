@@ -1,1 +1,49 @@
-{}
+{
+  "filters": {
+    "continent": "Continente",
+    "openTo": "Aberto para",
+    "groupSize": "Tamanho do grupo",
+    "language": "Idioma",
+    "sizePeople": "{label} pessoas"
+  },
+  "browse": {
+    "heading": "Find a Flock",
+    "create": "Criar",
+    "subtitle": "Viagens <b>em grupo</b> abertas para você pedir para entrar.",
+    "tabFindBuddy": "Find a Buddy",
+    "tabFindFlock": "Find a Flock",
+    "emptyFiltered": "Nenhum Flock corresponde a estes filtros. Tente ampliá-los.",
+    "emptyNone": "Ainda não há viagens abertas. Publique uma viagem e deixe como Pública para começar um Flock.",
+    "womenOnly": "Só mulheres",
+    "hostFallback": "Anfitrião",
+    "daysShort": "{count}d"
+  },
+  "budget": {
+    "friendly": "Econômico",
+    "mid": "Custo médio",
+    "comfort": "Confortável"
+  },
+  "detail": {
+    "back": "Flocks",
+    "unavailableTitle": "Este Flock não está disponível",
+    "unavailableBody": "Pode ter sido cancelado, lotado ou tornado privado.",
+    "exploreFlocks": "Explorar Flocks",
+    "matchBadge": "{pct}% a sua vibe",
+    "days": "{count} dias",
+    "going": "{going}/{capacity} vão",
+    "full": "Lotado",
+    "womenOnly": "Só mulheres",
+    "aboutHeading": "Sobre este Flock",
+    "hostedBy": "Organizado por",
+    "view": "Ver →",
+    "hostingTitle": "Você está organizando este Flock",
+    "noLongerActive": "· não está mais ativo",
+    "pendingRequests": "{count, plural, one {# pedido para entrar aguardando sua revisão.} other {# pedidos para entrar aguardando sua revisão.}}",
+    "noPending": "Nenhum pedido pendente no momento.",
+    "manageInMyTrips": "Gerenciar em Minhas viagens",
+    "inFlock": "Você está neste Flock 🎉",
+    "openChats": "Abra seus chats",
+    "datesPassed": "As datas deste Flock já passaram.",
+    "flockFull": "Este Flock está lotado — pode ser que uma vaga abra."
+  }
+}

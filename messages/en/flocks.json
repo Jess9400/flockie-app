@@ -1,1 +1,49 @@
-{}
+{
+  "filters": {
+    "continent": "Continent",
+    "openTo": "Open to",
+    "groupSize": "Group size",
+    "language": "Language",
+    "sizePeople": "{label} people"
+  },
+  "browse": {
+    "heading": "Find a Flock",
+    "create": "Create",
+    "subtitle": "Open <b>group trips</b> you can request to join.",
+    "tabFindBuddy": "Find a Buddy",
+    "tabFindFlock": "Find a Flock",
+    "emptyFiltered": "No Flocks match these filters. Try widening them.",
+    "emptyNone": "No open trips yet. Post a trip and set it to Public to start a Flock.",
+    "womenOnly": "Women only",
+    "hostFallback": "Host",
+    "daysShort": "{count}d"
+  },
+  "budget": {
+    "friendly": "Budget-friendly",
+    "mid": "Mid-range",
+    "comfort": "Comfort"
+  },
+  "detail": {
+    "back": "Flocks",
+    "unavailableTitle": "This Flock isn't available",
+    "unavailableBody": "It may have been cancelled, filled up, or made private.",
+    "exploreFlocks": "Explore Flocks",
+    "matchBadge": "{pct}% your vibe",
+    "days": "{count} days",
+    "going": "{going}/{capacity} going",
+    "full": "Full",
+    "womenOnly": "Women only",
+    "aboutHeading": "About this Flock",
+    "hostedBy": "Hosted by",
+    "view": "View →",
+    "hostingTitle": "You're hosting this Flock",
+    "noLongerActive": "· no longer active",
+    "pendingRequests": "{count, plural, one {# join request waiting for your review.} other {# join requests waiting for your review.}}",
+    "noPending": "No pending join requests right now.",
+    "manageInMyTrips": "Manage in My Trips",
+    "inFlock": "You're in this Flock 🎉",
+    "openChats": "Open your chats",
+    "datesPassed": "This Flock's dates have passed.",
+    "flockFull": "This Flock is full — someone's spot may still open up."
+  }
+}

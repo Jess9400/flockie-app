@@ -2,14 +2,13 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import GenerateCoverButton from "@/components/GenerateCoverButton";
 import { TRIP_VIBES } from "@/lib/vibe-check";
 import { CONTINENTS, FLOCK_LANGUAGES, GROUP_GENDERS } from "@/lib/trips";
 
 const TYPE_MAX = 3;
-const BUDGET_LABELS = ["Backpacker", "Budget", "Mid-range", "Comfort", "Luxury"];
-const PACE_LABELS = ["Very slow", "Relaxed", "Balanced", "Active", "Non-stop"];
 
 type Trip = {
   id?: string;
@@ -41,6 +40,7 @@ export default function TripForm({
   kind?: "trip" | "activity" | "flock";
 }) {
   const router = useRouter();
+  const tf = useTranslations("trips");
   const supabase = createClient();
   const isActivity = kind === "activity";
   const isFlock = kind === "flock";
@@ -77,7 +77,7 @@ export default function TripForm({
       if (error) throw error;
       setCover(supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl);
     } catch {
-      setErr("Photo upload failed.");
+      setErr(tf("form.errPhotoUpload"));
     } finally {
       setUploading(false);
       if (coverInput.current) coverInput.current.value = "";
@@ -99,17 +99,17 @@ export default function TripForm({
     const destinations = isActivity
       ? [dest1].map((d) => d.trim()).filter(Boolean)
       : [dest1, dest2, dest3].map((d) => d.trim()).filter(Boolean);
-    if (isActivity && !title.trim()) return setErr("Give your activity a name.");
+    if (isActivity && !title.trim()) return setErr(tf("form.errActivityName"));
     if (destinations.length === 0 || !start || !end) {
-      return setErr(`${isActivity ? "City" : "At least one destination"} and dates are required.`);
+      return setErr(isActivity ? tf("form.errCityDatesRequired") : tf("form.errDestDatesRequired"));
     }
-    if (new Date(end) < new Date(start)) return setErr("End date must be after the start date.");
-    if (!cover) return setErr("Add a cover photo — upload one or generate it.");
+    if (new Date(end) < new Date(start)) return setErr(tf("form.errEndAfterStart"));
+    if (!cover) return setErr(tf("form.errCoverRequired"));
     if (types.length === 0) {
-      return setErr(isActivity ? "Pick at least one activity vibe." : "Pick at least one trip type.");
+      return setErr(isActivity ? tf("form.errActivityVibe") : tf("form.errTripType"));
     }
-    if (isFlock && !continent) return setErr("Pick the continent your Flock is in.");
-    if (isFlock && !language) return setErr("Pick the group's main language.");
+    if (isFlock && !continent) return setErr(tf("form.errContinent"));
+    if (isFlock && !language) return setErr(tf("form.errLanguage"));
 
     setSaving(true);
     const payload = {
@@ -150,81 +150,73 @@ export default function TripForm({
     <form onSubmit={save} className="space-y-5 pb-8">
       {isActivity && (
         <label className="block">
-          <span className="mb-1 block text-sm font-bold">Activity</span>
-          <input className={inputCls} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Sunrise surf, padel game, gallery hop" />
+          <span className="mb-1 block text-sm font-bold">{tf("form.labelActivity")}</span>
+          <input className={inputCls} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={tf("form.activityPlaceholder")} />
         </label>
       )}
 
       {!isActivity && (
         <label className="block">
           <span className="mb-1 block text-sm font-bold">
-            About this {isFlock ? "Flock" : "trip"}{" "}
-            <span className="font-medium text-muted">(optional)</span>
+            {isFlock ? tf("form.aboutFlock") : tf("form.aboutTrip")}{" "}
+            <span className="font-medium text-muted">{tf("form.optional")}</span>
           </span>
           <textarea
             className={`${inputCls} h-24 resize-none`}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             maxLength={600}
-            placeholder={
-              isFlock
-                ? "What's the plan and the vibe? Who's it for? e.g. Chill week in Bali — surf, cafés, no big parties. Easy-going people welcome."
-                : "A few words about the trip and the kind of buddy you're after."
-            }
+            placeholder={isFlock ? tf("form.descFlockPlaceholder") : tf("form.descTripPlaceholder")}
           />
         </label>
       )}
 
       {isActivity ? (
         <label className="block">
-          <span className="mb-1 block text-sm font-bold">City</span>
-          <input className={inputCls} value={dest1} onChange={(e) => setDest1(e.target.value)} placeholder="Where you are" />
+          <span className="mb-1 block text-sm font-bold">{tf("form.labelCity")}</span>
+          <input className={inputCls} value={dest1} onChange={(e) => setDest1(e.target.value)} placeholder={tf("form.cityPlaceholder")} />
         </label>
       ) : (
         <div>
-          <span className="mb-1 block text-sm font-bold">Where to? (up to 3)</span>
+          <span className="mb-1 block text-sm font-bold">{tf("form.labelDestinations")}</span>
           <div className="space-y-2">
-            <input className={inputCls} value={dest1} onChange={(e) => setDest1(e.target.value)} placeholder="Destination 1 (required)" />
-            <input className={inputCls} value={dest2} onChange={(e) => setDest2(e.target.value)} placeholder="Destination 2 (optional)" />
-            <input className={inputCls} value={dest3} onChange={(e) => setDest3(e.target.value)} placeholder="Destination 3 (optional)" />
+            <input className={inputCls} value={dest1} onChange={(e) => setDest1(e.target.value)} placeholder={tf("form.dest1Placeholder")} />
+            <input className={inputCls} value={dest2} onChange={(e) => setDest2(e.target.value)} placeholder={tf("form.dest2Placeholder")} />
+            <input className={inputCls} value={dest3} onChange={(e) => setDest3(e.target.value)} placeholder={tf("form.dest3Placeholder")} />
           </div>
           <p className="mt-1 text-xs font-medium text-muted">
-            {isFlock
-              ? "Travelers who match any of these can request to join."
-              : "You’ll match with travelers heading to any of these."}
+            {isFlock ? tf("form.destHelpFlock") : tf("form.destHelpTrip")}
           </p>
         </div>
       )}
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="block">
-          <span className="mb-1 block text-sm font-bold">Start</span>
+          <span className="mb-1 block text-sm font-bold">{tf("form.labelStart")}</span>
           <input type="date" className={`${inputCls} block min-w-0 appearance-none`} value={start} onChange={(e) => setStart(e.target.value)} />
         </label>
         <label className="block">
-          <span className="mb-1 block text-sm font-bold">End</span>
+          <span className="mb-1 block text-sm font-bold">{tf("form.labelEnd")}</span>
           <input type="date" className={`${inputCls} block min-w-0 appearance-none`} value={end} onChange={(e) => setEnd(e.target.value)} />
         </label>
       </div>
-      {days > 0 && <p className="text-sm font-semibold text-flockie-orange">{days} days</p>}
+      {days > 0 && <p className="text-sm font-semibold text-flockie-orange">{tf("form.days", { count: days })}</p>}
 
       {isActivity ? (
         <p className="rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-medium text-ink/70">
-          Activities are <span className="font-bold text-ink">1:1</span> — you&rsquo;ll
-          match with one person at a time. For bigger groups, create a Vibe.
+          {tf.rich("form.activityNote", { b: (chunks) => <span className="font-bold text-ink">{chunks}</span> })}
         </p>
       ) : isFlock ? (
         <label className="block">
-          <span className="mb-1 block text-sm font-bold">Group size: {groupSize}</span>
+          <span className="mb-1 block text-sm font-bold">{tf("form.groupSize", { count: groupSize })}</span>
           <input type="range" min={3} max={12} value={groupSize} onChange={(e) => setGroupSize(Number(e.target.value))} className="w-full accent-flockie-orange" />
           <p className="mt-1 text-xs font-medium text-muted">
-            Anyone can request to join your Flock — you approve who&rsquo;s in.
+            {tf("form.flockSizeHelp")}
           </p>
         </label>
       ) : (
         <p className="rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-medium text-ink/70">
-          You&rsquo;re looking for <span className="font-bold text-ink">1 travel buddy</span> —
-          you both swipe, mutual likes connect. Want a group? Create a Flock.
+          {tf.rich("form.tripNote", { b: (chunks) => <span className="font-bold text-ink">{chunks}</span> })}
         </p>
       )}
 
@@ -232,18 +224,18 @@ export default function TripForm({
         <>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="block">
-              <span className="mb-1 block text-sm font-bold">Continent</span>
+              <span className="mb-1 block text-sm font-bold">{tf("form.labelContinent")}</span>
               <select className={inputCls} value={continent} onChange={(e) => setContinent(e.target.value)}>
-                <option value="">Select…</option>
+                <option value="">{tf("form.selectPlaceholder")}</option>
                 {CONTINENTS.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
             </label>
             <label className="block">
-              <span className="mb-1 block text-sm font-bold">Group language</span>
+              <span className="mb-1 block text-sm font-bold">{tf("form.labelGroupLanguage")}</span>
               <select className={inputCls} value={language} onChange={(e) => setLanguage(e.target.value)}>
-                <option value="">Select…</option>
+                <option value="">{tf("form.selectPlaceholder")}</option>
                 {FLOCK_LANGUAGES.map((l) => (
                   <option key={l} value={l}>{l}</option>
                 ))}
@@ -251,7 +243,7 @@ export default function TripForm({
             </label>
           </div>
           <div>
-            <span className="mb-1 block text-sm font-bold">Open to</span>
+            <span className="mb-1 block text-sm font-bold">{tf("form.labelOpenTo")}</span>
             <div className="grid grid-cols-3 gap-2">
               {GROUP_GENDERS.map((g) => (
                 <button
@@ -272,8 +264,8 @@ export default function TripForm({
 
       <div>
         <p className="text-sm font-bold">
-          {isActivity ? "Activity vibe" : "Trip type"}{" "}
-          <span className="font-semibold text-muted">({types.length}/{TYPE_MAX})</span>
+          {isActivity ? tf("form.labelActivityVibe") : tf("form.labelTripType")}{" "}
+          <span className="font-semibold text-muted">{tf("form.typeCount", { count: types.length, max: TYPE_MAX })}</span>
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
           {TRIP_VIBES.map((t) => {
@@ -290,7 +282,7 @@ export default function TripForm({
       </div>
 
       <div>
-        <span className="mb-1 block text-sm font-bold">Cover photo</span>
+        <span className="mb-1 block text-sm font-bold">{tf("form.labelCoverPhoto")}</span>
         {cover ? (
           <div className="relative aspect-[16/9] overflow-hidden rounded-2xl border-2 border-ink">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -299,7 +291,7 @@ export default function TripForm({
               type="button"
               onClick={() => setCover(null)}
               className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-ink text-xs font-bold text-white"
-              aria-label="Remove cover"
+              aria-label={tf("form.removeCoverAria")}
             >
               ✕
             </button>
@@ -312,7 +304,7 @@ export default function TripForm({
               disabled={uploading}
               className="flex aspect-[16/9] w-full items-center justify-center rounded-2xl border-2 border-dashed border-ink/40 text-sm font-bold text-muted disabled:opacity-50"
             >
-              {uploading ? "Uploading…" : "+ Upload a cover"}
+              {uploading ? tf("form.uploading") : tf("form.uploadCover")}
             </button>
             <GenerateCoverButton
               userId={userId}
@@ -326,28 +318,28 @@ export default function TripForm({
       </div>
 
       <label className="block">
-        <span className="mb-1 block text-sm font-bold">Budget: {BUDGET_LABELS[budget - 1]}</span>
+        <span className="mb-1 block text-sm font-bold">{tf("form.labelBudget", { label: tf(`form.budget.${budget}`) })}</span>
         <input type="range" min={1} max={5} value={budget} onChange={(e) => setBudget(Number(e.target.value))} className="w-full accent-flockie-orange" />
       </label>
       <label className="block">
-        <span className="mb-1 block text-sm font-bold">Pace: {PACE_LABELS[pace - 1]}</span>
+        <span className="mb-1 block text-sm font-bold">{tf("form.labelPace", { label: tf(`form.pace.${pace}`) })}</span>
         <input type="range" min={1} max={5} value={pace} onChange={(e) => setPace(Number(e.target.value))} className="w-full accent-flockie-orange" />
       </label>
 
-      <p className="text-xs font-medium text-muted">Pre-filled from your profile — tweak anything.</p>
+      <p className="text-xs font-medium text-muted">{tf("form.prefilledNote")}</p>
       {err && <p className="text-center text-sm font-bold text-flockie-orange">{err}</p>}
 
       <button type="submit" disabled={saving || uploading}
         className="w-full rounded-full border-2 border-ink bg-flockie-orange py-3.5 font-bold text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50">
         {saving
-          ? "Saving…"
+          ? tf("form.saving")
           : initial.id
-            ? "Update"
+            ? tf("form.update")
             : isActivity
-              ? "Post activity & find buddies"
+              ? tf("form.postActivity")
               : isFlock
-                ? "Create Flock"
-                : "Post trip & find a buddy"}
+                ? tf("form.createFlock")
+                : tf("form.postTrip")}
       </button>
     </form>
   );
