@@ -31,6 +31,8 @@ export const NAMESPACES = [
   "deals",
   "inbox",
   "review",
+  "activities",
+  "myVibes",
 ] as const;
 
 export default getRequestConfig(async () => {
