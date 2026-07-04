@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function VibeSearch({ q, city }: { q: string; city: string }) {
+  const t = useTranslations("components");
   const router = useRouter();
   const [query, setQuery] = useState(q);
   const [loc, setLoc] = useState(city);
@@ -30,13 +32,13 @@ export default function VibeSearch({ q, city }: { q: string; city: string }) {
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Activity (surf, dinner, yoga…)"
+        placeholder={t("vibeSearch.placeholderActivity")}
         className="w-full rounded-2xl border-2 border-ink bg-white px-4 py-2.5 font-medium outline-none"
       />
       <input
         value={loc}
         onChange={(e) => setLoc(e.target.value)}
-        placeholder="Location (city)"
+        placeholder={t("vibeSearch.placeholderCity")}
         className="w-full rounded-2xl border-2 border-ink bg-white px-4 py-2.5 font-medium outline-none sm:max-w-[40%]"
       />
       <div className="flex gap-2">
@@ -44,13 +46,13 @@ export default function VibeSearch({ q, city }: { q: string; city: string }) {
           type="submit"
           className="flex flex-1 items-center justify-center gap-1 rounded-2xl border-2 border-ink bg-flockie-orange px-4 py-2.5 font-bold text-white shadow-[0_3px_0_0_#E0512C] sm:flex-none"
         >
-          <Search size={16} /> Search
+          <Search size={16} /> {t("vibeSearch.searchButton")}
         </button>
         {active && (
           <button
             type="button"
             onClick={clear}
-            aria-label="Clear"
+            aria-label={t("vibeSearch.clearAriaLabel")}
             className="flex items-center justify-center rounded-2xl border-2 border-ink bg-white px-3"
           >
             <X size={16} />

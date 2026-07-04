@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SlidersHorizontal, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export type FilterSection = {
   key: string;
@@ -23,6 +24,7 @@ export default function FilterSheet({
   sections: FilterSection[];
   preserveKeys?: string[];
 }) {
+  const t = useTranslations("components");
   const router = useRouter();
   const sp = useSearchParams();
   const [open, setOpen] = useState(false);
@@ -75,7 +77,7 @@ export default function FilterSheet({
         onClick={openSheet}
         className="inline-flex items-center gap-2 rounded-full border-2 border-ink bg-white px-4 py-2 text-sm font-bold text-ink"
       >
-        <SlidersHorizontal size={16} /> Filters
+        <SlidersHorizontal size={16} /> {t("filterSheet.filters")}
         {activeCount > 0 && (
           <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-flockie-coral px-1 text-[10px] font-extrabold text-white">
             {activeCount}
@@ -93,10 +95,10 @@ export default function FilterSheet({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b-2 border-ink/10 px-5 py-4">
-              <button type="button" onClick={() => setOpen(false)} aria-label="Close">
+              <button type="button" onClick={() => setOpen(false)} aria-label={t("filterSheet.close")}>
                 <X size={22} className="text-ink" />
               </button>
-              <p className="font-fredoka text-lg font-bold text-ink">Filters</p>
+              <p className="font-fredoka text-lg font-bold text-ink">{t("filterSheet.filters")}</p>
               <span className="w-[22px]" />
             </div>
 
@@ -133,14 +135,14 @@ export default function FilterSheet({
                 onClick={reset}
                 className="font-nunito text-sm font-bold text-muted underline"
               >
-                Reset all
+                {t("filterSheet.resetAll")}
               </button>
               <button
                 type="button"
                 onClick={apply}
                 className="rounded-full border-2 border-ink bg-flockie-coral px-6 py-2.5 font-fredoka text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
               >
-                Show results
+                {t("filterSheet.showResults")}
               </button>
             </div>
           </div>

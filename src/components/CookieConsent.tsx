@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID ?? "G-BGV3BR3042";
 const STORAGE_KEY = "flockie-app-cookie-consent";
@@ -32,6 +33,7 @@ function loadGoogleAnalytics() {
 
 
 export default function CookieConsent() {
+  const t = useTranslations("components");
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -70,18 +72,18 @@ export default function CookieConsent() {
     <div
       role="dialog"
       aria-live="polite"
-      aria-label="Cookie consent"
+      aria-label={t("cookie.aria")}
       className="fixed inset-x-3 bottom-3 z-[60] mx-auto max-w-lg rounded-3xl border-2 border-navy bg-white p-5 font-nunito shadow-[0_8px_0_0_rgba(10,37,69,1)] sm:inset-x-0 sm:bottom-5"
     >
       <p className="text-sm font-medium text-navy/80">
-        We use optional cookies for analytics. Your call.{" "}
+        {t("cookie.body")}{" "}
         <a
           href="https://www.findflockie.com/privacy"
           target="_blank"
           rel="noopener noreferrer"
           className="font-bold text-flockie-coral underline underline-offset-2"
         >
-          Privacy Policy
+          {t("cookie.privacy")}
         </a>
       </p>
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
@@ -90,14 +92,14 @@ export default function CookieConsent() {
           onClick={decline}
           className="order-2 rounded-full border-2 border-navy bg-white px-5 py-2 font-fredoka font-semibold text-navy transition-transform hover:scale-105 sm:order-1"
         >
-          Decline
+          {t("cookie.decline")}
         </button>
         <button
           type="button"
           onClick={accept}
           className="order-1 rounded-full border-2 border-navy bg-flockie-coral px-5 py-2 font-fredoka font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] transition-transform hover:scale-105 active:translate-y-1 sm:order-2"
         >
-          Accept
+          {t("cookie.accept")}
         </button>
       </div>
     </div>

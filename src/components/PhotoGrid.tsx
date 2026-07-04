@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Plus, X, Video } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function PhotoGrid({
   photos,
@@ -24,6 +25,7 @@ export default function PhotoGrid({
   onRemoveVideo: () => void;
   uploading: boolean;
 }) {
+  const t = useTranslations("components");
   const [drag, setDrag] = useState<number | null>(null);
 
   function slot(i: number) {
@@ -47,14 +49,14 @@ export default function PhotoGrid({
         <img src={url} alt="" className="h-full w-full object-cover" />
         {isPrimary && (
           <span className="absolute left-1.5 top-1.5 rounded-full bg-navy px-2 py-0.5 font-nunito text-[10px] font-bold uppercase tracking-wide text-white">
-            Primary
+            {t("photoGrid.primary")}
           </span>
         )}
         <button
           type="button"
           onClick={() => onRemovePhoto(i)}
           className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-navy text-white opacity-0 transition-opacity group-hover:opacity-100"
-          aria-label="Remove photo"
+          aria-label={t("photoGrid.removePhoto")}
         >
           <X size={14} />
         </button>
@@ -74,7 +76,7 @@ export default function PhotoGrid({
             className="flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-navy bg-cream text-navy"
           >
             <Plus size={22} />
-            <span className="font-nunito text-[11px] font-semibold">Add photo</span>
+            <span className="font-nunito text-[11px] font-semibold">{t("photoGrid.addPhoto")}</span>
           </button>
         )}
 
@@ -83,13 +85,13 @@ export default function PhotoGrid({
           <div className="relative aspect-square overflow-hidden rounded-xl border-2 border-navy">
             <video src={videoUrl} className="h-full w-full object-cover" />
             <span className="absolute left-1.5 top-1.5 rounded-full bg-flockie-blue px-2 py-0.5 font-nunito text-[10px] font-bold uppercase tracking-wide text-white">
-              Video
+              {t("photoGrid.video")}
             </span>
             <button
               type="button"
               onClick={onRemoveVideo}
               className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-navy text-white"
-              aria-label="Remove video"
+              aria-label={t("photoGrid.removeVideo")}
             >
               <X size={14} />
             </button>
@@ -101,12 +103,12 @@ export default function PhotoGrid({
             className="flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-navy bg-cream text-navy"
           >
             <Video size={22} />
-            <span className="font-nunito text-[11px] font-semibold">Video (optional)</span>
+            <span className="font-nunito text-[11px] font-semibold">{t("photoGrid.videoOptional")}</span>
           </button>
         )}
       </div>
       {uploading && (
-        <p className="mt-2 font-nunito text-sm font-semibold text-flockie-coral">Uploading…</p>
+        <p className="mt-2 font-nunito text-sm font-semibold text-flockie-coral">{t("photoGrid.uploading")}</p>
       )}
     </div>
   );

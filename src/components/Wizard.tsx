@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ChevronLeft, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 // A page-based wizard: each page holds a small group of fields, styled like the
 // onboarding screenshots (coral progress bar, kicker, card/slider/badge controls).
@@ -74,18 +75,19 @@ function fieldComplete(f: WizardField, ans: WizardAnswers): boolean {
 
 // Small "how to answer" line shown under the kicker in one-question-per-screen
 // mode (e.g. "Tap one", "Pick up to 3", "Drag the slider").
-function mechanicLabel(f: WizardField): string {
+// NOTE: t is passed in from the parent Wizard component.
+function mechanicLabel(f: WizardField, t: (key: string, values?: Record<string, string | number>) => string): string {
   switch (f.type) {
     case "select":
-      return "Tap one";
+      return t("wizard.tapOne");
     case "multi":
-      return f.max ? `Pick up to ${f.max}` : "Pick all that apply";
+      return f.max ? t("wizard.pickUpTo", { max: f.max }) : t("wizard.pickAllThatApply");
     case "slider":
-      return "Drag the slider";
+      return t("wizard.dragSlider");
     case "skills":
-      return "Rate yourself by category";
+      return t("wizard.rateSelf");
     case "text":
-      return "One line";
+      return t("wizard.oneLine");
   }
 }
 
@@ -94,7 +96,7 @@ export default function Wizard({
   pages,
   initial,
   submitting,
-  finishLabel = "Finish",
+  finishLabel: finishLabelProp,
   flat = false,
   onComplete,
   onClose,
@@ -110,6 +112,8 @@ export default function Wizard({
   onComplete: (answers: WizardAnswers) => void;
   onClose?: () => void;
 }) {
+  const t = useTranslations("components");
+  const finishLabel = finishLabelProp ?? t("wizard.finish");
   const [p, setP] = useState(0);
   const [ans, setAns] = useState<WizardAnswers>(initial ?? {});
 
@@ -133,7 +137,7 @@ export default function Wizard({
   const headerBar = (
     <div className="mx-auto flex w-full max-w-md items-center gap-3 px-5 pb-2 pt-5 md:max-w-2xl">
       {p > 0 ? (
-        <button onClick={back} aria-label="Back" className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-navy bg-white text-navy">
+        <button onClick={back} aria-label={t("wizard.back")} className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-navy bg-white text-navy">
           <ChevronLeft size={18} />
         </button>
       ) : (
@@ -143,7 +147,7 @@ export default function Wizard({
         <div className="h-full rounded-full bg-flockie-coral transition-all" style={{ width: `${pct}%` }} />
       </div>
       {onClose ? (
-        <button onClick={onClose} aria-label="Close" className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-navy bg-white text-navy">
+        <button onClick={onClose} aria-label={t("wizard.close")} className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-navy bg-white text-navy">
           <X size={18} />
         </button>
       ) : (
@@ -162,9 +166,9 @@ export default function Wizard({
         <div className="flex-1 overflow-y-auto px-5 pb-6 pt-6 md:pt-12">
           <div className="mx-auto max-w-md md:max-w-2xl">
             <p className="font-nunito text-xs font-extrabold uppercase tracking-wide text-flockie-coral">
-              {title ? `${title} · ` : ""}{p + 1} of {n}
+              {title ? `${title} · ` : ""}{t("wizard.of", { current: p + 1, total: n })}
             </p>
-            <p className="mt-1 font-nunito text-sm font-semibold text-navy/45">{mechanicLabel(field)}</p>
+            <p className="mt-1 font-nunito text-sm font-semibold text-navy/45">{mechanicLabel(field, t)}</p>
             <h2 className="mt-1.5 font-fredoka text-2xl font-bold leading-tight text-navy">{field.label}</h2>
             {field.hint && <p className="mt-1.5 font-nunito text-sm font-medium text-navy/55">{field.hint}</p>}
 
@@ -187,7 +191,7 @@ export default function Wizard({
               disabled={!canContinue || submitting}
               className="mt-9 w-full rounded-full border-2 border-navy bg-navy py-3.5 font-fredoka text-base font-semibold text-white disabled:opacity-40"
             >
-              {submitting && last ? "Saving…" : last ? finishLabel : "Continue →"}
+              {submitting && last ? t("wizard.saving") : last ? finishLabel : t("wizard.continue")}
             </button>
           </div>
         </div>
@@ -206,7 +210,7 @@ export default function Wizard({
       <div className="flex-1 overflow-y-auto px-5 pb-6 pt-4">
         <div className="mx-auto max-w-md md:max-w-2xl">
           <p className="font-nunito text-xs font-extrabold uppercase tracking-wide text-flockie-coral">
-            {title ? `${title} · ` : ""}Step {p + 1} of {n}
+            {title ? `${title} · ` : ""}{t("wizard.stepOf", { current: p + 1, total: n })}
           </p>
           <h2 className="mt-1 font-fredoka text-2xl font-bold leading-tight text-navy">{page.title}</h2>
           {page.subtitle && <p className="mt-1 font-nunito text-sm font-medium text-navy/55">{page.subtitle}</p>}
@@ -223,7 +227,7 @@ export default function Wizard({
             disabled={!canContinue || submitting}
             className="mt-9 w-full rounded-full border-2 border-navy bg-navy py-3.5 font-fredoka text-base font-semibold text-white disabled:opacity-40"
           >
-            {submitting && last ? "Saving…" : last ? finishLabel : "Continue →"}
+            {submitting && last ? t("wizard.saving") : last ? finishLabel : t("wizard.continue")}
           </button>
         </div>
       </div>
@@ -244,6 +248,7 @@ function Field({
   // heading by the parent, so the field shouldn't repeat them.
   hideLabel?: boolean;
 }) {
+  const t = useTranslations("components");
   return (
     <div>
       {!hideLabel && (
@@ -294,8 +299,8 @@ function Field({
                   {c.emoji && <span>{c.emoji}</span>} {c.label}
                 </p>
                 <SliderField
-                  left="New to it"
-                  right="Pro"
+                  left={t("wizard.newToIt")}
+                  right={t("wizard.pro")}
                   labels={field.labels}
                   value={map[c.value] ?? 3}
                   onChange={(v) => onChange({ ...map, [c.value]: v as number })}

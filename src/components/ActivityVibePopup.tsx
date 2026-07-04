@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useEsc } from "@/lib/use-esc";
 import ActivityQuestions from "@/components/ActivityQuestions";
 import { EMPTY_ACTIVITY, type ActivityAnswers } from "@/lib/vibe-check";
+import { useTranslations } from "next-intl";
 
 const MAX_PHOTOS = 3;
 
@@ -21,6 +22,7 @@ export default function ActivityVibePopup({
   onDone: () => void;
   onClose: () => void;
 }) {
+  const t = useTranslations("components");
   const supabase = createClient();
   const [name, setName] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
@@ -75,7 +77,7 @@ export default function ActivityVibePopup({
       }
       setPhotos((p) => [...p, ...urls]);
     } catch {
-      setErr("Photo upload failed.");
+      setErr(t("activityVibePopup.photoUploadFailed"));
     } finally {
       setUploading(false);
       if (photoInput.current) photoInput.current.value = "";
@@ -84,9 +86,9 @@ export default function ActivityVibePopup({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim()) return setErr("Add your first name.");
-    if (photos.length === 0) return setErr("Add at least one photo.");
-    if (activity.activities.length === 0) return setErr("Pick at least one activity.");
+    if (!name.trim()) return setErr(t("activityVibePopup.addFirstName"));
+    if (photos.length === 0) return setErr(t("activityVibePopup.addPhoto"));
+    if (activity.activities.length === 0) return setErr(t("activityVibePopup.pickActivity"));
     setSaving(true);
     setErr(null);
     const { error } = await supabase
@@ -104,34 +106,34 @@ export default function ActivityVibePopup({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Quick vibe check"
+        aria-label={t("activityVibePopup.quickVibeCheck")}
         className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-3xl border-2 border-navy bg-cream p-5 font-nunito sm:rounded-3xl"
       >
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="font-fredoka text-2xl font-bold text-navy">Quick vibe check</h2>
+            <h2 className="font-fredoka text-2xl font-bold text-navy">{t("activityVibePopup.quickVibeCheck")}</h2>
             <p className="mt-1 font-nunito text-sm font-medium text-navy/60">
-              So the host&rsquo;s algorithm can match you. Takes a minute.
+              {t("activityVibePopup.subtitle")}
             </p>
           </div>
-          <button onClick={onClose} aria-label="Close" className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-navy text-navy">
+          <button onClick={onClose} aria-label={t("activityVibePopup.close")} className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-navy text-navy">
             <X size={18} />
           </button>
         </div>
 
         <form onSubmit={submit} className="mt-5 space-y-5">
           <label className="block">
-            <span className="mb-1.5 block font-nunito text-sm font-semibold text-navy">First name</span>
+            <span className="mb-1.5 block font-nunito text-sm font-semibold text-navy">{t("activityVibePopup.firstNameLabel")}</span>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Your first name"
+              placeholder={t("activityVibePopup.firstNamePlaceholder")}
               className="h-12 w-full rounded-2xl border-2 border-navy bg-white px-4 font-nunito font-medium text-navy outline-none focus:border-flockie-blue"
             />
           </label>
 
           <div>
-            <span className="mb-1.5 block font-nunito text-sm font-semibold text-navy">Photos (up to 3)</span>
+            <span className="mb-1.5 block font-nunito text-sm font-semibold text-navy">{t("activityVibePopup.photosLabel")}</span>
             <div className="grid grid-cols-3 gap-2">
               {photos.map((url, i) => (
                 <div key={url} className="relative aspect-square overflow-hidden rounded-2xl border-2 border-navy">
@@ -141,7 +143,7 @@ export default function ActivityVibePopup({
                     type="button"
                     onClick={() => setPhotos(photos.filter((_, idx) => idx !== i))}
                     className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-navy text-xs font-bold text-white"
-                    aria-label="Remove"
+                    aria-label={t("activityVibePopup.remove")}
                   >
                     ✕
                   </button>
@@ -158,7 +160,7 @@ export default function ActivityVibePopup({
               )}
             </div>
             <input ref={photoInput} type="file" accept="image/*" multiple hidden onChange={onPhotos} />
-            {uploading && <p className="mt-1 font-nunito text-sm font-semibold text-flockie-coral">Uploading…</p>}
+            {uploading && <p className="mt-1 font-nunito text-sm font-semibold text-flockie-coral">{t("activityVibePopup.uploading")}</p>}
           </div>
 
           <div className="border-t-2 border-navy/10 pt-4">
@@ -172,7 +174,7 @@ export default function ActivityVibePopup({
             disabled={saving || uploading}
             className="w-full rounded-full border-2 border-navy bg-flockie-coral py-3.5 font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] disabled:opacity-50"
           >
-            {saving ? "Saving…" : "Save & express interest"}
+            {saving ? t("activityVibePopup.saving") : t("activityVibePopup.submit")}
           </button>
         </form>
       </div>

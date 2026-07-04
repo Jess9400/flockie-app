@@ -88,6 +88,7 @@ export default function AppShell({
 }) {
   const pathname = usePathname();
   const t = useTranslations("nav");
+  const tc = useTranslations("components");
   const section = sectionFor(pathname);
   // Chat rooms fill the viewport exactly (no page scroll, no footer) so the
   // chat window stays static and only the message list scrolls inside it.
@@ -168,15 +169,15 @@ export default function AppShell({
       {/* Top bar */}
       <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b-2 border-ink bg-cream px-4 sm:px-6">
         <div className="flex items-center gap-2">
-          <button type="button" onClick={() => setOpen((v) => !v)} aria-label="Menu"
+          <button type="button" onClick={() => setOpen((v) => !v)} aria-label={tc("appShell.menu")}
             className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-ink lg:hidden">
             {open ? <X size={18} /> : <Menu size={18} />}
           </button>
-          <Link href="/home" aria-label="Flockie home">
+          <Link href="/home" aria-label={tc("appShell.home")}>
             <Image src="/logo.svg" alt="Flockie" width={130} height={44} className="h-9 w-auto" priority />
           </Link>
           <span className="rounded-full bg-flockie-coral px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-white">
-            Beta
+            {tc("appShell.beta")}
           </span>
         </div>
 
@@ -184,7 +185,7 @@ export default function AppShell({
           <LanguageSwitcher />
           <Link
             href="/inbox"
-            aria-label="Notifications"
+            aria-label={tc("appShell.notifications")}
             className="relative flex h-9 w-9 items-center justify-center rounded-full border-2 border-ink bg-white"
           >
             <Bell size={18} />
@@ -203,14 +204,14 @@ export default function AppShell({
                   {(name || "F")[0]}
                 </span>
               )}
-              <span className="hidden text-sm font-bold sm:inline">{name || "You"}</span>
+              <span className="hidden text-sm font-bold sm:inline">{name || tc("appShell.you")}</span>
             </button>
             {menu && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setMenu(false)} />
                 <div className="absolute right-0 z-50 mt-2 w-44 rounded-2xl border-2 border-ink bg-white p-2 shadow-[0_4px_0_rgba(10,37,69,0.15)]">
                   <Link href="/profile" onClick={() => setMenu(false)} className="block rounded-xl px-3 py-2 text-sm font-bold hover:bg-navy/5">
-                    Profile
+                    {tc("appShell.profile")}
                   </Link>
                   <div className="mt-1 border-t-2 border-navy/10 pt-1">
                     <SignOutButton />
@@ -256,7 +257,7 @@ export default function AppShell({
           layout stays. */}
       {!isChatRoom && (
         <nav
-          aria-label="Primary"
+          aria-label={tc("appShell.primaryNav")}
           className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-ink bg-white pb-[env(safe-area-inset-bottom)] sm:hidden"
         >
           <div className="grid grid-cols-5">

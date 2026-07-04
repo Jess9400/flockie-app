@@ -41,6 +41,7 @@ export default function TripForm({
 }) {
   const router = useRouter();
   const tf = useTranslations("trips");
+  const tc = useTranslations("components");
   const supabase = createClient();
   const isActivity = kind === "activity";
   const isFlock = kind === "flock";
@@ -228,7 +229,7 @@ export default function TripForm({
               <select className={inputCls} value={continent} onChange={(e) => setContinent(e.target.value)}>
                 <option value="">{tf("form.selectPlaceholder")}</option>
                 {CONTINENTS.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c}>{tc(`continents.${c}`)}</option>
                 ))}
               </select>
             </label>
@@ -237,7 +238,7 @@ export default function TripForm({
               <select className={inputCls} value={language} onChange={(e) => setLanguage(e.target.value)}>
                 <option value="">{tf("form.selectPlaceholder")}</option>
                 {FLOCK_LANGUAGES.map((l) => (
-                  <option key={l} value={l}>{l}</option>
+                  <option key={l} value={l}>{tc(`languages.${l}`)}</option>
                 ))}
               </select>
             </label>
@@ -254,7 +255,7 @@ export default function TripForm({
                     groupGender === g.value ? "bg-flockie-blue text-white" : "bg-white"
                   }`}
                 >
-                  {g.label}
+                  {tc(`groupGenders.${g.value}`)}
                 </button>
               ))}
             </div>
@@ -274,7 +275,7 @@ export default function TripForm({
             return (
               <button key={t} type="button" disabled={disabled} onClick={() => toggleType(t)}
                 className={`rounded-full border-2 border-ink px-3 py-1 text-xs font-bold ${on ? "bg-flockie-blue text-white" : disabled ? "bg-white text-muted/40 opacity-50" : "bg-white"}`}>
-                {t}
+                {tc(`tripTypes.${t}`)}
               </button>
             );
           })}

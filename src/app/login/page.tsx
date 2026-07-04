@@ -3,6 +3,7 @@
 import { Suspense, useState } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { safeRedirectPath } from "@/lib/redirects";
 
@@ -15,6 +16,7 @@ export default function LoginPage() {
 }
 
 function LoginForm() {
+  const t = useTranslations("components");
   const searchParams = useSearchParams();
   const supabase = createClient();
   const redirect = safeRedirectPath(searchParams.get("redirect"), "/home");
@@ -52,11 +54,10 @@ function LoginForm() {
           className="mx-auto h-14 w-auto"
         />
         <h1 className="mt-5 text-center text-4xl font-black leading-tight tracking-tight text-white">
-          Find someone to go with. <span className="text-flockie-coral">Anywhere.</span>
+          {t("login.headline")} <span className="text-flockie-coral">{t("login.headlineAccent")}</span>
         </h1>
         <p className="mx-auto mt-3 max-w-xs text-center text-sm font-medium leading-relaxed text-white/70">
-          Dinner tonight, a weekend trip, or just someone to hit the museum with. 5 quick
-          questions and we&rsquo;ll find your people.
+          {t("login.subheading")}
         </p>
 
         <label className="mt-8 flex cursor-pointer items-start gap-3 text-left text-xs font-medium leading-relaxed text-white/70">
@@ -67,13 +68,13 @@ function LoginForm() {
             className="mt-0.5 h-4 w-4 shrink-0 accent-flockie-coral"
           />
           <span>
-            I&rsquo;m 18 or older and I agree to Flockie&rsquo;s{" "}
+            {t("login.consentPrefix")}
             <a href="/terms" target="_blank" rel="noopener noreferrer" className="font-bold text-flockie-coral underline">
-              Terms
-            </a>{" "}
-            and{" "}
+              {t("login.terms")}
+            </a>
+            {t("login.consentAnd")}
             <a href="/privacy" target="_blank" rel="noopener noreferrer" className="font-bold text-flockie-coral underline">
-              Privacy Policy
+              {t("login.privacy")}
             </a>
             .
           </span>
@@ -84,7 +85,7 @@ function LoginForm() {
           disabled={loading || !agreed}
           className="mt-5 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-3.5 font-bold disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {loading ? "Connecting…" : "Continue with Google"}
+          {loading ? t("login.connecting") : t("login.continueGoogle")}
         </button>
       </div>
     </main>

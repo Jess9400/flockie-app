@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { useTranslations } from "next-intl";
 import { useEsc } from "@/lib/use-esc";
 
 // Shared, branded replacements for window.confirm / prompt / alert.
@@ -55,6 +56,7 @@ export const useConfirm = () => useContext(ConfirmCtx);
 export const useToast = () => useContext(ToastCtx);
 
 export function FeedbackProvider({ children }: { children: React.ReactNode }) {
+  const t = useTranslations("components");
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -151,7 +153,7 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
                   <textarea
                     value={freeText}
                     onChange={(e) => setFreeText(e.target.value)}
-                    placeholder={opts.freeTextPlaceholder ?? "Add a note (optional)…"}
+                    placeholder={opts.freeTextPlaceholder ?? t("confirm.notePlaceholder")}
                     rows={2}
                     maxLength={300}
                     className="mt-3 w-full rounded-2xl border-2 border-ink/20 px-3 py-2 text-sm font-medium outline-none focus:border-flockie-blue"
@@ -164,7 +166,7 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
                     onClick={() => settle(null)}
                     className="flex-1 rounded-full border-2 border-ink bg-white py-2.5 text-sm font-bold text-ink"
                   >
-                    {opts.cancelLabel ?? "Cancel"}
+                    {opts.cancelLabel ?? t("confirm.cancel")}
                   </button>
                   <button
                     type="button"
@@ -176,7 +178,7 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
                       opts.destructive ? "bg-red-600" : "bg-flockie-coral"
                     }`}
                   >
-                    {opts.confirmLabel ?? "Confirm"}
+                    {opts.confirmLabel ?? t("confirm.confirm")}
                   </button>
                 </div>
               </div>

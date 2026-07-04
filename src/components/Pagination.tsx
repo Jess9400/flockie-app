@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 // Numbered pagination (1 2 3 …). Server component: `hrefFor` builds each page's
 // URL while preserving the caller's other query params. Windowed so long lists
@@ -13,6 +14,7 @@ export default function Pagination({
   totalPages: number;
   hrefFor: (p: number) => string;
 }) {
+  const t = useTranslations("components");
   if (totalPages <= 1) return null;
 
   const want = new Set<number>([1, totalPages, page, page - 1, page + 1]);
@@ -29,9 +31,9 @@ export default function Pagination({
     "flex h-9 min-w-9 items-center justify-center rounded-full border-2 border-ink px-3 text-sm font-bold";
 
   return (
-    <nav className="mt-6 flex flex-wrap items-center justify-center gap-1.5" aria-label="Pagination">
+    <nav className="mt-6 flex flex-wrap items-center justify-center gap-1.5" aria-label={t("pagination.ariaLabel")}>
       {page > 1 && (
-        <Link href={hrefFor(page - 1)} className={`${cell} bg-white`} aria-label="Previous page">
+        <Link href={hrefFor(page - 1)} className={`${cell} bg-white`} aria-label={t("pagination.prevPage")}>
           <ChevronLeft size={16} />
         </Link>
       )}
@@ -52,7 +54,7 @@ export default function Pagination({
         ),
       )}
       {page < totalPages && (
-        <Link href={hrefFor(page + 1)} className={`${cell} bg-white`} aria-label="Next page">
+        <Link href={hrefFor(page + 1)} className={`${cell} bg-white`} aria-label={t("pagination.nextPage")}>
           <ChevronRight size={16} />
         </Link>
       )}

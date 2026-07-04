@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 // Substantial 1-5 slider (Fix 8): 12px gradient track, 5 snap dots, 32px thumb,
 // endpoint mini-labels, live answer below. A transparent native range input sits
 // on top for drag + keyboard + accessibility; the visuals are custom.
@@ -15,6 +17,7 @@ export default function RangeSlider({
   scale: readonly string[]; // 5 entries
   label?: string;
 }) {
+  const t = useTranslations("components");
   const display = value ?? 3;
   const pct = ((display - 1) / 4) * 100;
   const snaps = [0, 25, 50, 75, 100];
@@ -70,7 +73,7 @@ export default function RangeSlider({
           value == null ? "text-navy/40" : "text-navy"
         }`}
       >
-        {value == null ? "Slide to answer" : scale[value - 1]}
+        {value == null ? t("rangeSlider.slideToAnswer") : scale[value - 1]}
       </p>
     </div>
   );

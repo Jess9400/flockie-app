@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslations } from "next-intl";
 
 export default function RunMatching({
   vibeId,
@@ -12,6 +13,7 @@ export default function RunMatching({
   vibeId: string;
   status: string;
 }) {
+  const t = useTranslations("components");
   const router = useRouter();
   const supabase = createClient();
   const [busy, setBusy] = useState(false);
@@ -24,27 +26,27 @@ export default function RunMatching({
     setBusy(false);
     if (error) return setMsg(error.message);
     const r = data as { invited: number; standby: number };
-    setMsg(`Matched! Invited ${r.invited}, standby ${r.standby}.`);
+    setMsg(t("runMatching.matched", { invited: r.invited, standby: r.standby }));
     router.refresh();
   }
 
   return (
     <div className="space-y-2">
       <div className="rounded-full border-2 border-ink bg-white py-2.5 text-center text-sm font-bold">
-        You&rsquo;re the host
+        {t("runMatching.host")}
       </div>
       <button
         onClick={run}
         disabled={busy}
         className="w-full rounded-full border-2 border-ink bg-flockie-orange py-3.5 font-bold text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50"
       >
-        {busy ? "Running…" : status === "open" ? "Run matching now" : "Re-run matching"}
+        {busy ? t("runMatching.running") : status === "open" ? t("runMatching.runNow") : t("runMatching.reRun")}
       </button>
       <Link
         href={`/vibes/${vibeId}/chat`}
         className="block w-full rounded-full border-2 border-ink bg-flockie-blue py-3 text-center font-bold text-white"
       >
-        Open Vibing Chat
+        {t("runMatching.openChat")}
       </Link>
       {msg && (
         <p className="text-center text-sm font-bold text-flockie-blue">{msg}</p>

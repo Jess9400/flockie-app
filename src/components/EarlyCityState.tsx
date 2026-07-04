@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { ArrowRight } from "lucide-react";
 import InviteFriendsButton from "@/components/InviteFriendsButton";
 
@@ -15,30 +16,30 @@ export default function EarlyCityState({
   inviterId: string;
   inviterName?: string;
 }) {
+  const t = useTranslations("components");
   return (
     <section className="mx-4 mt-6 rounded-3xl border-[3px] border-ink bg-cream p-6 text-center shadow-[0_6px_0_0_rgba(10,37,69,1)] sm:p-8">
       <div className="text-4xl" aria-hidden>
         🌱
       </div>
       <h2 className="mt-2 text-[24px] font-black leading-tight sm:text-[30px]">
-        You&rsquo;re early in {city}
+        {t("earlyCity.heading", { city })}
       </h2>
       <p className="mx-auto mt-2 max-w-md font-bold text-ink/70">
-        Flockie is just getting started here — which means you get to shape it. Bring a
-        friend or two and you&rsquo;ll have people to explore with in no time.
+        {t("earlyCity.body")}
       </p>
       <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
         <InviteFriendsButton
           inviterId={inviterId}
           inviterName={inviterName}
           city={city}
-          label="Invite friends"
+          label={t("earlyCity.invite")}
         />
         <Link
           href="#explore-world"
           className="inline-flex items-center gap-1 text-sm font-bold text-flockie-coral"
         >
-          Meanwhile, explore around the world <ArrowRight size={15} />
+          {t("earlyCity.exploreWorld")} <ArrowRight size={15} />
         </Link>
       </div>
     </section>
