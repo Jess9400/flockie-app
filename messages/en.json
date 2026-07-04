@@ -1,0 +1,21 @@
+{
+  "nav": {
+    "home": "Home",
+    "vibes": "Vibes",
+    "findABuddy": "Find a Buddy",
+    "match": "Match",
+    "myTrips": "My Trips",
+    "chats": "Chats",
+    "profile": "Profile"
+  },
+  "common": {
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "homeSubline": "What do you want to do today?",
+    "findBuddyHeading": "Find a buddy for an activity",
+    "language": "Language"
+  }
+}

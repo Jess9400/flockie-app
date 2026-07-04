@@ -7,8 +7,10 @@ import { usePathname } from "next/navigation";
 import {
   Home, Compass, Map, Sparkles, MessageCircle, User, Bell, Menu, X,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Footer from "@/components/Footer";
 import SignOutButton from "@/components/SignOutButton";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { FeedbackProvider } from "@/components/ui/feedback";
 import { createClient } from "@/lib/supabase/client";
 
@@ -48,7 +50,8 @@ function sectionFor(pathname: string): string {
 
 type NavItem = {
   href: string;
-  label: string;
+  // Key into the `nav` message namespace (resolved via useTranslations at render).
+  labelKey: string;
   icon: typeof Home;
   sections: string[];
 };
@@ -59,21 +62,21 @@ type NavItem = {
 // page. `sections` therefore include the child tabs so the parent highlights
 // on them (e.g. Vibes stays active on /my-vibes).
 const PRIMARY_NAV: NavItem[] = [
-  { href: "/home", label: "Home", icon: Home, sections: ["home"] },
-  { href: "/vibes", label: "Vibes", icon: Sparkles, sections: ["vibes", "my-vibes"] },
-  { href: "/match", label: "Find a Buddy", icon: Compass, sections: ["match"] },
-  { href: "/my-trips", label: "My Trips", icon: Map, sections: ["trips", "deals"] },
-  { href: "/chats", label: "Chats", icon: MessageCircle, sections: ["chats"] },
+  { href: "/home", labelKey: "home", icon: Home, sections: ["home"] },
+  { href: "/vibes", labelKey: "vibes", icon: Sparkles, sections: ["vibes", "my-vibes"] },
+  { href: "/match", labelKey: "findABuddy", icon: Compass, sections: ["match"] },
+  { href: "/my-trips", labelKey: "myTrips", icon: Map, sections: ["trips", "deals"] },
+  { href: "/chats", labelKey: "chats", icon: MessageCircle, sections: ["chats"] },
 ];
 
 // Mobile bottom tab bar: the 5 core surfaces, thumb-reachable. Tabs claim the
 // sections of their children so e.g. /my-vibes lights up Vibes.
 const TABS: NavItem[] = [
-  { href: "/home", label: "Home", icon: Home, sections: ["home"] },
-  { href: "/vibes", label: "Vibes", icon: Sparkles, sections: ["vibes", "my-vibes"] },
-  { href: "/match", label: "Match", icon: Compass, sections: ["match"] },
-  { href: "/chats", label: "Chats", icon: MessageCircle, sections: ["chats"] },
-  { href: "/profile", label: "Profile", icon: User, sections: ["profile", "settings"] },
+  { href: "/home", labelKey: "home", icon: Home, sections: ["home"] },
+  { href: "/vibes", labelKey: "vibes", icon: Sparkles, sections: ["vibes", "my-vibes"] },
+  { href: "/match", labelKey: "match", icon: Compass, sections: ["match"] },
+  { href: "/chats", labelKey: "chats", icon: MessageCircle, sections: ["chats"] },
+  { href: "/profile", labelKey: "profile", icon: User, sections: ["profile", "settings"] },
 ];
 
 export default function AppShell({
@@ -84,6 +87,7 @@ export default function AppShell({
   userId: string;
 }) {
   const pathname = usePathname();
+  const t = useTranslations("nav");
   const section = sectionFor(pathname);
   // Chat rooms fill the viewport exactly (no page scroll, no footer) so the
   // chat window stays static and only the message list scrolls inside it.
@@ -147,13 +151,13 @@ export default function AppShell({
             className={navItemCls(item.sections.includes(section))}
           >
             <Icon size={18} />
-            <span className="flex-1">{item.label}</span>
+            <span className="flex-1">{t(item.labelKey)}</span>
           </Link>
         );
       })}
       <div className="my-2 border-t-2 border-navy/10" />
       <Link href="/profile" onClick={() => setOpen(false)} className={navItemCls(section === "profile")}>
-        <User size={18} /> <span className="flex-1">Profile</span>
+        <User size={18} /> <span className="flex-1">{t("profile")}</span>
       </Link>
     </nav>
   );
@@ -177,6 +181,7 @@ export default function AppShell({
         </div>
 
         <div className="flex items-center gap-2">
+          <LanguageSwitcher />
           <Link
             href="/inbox"
             aria-label="Notifications"
@@ -275,7 +280,7 @@ export default function AppShell({
                       </span>
                     )}
                   </span>
-                  {tab.label}
+                  {t(tab.labelKey)}
                 </Link>
               );
             })}
