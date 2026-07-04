@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Check, Globe } from "lucide-react";
+import { setUserLocale } from "@/app/actions/locale";
 
 type Option = { code: string; label: string };
 
@@ -45,6 +46,10 @@ export default function LanguageSwitcher() {
   function choose(code: string) {
     document.cookie = `NEXT_LOCALE=${code}; path=/; max-age=${ONE_YEAR}; SameSite=Lax`;
     setOpen(false);
+    // Persist to profiles.locale so localized emails follow the user's choice.
+    // Fire-and-forget: the cookie already drives the UI, and setUserLocale
+    // no-ops when signed out.
+    void setUserLocale(code);
     // Re-render server components (layout resolves the cookie) in the new locale.
     router.refresh();
   }

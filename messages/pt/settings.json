@@ -6,6 +6,10 @@
     "title": "Conta",
     "signOut": "Sair"
   },
+  "language": {
+    "title": "Idioma",
+    "subtitle": "Define o idioma do app e o dos seus e-mails do Flockie."
+  },
   "notifications": {
     "title": "Notificações",
     "description": "Convites, confirmações e novidades."

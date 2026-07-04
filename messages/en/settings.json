@@ -6,6 +6,10 @@
     "title": "Account",
     "signOut": "Sign out"
   },
+  "language": {
+    "title": "Language",
+    "subtitle": "Sets the app language and the language of your Flockie emails."
+  },
   "notifications": {
     "title": "Notifications",
     "description": "Invitations, confirmations, and updates."
