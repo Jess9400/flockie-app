@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Send, Sparkles, X, ImagePlus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { formatMessageDivider, needsDivider } from "@/lib/chat";
 import { isImageUrl, firstUrl } from "@/lib/chat-content";
@@ -42,6 +43,7 @@ export default function BuddyChatRoom({
 }) {
   const supabase = createClient();
   const router = useRouter();
+  const t = useTranslations("buddies");
   const [messages, setMessages] = useState<LocalMsg[]>(initialMessages);
   const [text, setText] = useState("");
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
@@ -156,14 +158,14 @@ export default function BuddyChatRoom({
   // Progressive prompts (client-derived, dismissible).
   const prompts: { key: string; text: string; cta?: { label: string; href: string } }[] = [];
   if (messages.length >= 5) {
-    prompts.push({ key: "rapport", text: "Looks like you two are getting along. Ready to share tentative dates?" });
+    prompts.push({ key: "rapport", text: t("room.promptRapport") });
   }
   if (tripStartIso) {
     const h = hoursUntil(tripStartIso);
     if (h > 0 && h < 24 * 7) {
       prompts.push({
         key: "pretrip",
-        text: `Trip with ${otherName} starts soon. Want to share your booking confirmations in the chat?`,
+        text: t("room.promptPretrip", { name: otherName }),
       });
     }
   }
@@ -172,8 +174,8 @@ export default function BuddyChatRoom({
     if (daysAfter >= 2) {
       prompts.push({
         key: "review",
-        text: `How was the trip with ${otherName}?`,
-        cta: { label: "Leave a review →", href: `/review/${otherId}` },
+        text: t("room.promptReview", { name: otherName }),
+        cta: { label: t("room.leaveReview"), href: `/review/${otherId}` },
       });
     }
   }
@@ -193,7 +195,7 @@ export default function BuddyChatRoom({
     <div className="relative flex min-h-0 flex-1 flex-col font-nunito">
       {toast && (
         <div className="absolute left-1/2 top-2 z-30 -translate-x-1/2 rounded-full border-2 border-navy bg-flockie-coral px-4 py-1.5 font-fredoka text-sm font-semibold text-white shadow-[0_3px_0_rgba(10,37,69,1)]">
-          🎉 You matched! Say hi 👋
+          {t("room.matchedToast")}
         </div>
       )}
 
@@ -201,7 +203,7 @@ export default function BuddyChatRoom({
         {/* Algo icebreaker */}
         <div className="mx-auto my-3 max-w-[92%] rounded-2xl border-2 border-flockie-blue bg-cream p-4">
           <p className="flex items-center gap-1.5 font-fredoka text-sm font-semibold text-flockie-blue">
-            <Sparkles size={15} /> {isGroup ? "Trip plan:" : "The algo says:"}
+            <Sparkles size={15} /> {isGroup ? t("room.tripPlan") : t("room.algoSays")}
           </p>
           <p className="mt-1.5 whitespace-pre-line font-nunito text-sm font-medium text-navy">
             {icebreaker}
@@ -268,7 +270,7 @@ export default function BuddyChatRoom({
                           onClick={() => retry(m)}
                           className="mr-1 mt-0.5 font-nunito text-[11px] font-bold text-flockie-coral"
                         >
-                          Failed — tap to retry
+                          {t("shared.failedRetry")}
                         </button>
                       )}
                       {firstUrl(m.content) && <LinkPreview url={firstUrl(m.content)!} />}
@@ -296,7 +298,7 @@ export default function BuddyChatRoom({
               <button
                 type="button"
                 onClick={() => dismiss(p.key)}
-                aria-label="Dismiss"
+                aria-label={t("room.dismiss")}
                 className="text-navy/30 hover:text-navy/60"
               >
                 <X size={13} />
@@ -313,7 +315,7 @@ export default function BuddyChatRoom({
           type="button"
           onClick={() => imgInput.current?.click()}
           disabled={uploading}
-          aria-label="Send photo"
+          aria-label={t("shared.sendPhoto")}
           className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-navy text-navy disabled:opacity-50"
         >
           <ImagePlus size={18} />
@@ -321,13 +323,13 @@ export default function BuddyChatRoom({
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder={uploading ? "Sending photo…" : `Message ${otherName}…`}
+          placeholder={uploading ? t("shared.sendingPhoto") : t("room.messagePerson", { name: otherName })}
           className="h-12 w-full rounded-full border-2 border-navy bg-cream px-5 font-nunito text-[15px] font-medium text-navy outline-none focus:border-flockie-blue"
         />
         <button
           type="submit"
           disabled={!text.trim()}
-          aria-label="Send"
+          aria-label={t("shared.send")}
           className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-flockie-coral text-white disabled:opacity-50"
         >
           <Send size={18} />

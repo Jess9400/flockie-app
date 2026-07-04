@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import ChatRow from "@/components/ChatRow";
@@ -50,10 +51,15 @@ async function latestPerChat(
   return out;
 }
 
-function preview(last: LastMsg | undefined, meId: string, fallback: string): string {
+function preview(
+  last: LastMsg | undefined,
+  meId: string,
+  fallback: string,
+  you: (message: string) => string
+): string {
   if (!last) return fallback;
   const body = last.content.replace(/\s+/g, " ").trim();
-  return last.sender_id === meId ? `You: ${body}` : body;
+  return last.sender_id === meId ? you(body) : body;
 }
 
 function renderRow(r: Row) {
@@ -107,8 +113,10 @@ export default async function ChatsPage({
   searchParams: { tab?: string };
 }) {
   const supabase = await createClient();
+  const t = await getTranslations("buddies");
   const user = await getSessionUser();
   const meId = user!.id;
+  const you = (message: string) => t("list.youPrefix", { message });
 
   const [{ data: buddies }, { data: vibes }, { data: flockChats }] = await Promise.all([
     supabase.rpc("buddy_chat_summaries"),
@@ -161,7 +169,7 @@ export default async function ChatsPage({
       href: `/buddies/${b.chat_id}`,
       photo: b.photo,
       title: name,
-      subtitle: preview(last, meId, "Trip match"),
+      subtitle: preview(last, meId, t("list.tripMatch"), you),
       time: last ? formatChatTime(last.created_at) : "",
       unread: b.unread,
       fallback: name[0]?.toUpperCase() ?? "F",
@@ -179,7 +187,7 @@ export default async function ChatsPage({
       href: `/vibes/${v.vibe_id}/chat`,
       photo: vibeBanner[v.vibe_id] ?? v.photo,
       title: v.title,
-      subtitle: preview(last, meId, ctx),
+      subtitle: preview(last, meId, ctx, you),
       time: last ? formatChatTime(last.created_at) : "",
       unread: v.unread,
       fallback: v.title[0]?.toUpperCase() ?? "🎟️",
@@ -213,29 +221,29 @@ export default async function ChatsPage({
 
   return (
     <main className="mx-auto w-full max-w-2xl px-5 pb-12 pt-6 font-nunito">
-      <h1 className="font-fredoka text-3xl font-bold text-navy">Chats</h1>
+      <h1 className="font-fredoka text-3xl font-bold text-navy">{t("list.title")}</h1>
       <p className="mt-1 font-nunito text-base font-normal text-navy/70">
-        Your conversations, all in one place.
+        {t("list.subtitle")}
       </p>
 
       <div className="mt-5 inline-flex gap-1 rounded-full border-2 border-ink bg-white p-1 text-sm font-bold">
-        <TabLink href="/chats?tab=travel" active={tab === "travel"} label="Travel" count={travelUnread} />
-        <TabLink href="/chats?tab=activity" active={tab === "activity"} label="Activity" count={activityUnread} />
-        <TabLink href="/chats?tab=vibes" active={tab === "vibes"} label="Vibes" count={vibesUnread} />
+        <TabLink href="/chats?tab=travel" active={tab === "travel"} label={t("list.tabTravel")} count={travelUnread} />
+        <TabLink href="/chats?tab=activity" active={tab === "activity"} label={t("list.tabActivity")} count={activityUnread} />
+        <TabLink href="/chats?tab=vibes" active={tab === "vibes"} label={t("list.tabVibes")} count={vibesUnread} />
       </div>
 
       {tab === "travel" && (
         <section className="mt-6">
           <p className="font-nunito text-sm font-normal text-navy/60">
-            Trip &amp; Flock chats — buddies and groups
+            {t("list.travelDesc")}
           </p>
           <div className="mt-3 space-y-3">
             {travelRows.length === 0 ? (
               <EmptyState
                 variant="buddy"
-                title="No travel chats yet"
-                body="When you match for a trip or join a Flock, your chat shows up here."
-                cta="Find a Buddy"
+                title={t("list.travelEmptyTitle")}
+                body={t("list.travelEmptyBody")}
+                cta={t("list.findABuddy")}
                 href="/match"
               />
             ) : (
@@ -248,15 +256,15 @@ export default async function ChatsPage({
       {tab === "activity" && (
         <section className="mt-6">
           <p className="font-nunito text-sm font-normal text-navy/60">
-            1:1 chats with your activity buddies
+            {t("list.activityDesc")}
           </p>
           <div className="mt-3 space-y-3">
             {activityRows.length === 0 ? (
               <EmptyState
                 variant="buddy"
-                title="No activity chats yet"
-                body="Match on a 1:1 activity and your chat will appear here."
-                cta="Find a Buddy"
+                title={t("list.activityEmptyTitle")}
+                body={t("list.activityEmptyBody")}
+                cta={t("list.findABuddy")}
                 href="/match"
               />
             ) : (
@@ -269,15 +277,15 @@ export default async function ChatsPage({
       {tab === "vibes" && (
         <section className="mt-6">
           <p className="font-nunito text-sm font-normal text-navy/60">
-            Group chats from Vibes you joined
+            {t("list.vibesDesc")}
           </p>
           <div className="mt-3 space-y-3">
             {vibeRows.length === 0 ? (
               <EmptyState
                 variant="vibe"
-                title="No Vibe chats yet"
-                body="Join a Vibe to start chatting with vibe-matched people."
-                cta="Browse Vibes"
+                title={t("list.vibesEmptyTitle")}
+                body={t("list.vibesEmptyBody")}
+                cta={t("list.browseVibes")}
                 href="/vibes"
               />
             ) : (

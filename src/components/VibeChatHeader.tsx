@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronDown, MapPin, CalendarClock, Users, X, MoreVertical } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import BrandedMap from "@/components/BrandedMap";
 import { useConfirm } from "@/components/ui/feedback";
@@ -49,6 +50,7 @@ export default function VibeChatHeader({
   const router = useRouter();
   const supabase = createClient();
   const confirm = useConfirm();
+  const t = useTranslations("buddies");
   const [expanded, setExpanded] = useState(false);
   const [panel, setPanel] = useState(false);
   const [leaving, setLeaving] = useState(false);
@@ -67,9 +69,9 @@ export default function VibeChatHeader({
   async function leave() {
     if (
       !(await confirm({
-        title: "Leave this Vibe?",
-        message: "You'll lose your spot and the chat.",
-        confirmLabel: "Leave",
+        title: t("vibeHeader.leaveVibeTitle"),
+        message: t("vibeHeader.leaveVibeMsg"),
+        confirmLabel: t("shared.leave"),
         destructive: true,
       }))
     )
@@ -138,7 +140,7 @@ export default function VibeChatHeader({
           <button
             type="button"
             onClick={() => setPanel(true)}
-            aria-label="Members"
+            aria-label={t("shared.members")}
             className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-navy text-navy"
           >
             <Users size={16} />
@@ -146,7 +148,7 @@ export default function VibeChatHeader({
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
-            aria-label={expanded ? "Collapse" : "Expand"}
+            aria-label={expanded ? t("shared.collapse") : t("shared.expand")}
             className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-navy text-navy"
           >
             <ChevronDown
@@ -158,7 +160,7 @@ export default function VibeChatHeader({
             <button
               type="button"
               onClick={() => setMenu((v) => !v)}
-              aria-label="Menu"
+              aria-label={t("shared.menu")}
               className="flex h-9 w-9 items-center justify-center rounded-full text-navy hover:bg-navy/5"
             >
               <MoreVertical size={18} />
@@ -172,14 +174,14 @@ export default function VibeChatHeader({
                     onClick={() => { setMenu(false); setExpanded(true); }}
                     className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5"
                   >
-                    View details
+                    {t("shared.viewDetails")}
                   </button>
                   <button
                     type="button"
                     onClick={toggleMute}
                     className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5"
                   >
-                    {muted ? "Unmute notifications" : "Mute notifications"}
+                    {muted ? t("shared.muteOff") : t("shared.muteOn")}
                   </button>
                   <button
                     type="button"
@@ -187,7 +189,7 @@ export default function VibeChatHeader({
                     disabled={leaving}
                     className="block w-full rounded-xl px-3 py-2 text-left text-flockie-coral hover:bg-navy/5"
                   >
-                    Leave Vibe
+                    {t("vibeHeader.leaveVibe")}
                   </button>
                 </div>
               </>
@@ -207,7 +209,7 @@ export default function VibeChatHeader({
           )}
           <p className="flex items-center gap-1.5 font-nunito text-sm font-medium text-navy">
             <MapPin size={15} className="text-flockie-coral" />
-            {locationLabel || "Location TBD"}
+            {locationLabel || t("vibeHeader.locationTBD")}
           </p>
           {description && (
             <p className="font-nunito text-sm font-normal text-navy/80">{description}</p>
@@ -217,7 +219,7 @@ export default function VibeChatHeader({
               <BrandedMap apiKey={GMAPS_KEY} location={locationLabel} fallbackSrc={mapSrc} />
             ) : (
               <iframe
-                title="Event location"
+                title={t("vibeHeader.mapTitle")}
                 src={mapSrc}
                 loading="lazy"
                 className="h-[150px] w-full rounded-2xl border-2 border-navy"
@@ -231,7 +233,7 @@ export default function VibeChatHeader({
               rel="noopener noreferrer"
               className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-navy bg-flockie-coral py-3 font-fredoka text-sm font-semibold text-white"
             >
-              🎟️ Book your spot →
+              {t("shared.bookSpot")}
             </a>
           )}
           <button
@@ -240,7 +242,7 @@ export default function VibeChatHeader({
             disabled={leaving}
             className="rounded-full border-2 border-navy bg-white px-4 py-1.5 font-fredoka text-sm font-semibold text-navy disabled:opacity-50"
           >
-            {leaving ? "Leaving…" : "Leave Vibe"}
+            {leaving ? t("shared.leaving") : t("vibeHeader.leaveVibe")}
           </button>
         </div>
       )}
@@ -252,12 +254,12 @@ export default function VibeChatHeader({
           <aside className="fixed right-0 top-0 z-50 flex h-full w-72 flex-col border-l-2 border-navy bg-cream p-4">
             <div className="flex items-center justify-between">
               <p className="font-fredoka text-lg font-semibold text-navy">
-                Members ({members.length})
+                {t("vibeHeader.membersCount", { count: members.length })}
               </p>
               <button
                 type="button"
                 onClick={() => setPanel(false)}
-                aria-label="Close"
+                aria-label={t("shared.close")}
                 className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-navy text-navy"
               >
                 <X size={16} />
@@ -278,7 +280,7 @@ export default function VibeChatHeader({
                       </span>
                       {m.isHost && (
                         <span className="rounded-full bg-flockie-coral px-1.5 py-0.5 font-nunito text-[10px] font-bold text-white">
-                          Host
+                          {t("vibeHeader.host")}
                         </span>
                       )}
                     </span>
@@ -295,7 +297,7 @@ export default function VibeChatHeader({
               disabled={leaving}
               className="mt-3 rounded-full border-2 border-navy bg-white py-2 font-fredoka text-sm font-semibold text-navy disabled:opacity-50"
             >
-              {leaving ? "Leaving…" : "Leave Vibe"}
+              {leaving ? t("shared.leaving") : t("vibeHeader.leaveVibe")}
             </button>
           </aside>
         </>

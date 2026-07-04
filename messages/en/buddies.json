@@ -1,1 +1,134 @@
-{}
+{
+  "shared": {
+    "chats": "Chats",
+    "leave": "Leave",
+    "leaving": "Leaving…",
+    "viewDetails": "View details",
+    "muteOn": "Mute notifications",
+    "muteOff": "Unmute notifications",
+    "members": "Members",
+    "menu": "Menu",
+    "close": "Close",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "send": "Send",
+    "sendPhoto": "Send photo",
+    "sendingPhoto": "Sending photo…",
+    "failedRetry": "Failed — tap to retry",
+    "bookSpot": "🎟️ Book your spot →"
+  },
+  "list": {
+    "title": "Chats",
+    "subtitle": "Your conversations, all in one place.",
+    "tabTravel": "Travel",
+    "tabActivity": "Activity",
+    "tabVibes": "Vibes",
+    "travelDesc": "Trip & Flock chats — buddies and groups",
+    "activityDesc": "1:1 chats with your activity buddies",
+    "vibesDesc": "Group chats from Vibes you joined",
+    "travelEmptyTitle": "No travel chats yet",
+    "travelEmptyBody": "When you match for a trip or join a Flock, your chat shows up here.",
+    "activityEmptyTitle": "No activity chats yet",
+    "activityEmptyBody": "Match on a 1:1 activity and your chat will appear here.",
+    "vibesEmptyTitle": "No Vibe chats yet",
+    "vibesEmptyBody": "Join a Vibe to start chatting with vibe-matched people.",
+    "findABuddy": "Find a Buddy",
+    "browseVibes": "Browse Vibes",
+    "youPrefix": "You: {message}",
+    "tripMatch": "Trip match",
+    "tags": {
+      "travel_buddy": "Travel Buddy",
+      "activity_buddy": "Activity Buddy",
+      "flock": "Flock",
+      "vibe": "Vibes Buddy"
+    }
+  },
+  "chatPage": {
+    "yourMatch": "your match",
+    "alignOn": "You both align on {tags}.",
+    "similarOverall": "You've got a similar overall travel vibe.",
+    "icebreakerMatched": "You both matched on {destination}, {dateRange}.",
+    "compatibleVibes": "Compatible vibes: {tags}.",
+    "planTogether": "Start planning together — exchange dates, share must-dos, and talk about what you're both hoping to get from this trip.",
+    "similarVibe": "You both have a similar travel vibe. Pick a destination together and start planning. No pressure.",
+    "similarVibeWith": "You both have a similar travel vibe — {tags}. Pick a destination together and start planning. No pressure.",
+    "flockIcebreaker": "You're all going to {title}{dateRangeSuffix}. 🎒\nSay hi and start sorting it together — lock the dates that work, where you're staying, and the must-dos everyone wants in.",
+    "dateRange": "{start} → {end} · {days, plural, one {# day} other {# days}}"
+  },
+  "header": {
+    "leaveMatchTitle": "Leave this match?",
+    "leaveMatchMsg": "You'll lose access to this chat and {name} will be notified.",
+    "leaveFlockTitle": "Leave this Flock?",
+    "leaveFlockMsg": "You'll lose your spot and the group chat.",
+    "reportTitle": "Report {name}?",
+    "reportMsg": "Tell us what's wrong. This is private to Flockie.",
+    "reportPlaceholder": "What happened? (optional)",
+    "report": "Report",
+    "reportThanks": "Thanks — our team will review this report.",
+    "reportUser": "Report this user",
+    "makeFlockTitle": "Turn this trip into a Flock?",
+    "makeFlockMsg": "It becomes a public group trip others can request to join — you and your buddy approve new members together.",
+    "makeFlockConfirm": "Make it a Flock",
+    "makeFlockDone": "Done! Your trip is now a Flock — approve join requests from this chat or My Trips.",
+    "viewTripDetails": "View trip details",
+    "leaveFlock": "Leave Flock",
+    "groupTripFallback": "Group trip",
+    "goingCount": "{count} going",
+    "membersHeading": "Members",
+    "viewProfileNamed": "View {name}'s profile",
+    "turnIntoFlock": "Turn this into a Flock",
+    "leaveMatch": "Leave this match",
+    "yourVibeScore": "✨ {score}% your vibe",
+    "viewFullProfileNamed": "View {name}'s full profile",
+    "leaveMatchBtn": "Leave match"
+  },
+  "vibeHeader": {
+    "leaveVibeTitle": "Leave this Vibe?",
+    "leaveVibeMsg": "You'll lose your spot and the chat.",
+    "leaveVibe": "Leave Vibe",
+    "membersCount": "Members ({count})",
+    "locationTBD": "Location TBD",
+    "mapTitle": "Event location",
+    "host": "Host"
+  },
+  "room": {
+    "matchedToast": "🎉 You matched! Say hi 👋",
+    "tripPlan": "Trip plan:",
+    "algoSays": "The algo says:",
+    "promptRapport": "Looks like you two are getting along. Ready to share tentative dates?",
+    "promptPretrip": "Trip with {name} starts soon. Want to share your booking confirmations in the chat?",
+    "promptReview": "How was the trip with {name}?",
+    "leaveReview": "Leave a review →",
+    "dismiss": "Dismiss",
+    "messagePerson": "Message {name}…"
+  },
+  "vibeRoom": {
+    "startOfChat": "This is the start of your Vibe chat. Say hi 👋",
+    "messageGroup": "Message the group…",
+    "reviewVibe": "⭐ How was it? Review this Vibe →",
+    "vibeStartsIn": "Vibe starts in {hours}h"
+  },
+  "vibeChatPage": {
+    "back": "Back",
+    "notConfirmed": "The Vibing Chat opens once you're confirmed for this Vibe.",
+    "cancelledNotice": "This Vibe was cancelled — the chat is now inactive."
+  },
+  "flockRequests": {
+    "title": "Join requests",
+    "pendingSuffix": "· {count} pending",
+    "error": "Something went wrong — try again.",
+    "approve": "Approve",
+    "decline": "Decline",
+    "approvedWaiting": "✓ You approved {names} — waiting for your co-host.",
+    "going": "Going ({count})",
+    "removeNamed": "Remove {name}",
+    "removeTitle": "Remove this member?",
+    "removeMsg": "Their spot opens up for someone else.",
+    "remove": "Remove"
+  },
+  "peek": {
+    "profileAria": "{name}'s profile",
+    "viewFullProfile": "View full profile",
+    "close": "Close"
+  }
+}

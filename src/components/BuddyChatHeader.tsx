@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, MoreVertical, ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import ProfilePeek, { type PeekData } from "@/components/ProfilePeek";
 import { useConfirm, useToast } from "@/components/ui/feedback";
@@ -56,6 +57,7 @@ export default function BuddyChatHeader({
   const supabase = createClient();
   const confirm = useConfirm();
   const toast = useToast();
+  const t = useTranslations("buddies");
   const [expanded, setExpanded] = useState(false);
   const [menu, setMenu] = useState(false);
   const [showPeek, setShowPeek] = useState(false);
@@ -65,9 +67,9 @@ export default function BuddyChatHeader({
   async function leave() {
     if (
       !(await confirm({
-        title: "Leave this match?",
-        message: `You'll lose access to this chat and ${name} will be notified.`,
-        confirmLabel: "Leave",
+        title: t("header.leaveMatchTitle"),
+        message: t("header.leaveMatchMsg", { name }),
+        confirmLabel: t("shared.leave"),
         destructive: true,
       }))
     )
@@ -89,9 +91,9 @@ export default function BuddyChatHeader({
     if (!flockTripId) return;
     if (
       !(await confirm({
-        title: "Leave this Flock?",
-        message: "You'll lose your spot and the group chat.",
-        confirmLabel: "Leave",
+        title: t("header.leaveFlockTitle"),
+        message: t("header.leaveFlockMsg"),
+        confirmLabel: t("shared.leave"),
         destructive: true,
       }))
     )
@@ -109,32 +111,31 @@ export default function BuddyChatHeader({
   async function report() {
     setMenu(false);
     const res = await confirm({
-      title: `Report ${name}?`,
-      message: "Tell us what's wrong. This is private to Flockie.",
+      title: t("header.reportTitle", { name }),
+      message: t("header.reportMsg"),
       allowFreeText: true,
-      freeTextPlaceholder: "What happened? (optional)",
-      confirmLabel: "Report",
+      freeTextPlaceholder: t("header.reportPlaceholder"),
+      confirmLabel: t("header.report"),
       destructive: true,
     });
     if (!res) return;
     await supabase.rpc("report_user", { p_target: peek.id, p_reason: res.note });
-    toast("Thanks — our team will review this report.");
+    toast(t("header.reportThanks"));
   }
 
   async function makeFlock() {
     setMenu(false);
     if (
       !(await confirm({
-        title: "Turn this trip into a Flock?",
-        message:
-          "It becomes a public group trip others can request to join — you and your buddy approve new members together.",
-        confirmLabel: "Make it a Flock",
+        title: t("header.makeFlockTitle"),
+        message: t("header.makeFlockMsg"),
+        confirmLabel: t("header.makeFlockConfirm"),
       }))
     )
       return;
     const { error } = await supabase.rpc("convert_match_to_flock", { p_match: matchId });
     if (error) return toast(error.message, "error");
-    toast("Done! Your trip is now a Flock — approve join requests from this chat or My Trips.");
+    toast(t("header.makeFlockDone"));
     router.refresh();
   }
 
@@ -144,7 +145,7 @@ export default function BuddyChatHeader({
       <div className="z-20 -mx-5 shrink-0 border-b-2 border-navy bg-white px-5">
         <div className="flex items-center justify-between pt-3">
           <Link href="/chats" className="flex items-center gap-1 font-nunito text-sm font-bold text-navy/60">
-            <ChevronLeft size={16} /> Chats
+            <ChevronLeft size={16} /> {t("shared.chats")}
           </Link>
           <div className="flex items-center gap-2">
             <span className="rounded-full bg-flockie-orange px-2.5 py-0.5 font-nunito text-[11px] font-extrabold uppercase text-white">
@@ -154,7 +155,7 @@ export default function BuddyChatHeader({
               <button
                 type="button"
                 onClick={() => setMenu((v) => !v)}
-                aria-label="Menu"
+                aria-label={t("shared.menu")}
                 className="flex h-8 w-8 items-center justify-center rounded-full text-navy hover:bg-navy/5"
               >
                 <MoreVertical size={18} />
@@ -168,14 +169,14 @@ export default function BuddyChatHeader({
                       onClick={() => { setMenu(false); setExpanded(true); }}
                       className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5"
                     >
-                      View trip details
+                      {t("header.viewTripDetails")}
                     </button>
                     <button
                       type="button"
                       onClick={toggleMute}
                       className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5"
                     >
-                      {muted ? "Unmute notifications" : "Mute notifications"}
+                      {muted ? t("shared.muteOff") : t("shared.muteOn")}
                     </button>
                     {flockTripId && (
                       <button
@@ -184,7 +185,7 @@ export default function BuddyChatHeader({
                         disabled={leaving}
                         className="block w-full rounded-xl px-3 py-2 text-left text-flockie-coral hover:bg-navy/5"
                       >
-                        Leave Flock
+                        {t("header.leaveFlock")}
                       </button>
                     )}
                   </div>
@@ -201,9 +202,9 @@ export default function BuddyChatHeader({
         >
           <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cream text-2xl">🧳</span>
           <span className="min-w-0 flex-1">
-            <span className="block truncate font-fredoka text-lg font-semibold text-navy">{groupTitle || "Group trip"}</span>
+            <span className="block truncate font-fredoka text-lg font-semibold text-navy">{groupTitle || t("header.groupTripFallback")}</span>
             <span className="block truncate font-nunito text-sm font-medium text-navy/70">
-              {groupMembers.length} going{dateRange ? ` · ${dateRange}` : ""}
+              {t("header.goingCount", { count: groupMembers.length })}{dateRange ? ` · ${dateRange}` : ""}
             </span>
           </span>
           <ChevronDown size={18} className={`shrink-0 text-navy transition-transform ${expanded ? "rotate-180" : ""}`} />
@@ -231,7 +232,7 @@ export default function BuddyChatHeader({
         {expanded && (
           <div className="max-h-[55vh] space-y-2 overflow-y-auto pb-4">
             {dateRange && <p className="font-nunito text-sm font-medium text-navy">📅 {dateRange}</p>}
-            <p className="font-nunito text-xs font-bold uppercase tracking-wide text-navy/55">Members</p>
+            <p className="font-nunito text-xs font-bold uppercase tracking-wide text-navy/55">{t("header.membersHeading")}</p>
             <div className="flex flex-wrap gap-2">
               {groupMembers.map((m) => (
                 <Link
@@ -262,13 +263,13 @@ export default function BuddyChatHeader({
       {/* top row */}
       <div className="flex items-center justify-between pt-3">
         <Link href="/chats" className="flex items-center gap-1 font-nunito text-sm font-bold text-navy/60">
-          <ChevronLeft size={16} /> Chats
+          <ChevronLeft size={16} /> {t("shared.chats")}
         </Link>
         <div className="relative">
           <button
             type="button"
             onClick={() => setMenu((v) => !v)}
-            aria-label="Menu"
+            aria-label={t("shared.menu")}
             className="flex h-8 w-8 items-center justify-center rounded-full text-navy hover:bg-navy/5"
           >
             <MoreVertical size={18} />
@@ -278,24 +279,24 @@ export default function BuddyChatHeader({
               <div className="fixed inset-0 z-30" onClick={() => setMenu(false)} />
               <div className="absolute right-0 z-40 mt-1 w-52 rounded-2xl border-2 border-navy bg-white p-1.5 font-nunito text-sm font-semibold text-navy shadow-[0_4px_0_rgba(10,37,69,0.15)]">
                 <Link href={`/people/${peek.id}`} className="block rounded-xl px-3 py-2 hover:bg-navy/5">
-                  View {name}&rsquo;s profile
+                  {t("header.viewProfileNamed", { name })}
                 </Link>
                 <button type="button" onClick={() => { setMenu(false); setExpanded(true); }} className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5">
-                  View details
+                  {t("shared.viewDetails")}
                 </button>
                 {canFlock && (
                   <button type="button" onClick={makeFlock} className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5">
-                    Turn this into a Flock
+                    {t("header.turnIntoFlock")}
                   </button>
                 )}
                 <button type="button" onClick={toggleMute} className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5">
-                  {muted ? "Unmute notifications" : "Mute notifications"}
+                  {muted ? t("shared.muteOff") : t("shared.muteOn")}
                 </button>
                 <button type="button" onClick={report} className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5">
-                  Report this user
+                  {t("header.reportUser")}
                 </button>
                 <button type="button" onClick={leave} disabled={leaving} className="block w-full rounded-xl px-3 py-2 text-left text-flockie-coral hover:bg-navy/5">
-                  Leave this match
+                  {t("header.leaveMatch")}
                 </button>
               </div>
             </>
@@ -305,7 +306,7 @@ export default function BuddyChatHeader({
 
       {/* context card */}
       <div className="flex items-start gap-3 py-3">
-        <button type="button" onClick={() => setShowPeek(true)} aria-label={`${name}'s profile`} className="shrink-0">
+        <button type="button" onClick={() => setShowPeek(true)} aria-label={t("peek.profileAria", { name })} className="shrink-0">
           {photo ? (
             <Image src={photo} alt="" width={56} height={56} className="h-14 w-14 rounded-full object-cover" />
           ) : (
@@ -330,7 +331,7 @@ export default function BuddyChatHeader({
           <div className="mt-1 flex flex-wrap items-center gap-2">
             {score != null && (
               <span className="rounded-full bg-flockie-blue px-2.5 py-0.5 font-nunito text-xs font-bold text-white">
-                ✨ {score}% your vibe
+                {t("header.yourVibeScore", { score })}
               </span>
             )}
             {sharedVibe.slice(0, 3).map((t) => (
@@ -344,7 +345,7 @@ export default function BuddyChatHeader({
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          aria-label={expanded ? "Collapse" : "Expand"}
+          aria-label={expanded ? t("shared.collapse") : t("shared.expand")}
           className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-navy"
         >
           <ChevronDown size={18} className={`transition-transform ${expanded ? "rotate-180" : ""}`} />
@@ -371,7 +372,7 @@ export default function BuddyChatHeader({
               href={`/people/${peek.id}`}
               className="rounded-full border-2 border-navy bg-flockie-blue px-4 py-1.5 font-fredoka text-sm font-semibold text-white"
             >
-              View {name}&rsquo;s full profile
+              {t("header.viewFullProfileNamed", { name })}
             </Link>
             <button
               type="button"
@@ -379,7 +380,7 @@ export default function BuddyChatHeader({
               disabled={leaving}
               className="rounded-full border-2 border-navy bg-white px-4 py-1.5 font-fredoka text-sm font-semibold text-navy disabled:opacity-50"
             >
-              {leaving ? "Leaving…" : "Leave match"}
+              {leaving ? t("shared.leaving") : t("header.leaveMatchBtn")}
             </button>
           </div>
         </div>

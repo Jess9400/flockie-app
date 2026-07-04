@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Check, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { useConfirm } from "@/components/ui/feedback";
 
@@ -39,6 +40,7 @@ export default function FlockJoinRequests({
 }) {
   const supabase = createClient();
   const confirm = useConfirm();
+  const t = useTranslations("buddies");
   const [items, setItems] = useState(requests);
   const [busy, setBusy] = useState<string | null>(null);
   const [err, setErr] = useState(false);
@@ -60,9 +62,9 @@ export default function FlockJoinRequests({
   async function remove(userId: string) {
     if (
       !(await confirm({
-        title: "Remove this member?",
-        message: "Their spot opens up for someone else.",
-        confirmLabel: "Remove",
+        title: t("flockRequests.removeTitle"),
+        message: t("flockRequests.removeMsg"),
+        confirmLabel: t("flockRequests.remove"),
         destructive: true,
       }))
     )
@@ -84,10 +86,10 @@ export default function FlockJoinRequests({
   return (
     <div className="mt-3 rounded-2xl border-2 border-ink bg-cream p-3">
       <p className="text-xs font-extrabold uppercase tracking-wide text-muted">
-        Join requests {pending.length > 0 && `· ${pending.length} pending`}
+        {t("flockRequests.title")} {pending.length > 0 && t("flockRequests.pendingSuffix", { count: pending.length })}
       </p>
       {err && (
-        <p className="mt-1 text-xs font-bold text-red-700">Something went wrong — try again.</p>
+        <p className="mt-1 text-xs font-bold text-red-700">{t("flockRequests.error")}</p>
       )}
 
       {pending.length > 0 && (
@@ -113,7 +115,7 @@ export default function FlockJoinRequests({
               <button
                 onClick={() => act(r.userId, true)}
                 disabled={busy === r.userId}
-                aria-label="Approve"
+                aria-label={t("flockRequests.approve")}
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-flockie-blue text-white disabled:opacity-50"
               >
                 <Check size={16} />
@@ -121,7 +123,7 @@ export default function FlockJoinRequests({
               <button
                 onClick={() => act(r.userId, false)}
                 disabled={busy === r.userId}
-                aria-label="Decline"
+                aria-label={t("flockRequests.decline")}
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-white text-ink disabled:opacity-50"
               >
                 <X size={16} />
@@ -133,13 +135,13 @@ export default function FlockJoinRequests({
 
       {waiting.length > 0 && (
         <p className="mt-2 text-[11px] font-medium text-muted">
-          ✓ You approved {waiting.map((w) => w.name).join(", ")} — waiting for your co-host.
+          {t("flockRequests.approvedWaiting", { names: waiting.map((w) => w.name).join(", ") })}
         </p>
       )}
 
       {accepted.length > 0 && (
         <div className="mt-2">
-          <p className="text-[11px] font-bold text-muted">Going ({accepted.length})</p>
+          <p className="text-[11px] font-bold text-muted">{t("flockRequests.going", { count: accepted.length })}</p>
           <div className="mt-1 flex flex-wrap gap-1.5">
             {accepted.map((r) => (
               <span
@@ -162,7 +164,7 @@ export default function FlockJoinRequests({
                     type="button"
                     onClick={() => remove(r.userId)}
                     disabled={busy === r.userId}
-                    aria-label={`Remove ${r.name}`}
+                    aria-label={t("flockRequests.removeNamed", { name: r.name })}
                     className="flex h-7 w-7 items-center justify-center rounded-full text-muted hover:bg-ink/5 hover:text-ink"
                   >
                     <X size={13} />

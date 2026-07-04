@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import ChatRoom from "@/components/ChatRoom";
@@ -11,6 +12,7 @@ export default async function VibeChatPage({
   params: { id: string };
 }) {
   const supabase = await createClient();
+  const t = await getTranslations("buddies");
   const user = await getSessionUser();
 
   // get_or_create_chat enforces membership (host or confirmed)
@@ -22,10 +24,10 @@ export default async function VibeChatPage({
     return (
       <main className="mx-auto w-full max-w-2xl px-5 pt-6">
         <Link href={`/vibes/${params.id}`} className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-navy/60">
-          <ChevronLeft size={16} /> Back
+          <ChevronLeft size={16} /> {t("vibeChatPage.back")}
         </Link>
         <div className="rounded-3xl border-2 border-dashed border-navy/30 py-16 text-center font-nunito font-medium text-navy/60">
-          The Vibing Chat opens once you&rsquo;re confirmed for this Vibe.
+          {t("vibeChatPage.notConfirmed")}
         </div>
       </main>
     );
@@ -127,7 +129,7 @@ export default async function VibeChatPage({
 
         {vibe?.status === "cancelled" && (
           <div className="mt-3 shrink-0 rounded-2xl border-2 border-navy bg-cream p-3 text-sm font-bold text-navy/70">
-            This Vibe was cancelled — the chat is now inactive.
+            {t("vibeChatPage.cancelledNotice")}
           </div>
         )}
 

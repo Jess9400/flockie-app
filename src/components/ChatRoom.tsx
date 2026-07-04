@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Send, ImagePlus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { formatMessageDivider, needsDivider } from "@/lib/chat";
 import { isImageUrl, firstUrl } from "@/lib/chat-content";
@@ -38,6 +39,7 @@ export default function ChatRoom({
 }) {
   const supabase = createClient();
   const router = useRouter();
+  const t = useTranslations("buddies");
   const [messages, setMessages] = useState<LocalMsg[]>(initialMessages);
   const [text, setText] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -146,7 +148,7 @@ export default function ChatRoom({
       <div className="min-h-0 flex-1 space-y-1 overflow-y-auto py-4">
         {/* Welcome breadcrumb */}
         <p className="px-6 py-2 text-center font-nunito text-[13px] font-medium italic text-navy/50">
-          This is the start of your Vibe chat. Say hi 👋
+          {t("vibeRoom.startOfChat")}
         </p>
 
         {rows.map(({ m, divider, firstInSeq }) => {
@@ -218,7 +220,7 @@ export default function ChatRoom({
                           onClick={() => retry(m)}
                           className="mr-1 mt-0.5 font-nunito text-[11px] font-bold text-flockie-coral"
                         >
-                          Failed — tap to retry
+                          {t("shared.failedRetry")}
                         </button>
                       )}
                       {firstUrl(m.content) && <LinkPreview url={firstUrl(m.content)!} />}
@@ -240,7 +242,7 @@ export default function ChatRoom({
               href={reviewHref}
               className="rounded-full border-2 border-navy bg-flockie-coral px-3 py-1 font-nunito text-xs font-bold text-white"
             >
-              ⭐ How was it? Review this Vibe →
+              {t("vibeRoom.reviewVibe")}
             </Link>
           )}
           {bookingUrl && (
@@ -250,12 +252,12 @@ export default function ChatRoom({
               rel="noopener noreferrer"
               className="rounded-full border-2 border-navy bg-flockie-coral px-3 py-1 font-nunito text-xs font-bold text-white"
             >
-              🎟️ Book your spot →
+              {t("shared.bookSpot")}
             </a>
           )}
           {startsSoon && startsAt && (
             <span className="rounded-full bg-flockie-coral/15 px-3 py-1 font-nunito text-xs font-bold text-navy">
-              Vibe starts in {Math.round(hoursUntil(startsAt))}h
+              {t("vibeRoom.vibeStartsIn", { hours: Math.round(hoursUntil(startsAt)) })}
             </span>
           )}
         </div>
@@ -267,7 +269,7 @@ export default function ChatRoom({
           type="button"
           onClick={() => imgInput.current?.click()}
           disabled={uploading}
-          aria-label="Send photo"
+          aria-label={t("shared.sendPhoto")}
           className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-navy text-navy disabled:opacity-50"
         >
           <ImagePlus size={18} />
@@ -275,13 +277,13 @@ export default function ChatRoom({
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder={uploading ? "Sending photo…" : "Message the group…"}
+          placeholder={uploading ? t("shared.sendingPhoto") : t("vibeRoom.messageGroup")}
           className="h-12 w-full rounded-full border-2 border-navy bg-cream px-5 font-nunito text-[15px] font-medium text-navy outline-none focus:border-flockie-blue"
         />
         <button
           type="submit"
           disabled={!text.trim()}
-          aria-label="Send"
+          aria-label={t("shared.send")}
           className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-flockie-coral text-white disabled:opacity-50"
         >
           <Send size={18} />

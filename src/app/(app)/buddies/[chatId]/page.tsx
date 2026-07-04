@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import BuddyChatRoom from "@/components/BuddyChatRoom";
@@ -13,6 +14,7 @@ export default async function BuddyChatPage({
   params: { chatId: string };
 }) {
   const supabase = await createClient();
+  const t = await getTranslations("buddies");
   // The chat lookup only needs params.chatId — fetch it alongside the user.
   const [user, { data: chat }] = await Promise.all([
     getSessionUser(),
@@ -150,7 +152,7 @@ export default async function BuddyChatPage({
     mp?.forEach((p) => (chatMembers[p.id] = { name: p.display_name || "Flockie", photo: p.photos?.[0] ?? null }));
   }
 
-  const otherName = (other?.display_name || "your match").split(" ")[0];
+  const otherName = (other?.display_name || t("chatPage.yourMatch")).split(" ")[0];
 
   // Prefer the trip persisted on the match; fall back to soonest active trip.
   const todayIso = new Date().toISOString().slice(0, 10);
@@ -185,7 +187,7 @@ export default async function BuddyChatPage({
     const s = new Date(trip.start_date);
     const e = new Date(trip.end_date);
     const days = Math.max(1, Math.round((+e - +s) / 86400000) + 1);
-    dateRange = `${format(s, "MMM d")} → ${format(e, "MMM d")} · ${days} days`;
+    dateRange = t("chatPage.dateRange", { start: format(s, "MMM d"), end: format(e, "MMM d"), days });
   }
 
   // Shared tags + compatibility score.
@@ -196,17 +198,19 @@ export default async function BuddyChatPage({
     matchExt?.score != null ? Math.round(Number(matchExt.score)) : null;
 
   const compatLine = common.length
-    ? `You both align on ${common.slice(0, 3).join(", ").toLowerCase()}.`
-    : "You've got a similar overall travel vibe.";
+    ? t("chatPage.alignOn", { tags: common.slice(0, 3).join(", ").toLowerCase() })
+    : t("chatPage.similarOverall");
 
   const icebreaker =
     destination && dateRange
-      ? `You both matched on ${destination}, ${dateRange}.\n${
-          common.length ? `Compatible vibes: ${common.slice(0, 4).join(", ").toLowerCase()}.\n\n` : "\n"
-        }Start planning together — exchange dates, share must-dos, and talk about what you're both hoping to get from this trip.`
-      : `You both have a similar travel vibe${
-          common.length ? ` — ${common.slice(0, 3).join(", ").toLowerCase()}` : ""
-        }. Pick a destination together and start planning. No pressure.`;
+      ? `${t("chatPage.icebreakerMatched", { destination, dateRange })}\n${
+          common.length
+            ? `${t("chatPage.compatibleVibes", { tags: common.slice(0, 4).join(", ").toLowerCase() })}\n\n`
+            : "\n"
+        }${t("chatPage.planTogether")}`
+      : common.length
+        ? t("chatPage.similarVibeWith", { tags: common.slice(0, 3).join(", ").toLowerCase() })
+        : t("chatPage.similarVibe");
 
   const peek: PeekData = {
     id: otherId,
@@ -236,11 +240,12 @@ export default async function BuddyChatPage({
     const s = new Date(flockStart);
     const e = new Date(flockEnd);
     const days = Math.max(1, Math.round((+e - +s) / 86400000) + 1);
-    flockDateRange = `${format(s, "MMM d")} → ${format(e, "MMM d")} · ${days} days`;
+    flockDateRange = t("chatPage.dateRange", { start: format(s, "MMM d"), end: format(e, "MMM d"), days });
   }
-  const flockIcebreaker =
-    `You're all going to ${flockTitle}${flockDateRange ? `, ${flockDateRange}` : ""}. 🎒\n` +
-    `Say hi and start sorting it together — lock the dates that work, where you're staying, and the must-dos everyone wants in.`;
+  const flockIcebreaker = t("chatPage.flockIcebreaker", {
+    title: flockTitle,
+    dateRangeSuffix: flockDateRange ? `, ${flockDateRange}` : "",
+  });
   const headerDestination = isFlock ? flockTitle : destination;
   const headerDateRange = isFlock ? flockDateRange : dateRange;
   const finalIcebreaker = isFlock ? flockIcebreaker : icebreaker;

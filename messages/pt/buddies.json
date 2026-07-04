@@ -1,1 +1,134 @@
-{}
+{
+  "shared": {
+    "chats": "Chats",
+    "leave": "Sair",
+    "leaving": "Saindo…",
+    "viewDetails": "Ver detalhes",
+    "muteOn": "Silenciar notificações",
+    "muteOff": "Ativar notificações",
+    "members": "Membros",
+    "menu": "Menu",
+    "close": "Fechar",
+    "expand": "Expandir",
+    "collapse": "Recolher",
+    "send": "Enviar",
+    "sendPhoto": "Enviar foto",
+    "sendingPhoto": "Enviando foto…",
+    "failedRetry": "Falhou — toque para tentar de novo",
+    "bookSpot": "🎟️ Reserve seu lugar →"
+  },
+  "list": {
+    "title": "Chats",
+    "subtitle": "Suas conversas, todas em um só lugar.",
+    "tabTravel": "Viagens",
+    "tabActivity": "Atividades",
+    "tabVibes": "Vibes",
+    "travelDesc": "Chats de viagens e Flocks — buddies e grupos",
+    "activityDesc": "Chats 1:1 com seus buddies de atividade",
+    "vibesDesc": "Chats em grupo das Vibes que você entrou",
+    "travelEmptyTitle": "Você ainda não tem chats de viagem",
+    "travelEmptyBody": "Quando você der match para uma viagem ou entrar em um Flock, seu chat aparece aqui.",
+    "activityEmptyTitle": "Você ainda não tem chats de atividade",
+    "activityEmptyBody": "Dê match em uma atividade 1:1 e seu chat vai aparecer aqui.",
+    "vibesEmptyTitle": "Você ainda não tem chats de Vibes",
+    "vibesEmptyBody": "Entre em uma Vibe para começar a conversar com pessoas que combinam com você.",
+    "findABuddy": "Find a Buddy",
+    "browseVibes": "Explorar Vibes",
+    "youPrefix": "Você: {message}",
+    "tripMatch": "Match de viagem",
+    "tags": {
+      "travel_buddy": "Travel Buddy",
+      "activity_buddy": "Activity Buddy",
+      "flock": "Flock",
+      "vibe": "Vibes Buddy"
+    }
+  },
+  "chatPage": {
+    "yourMatch": "seu match",
+    "alignOn": "Vocês dois combinam em {tags}.",
+    "similarOverall": "Vocês têm um vibe de viagem bem parecido no geral.",
+    "icebreakerMatched": "Vocês dois deram match em {destination}, {dateRange}.",
+    "compatibleVibes": "Vibes compatíveis: {tags}.",
+    "planTogether": "Comecem a planejar juntos — troquem datas, compartilhem o que não pode faltar e conversem sobre o que cada um espera desta viagem.",
+    "similarVibe": "Vocês dois têm um vibe de viagem parecido. Escolham um destino juntos e comecem a planejar. Sem pressão.",
+    "similarVibeWith": "Vocês dois têm um vibe de viagem parecido — {tags}. Escolham um destino juntos e comecem a planejar. Sem pressão.",
+    "flockIcebreaker": "Todos vão para {title}{dateRangeSuffix}. 🎒\nDigam oi e comecem a organizar juntos — fechem as datas que funcionam, onde vão ficar e o que não pode faltar para todo mundo.",
+    "dateRange": "{start} → {end} · {days, plural, one {# dia} other {# dias}}"
+  },
+  "header": {
+    "leaveMatchTitle": "Sair deste match?",
+    "leaveMatchMsg": "Você vai perder o acesso a este chat e {name} será notificado.",
+    "leaveFlockTitle": "Sair deste Flock?",
+    "leaveFlockMsg": "Você vai perder seu lugar e o chat em grupo.",
+    "reportTitle": "Denunciar {name}?",
+    "reportMsg": "Conte para a gente o que aconteceu. Isso é privado para a Flockie.",
+    "reportPlaceholder": "O que aconteceu? (opcional)",
+    "report": "Denunciar",
+    "reportThanks": "Obrigado — nossa equipe vai analisar esta denúncia.",
+    "reportUser": "Denunciar este usuário",
+    "makeFlockTitle": "Transformar esta viagem em um Flock?",
+    "makeFlockMsg": "Ela vira uma viagem em grupo pública que outras pessoas podem pedir para entrar — você e seu buddy aprovam os novos membros juntos.",
+    "makeFlockConfirm": "Transformar em Flock",
+    "makeFlockDone": "Pronto! Sua viagem agora é um Flock — aprove os pedidos de entrada neste chat ou em Minhas viagens.",
+    "viewTripDetails": "Ver detalhes da viagem",
+    "leaveFlock": "Sair do Flock",
+    "groupTripFallback": "Viagem em grupo",
+    "goingCount": "{count} vão",
+    "membersHeading": "Membros",
+    "viewProfileNamed": "Ver o perfil de {name}",
+    "turnIntoFlock": "Transformar em um Flock",
+    "leaveMatch": "Sair deste match",
+    "yourVibeScore": "✨ {score}% do seu vibe",
+    "viewFullProfileNamed": "Ver o perfil completo de {name}",
+    "leaveMatchBtn": "Sair do match"
+  },
+  "vibeHeader": {
+    "leaveVibeTitle": "Sair desta Vibe?",
+    "leaveVibeMsg": "Você vai perder seu lugar e o chat.",
+    "leaveVibe": "Sair da Vibe",
+    "membersCount": "Membros ({count})",
+    "locationTBD": "Local a confirmar",
+    "mapTitle": "Local do evento",
+    "host": "Anfitrião"
+  },
+  "room": {
+    "matchedToast": "🎉 Vocês deram match! Diga oi 👋",
+    "tripPlan": "Plano da viagem:",
+    "algoSays": "O algoritmo diz:",
+    "promptRapport": "Parece que vocês dois estão se dando bem. Prontos para compartilhar datas provisórias?",
+    "promptPretrip": "Sua viagem com {name} começa em breve. Quer compartilhar suas confirmações de reserva no chat?",
+    "promptReview": "Como foi a viagem com {name}?",
+    "leaveReview": "Deixe uma avaliação →",
+    "dismiss": "Dispensar",
+    "messagePerson": "Escreva para {name}…"
+  },
+  "vibeRoom": {
+    "startOfChat": "Este é o começo do seu chat da Vibe. Diga oi 👋",
+    "messageGroup": "Escreva para o grupo…",
+    "reviewVibe": "⭐ Como foi? Avalie esta Vibe →",
+    "vibeStartsIn": "A Vibe começa em {hours}h"
+  },
+  "vibeChatPage": {
+    "back": "Voltar",
+    "notConfirmed": "O chat da Vibe abre quando você é confirmado para esta Vibe.",
+    "cancelledNotice": "Esta Vibe foi cancelada — o chat agora está inativo."
+  },
+  "flockRequests": {
+    "title": "Pedidos para entrar",
+    "pendingSuffix": "· {count} pendentes",
+    "error": "Algo deu errado — tente de novo.",
+    "approve": "Aprovar",
+    "decline": "Recusar",
+    "approvedWaiting": "✓ Você aprovou {names} — esperando seu co-anfitrião.",
+    "going": "Vão ({count})",
+    "removeNamed": "Remover {name}",
+    "removeTitle": "Remover este membro?",
+    "removeMsg": "O lugar dele abre para outra pessoa.",
+    "remove": "Remover"
+  },
+  "peek": {
+    "profileAria": "Perfil de {name}",
+    "viewFullProfile": "Ver perfil completo",
+    "close": "Fechar"
+  }
+}
