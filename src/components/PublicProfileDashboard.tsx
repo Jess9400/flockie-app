@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { format } from "date-fns";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import MatchBackButton from "@/components/MatchBackButton";
 import PhotoStrip from "@/components/PhotoStrip";
 import ProfileIdentityCard from "@/components/ProfileIdentityCard";
@@ -16,7 +17,7 @@ type PublicProfile = Partial<Profile> & {
   archetype?: string | null;
 };
 
-export default function PublicProfileDashboard({
+export default async function PublicProfileDashboard({
   personId,
   profile,
   reviewItems,
@@ -31,7 +32,8 @@ export default function PublicProfileDashboard({
   events?: EventsData;
   incomingLike: boolean;
 }) {
-  const firstName = (profile.display_name || "They").split(" ")[0];
+  const t = await getTranslations("profile");
+  const firstName = (profile.display_name || t("public.nameFallback")).split(" ")[0];
   const archetype = profile.archetype
     ? ARCHETYPES[profile.archetype as VibeDimension]
     : null;
@@ -42,6 +44,7 @@ export default function PublicProfileDashboard({
   ]);
   const activities = uniqueItems(profile.activities ?? []);
   const history = buildHistory(events);
+  const roleLabel = (role: string) => t(`public.roles.${role}`);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(300px,390px)_minmax(0,1fr)] lg:items-start">
@@ -59,8 +62,8 @@ export default function PublicProfileDashboard({
 
       <div className="min-w-0 space-y-4">
         <Panel
-          title={`About ${firstName}`}
-          description="The public side of their Flockie profile."
+          title={t("public.about", { name: firstName })}
+          description={t("public.aboutDescription")}
         >
           {archetype && (
             <div
@@ -70,7 +73,7 @@ export default function PublicProfileDashboard({
               }}
             >
               <p className="text-[10px] font-extrabold uppercase tracking-wide text-muted">
-                Their vibe
+                {t("public.theirVibe")}
               </p>
               <div className="mt-1 flex items-center gap-2">
                 <span className="text-2xl">{archetype.emoji}</span>
@@ -79,7 +82,7 @@ export default function PublicProfileDashboard({
                 </h2>
               </div>
               <p className="mt-2 text-sm font-medium leading-relaxed text-navy/75">
-                {archetype.description}
+                {t(`archetypes.${archetype.key}.description`)}
               </p>
             </div>
           )}
@@ -91,16 +94,16 @@ export default function PublicProfileDashboard({
           )}
 
           {activities.length > 0 && (
-            <ChipGroup title="Likes doing" items={activities} />
+            <ChipGroup title={t("public.likesDoing")} items={activities} />
           )}
           {vibeTags.length > 0 && (
-            <ChipGroup title="Their kind of vibe" items={vibeTags} />
+            <ChipGroup title={t("public.theirKindOfVibe")} items={vibeTags} />
           )}
 
           {photos.length > 0 && (
             <div className="mt-4">
               <p className="mb-2 text-xs font-extrabold uppercase tracking-wide text-muted">
-                More photos
+                {t("public.morePhotos")}
               </p>
               <PhotoStrip photos={photos} />
             </div>
@@ -121,18 +124,18 @@ export default function PublicProfileDashboard({
             photos.length === 0 &&
             !profile.video_url && (
               <p className="rounded-2xl bg-cream p-4 text-sm font-medium text-muted">
-                {firstName} is still adding details to their public profile.
+                {t("public.stillAdding", { name: firstName })}
               </p>
             )}
         </Panel>
 
         <Panel
-          title="Flockie history"
-          description="Completed public Vibes and flocks—not future plans."
+          title={t("public.history.title")}
+          description={t("public.history.description")}
           badge={
             history.length > 0 ? (
               <span className="shrink-0 whitespace-nowrap rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-700">
-                {history.length} completed
+                {t("public.history.completedCount", { count: history.length })}
               </span>
             ) : undefined
           }
@@ -140,23 +143,23 @@ export default function PublicProfileDashboard({
           {history.length > 0 ? (
             <div className="space-y-2">
               {history.slice(0, 6).map((item) => (
-                <HistoryRow key={item.key} item={item} />
+                <HistoryRow key={item.key} item={item} roleLabel={roleLabel(item.role)} />
               ))}
             </div>
           ) : (
             <p className="rounded-2xl bg-cream p-4 text-sm font-medium text-muted">
-              No completed public plans to show yet.
+              {t("public.history.empty")}
             </p>
           )}
         </Panel>
 
         <Panel
-          title="Reviews"
-          description="Feedback from completed Flockie interactions."
+          title={t("public.reviews.title")}
+          description={t("public.reviews.description")}
           badge={
             reviewItems.length > 0 ? (
               <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-700">
-                <CheckCircle2 size={11} /> {reviewItems.length} verified
+                <CheckCircle2 size={11} /> {t("public.reviews.verifiedCount", { count: reviewItems.length })}
               </span>
             ) : undefined
           }
@@ -164,12 +167,17 @@ export default function PublicProfileDashboard({
           {reviewItems.length > 0 ? (
             <div className="space-y-2">
               {reviewItems.map((review) => (
-                <ReviewRow key={review.id} review={review} />
+                <ReviewRow
+                  key={review.id}
+                  review={review}
+                  verifiedLabel={t("public.reviews.verified")}
+                  noCommentLabel={t("public.reviews.noComment")}
+                />
               ))}
             </div>
           ) : (
             <p className="rounded-2xl bg-cream p-4 text-sm font-medium text-muted">
-              No reviews yet.
+              {t("public.reviews.empty")}
             </p>
           )}
         </Panel>
@@ -244,7 +252,7 @@ function buildHistory(events?: EventsData): HistoryItem[] {
         key: `vibe-${item.id}-${index}`,
         title: item.title,
         subtitle: formatVibeWhen(item.starts_at),
-        role: item.role === "host" ? "Hosted" : "Joined",
+        role: item.role === "host" ? "hosted" : "joined",
         photo: item.photo,
         emoji: "🎟️",
         href: `/vibes/${item.id}`,
@@ -257,7 +265,7 @@ function buildHistory(events?: EventsData): HistoryItem[] {
         key: `flock-${item.id}-${index}`,
         title: item.destination || "Flock",
         subtitle: dateRange(item.start_date, item.end_date),
-        role: item.role === "host" ? "Hosted" : "Joined",
+        role: item.role === "host" ? "hosted" : "joined",
         photo: item.photo,
         emoji: "🧳",
         sortValue: +new Date(item.end_date),
@@ -266,7 +274,7 @@ function buildHistory(events?: EventsData): HistoryItem[] {
   return [...vibes, ...flocks].sort((a, b) => b.sortValue - a.sortValue);
 }
 
-function HistoryRow({ item }: { item: HistoryItem }) {
+function HistoryRow({ item, roleLabel }: { item: HistoryItem; roleLabel: string }) {
   const content = (
     <>
       <span className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-2 border-ink bg-cream text-xl">
@@ -285,7 +293,7 @@ function HistoryRow({ item }: { item: HistoryItem }) {
         </span>
       </span>
       <span className="rounded-full bg-cream px-2 py-1 text-[10px] font-extrabold uppercase text-muted">
-        {item.role}
+        {roleLabel}
       </span>
       {item.href && <ArrowRight size={15} className="shrink-0 text-muted" />}
     </>
@@ -303,7 +311,15 @@ function HistoryRow({ item }: { item: HistoryItem }) {
   );
 }
 
-function ReviewRow({ review }: { review: ReviewItem }) {
+function ReviewRow({
+  review,
+  verifiedLabel,
+  noCommentLabel,
+}: {
+  review: ReviewItem;
+  verifiedLabel: string;
+  noCommentLabel: string;
+}) {
   return (
     <article className="rounded-2xl border-2 border-ink/10 bg-[#FCF9F4] p-3">
       <div className="flex items-center gap-2">
@@ -324,7 +340,7 @@ function ReviewRow({ review }: { review: ReviewItem }) {
           {review.reviewerName}
         </span>
         <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-extrabold text-emerald-700">
-          Verified interaction
+          {verifiedLabel}
         </span>
         <time className="ml-auto shrink-0 text-[10px] font-medium text-muted">
           {format(new Date(review.created_at), "MMM yyyy")}
@@ -336,7 +352,7 @@ function ReviewRow({ review }: { review: ReviewItem }) {
         </p>
       ) : (
         <p className="mt-2 text-xs font-medium text-muted">
-          Shared feedback after a completed Flockie interaction.
+          {noCommentLabel}
         </p>
       )}
     </article>

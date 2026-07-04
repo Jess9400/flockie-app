@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { formatVibeWhen } from "@/lib/vibes";
 
 type VibeEvt = { id: string; title: string; photo: string | null; starts_at: string; role: string; past: boolean; reviewed?: boolean };
@@ -97,6 +100,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 const dateRange = (a: string, b: string) => (a === b ? a : `${a} → ${b}`);
 
 export default function ProfileEvents({ data, isOwner }: { data: EventsData; isOwner: boolean }) {
+  const t = useTranslations("profile");
   const vibes = data?.vibes ?? [];
   const flocks = data?.flocks ?? [];
   const activities = data?.activities ?? [];
@@ -107,7 +111,7 @@ export default function ProfileEvents({ data, isOwner }: { data: EventsData; isO
   return (
     <>
       {vibes.length > 0 && (
-        <Section title="Vibes">
+        <Section title={t("events.vibes")}>
           {vibes.map((v, i) => (
             <Row
               key={`${v.id}-${v.role}-${i}`}
@@ -115,18 +119,18 @@ export default function ProfileEvents({ data, isOwner }: { data: EventsData; isO
               emoji="🎟️"
               title={v.title}
               sub={formatVibeWhen(v.starts_at)}
-              role={v.role === "host" ? "Host" : "Going"}
+              role={v.role === "host" ? t("events.host") : t("events.going")}
               past={v.past}
               href={`/vibes/${v.id}`}
               reviewHref={isOwner && v.past && v.role !== "host" ? `/vibes/${v.id}/review` : null}
-              reviewLabel={v.reviewed ? "Edit your review" : "Review this Vibe"}
+              reviewLabel={v.reviewed ? t("events.editReview") : t("events.reviewVibe")}
             />
           ))}
         </Section>
       )}
 
       {flocks.length > 0 && (
-        <Section title="Flocks">
+        <Section title={t("events.flocks")}>
           {flocks.map((f, i) => (
             <Row
               key={`${f.id}-${f.role}-${i}`}
@@ -134,17 +138,17 @@ export default function ProfileEvents({ data, isOwner }: { data: EventsData; isO
               emoji="🧳"
               title={f.destination || "Flock"}
               sub={dateRange(f.start_date, f.end_date)}
-              role={f.role === "host" ? "Host" : "Going"}
+              role={f.role === "host" ? t("events.host") : t("events.going")}
               past={f.past}
               reviewHref={isOwner && f.past ? `/flocks/${f.id}/review` : null}
-              reviewLabel="Review your flockmates"
+              reviewLabel={t("events.reviewFlockmates")}
             />
           ))}
         </Section>
       )}
 
       {isOwner && activities.length > 0 && (
-        <Section title="Activities">
+        <Section title={t("events.activities")}>
           {activities.map((a) => (
             <Row key={a.id} photo={a.photo} emoji="🎯" title={a.title || "Activity"} sub={dateRange(a.start_date, a.end_date)} past={a.past} />
           ))}
@@ -152,9 +156,9 @@ export default function ProfileEvents({ data, isOwner }: { data: EventsData; isO
       )}
 
       {isOwner && trips.length > 0 && (
-        <Section title="Trips">
-          {trips.map((t) => (
-            <Row key={t.id} photo={t.photo} emoji="✈️" title={t.destination || "Trip"} sub={dateRange(t.start_date, t.end_date)} past={t.past} />
+        <Section title={t("events.trips")}>
+          {trips.map((tr) => (
+            <Row key={tr.id} photo={tr.photo} emoji="✈️" title={tr.destination || "Trip"} sub={dateRange(tr.start_date, tr.end_date)} past={tr.past} />
           ))}
         </Section>
       )}

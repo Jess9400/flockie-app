@@ -1,1 +1,206 @@
-{}
+{
+  "editor": {
+    "cancel": "Cancel"
+  },
+  "reviewerFallback": "A flockie",
+  "form": {
+    "photosTitle": "Photos & video",
+    "photosSubtitle": "At least one photo. Your first photo is your primary — drag to reorder.",
+    "aboutTitle": "About you",
+    "name": "Name",
+    "namePlaceholder": "Your first name",
+    "age": "Age",
+    "gender": "Gender",
+    "genderSelect": "Select…",
+    "homeCity": "Home city",
+    "cityPlaceholder": "e.g. Lisbon",
+    "bioLabel": "A little about you (optional)",
+    "bioPlaceholder": "What should people know about you?",
+    "verificationsTitle": "Verifications",
+    "verificationsSubtitle": "Link your handles so matches can check you out (optional).",
+    "instagram": "Instagram",
+    "xTwitter": "X (Twitter)",
+    "tiktok": "TikTok",
+    "handlePlaceholder": "@yourhandle",
+    "needPhoto": "Add at least one profile photo.",
+    "photoUploadFailed": "Photo upload failed.",
+    "videoUploadFailed": "Video upload failed.",
+    "saved": "Saved!",
+    "saving": "Saving…",
+    "save": "Save profile"
+  },
+  "genders": {
+    "woman": "Woman",
+    "man": "Man",
+    "non_binary": "Non-binary",
+    "prefer_not_to_say": "Prefer not to say"
+  },
+  "identity": {
+    "titleFallback": "Your profile",
+    "bioPrompt": "Add a short bio so people understand what it feels like to hang out with you.",
+    "reviews": "Reviews",
+    "vibesJoined": "Vibes joined",
+    "hosted": "Hosted",
+    "editPublic": "Edit public profile",
+    "shareAria": "Share profile",
+    "settingsAria": "Settings"
+  },
+  "dashboard": {
+    "heading": "Profile dashboard",
+    "subheading": "Manage what people see and what Flockie uses for matching.",
+    "publicProfile": "Public profile",
+    "share": "Share",
+    "settings": "Settings",
+    "matchSetup": {
+      "title": "Match setup",
+      "description": "Private inputs used by Flockie. Other users never see your raw preferences or dealbreakers.",
+      "privateBadge": "Private"
+    },
+    "yourVibe": "Your vibe",
+    "vibeUpdatesWhenDone": "Updates when you finish your quiz",
+    "vibeBuiltFromAnswers": "Built from your answers below",
+    "view": "View",
+    "vibeQuiz": {
+      "title": "Vibe quiz",
+      "description": "Your global personality read. Retaking restarts the whole quiz.",
+      "complete": "Complete",
+      "finishYourQuiz": "Finish your quiz",
+      "notStarted": "Not started",
+      "starting": "Starting…",
+      "retake": "Retake",
+      "finishQuiz": "Finish quiz",
+      "start": "Start"
+    },
+    "tripVibe": {
+      "title": "Trip vibe",
+      "description": "Pace, budget, planning, nightlife, travel style, and trip dealbreakers.",
+      "complete": "Complete",
+      "addPreferences": "Add preferences",
+      "retake": "Retake",
+      "start": "Start"
+    },
+    "activityVibe": {
+      "title": "Activity vibe",
+      "description": "Activities, skill levels, intensity, group size, and activity dealbreakers.",
+      "complete": "Complete",
+      "addPreferences": "Add preferences",
+      "retake": "Retake",
+      "start": "Start"
+    },
+    "matchSetupNote": "Soft preferences improve ranking. Dealbreakers strictly filter. Interest, Not for me, invitation responses, attendance, and reviews also teach the algorithm.",
+    "redoConfirm": {
+      "title": "Retake your vibe quiz?",
+      "message": "You'll answer the whole quiz again from question 1 — there's no saving halfway. Your current vibe stays active until you finish.",
+      "confirmLabel": "Start the quiz"
+    },
+    "redoError": "Couldn't reset the quiz — try again.",
+    "visibility": {
+      "title": "Visibility summary",
+      "description": "These rules are enforced by the profile privacy layer.",
+      "settingsLink": "Settings →",
+      "publicProfileTitle": "Public profile",
+      "publicProfileDesc": "Photo, name, age, city, bio, public interests, qualitative reviews, and completed public history.",
+      "socialAccountsTitle": "Social accounts",
+      "socialMembersDesc": "Visible to signed-in Flockie members.",
+      "socialPrivateDesc": "Hidden from everyone else.",
+      "socialConnectionsDesc": "Visible after you share a confirmed plan or buddy match.",
+      "matchSetupTitle": "Match setup",
+      "matchSetupDesc": "Raw quiz answers, preferences, dealbreakers, and behavioral signals.",
+      "planVisibilityTitle": "Plan visibility",
+      "planVisibilityDesc": "Upcoming plans stay on your owner dashboard; completed public Vibes and flocks can appear on your public profile.",
+      "labelVisible": "Visible",
+      "labelMembers": "Members",
+      "labelOnlyYou": "Only you",
+      "labelConnections": "Connections",
+      "labelProfileDisplay": "Profile display"
+    },
+    "upcoming": {
+      "title": "My upcoming plans",
+      "description": "A private management preview on your owner dashboard.",
+      "seeAll": "See all →",
+      "empty": "No upcoming plans yet.",
+      "exploreVibes": "Explore Vibes"
+    },
+    "reviews": {
+      "title": "Reviews",
+      "description": "Verified feedback from completed Flockie interactions.",
+      "showLess": "Show less",
+      "seeAllCount": "See all {count}",
+      "empty": "No reviews yet — reviews appear after you travel together, do an activity, or share a Flock.",
+      "verified": "Verified interaction"
+    },
+    "roles": {
+      "host": "Host",
+      "going": "Going",
+      "plan": "Plan",
+      "trip": "Trip"
+    }
+  },
+  "public": {
+    "nameFallback": "them",
+    "about": "About {name}",
+    "aboutDescription": "The public side of their Flockie profile.",
+    "theirVibe": "Their vibe",
+    "likesDoing": "Likes doing",
+    "theirKindOfVibe": "Their kind of vibe",
+    "morePhotos": "More photos",
+    "stillAdding": "{name} is still adding details to their public profile.",
+    "history": {
+      "title": "Flockie history",
+      "description": "Completed public Vibes and flocks—not future plans.",
+      "completedCount": "{count} completed",
+      "empty": "No completed public plans to show yet."
+    },
+    "roles": {
+      "hosted": "Hosted",
+      "joined": "Joined"
+    },
+    "reviews": {
+      "title": "Reviews",
+      "description": "Feedback from completed Flockie interactions.",
+      "verifiedCount": "{count} verified",
+      "empty": "No reviews yet.",
+      "verified": "Verified interaction",
+      "noComment": "Shared feedback after a completed Flockie interaction."
+    }
+  },
+  "view": {
+    "theirVibe": "Their vibe",
+    "tripVibe": "Trip vibe",
+    "travelStyle": "Travel style",
+    "activities": "Activities",
+    "activityVibe": "Activity vibe",
+    "skillLevels": "Skill levels"
+  },
+  "reviews": {
+    "title": "Reviews",
+    "empty": "No reviews yet — reviews appear after you travel together, do an activity, or share a Flock."
+  },
+  "events": {
+    "vibes": "Vibes",
+    "flocks": "Flocks",
+    "activities": "Activities",
+    "trips": "Trips",
+    "reviewVibe": "Review this Vibe",
+    "editReview": "Edit your review",
+    "reviewFlockmates": "Review your flockmates",
+    "host": "Host",
+    "going": "Going"
+  },
+  "completePopup": {
+    "title": "Your vibe is complete!",
+    "body": "All three forms done. Now pull your people in.",
+    "done": "Done"
+  },
+  "page": {
+    "back": "Back"
+  },
+  "archetypes": {
+    "culture": { "description": "You go deep, not wide. You're in the museum before it opens and the local spot after it closes." },
+    "social": { "description": "You came for one thing and stayed for the people. You know everyone's name by day two." },
+    "night": { "description": "Things reveal themselves after dark and you know it. Mornings are for recovery." },
+    "food": { "description": "You plan your days around meals, and you'll take the long way for the right place." },
+    "adventure": { "description": "No plan is the plan. You decide late, travel light, and somehow always find the right people." },
+    "wellness": { "description": "Slow, intentional, unbothered. You need at least one afternoon with absolutely nothing planned." }
+  }
+}

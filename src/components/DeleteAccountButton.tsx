@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { useConfirm } from "@/components/ui/feedback";
 
 export default function DeleteAccountButton() {
   const router = useRouter();
+  const t = useTranslations("settings");
   const supabase = createClient();
   const confirm = useConfirm();
   const [busy, setBusy] = useState(false);
@@ -31,10 +33,9 @@ export default function DeleteAccountButton() {
   async function remove() {
     if (
       !(await confirm({
-        title: "Delete your account?",
-        message:
-          "This permanently removes your profile, photos, vibe check, and matches. This can't be undone.",
-        confirmLabel: "Delete account",
+        title: t("deleteAccount.confirmTitle"),
+        message: t("deleteAccount.confirmMessage"),
+        confirmLabel: t("deleteAccount.confirmLabel"),
         destructive: true,
       }))
     )
@@ -54,7 +55,7 @@ export default function DeleteAccountButton() {
         await purgeFolder("videos", uid);
       } catch (e) {
         setBusy(false);
-        setErr("Couldn't remove your media — please try again. " + ((e as Error)?.message ?? ""));
+        setErr(t("deleteAccount.mediaError") + ((e as Error)?.message ?? ""));
         return;
       }
     }
@@ -78,7 +79,7 @@ export default function DeleteAccountButton() {
         disabled={busy}
         className="font-nunito text-sm font-medium text-navy underline decoration-navy/30 underline-offset-2 hover:decoration-navy disabled:opacity-50"
       >
-        {busy ? "Deleting…" : "Delete account"}
+        {busy ? t("deleteAccount.deleting") : t("deleteAccount.button")}
       </button>
       {err && <p className="mt-1 font-nunito text-xs font-medium text-flockie-coral">{err}</p>}
     </div>

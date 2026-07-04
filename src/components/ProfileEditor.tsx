@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import OwnerProfileDashboard from "@/components/OwnerProfileDashboard";
 import { type ReviewItem } from "@/components/ProfileReviews";
 import { type EventsData } from "@/components/ProfileEvents";
@@ -30,6 +31,7 @@ export default function ProfileEditor({
   stats?: Record<string, number>;
   events?: EventsData;
 }) {
+  const t = useTranslations("profile");
   // Start in edit mode if the profile isn't complete yet (first-time onboarding).
   const [editing, setEditing] = useState(!complete);
   const [showShare, setShowShare] = useState(false);
@@ -55,7 +57,7 @@ export default function ProfileEditor({
             onClick={() => setEditing(false)}
             className="mb-6 rounded-full border-2 border-navy bg-white px-5 py-2 font-fredoka text-sm font-semibold text-navy"
           >
-            Cancel
+            {t("editor.cancel")}
           </button>
         )}
         <VibeCheckForm

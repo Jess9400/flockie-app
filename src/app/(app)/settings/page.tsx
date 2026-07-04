@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import NotificationsToggle from "@/components/NotificationsToggle";
@@ -12,6 +13,7 @@ import DeleteAccountButton from "@/components/DeleteAccountButton";
 export default async function SettingsPage() {
   const supabase = await createClient();
   const user = await getSessionUser();
+  const t = await getTranslations("settings");
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -42,10 +44,10 @@ export default async function SettingsPage() {
         href="/profile"
         className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-navy/60 hover:text-navy"
       >
-        <ChevronLeft size={16} /> Profile
+        <ChevronLeft size={16} /> {t("backToProfile")}
       </Link>
 
-      <h1 className="font-fredoka text-3xl font-bold text-navy">Settings</h1>
+      <h1 className="font-fredoka text-3xl font-bold text-navy">{t("title")}</h1>
 
       <section className="mt-8 space-y-3">
         <SocialVisibilityControl
@@ -72,7 +74,7 @@ export default async function SettingsPage() {
       </section>
 
       <section className="mt-8">
-        <h2 className="font-fredoka text-lg font-semibold text-navy">Account</h2>
+        <h2 className="font-fredoka text-lg font-semibold text-navy">{t("account.title")}</h2>
         <p className="mt-1 text-sm font-medium text-navy/60">{user?.email}</p>
         <div className="mt-4">
           <SignOutButton />

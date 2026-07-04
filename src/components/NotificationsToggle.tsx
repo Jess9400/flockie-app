@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 
 export default function NotificationsToggle({
@@ -10,6 +11,7 @@ export default function NotificationsToggle({
   userId: string;
   initial: boolean;
 }) {
+  const t = useTranslations("settings");
   const supabase = createClient();
   const [on, setOn] = useState(initial);
   const [busy, setBusy] = useState(false);
@@ -35,9 +37,9 @@ export default function NotificationsToggle({
     <div className="rounded-2xl border-2 border-ink bg-white p-4">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-extrabold">Notifications</p>
+          <p className="text-sm font-extrabold">{t("notifications.title")}</p>
           <p className="text-xs font-medium text-muted">
-            Invitations, confirmations, and updates.
+            {t("notifications.description")}
           </p>
         </div>
         <button
@@ -56,9 +58,7 @@ export default function NotificationsToggle({
         </button>
       </div>
       {err && (
-        <p className="mt-2 text-xs font-bold text-red-700">
-          Couldn&rsquo;t save — check your connection and try again.
-        </p>
+        <p className="mt-2 text-xs font-bold text-red-700">{t("saveError")}</p>
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import RevealActions from "@/components/onboarding/RevealActions";
 
 // Shown once on the profile after all 3 forms are complete: celebrate + the two
@@ -20,6 +21,7 @@ export default function VibeCompletePopup({
   allComplete: boolean;
   force?: boolean; // ?vibe_done=1 — show right after finishing the last form
 }) {
+  const t = useTranslations("profile");
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -38,9 +40,9 @@ export default function VibeCompletePopup({
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-navy/50 p-4 font-nunito sm:items-center">
       <div className="w-full max-w-sm rounded-3xl border-2 border-navy bg-cream p-5 text-center shadow-[0_6px_0_0_rgba(10,37,69,1)]">
         <p className="text-3xl">🎉</p>
-        <p className="mt-2 font-fredoka text-xl font-bold text-navy">Your vibe is complete!</p>
+        <p className="mt-2 font-fredoka text-xl font-bold text-navy">{t("completePopup.title")}</p>
         <p className="mt-1 font-nunito text-sm font-medium text-navy/60">
-          All three forms done. Now pull your people in.
+          {t("completePopup.body")}
         </p>
         <div className="mt-4">
           <RevealActions userId={userId} name={name} tags={tags} archetypeKey={archetypeKey} />
@@ -50,7 +52,7 @@ export default function VibeCompletePopup({
           onClick={() => setShow(false)}
           className="mt-3 w-full py-2 font-nunito text-sm font-bold text-navy/50"
         >
-          Done
+          {t("completePopup.done")}
         </button>
       </div>
     </div>

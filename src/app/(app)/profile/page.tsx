@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import ProfileEditor from "@/components/ProfileEditor";
@@ -16,6 +17,7 @@ export default async function ProfilePage({
     (searchParams.compat ? `/compat/${searchParams.compat}` : undefined);
   const supabase = await createClient();
   const user = await getSessionUser();
+  const t = await getTranslations("profile");
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -61,7 +63,7 @@ export default async function ProfilePage({
     rating: r.rating,
     comment: r.comment,
     created_at: r.created_at,
-    reviewerName: (reviewers[r.reviewer_id]?.display_name || "A flockie").split(" ")[0],
+    reviewerName: (reviewers[r.reviewer_id]?.display_name || t("reviewerFallback")).split(" ")[0],
     reviewerPhoto: reviewers[r.reviewer_id]?.photos?.[0] ?? null,
   }));
 

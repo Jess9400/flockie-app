@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { SLIDERS, SKILL_CATEGORIES, SKILL_SCALE, type Profile } from "@/lib/vibe-check";
 import { ARCHETYPES } from "@/lib/onboarding/archetypes";
 import type { VibeDimension } from "@/lib/onboarding/types";
@@ -31,6 +34,7 @@ export default function ProfileView({
 }: {
   profile: Partial<Profile> & { archetype?: string | null };
 }) {
+  const t = useTranslations("profile");
   const p = profile;
   const photos = p.photos ?? [];
   const hero = photos[0];
@@ -87,7 +91,7 @@ export default function ProfileView({
           <ArchetypeBadge archetypeKey={p.archetype!} size={44} />
           <div>
             <p className="font-nunito text-[11px] font-bold uppercase tracking-wide text-navy/55">
-              Their vibe
+              {t("view.theirVibe")}
             </p>
             <p className="font-fredoka text-xl font-bold text-navy">{archetype.name}</p>
             <p className="mt-0.5 font-nunito text-sm font-medium text-navy/70">
@@ -142,16 +146,16 @@ export default function ProfileView({
 
       {/* Tag chips */}
       <div className="mt-10 space-y-6">
-        <ChipGroup label="Trip vibe" items={p.trip_vibe} />
-        <ChipGroup label="Travel style" items={p.travel_style} />
-        <ChipGroup label="Activities" items={p.activities} />
-        <ChipGroup label="Activity vibe" items={p.activity_vibe} />
+        <ChipGroup label={t("view.tripVibe")} items={p.trip_vibe} />
+        <ChipGroup label={t("view.travelStyle")} items={p.travel_style} />
+        <ChipGroup label={t("view.activities")} items={p.activities} />
+        <ChipGroup label={t("view.activityVibe")} items={p.activity_vibe} />
 
         {/* Skill levels (per category) */}
         {skills.length > 0 && (
           <div>
             <p className="font-nunito text-[11px] font-bold uppercase tracking-wide text-navy/55">
-              Skill levels
+              {t("view.skillLevels")}
             </p>
             <div className="mt-2 space-y-2">
               {skills.map((c) => (

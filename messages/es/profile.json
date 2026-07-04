@@ -1,1 +1,206 @@
-{}
+{
+  "editor": {
+    "cancel": "Cancelar"
+  },
+  "reviewerFallback": "Un flockie",
+  "form": {
+    "photosTitle": "Fotos y video",
+    "photosSubtitle": "Al menos una foto. Tu primera foto es la principal — arrástralas para reordenar.",
+    "aboutTitle": "Sobre ti",
+    "name": "Nombre",
+    "namePlaceholder": "Tu nombre",
+    "age": "Edad",
+    "gender": "Género",
+    "genderSelect": "Selecciona…",
+    "homeCity": "Ciudad de residencia",
+    "cityPlaceholder": "p. ej. Lisboa",
+    "bioLabel": "Un poco sobre ti (opcional)",
+    "bioPlaceholder": "¿Qué te gustaría que la gente sepa de ti?",
+    "verificationsTitle": "Verificaciones",
+    "verificationsSubtitle": "Enlaza tus perfiles para que tus matches puedan conocerte (opcional).",
+    "instagram": "Instagram",
+    "xTwitter": "X (Twitter)",
+    "tiktok": "TikTok",
+    "handlePlaceholder": "@tuusuario",
+    "needPhoto": "Añade al menos una foto de perfil.",
+    "photoUploadFailed": "No se pudo subir la foto.",
+    "videoUploadFailed": "No se pudo subir el video.",
+    "saved": "¡Guardado!",
+    "saving": "Guardando…",
+    "save": "Guardar perfil"
+  },
+  "genders": {
+    "woman": "Mujer",
+    "man": "Hombre",
+    "non_binary": "No binario",
+    "prefer_not_to_say": "Prefiero no decirlo"
+  },
+  "identity": {
+    "titleFallback": "Tu perfil",
+    "bioPrompt": "Añade una bio corta para que la gente entienda cómo es pasar el rato contigo.",
+    "reviews": "Reseñas",
+    "vibesJoined": "Vibes hechas",
+    "hosted": "Organizadas",
+    "editPublic": "Editar perfil público",
+    "shareAria": "Compartir perfil",
+    "settingsAria": "Ajustes"
+  },
+  "dashboard": {
+    "heading": "Panel de perfil",
+    "subheading": "Gestiona lo que la gente ve y lo que Flockie usa para hacer match.",
+    "publicProfile": "Perfil público",
+    "share": "Compartir",
+    "settings": "Ajustes",
+    "matchSetup": {
+      "title": "Ajustes de match",
+      "description": "Datos privados que usa Flockie. Los demás nunca ven tus preferencias ni tus aspectos no negociables.",
+      "privateBadge": "Privado"
+    },
+    "yourVibe": "Tu vibe",
+    "vibeUpdatesWhenDone": "Se actualiza cuando termines tu quiz",
+    "vibeBuiltFromAnswers": "Creado a partir de tus respuestas de abajo",
+    "view": "Ver",
+    "vibeQuiz": {
+      "title": "Vibe quiz",
+      "description": "Tu lectura de personalidad global. Si lo repites, el quiz empieza de nuevo.",
+      "complete": "Completo",
+      "finishYourQuiz": "Termina tu quiz",
+      "notStarted": "Sin empezar",
+      "starting": "Empezando…",
+      "retake": "Repetir",
+      "finishQuiz": "Terminar quiz",
+      "start": "Empezar"
+    },
+    "tripVibe": {
+      "title": "Trip vibe",
+      "description": "Ritmo, presupuesto, planificación, vida nocturna, estilo de viaje y aspectos no negociables del viaje.",
+      "complete": "Completo",
+      "addPreferences": "Añadir preferencias",
+      "retake": "Repetir",
+      "start": "Empezar"
+    },
+    "activityVibe": {
+      "title": "Activity vibe",
+      "description": "Actividades, nivel de habilidad, intensidad, tamaño del grupo y aspectos no negociables de la actividad.",
+      "complete": "Completo",
+      "addPreferences": "Añadir preferencias",
+      "retake": "Repetir",
+      "start": "Empezar"
+    },
+    "matchSetupNote": "Las preferencias flexibles mejoran el ranking. Los aspectos no negociables filtran de forma estricta. Interés, No es para mí, respuestas a invitaciones, asistencia y reseñas también entrenan al algoritmo.",
+    "redoConfirm": {
+      "title": "¿Repetir tu vibe quiz?",
+      "message": "Responderás todo el quiz otra vez desde la pregunta 1 — no se puede guardar a medias. Tu vibe actual sigue activo hasta que termines.",
+      "confirmLabel": "Empezar el quiz"
+    },
+    "redoError": "No se pudo reiniciar el quiz — inténtalo de nuevo.",
+    "visibility": {
+      "title": "Resumen de visibilidad",
+      "description": "Estas reglas las aplica la capa de privacidad del perfil.",
+      "settingsLink": "Ajustes →",
+      "publicProfileTitle": "Perfil público",
+      "publicProfileDesc": "Foto, nombre, edad, ciudad, bio, intereses públicos, reseñas cualitativas e historial público completado.",
+      "socialAccountsTitle": "Cuentas sociales",
+      "socialMembersDesc": "Visible para los miembros de Flockie con sesión iniciada.",
+      "socialPrivateDesc": "Oculto para todos los demás.",
+      "socialConnectionsDesc": "Visible después de que compartas un plan confirmado o un match de buddy.",
+      "matchSetupTitle": "Ajustes de match",
+      "matchSetupDesc": "Respuestas del quiz, preferencias, aspectos no negociables y señales de comportamiento.",
+      "planVisibilityTitle": "Visibilidad de los planes",
+      "planVisibilityDesc": "Los próximos planes quedan en tu panel; las Vibes y Flocks públicas completadas pueden aparecer en tu perfil público.",
+      "labelVisible": "Visible",
+      "labelMembers": "Miembros",
+      "labelOnlyYou": "Solo tú",
+      "labelConnections": "Conexiones",
+      "labelProfileDisplay": "En el perfil"
+    },
+    "upcoming": {
+      "title": "Mis próximos planes",
+      "description": "Una vista previa privada de gestión en tu panel.",
+      "seeAll": "Ver todo →",
+      "empty": "Aún no tienes próximos planes.",
+      "exploreVibes": "Explorar Vibes"
+    },
+    "reviews": {
+      "title": "Reseñas",
+      "description": "Opiniones verificadas de interacciones completadas en Flockie.",
+      "showLess": "Ver menos",
+      "seeAllCount": "Ver todas {count}",
+      "empty": "Aún no hay reseñas — aparecen después de que viajes con alguien, hagas una actividad o compartas un Flock.",
+      "verified": "Interacción verificada"
+    },
+    "roles": {
+      "host": "Anfitrión",
+      "going": "Voy",
+      "plan": "Plan",
+      "trip": "Viaje"
+    }
+  },
+  "public": {
+    "nameFallback": "esta persona",
+    "about": "Sobre {name}",
+    "aboutDescription": "El lado público de su perfil de Flockie.",
+    "theirVibe": "Su vibe",
+    "likesDoing": "Le gusta hacer",
+    "theirKindOfVibe": "Su tipo de vibe",
+    "morePhotos": "Más fotos",
+    "stillAdding": "{name} todavía está añadiendo detalles a su perfil público.",
+    "history": {
+      "title": "Historial de Flockie",
+      "description": "Vibes y Flocks públicas completadas, no planes futuros.",
+      "completedCount": "{count} completadas",
+      "empty": "Aún no hay planes públicos completados para mostrar."
+    },
+    "roles": {
+      "hosted": "Organizó",
+      "joined": "Participó"
+    },
+    "reviews": {
+      "title": "Reseñas",
+      "description": "Opiniones de interacciones completadas en Flockie.",
+      "verifiedCount": "{count} verificadas",
+      "empty": "Aún no hay reseñas.",
+      "verified": "Interacción verificada",
+      "noComment": "Compartió su opinión tras una interacción completada en Flockie."
+    }
+  },
+  "view": {
+    "theirVibe": "Su vibe",
+    "tripVibe": "Trip vibe",
+    "travelStyle": "Estilo de viaje",
+    "activities": "Actividades",
+    "activityVibe": "Activity vibe",
+    "skillLevels": "Niveles de habilidad"
+  },
+  "reviews": {
+    "title": "Reseñas",
+    "empty": "Aún no hay reseñas — aparecen después de que viajes con alguien, hagas una actividad o compartas un Flock."
+  },
+  "events": {
+    "vibes": "Vibes",
+    "flocks": "Flocks",
+    "activities": "Actividades",
+    "trips": "Viajes",
+    "reviewVibe": "Reseñar esta Vibe",
+    "editReview": "Editar tu reseña",
+    "reviewFlockmates": "Reseñar a tus flockmates",
+    "host": "Anfitrión",
+    "going": "Voy"
+  },
+  "completePopup": {
+    "title": "¡Tu vibe está completo!",
+    "body": "Los tres formularios están listos. Ahora atrae a tu gente.",
+    "done": "Listo"
+  },
+  "page": {
+    "back": "Volver"
+  },
+  "archetypes": {
+    "culture": { "description": "Vas a fondo, no a lo ancho. Estás en el museo antes de que abra y en el sitio local después de que cierre." },
+    "social": { "description": "Viniste por una cosa y te quedaste por la gente. Para el segundo día ya sabes el nombre de todos." },
+    "night": { "description": "Las cosas se revelan de noche y lo sabes. Las mañanas son para recuperarte." },
+    "food": { "description": "Planeas tus días en torno a las comidas, y tomas el camino largo por el lugar correcto." },
+    "adventure": { "description": "El plan es no tener plan. Decides tarde, viajas ligero y siempre encuentras a la gente indicada." },
+    "wellness": { "description": "Lento, intencional, sin agobios. Necesitas al menos una tarde sin absolutamente nada planeado." }
+  }
+}
