@@ -74,7 +74,7 @@
     },
     "vibe_shortlisted": {
       "title": "Você está concorrendo",
-      "body": "Você entrou na pré-seleção de {title}. Em breve confirmamos a sua vaga."
+      "body": "Você está concorrendo a uma vaga em {title}. Em breve confirmamos a sua vaga."
     },
     "vibe_updated": {
       "title": "Novo horário para {title}",
