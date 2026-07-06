@@ -340,6 +340,9 @@ export default function CreateVibeForm({
         starts_at: new Date(startsAt).toISOString(),
         ends_at: endsAt ? new Date(endsAt).toISOString() : null,
         signup_deadline: new Date(deadline).toISOString(),
+        // The tz the host entered the time in — pairs with starts_at (a UTC
+        // instant) so we can render the correct local wall-clock time everywhere.
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         capacity,
         gender_pref: genderPref,
         algo_share: algoShare,

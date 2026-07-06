@@ -78,19 +78,19 @@ const EMAIL_TEMPLATES: Record<NotifType, Record<Locale, Template>> = {
     en: {
       subject: "You're confirmed 🎉",
       heading: "You're in!",
-      body: "Your spot for {title} on {date} is confirmed. Where: {location}. Open the chat for the exact time, the group, and anything to bring.",
+      body: "Your spot for {title} on {when} is confirmed. Where: {location}. Open the chat to meet the group and see what to bring.",
       cta: "Open the chat",
     },
     es: {
       subject: "Estás confirmado 🎉",
       heading: "¡Estás dentro!",
-      body: "Tu lugar para {title} el {date} está confirmado. Dónde: {location}. Abre el chat para la hora exacta, el grupo y qué llevar.",
+      body: "Tu lugar para {title} el {when} está confirmado. Dónde: {location}. Abre el chat para conocer al grupo y ver qué llevar.",
       cta: "Abrir el chat",
     },
     pt: {
       subject: "Você está confirmado 🎉",
       heading: "Você está dentro!",
-      body: "Sua vaga para {title} em {date} está confirmada. Onde: {location}. Abra o chat para o horário exato, o grupo e o que levar.",
+      body: "Sua vaga para {title} em {when} está confirmada. Onde: {location}. Abra o chat para conhecer o grupo e ver o que levar.",
       cta: "Abrir o chat",
     },
   },
