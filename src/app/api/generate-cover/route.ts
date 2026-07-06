@@ -45,7 +45,10 @@ export async function POST(req: Request) {
 
   const styled =
     `Flat, vibrant illustrated event cover poster. ${prompt}. ` +
-    `Warm, playful, modern editorial style, bold simple shapes, no text, no logos, no real human faces.`;
+    `Warm, playful, modern editorial style, bold simple shapes. ` +
+    `IMPORTANT: do NOT render any text, letters, words, numbers, captions, titles, labels, ` +
+    `signage, typography, watermarks, or logos anywhere in the image — the artwork must be ` +
+    `purely visual with zero written characters. No real human faces.`;
 
   try {
     const { images } = await generateImage({
