@@ -10,7 +10,14 @@ export type Notif = {
   type: string;
   title: string;
   body: string | null;
-  data: { vibe_id?: string; trip_id?: string; like_from?: string; chat_id?: string; href?: string } | null;
+  data: {
+    vibe_id?: string;
+    trip_id?: string;
+    like_from?: string;
+    chat_id?: string;
+    href?: string;
+    count?: number;
+  } | null;
   read_at: string | null;
   dismissed_at: string | null;
   created_at: string;
@@ -28,7 +35,13 @@ const STYLE: Record<string, string> = {
   buddy_match: "border-[#06D6A0] bg-[#06D6A0]/10",
 };
 
-export default function InboxList({ notifications }: { notifications: Notif[] }) {
+export default function InboxList({
+  notifications,
+  titles = {},
+}: {
+  notifications: Notif[];
+  titles?: Record<string, string>;
+}) {
   const supabase = createClient();
   const t = useTranslations("inbox");
   const [visibleNotifications, setVisibleNotifications] = useState(notifications);
@@ -104,6 +117,18 @@ export default function InboxList({ notifications }: { notifications: Notif[] })
                   : tripId
                     ? t("openMyTrips")
                     : t("open");
+        // Render the notification words in the viewer's language at display time,
+        // keeping the specific Vibe / trip name when we have it. Legacy or unknown
+        // types (no message key) fall back to the English text stored in the row.
+        const resolvedTitle =
+          (vibeId && titles[vibeId]) ||
+          (tripId && titles[tripId]) ||
+          (tripId ? t("fallbackTrip") : t("fallbackVibe"));
+        const params = { title: resolvedTitle, count: n.data?.count ?? 0 };
+        const titleKey = `types.${n.type}.title`;
+        const bodyKey = `types.${n.type}.body`;
+        const displayTitle = t.has(titleKey) ? t(titleKey, params) : n.title;
+        const displayBody = t.has(bodyKey) ? t(bodyKey, params) : n.body;
         const card = (
           <div
             className={`rounded-2xl border-2 p-4 ${STYLE[n.type] ?? "border-ink/15 bg-white"} ${
@@ -112,8 +137,8 @@ export default function InboxList({ notifications }: { notifications: Notif[] })
           >
             <div className="flex items-start gap-3">
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-extrabold">{n.title}</p>
-                {n.body && <p className="mt-0.5 text-sm font-medium text-ink/70">{n.body}</p>}
+                <p className="text-sm font-extrabold">{displayTitle}</p>
+                {displayBody && <p className="mt-0.5 text-sm font-medium text-ink/70">{displayBody}</p>}
               </div>
               <button
                 type="button"
