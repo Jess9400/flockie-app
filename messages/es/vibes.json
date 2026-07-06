@@ -252,7 +252,9 @@
     "linkCopied": "¡Enlace copiado!",
     "shareInviteLink": "Compartir enlace de invitación",
     "pendingRequests": "Solicitudes pendientes",
-    "add": "Añadir"
+    "add": "Añadir",
+    "autoSendShort": "Las invitaciones se envían solas unos 30 min después del match — o envíalas ahora.",
+    "autoSendPlanned": "Las invitaciones se envían solas en unas 6 horas — o envíalas ahora."
   },
   "settings": {
     "manageVibeAria": "Gestionar Vibe",

@@ -516,6 +516,7 @@ export default async function VibeDetailPage({
           candidates={shortlist}
           rejectCap={previewRejectCap}
           rejectsUsed={previewRejectsUsed}
+          startsAt={vibe.starts_at}
         />
       )}
 

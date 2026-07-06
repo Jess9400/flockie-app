@@ -252,7 +252,9 @@
     "linkCopied": "Link copied!",
     "shareInviteLink": "Share invite link",
     "pendingRequests": "Pending requests",
-    "add": "Add"
+    "add": "Add",
+    "autoSendShort": "Invites auto-send about 30 min after matching — or send them now.",
+    "autoSendPlanned": "Invites auto-send within about 6 hours — or send them now."
   },
   "settings": {
     "manageVibeAria": "Manage Vibe",

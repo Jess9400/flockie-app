@@ -24,11 +24,13 @@ export default function HostVibeShortlist({
   candidates,
   rejectCap,
   rejectsUsed,
+  startsAt,
 }: {
   vibeId: string;
   candidates: ShortlistCandidate[];
   rejectCap: number;
   rejectsUsed: number;
+  startsAt: string;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -37,6 +39,9 @@ export default function HostVibeShortlist({
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const left = Math.max(0, rejectCap - rejectsUsed);
+  // Same threshold as the auto-commit window (see vibe-review-window-scale.sql):
+  // <24h to start = short vibe → ~30 min review window, else ~6h.
+  const isShort = new Date(startsAt).getTime() - Date.now() < 24 * 3600 * 1000;
 
   async function reject(userId: string) {
     setBusy(true);
@@ -120,6 +125,10 @@ export default function HostVibeShortlist({
       >
         <Send size={16} /> {t("host.sendInvitesNow")}
       </button>
+
+      <p className="mt-2 text-center text-xs font-medium text-muted">
+        {isShort ? t("host.autoSendShort") : t("host.autoSendPlanned")}
+      </p>
 
       {msg && <p className="mt-2 text-center text-sm font-bold text-flockie-blue">{msg}</p>}
     </div>
