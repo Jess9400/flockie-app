@@ -579,6 +579,7 @@ export default async function VibeDetailPage({
               hostCode={searchParams.code ?? null}
               initialNotForMe={!!myFeedback}
               vibeFormDone={!!me?.vibe_completed_at}
+              hasCity={!!me?.home_city?.trim()}
             />
           </>
         )}
