@@ -57,6 +57,33 @@ export async function POST(req: Request) {
   const to = u?.user?.email;
   if (!to) return NextResponse.json({ ok: true, skipped: "no-email" });
 
+  // 3b. Enrich the confirmed email with the details a confirmed guest needs —
+  // title, day, and (they're confirmed, so) the exact location. The vibe stores
+  // no timezone, so we show the DATE only and leave the exact time to the chat
+  // rather than risk a wrong hour in a server-rendered (UTC) email.
+  const vibeId = record.data?.vibe_id;
+  if (record.type === "vibe_confirmed" && typeof vibeId === "string") {
+    const { data: v } = await admin
+      .from("vibes")
+      .select("title, starts_at, location_name, area, city")
+      .eq("id", vibeId)
+      .maybeSingle();
+    if (v) {
+      const tag = loc?.locale === "pt" ? "pt-BR" : loc?.locale === "es" ? "es" : "en";
+      const date = v.starts_at
+        ? new Intl.DateTimeFormat(tag, { weekday: "long", month: "long", day: "numeric" }).format(
+            new Date(v.starts_at as string)
+          )
+        : "";
+      record.data = {
+        ...record.data,
+        title: v.title ?? "the Vibe",
+        date,
+        location: v.location_name || v.area || v.city || "shared in the chat",
+      };
+    }
+  }
+
   // 4. Build (Tier-1 only) + send.
   const site = process.env.NEXT_PUBLIC_SITE_URL || "https://app.findflockie.com";
   const unsubUrl = `${site}/api/email/unsubscribe?token=${prof?.email_unsubscribe_token ?? ""}`;

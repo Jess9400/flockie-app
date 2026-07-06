@@ -76,21 +76,21 @@ const EMAIL_TEMPLATES: Record<NotifType, Record<Locale, Template>> = {
   },
   vibe_confirmed: {
     en: {
-      subject: "You're in for the Vibe",
+      subject: "You're confirmed 🎉",
       heading: "You're in!",
-      body: "Your spot is confirmed. Open the chat to meet the group and sort out the details.",
+      body: "Your spot for {title} on {date} is confirmed. Where: {location}. Open the chat for the exact time, the group, and anything to bring.",
       cta: "Open the chat",
     },
     es: {
-      subject: "Estás dentro de la Vibe",
+      subject: "Estás confirmado 🎉",
       heading: "¡Estás dentro!",
-      body: "Tu lugar está confirmado. Abre el chat para conocer al grupo y coordinar los detalles.",
+      body: "Tu lugar para {title} el {date} está confirmado. Dónde: {location}. Abre el chat para la hora exacta, el grupo y qué llevar.",
       cta: "Abrir el chat",
     },
     pt: {
-      subject: "Você está confirmado na Vibe",
+      subject: "Você está confirmado 🎉",
       heading: "Você está dentro!",
-      body: "Sua vaga está confirmada. Abra o chat para conhecer o grupo e combinar os detalhes.",
+      body: "Sua vaga para {title} em {date} está confirmada. Onde: {location}. Abra o chat para o horário exato, o grupo e o que levar.",
       cta: "Abrir o chat",
     },
   },
