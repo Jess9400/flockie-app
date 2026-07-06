@@ -223,7 +223,7 @@ export default async function VibesPage({
                 vibe={{ ...v, host: hosts[v.host_id] ?? null } as VibeCardData}
                 confirmedCount={counts[v.id] ?? 0}
                 myStatus={isPast ? null : mine[v.id] ?? null}
-                matchPct={isPast ? undefined : vibeMatch[v.id]}
+                matchPct={isPast || v.host_id === user!.id ? undefined : vibeMatch[v.id]}
                 faded={isPast}
                 rating={isPast ? ratings[v.id] ?? null : undefined}
                 canDismiss={!isPast && v.host_id !== user!.id && !mine[v.id]}
