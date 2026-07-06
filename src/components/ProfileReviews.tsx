@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import { format } from "date-fns";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { dfLocale } from "@/lib/date-locale";
 import Stars from "@/components/Stars";
 
 export type ReviewItem = {
@@ -24,6 +25,7 @@ export default function ProfileReviews({
   items: ReviewItem[];
 }) {
   const t = useTranslations("profile");
+  const locale = useLocale();
   return (
     <section className="mt-10 font-nunito">
       <div className="flex items-center gap-2">
@@ -60,7 +62,7 @@ export default function ProfileReviews({
                 )}
                 <span className="font-nunito text-sm font-bold text-navy">{r.reviewerName}</span>
                 <span className="ml-auto font-nunito text-xs font-medium text-navy/50">
-                  {format(new Date(r.created_at), "MMM yyyy")}
+                  {format(new Date(r.created_at), "MMM yyyy", { locale: dfLocale(locale) })}
                 </span>
               </div>
               <div className="mt-2">

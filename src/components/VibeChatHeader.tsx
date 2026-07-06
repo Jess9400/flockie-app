@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronDown, MapPin, CalendarClock, Users, X, MoreVertical } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import BrandedMap from "@/components/BrandedMap";
 import { useConfirm } from "@/components/ui/feedback";
@@ -51,6 +51,7 @@ export default function VibeChatHeader({
   const supabase = createClient();
   const confirm = useConfirm();
   const t = useTranslations("buddies");
+  const locale = useLocale();
   const [expanded, setExpanded] = useState(false);
   const [panel, setPanel] = useState(false);
   const [leaving, setLeaving] = useState(false);
@@ -121,7 +122,7 @@ export default function VibeChatHeader({
         >
           <p className="truncate font-fredoka text-lg font-semibold text-navy">{title}</p>
           <p className="truncate font-nunito text-sm font-medium text-navy/70">
-            {startsAt ? formatVibeWhen(startsAt) : ""}
+            {startsAt ? formatVibeWhen(startsAt, locale) : ""}
             {locationLabel ? ` · ${locationLabel}` : ""}
           </p>
           <div className="mt-1 flex items-center">
@@ -204,7 +205,7 @@ export default function VibeChatHeader({
           {startsAt && (
             <p className="flex items-center gap-1.5 font-nunito text-sm font-medium text-navy">
               <CalendarClock size={15} className="text-flockie-coral" />
-              {formatVibeWhen(startsAt)}
+              {formatVibeWhen(startsAt, locale)}
             </p>
           )}
           <p className="flex items-center gap-1.5 font-nunito text-sm font-medium text-navy">

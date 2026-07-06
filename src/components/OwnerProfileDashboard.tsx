@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { format } from "date-fns";
-import { useTranslations } from "next-intl";
+import { dfLocale } from "@/lib/date-locale";
+import { useTranslations, useLocale } from "next-intl";
 import {
   ArrowRight,
   Check,
@@ -58,6 +59,7 @@ export default function OwnerProfileDashboard({
   onShare: () => void;
 }) {
   const t = useTranslations("profile");
+  const locale = useLocale();
   const router = useRouter();
   const confirm = useConfirm();
   const toast = useToast();
@@ -77,7 +79,7 @@ export default function OwnerProfileDashboard({
   const activityComplete =
     !!profile.activity_prefs_complete || (profile.activities?.length ?? 0) > 0;
   const socialVisibility = profile.social_visibility ?? "connections";
-  const upcoming = useMemo(() => buildUpcoming(events), [events]);
+  const upcoming = useMemo(() => buildUpcoming(events, locale), [events, locale]);
   const visibleReviews = showAllReviews ? reviewItems : reviewItems.slice(0, 2);
 
   function setupDone() {
@@ -538,14 +540,14 @@ type UpcomingItem = {
   sortValue: number;
 };
 
-function buildUpcoming(events?: EventsData): UpcomingItem[] {
+function buildUpcoming(events?: EventsData, locale = "en"): UpcomingItem[] {
   const vibes =
     events?.vibes
       ?.filter((item) => !item.past)
       .map((item, index) => ({
         key: `vibe-${item.id}-${index}`,
         title: item.title,
-        subtitle: formatVibeWhen(item.starts_at),
+        subtitle: formatVibeWhen(item.starts_at, locale),
         role: item.role === "host" ? "host" : "going",
         photo: item.photo,
         emoji: "🎟️",
@@ -626,6 +628,7 @@ function UpcomingRow({ item }: { item: UpcomingItem }) {
 
 function ReviewRow({ review }: { review: ReviewItem }) {
   const t = useTranslations("profile");
+  const locale = useLocale();
   return (
     <article className="rounded-2xl border-2 border-ink/10 bg-[#FCF9F4] p-3">
       <div className="flex items-center gap-2">
@@ -647,7 +650,7 @@ function ReviewRow({ review }: { review: ReviewItem }) {
           {t("dashboard.reviews.verified")}
         </span>
         <time className="ml-auto text-[10px] font-medium text-muted">
-          {format(new Date(review.created_at), "MMM yyyy")}
+          {format(new Date(review.created_at), "MMM yyyy", { locale: dfLocale(locale) })}
         </time>
       </div>
       {review.comment && (

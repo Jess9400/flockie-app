@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Star } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { formatVibeWhen } from "@/lib/vibes";
 
 type VibeEvt = { id: string; title: string; photo: string | null; starts_at: string; role: string; past: boolean; reviewed?: boolean };
@@ -101,6 +101,7 @@ const dateRange = (a: string, b: string) => (a === b ? a : `${a} → ${b}`);
 
 export default function ProfileEvents({ data, isOwner }: { data: EventsData; isOwner: boolean }) {
   const t = useTranslations("profile");
+  const locale = useLocale();
   const vibes = data?.vibes ?? [];
   const flocks = data?.flocks ?? [];
   const activities = data?.activities ?? [];
@@ -118,7 +119,7 @@ export default function ProfileEvents({ data, isOwner }: { data: EventsData; isO
               photo={v.photo}
               emoji="🎟️"
               title={v.title}
-              sub={formatVibeWhen(v.starts_at)}
+              sub={formatVibeWhen(v.starts_at, locale)}
               role={v.role === "host" ? t("events.host") : t("events.going")}
               past={v.past}
               href={`/vibes/${v.id}`}

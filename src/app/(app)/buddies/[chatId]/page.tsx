@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
+import { dfLocale } from "@/lib/date-locale";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import BuddyChatRoom from "@/components/BuddyChatRoom";
@@ -15,6 +16,7 @@ export default async function BuddyChatPage({
 }) {
   const supabase = await createClient();
   const t = await getTranslations("buddies");
+  const locale = await getLocale();
   // The chat lookup only needs params.chatId — fetch it alongside the user.
   const [user, { data: chat }] = await Promise.all([
     getSessionUser(),
@@ -187,7 +189,7 @@ export default async function BuddyChatPage({
     const s = new Date(trip.start_date);
     const e = new Date(trip.end_date);
     const days = Math.max(1, Math.round((+e - +s) / 86400000) + 1);
-    dateRange = t("chatPage.dateRange", { start: format(s, "MMM d"), end: format(e, "MMM d"), days });
+    dateRange = t("chatPage.dateRange", { start: format(s, "MMM d", { locale: dfLocale(locale) }), end: format(e, "MMM d", { locale: dfLocale(locale) }), days });
   }
 
   // Shared tags + compatibility score.
@@ -240,7 +242,7 @@ export default async function BuddyChatPage({
     const s = new Date(flockStart);
     const e = new Date(flockEnd);
     const days = Math.max(1, Math.round((+e - +s) / 86400000) + 1);
-    flockDateRange = t("chatPage.dateRange", { start: format(s, "MMM d"), end: format(e, "MMM d"), days });
+    flockDateRange = t("chatPage.dateRange", { start: format(s, "MMM d", { locale: dfLocale(locale) }), end: format(e, "MMM d", { locale: dfLocale(locale) }), days });
   }
   const flockIcebreaker = t("chatPage.flockIcebreaker", {
     title: flockTitle,

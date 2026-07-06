@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { format } from "date-fns";
+import { dfLocale } from "@/lib/date-locale";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import MatchBackButton from "@/components/MatchBackButton";
 import PhotoStrip from "@/components/PhotoStrip";
 import ProfileIdentityCard from "@/components/ProfileIdentityCard";
@@ -33,6 +34,7 @@ export default async function PublicProfileDashboard({
   incomingLike: boolean;
 }) {
   const t = await getTranslations("profile");
+  const locale = await getLocale();
   const tvc = await getTranslations("vibeCheck");
   const tc = await getTranslations("components");
   const firstName = (profile.display_name || t("public.nameFallback")).split(" ")[0];
@@ -54,7 +56,7 @@ export default async function PublicProfileDashboard({
     ...(profile.trip_vibe ?? []),
   ]).map((v) => ({ key: v, label: vibeTagLabel(v) }));
   const activities = uniqueItems(profile.activities ?? []).map((a) => ({ key: a, label: activityLabel(a) }));
-  const history = buildHistory(events);
+  const history = buildHistory(events, locale);
   const roleLabel = (role: string) => t(`public.roles.${role}`);
 
   return (
@@ -183,6 +185,7 @@ export default async function PublicProfileDashboard({
                   review={review}
                   verifiedLabel={t("public.reviews.verified")}
                   noCommentLabel={t("public.reviews.noComment")}
+                  locale={locale}
                 />
               ))}
             </div>
@@ -255,14 +258,14 @@ type HistoryItem = {
   sortValue: number;
 };
 
-function buildHistory(events?: EventsData): HistoryItem[] {
+function buildHistory(events?: EventsData, locale = "en"): HistoryItem[] {
   const vibes =
     events?.vibes
       ?.filter((item) => item.past)
       .map((item, index) => ({
         key: `vibe-${item.id}-${index}`,
         title: item.title,
-        subtitle: formatVibeWhen(item.starts_at),
+        subtitle: formatVibeWhen(item.starts_at, locale),
         role: item.role === "host" ? "hosted" : "joined",
         photo: item.photo,
         emoji: "🎟️",
@@ -275,7 +278,7 @@ function buildHistory(events?: EventsData): HistoryItem[] {
       .map((item, index) => ({
         key: `flock-${item.id}-${index}`,
         title: item.destination || "Flock",
-        subtitle: dateRange(item.start_date, item.end_date),
+        subtitle: dateRange(item.start_date, item.end_date, locale),
         role: item.role === "host" ? "hosted" : "joined",
         photo: item.photo,
         emoji: "🧳",
@@ -326,10 +329,12 @@ function ReviewRow({
   review,
   verifiedLabel,
   noCommentLabel,
+  locale = "en",
 }: {
   review: ReviewItem;
   verifiedLabel: string;
   noCommentLabel: string;
+  locale?: string;
 }) {
   return (
     <article className="rounded-2xl border-2 border-ink/10 bg-[#FCF9F4] p-3">
@@ -354,7 +359,7 @@ function ReviewRow({
           {verifiedLabel}
         </span>
         <time className="ml-auto shrink-0 text-[10px] font-medium text-muted">
-          {format(new Date(review.created_at), "MMM yyyy")}
+          {format(new Date(review.created_at), "MMM yyyy", { locale: dfLocale(locale) })}
         </time>
       </div>
       {review.comment ? (
@@ -374,8 +379,9 @@ function uniqueItems(items: string[]) {
   return Array.from(new Set(items.map((item) => item.trim()).filter(Boolean)));
 }
 
-function dateRange(start: string, end: string) {
-  const startDate = format(new Date(`${start}T00:00:00`), "MMM d, yyyy");
-  const endDate = format(new Date(`${end}T00:00:00`), "MMM d, yyyy");
+function dateRange(start: string, end: string, locale = "en") {
+  const df = dfLocale(locale);
+  const startDate = format(new Date(`${start}T00:00:00`), "MMM d, yyyy", { locale: df });
+  const endDate = format(new Date(`${end}T00:00:00`), "MMM d, yyyy", { locale: df });
   return start === end ? startDate : `${startDate} – ${endDate}`;
 }

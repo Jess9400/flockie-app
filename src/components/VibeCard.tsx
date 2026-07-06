@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MapPin, Users, Star } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { formatVibeWhen, type InterestStatus } from "@/lib/vibes";
 import { formatApproximateVibeLocation } from "@/lib/vibe-location";
@@ -48,6 +48,7 @@ export default function VibeCard({
 }) {
   const supabase = createClient();
   const t = useTranslations("vibes");
+  const locale = useLocale();
   const [hidden, setHidden] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -162,7 +163,7 @@ export default function VibeCard({
             {vibe.title}
           </p>
           <p className="mt-1 text-[11px] font-bold leading-tight text-flockie-orange">
-            {formatVibeWhen(vibe.starts_at)}
+            {formatVibeWhen(vibe.starts_at, locale)}
           </p>
           <p className="mt-0.5 flex items-center gap-1 text-[11px] font-medium text-muted">
             <MapPin size={11} className="shrink-0" />

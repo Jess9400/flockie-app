@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { intlLocale } from "@/lib/date-locale";
 import { Hotel, Plane, Ticket, Search, Users, MapPin, Car, LifeBuoy } from "lucide-react";
 
 // Travelpayouts affiliate marker (tracks commission on Hotellook / Aviasales).
@@ -53,6 +54,7 @@ export default function DealsSearch({
   plans?: Plan[];
 }) {
   const t = useTranslations("deals");
+  const locale = useLocale();
   const [city, setCity] = useState(defaultCity ?? "");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
@@ -61,7 +63,7 @@ export default function DealsSearch({
   function fmtDates(a: string, b: string) {
     if (!a) return "";
     const f = (d: string) =>
-      new Date(d).toLocaleDateString("en", { day: "numeric", month: "short" });
+      new Date(d).toLocaleDateString(intlLocale(locale), { day: "numeric", month: "short" });
     return b ? `${f(a)} – ${f(b)}` : f(a);
   }
 

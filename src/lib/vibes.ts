@@ -1,13 +1,16 @@
 // Constants for the Vibe Buddy / "Create a Vibe" module.
 import { format, isToday, isTomorrow } from "date-fns";
+import { dfLocale, relativeWords } from "@/lib/date-locale";
 
 // "Today, 3pm" / "Tomorrow, 3pm" / "Sat Jun 21, 3pm"
-export function formatVibeWhen(iso: string): string {
+export function formatVibeWhen(iso: string, locale = "en"): string {
   const d = new Date(iso);
-  const t = format(d, "h:mmaaa").toLowerCase().replace(":00", "");
-  if (isToday(d)) return `Today, ${t}`;
-  if (isTomorrow(d)) return `Tomorrow, ${t}`;
-  return `${format(d, "EEE MMM d")}, ${t}`;
+  const df = dfLocale(locale);
+  const rel = relativeWords(locale);
+  const t = format(d, "h:mmaaa", { locale: df }).toLowerCase().replace(":00", "");
+  if (isToday(d)) return `${rel.today}, ${t}`;
+  if (isTomorrow(d)) return `${rel.tomorrow}, ${t}`;
+  return `${format(d, "EEE MMM d", { locale: df })}, ${t}`;
 }
 
 

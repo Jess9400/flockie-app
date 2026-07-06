@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, MapPin, Users, CalendarClock, RefreshCw } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import InterestButton from "@/components/InterestButton";
@@ -26,6 +26,7 @@ export default async function VibeDetailPage({
 }) {
   const supabase = await createClient();
   const t = await getTranslations("vibes");
+  const locale = await getLocale();
   // The vibe lookup only needs params.id — fetch it alongside the user.
   const [user, { data: vibe }] = await Promise.all([
     getSessionUser(),
@@ -330,7 +331,7 @@ export default async function VibeDetailPage({
           <div className="mt-2 space-y-1 text-sm font-medium text-ink">
             <p className="flex items-center gap-2">
               <CalendarClock size={15} className="shrink-0 text-flockie-orange" />
-              {formatVibeWhen(vibe.starts_at)}
+              {formatVibeWhen(vibe.starts_at, locale)}
             </p>
             <p className="flex items-center gap-2">
               <MapPin size={15} className="shrink-0 text-flockie-orange" />
