@@ -199,7 +199,14 @@
     "betterMatches": "Want better matches?",
     "takeVibeForm": "Take the 60-second Vibe form so the algorithm reads you right.",
     "completeVibeForm": "Complete Vibe form →",
-    "done": "Done"
+    "done": "Done",
+    "cityGate": {
+      "title": "Where are you based?",
+      "body": "Add your city so we can give you priority for events near you.",
+      "placeholder": "Your city",
+      "save": "Save",
+      "cancel": "Cancel"
+    }
   },
   "host": {
     "youCancelled": "You cancelled this Vibe.",

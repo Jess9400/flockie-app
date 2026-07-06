@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -8,6 +8,9 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { useEsc } from "@/lib/use-esc";
 import ActivityVibeForm from "@/components/ActivityVibeForm";
+import CityAutocomplete from "@/components/CityAutocomplete";
+import { captureAndStoreLocation } from "@/lib/location";
+import { normalizeCity } from "@/lib/cities";
 import { useConfirm } from "@/components/ui/feedback";
 import type { InterestStatus } from "@/lib/vibes";
 
@@ -24,6 +27,7 @@ type Props = {
   hostCode?: string | null;
   initialNotForMe?: boolean;
   vibeFormDone?: boolean;
+  hasCity?: boolean;
 };
 
 export default function InterestButton({
@@ -39,6 +43,7 @@ export default function InterestButton({
   hostCode,
   initialNotForMe = false,
   vibeFormDone,
+  hasCity = true,
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
@@ -57,6 +62,41 @@ export default function InterestButton({
   const [message, setMessage] = useState<string | null>(null);
   const [notForMe, setNotForMe] = useState(initialNotForMe);
   const [mounted, setMounted] = useState(false);
+  const [hasCityState, setHasCityState] = useState(hasCity);
+  const [cityGate, setCityGate] = useState(false);
+  const [cityInput, setCityInput] = useState("");
+  const pendingRef = useRef<null | (() => void)>(null);
+
+  // Same-city ranking needs the applicant to have a city. If they don't, try the
+  // geolocation popup first (captureAndStoreLocation auto-fills home_city when it's
+  // empty), then fall back to a manual city picker. Returns true if a city is
+  // present/captured; false if it opened the picker (whose Save re-runs `resume`).
+  async function ensureCity(resume: () => void): Promise<boolean> {
+    if (hasCityState) return true;
+    const ok = await captureAndStoreLocation();
+    if (ok) {
+      setHasCityState(true);
+      return true;
+    }
+    pendingRef.current = resume;
+    setCityGate(true);
+    return false;
+  }
+
+  async function saveCity() {
+    const c = normalizeCity(cityInput);
+    if (!c) return;
+    setBusy(true);
+    setMessage(null);
+    const { error } = await supabase.from("profiles").update({ home_city: c }).eq("id", userId);
+    setBusy(false);
+    if (error) return setMessage(error.message);
+    setHasCityState(true);
+    setCityGate(false);
+    const resume = pendingRef.current;
+    pendingRef.current = null;
+    resume?.();
+  }
 
   useEffect(() => setMounted(true), []);
   useEsc(() => setPopup(null), !!popup);
@@ -76,6 +116,7 @@ export default function InterestButton({
   }
 
   async function doInsert() {
+    if (!(await ensureCity(doInsert))) return;
     setBusy(true);
     setMessage(null);
     // Friendly pre-check: hosts can set who a vibe is for (gender / age range).
@@ -116,6 +157,7 @@ export default function InterestButton({
 
   // Private link: request to join the host's direct spots (still vibe-checked).
   async function doRequest() {
+    if (!(await ensureCity(doRequest))) return;
     setBusy(true);
     const { error } = await supabase.rpc("request_private_vibe", { p_vibe: vibeId });
     setBusy(false);
@@ -400,6 +442,49 @@ export default function InterestButton({
           }}
         />
       )}
+
+      {cityGate && mounted &&
+        createPortal(
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-label={t("interest.cityGate.title")}
+              className="w-full max-w-sm rounded-3xl border-2 border-ink bg-white p-6 shadow-[0_6px_0_0_rgba(10,37,69,1)]"
+            >
+              <h2 className="font-fredoka text-xl font-bold text-ink">{t("interest.cityGate.title")}</h2>
+              <p className="mt-1 font-nunito text-sm font-medium text-muted">{t("interest.cityGate.body")}</p>
+              <div className="mt-4">
+                <CityAutocomplete
+                  value={cityInput}
+                  onChange={setCityInput}
+                  placeholder={t("interest.cityGate.placeholder")}
+                />
+              </div>
+              <div className="mt-4 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCityGate(false);
+                    pendingRef.current = null;
+                  }}
+                  className="flex-1 rounded-full border-2 border-ink py-2.5 text-sm font-bold"
+                >
+                  {t("interest.cityGate.cancel")}
+                </button>
+                <button
+                  type="button"
+                  disabled={busy || !cityInput.trim()}
+                  onClick={saveCity}
+                  className="flex-1 rounded-full border-2 border-ink bg-flockie-orange py-2.5 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C] disabled:opacity-50"
+                >
+                  {t("interest.cityGate.save")}
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
 
       {popup && mounted &&
         createPortal(
