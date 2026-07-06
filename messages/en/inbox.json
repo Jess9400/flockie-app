@@ -73,8 +73,8 @@
       "body": "Leave a quick review of the Vibe."
     },
     "vibe_shortlisted": {
-      "title": "A Vibe you might love: {title}",
-      "body": "You're in the running — we'll let you know if a spot is yours."
+      "title": "You're in the running",
+      "body": "You made the shortlist for {title}. We'll confirm your spot soon."
     },
     "vibe_updated": {
       "title": "New time for {title}",

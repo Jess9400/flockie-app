@@ -17,7 +17,10 @@ begin
                  'Content-Type', 'application/json',
                  'x-webhook-secret', '<EMAIL_WEBHOOK_SECRET>'
                ),
-    body    := jsonb_build_object('type', 'INSERT', 'record', to_jsonb(NEW))
+    body    := jsonb_build_object('type', 'INSERT', 'record', to_jsonb(NEW)),
+    -- 15s (default is 5s): a burst of inserts cold-starts the serverless function,
+    -- and 5s wasn't enough — timed-out POSTs dropped the email.
+    timeout_milliseconds := 15000
   );
   return NEW;
 end $$;

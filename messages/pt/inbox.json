@@ -73,8 +73,8 @@
       "body": "Deixe uma avaliação rápida da Vibe."
     },
     "vibe_shortlisted": {
-      "title": "Uma Vibe que você pode amar: {title}",
-      "body": "Você está na disputa — a gente avisa se uma vaga for sua."
+      "title": "Você está concorrendo",
+      "body": "Você entrou na pré-seleção de {title}. Em breve confirmamos a sua vaga."
     },
     "vibe_updated": {
       "title": "Novo horário para {title}",

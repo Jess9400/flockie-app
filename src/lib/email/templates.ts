@@ -46,7 +46,8 @@ type NotifType =
   | "vibe_starting_soon"
   | "unread_messages"
   | "weekly_digest"
-  | "vibe_recommendation";
+  | "vibe_recommendation"
+  | "vibe_shortlisted";
 
 // Per-notification-type, per-locale copy. Bodies are intentionally generic:
 // the specific Vibe/Flock title lives in the English record.title (not in
@@ -310,6 +311,26 @@ const EMAIL_TEMPLATES: Record<NotifType, Record<Locale, Template>> = {
       subject: "Uma Vibe que você pode curtir",
       heading: "Uma Vibe perto de você",
       body: "Encontramos uma Vibe na sua cidade que combina com você. Dê uma olhada — e entre se for a sua vibe.",
+      cta: "Ver a Vibe",
+    },
+  },
+  vibe_shortlisted: {
+    en: {
+      subject: "You're in the running",
+      heading: "You're in the running",
+      body: "You made the shortlist for a Vibe. We'll confirm your spot soon — keep an eye out.",
+      cta: "See the Vibe",
+    },
+    es: {
+      subject: "Estás en la lista",
+      heading: "Estás en la lista",
+      body: "Entraste en la preselección de una Vibe. Pronto confirmamos tu lugar — mantente atento.",
+      cta: "Ver la Vibe",
+    },
+    pt: {
+      subject: "Você está concorrendo a uma vaga",
+      heading: "Você está concorrendo",
+      body: "Você entrou na pré-seleção de uma Vibe. Em breve confirmamos a sua vaga — fique de olho.",
       cta: "Ver a Vibe",
     },
   },
