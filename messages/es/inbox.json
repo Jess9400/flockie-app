@@ -91,6 +91,10 @@
     "weekly_digest": {
       "title": "{count, plural, =1 {# Vibe nueva esta semana} other {# Vibes nuevas esta semana}}",
       "body": "Vibes frescas elegidas para ti: échales un vistazo."
+    },
+    "vibe_recommendation": {
+      "title": "Una Vibe que te puede gustar",
+      "body": "{title}: una Vibe en tu ciudad. Toca para verla."
     }
   }
 }
