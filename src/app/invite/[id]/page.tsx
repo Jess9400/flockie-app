@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MapPin, CalendarClock, Users } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { formatVibeWhen } from "@/lib/vibes";
 import { formatApproximateVibeLocation } from "@/lib/vibe-location";
@@ -53,7 +53,7 @@ export default async function InvitePage({
   params: { id: string };
   searchParams: { via?: string; code?: string };
 }) {
-  const [t, v] = await Promise.all([getTranslations("components"), getVibe(params.id)]);
+  const [t, v, locale] = await Promise.all([getTranslations("components"), getVibe(params.id), getLocale()]);
   if (!v) notFound();
   const viaHost = searchParams.via === "host";
   const hostCode = searchParams.code?.trim() || "";
@@ -83,7 +83,7 @@ export default async function InvitePage({
           <h1 className="mt-1 font-fredoka text-3xl font-bold leading-tight text-navy">{v.title}</h1>
 
           <div className="mt-3 space-y-1.5 font-nunito text-sm font-medium text-navy">
-            <p className="flex items-center gap-2"><CalendarClock size={16} className="text-flockie-coral" /> {formatVibeWhen(v.starts_at)}</p>
+            <p className="flex items-center gap-2"><CalendarClock size={16} className="text-flockie-coral" /> {formatVibeWhen(v.starts_at, locale)}</p>
             <p className="flex items-center gap-2"><MapPin size={16} className="text-flockie-coral" /> {approximateLocation}</p>
             <p className="flex items-center gap-2"><Users size={16} className="text-flockie-coral" /> {v.confirmed_count}/{v.capacity} {t("invite.going")}</p>
           </div>

@@ -2,7 +2,8 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { intlLocale } from "@/lib/date-locale";
 import { createClient } from "@/lib/supabase/client";
 import ShareVibeButton from "@/components/ShareVibeButton";
 import GenerateCoverButton from "@/components/GenerateCoverButton";
@@ -89,6 +90,7 @@ export default function CreateVibeForm({
 }) {
   const supabase = createClient();
   const t = useTranslations("vibes");
+  const locale = useLocale();
   const tc = useTranslations("components");
   const catLabel = (c: string) =>
     t.has(`categories.${c}`) ? t(`categories.${c}`) : formatActivityLabel(c);
@@ -602,11 +604,11 @@ export default function CreateVibeForm({
             <div className="mt-2 grid gap-1 text-ink/80">
               <p>
                 <span className="text-muted">{t("create.starts")}</span>{" "}
-                {startsAt ? prettyDateTime(startsAt) : t("create.chooseDateTime")}
+                {startsAt ? prettyDateTime(startsAt, locale) : t("create.chooseDateTime")}
               </p>
               <p>
                 <span className="text-muted">{t("create.ends")}</span>{" "}
-                {endsAt ? prettyDateTime(endsAt) : t("create.calculatedFromDuration")}
+                {endsAt ? prettyDateTime(endsAt, locale) : t("create.calculatedFromDuration")}
               </p>
             </div>
           </div>
@@ -936,10 +938,10 @@ function timePart(value: string) {
   return value.slice(11, 16);
 }
 
-function prettyDateTime(value: string) {
+function prettyDateTime(value: string, locale = "en") {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "Choose date + time";
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
     weekday: "short",
     month: "short",
     day: "numeric",

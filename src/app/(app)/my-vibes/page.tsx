@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Plus, Users, RefreshCw } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import ShareVibeButton from "@/components/ShareVibeButton";
@@ -48,6 +48,7 @@ export default async function MyVibesPage({
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("myVibes");
+  const locale = await getLocale();
 
   const VIBE_TABS = [
     { href: "/vibes", label: t("tabVibes") },
@@ -145,7 +146,7 @@ export default async function MyVibesPage({
           <div className="min-w-0 flex-1">
             <p className="truncate font-extrabold">{v.title}</p>
             <p className="truncate text-xs font-medium text-muted">
-              {formatVibeWhen(v.starts_at)} · {v.location_name || v.city}
+              {formatVibeWhen(v.starts_at, locale)} · {v.location_name || v.city}
             </p>
           </div>
           <div className="flex shrink-0 flex-col items-end gap-1">
@@ -228,7 +229,7 @@ export default async function MyVibesPage({
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-extrabold">{v.title}</p>
                   <p className="truncate text-xs font-medium text-muted">
-                    {formatVibeWhen(v.starts_at)} · {v.area || v.city}
+                    {formatVibeWhen(v.starts_at, locale)} · {v.area || v.city}
                   </p>
                 </div>
                 <span

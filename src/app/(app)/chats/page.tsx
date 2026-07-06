@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import ChatRow from "@/components/ChatRow";
@@ -114,6 +114,7 @@ export default async function ChatsPage({
 }) {
   const supabase = await createClient();
   const t = await getTranslations("buddies");
+  const locale = await getLocale();
   const user = await getSessionUser();
   const meId = user!.id;
   const you = (message: string) => t("list.youPrefix", { message });
@@ -170,7 +171,7 @@ export default async function ChatsPage({
       photo: b.photo,
       title: name,
       subtitle: preview(last, meId, t("list.tripMatch"), you),
-      time: last ? formatChatTime(last.created_at) : "",
+      time: last ? formatChatTime(last.created_at, locale) : "",
       unread: b.unread,
       fallback: name[0]?.toUpperCase() ?? "F",
       fallbackTone: "blue",
@@ -181,14 +182,14 @@ export default async function ChatsPage({
 
   const vibeRows: Row[] = vibeList.map((v) => {
     const last = vibeLast[v.chat_id];
-    const ctx = [formatVibeShort(v.starts_at), cities[v.vibe_id]].filter(Boolean).join(" · ");
+    const ctx = [formatVibeShort(v.starts_at, locale), cities[v.vibe_id]].filter(Boolean).join(" · ");
     return {
       id: v.chat_id,
       href: `/vibes/${v.vibe_id}/chat`,
       photo: vibeBanner[v.vibe_id] ?? v.photo,
       title: v.title,
       subtitle: preview(last, meId, ctx, you),
-      time: last ? formatChatTime(last.created_at) : "",
+      time: last ? formatChatTime(last.created_at, locale) : "",
       unread: v.unread,
       fallback: v.title[0]?.toUpperCase() ?? "🎟️",
       fallbackTone: "cream",

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Send, ImagePlus } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { formatMessageDivider, needsDivider } from "@/lib/chat";
 import { isImageUrl, firstUrl } from "@/lib/chat-content";
@@ -40,6 +40,7 @@ export default function ChatRoom({
   const supabase = createClient();
   const router = useRouter();
   const t = useTranslations("buddies");
+  const locale = useLocale();
   const [messages, setMessages] = useState<LocalMsg[]>(initialMessages);
   const [text, setText] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -170,7 +171,7 @@ export default function ChatRoom({
                 <div className="flex items-center gap-3 px-4 py-3">
                   <span className="h-px flex-1 bg-navy/10" />
                   <span className="font-nunito text-[11px] font-medium text-navy/40">
-                    {formatMessageDivider(m.created_at)}
+                    {formatMessageDivider(m.created_at, locale)}
                   </span>
                   <span className="h-px flex-1 bg-navy/10" />
                 </div>
