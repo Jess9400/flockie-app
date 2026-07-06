@@ -8,5 +8,89 @@
   "viewConfirm": "View & confirm →",
   "sayHi": "Say hi in the group chat →",
   "openMyTrips": "Open My Trips →",
-  "open": "Open →"
+  "open": "Open →",
+  "fallbackVibe": "a Vibe",
+  "fallbackTrip": "your trip",
+  "types": {
+    "buddy_match": {
+      "title": "It's a match! 🎉",
+      "body": "You both liked each other. Say hi."
+    },
+    "buddy_left": {
+      "title": "A travel match ended",
+      "body": "One of your travel matches left the chat."
+    },
+    "buddy_review_reminder": {
+      "title": "How was your trip?",
+      "body": "Rate the buddies you flocked with."
+    },
+    "flock_approved": {
+      "title": "You're in! 🎉",
+      "body": "Your request to join {title} was approved."
+    },
+    "flock_created": {
+      "title": "{title} is now a Flock",
+      "body": "You and your buddy opened the trip to a group — approve who joins together."
+    },
+    "flock_declined": {
+      "title": "Update on {title}",
+      "body": "The host went with other travelers this time. More Flocks are waiting for you."
+    },
+    "flock_left": {
+      "title": "Someone left your Flock",
+      "body": "A member left the group trip."
+    },
+    "flock_removed": {
+      "title": "Removed from a Flock",
+      "body": "A host removed you from the group trip."
+    },
+    "trip_join_request": {
+      "title": "Someone wants to join your trip",
+      "body": "A flockie asked to join {title}."
+    },
+    "vibe_cancelled": {
+      "title": "Cancelled: {title}",
+      "body": "The host cancelled this Vibe."
+    },
+    "vibe_confirmed": {
+      "title": "You're in for {title}",
+      "body": "You're confirmed — the Vibing Chat is open."
+    },
+    "vibe_invitation": {
+      "title": "You're invited to {title}",
+      "body": "Confirm within 24 hours to grab your spot."
+    },
+    "vibe_private_request": {
+      "title": "Someone joined {title} with your code",
+      "body": "They're confirmed in one of your spots."
+    },
+    "vibe_review_ready": {
+      "title": "Your matched list for {title} is ready",
+      "body": "Review it — remove a few before invites go out, or send them now."
+    },
+    "vibe_review_reminder": {
+      "title": "How was {title}?",
+      "body": "Leave a quick review of the Vibe."
+    },
+    "vibe_shortlisted": {
+      "title": "A Vibe you might love: {title}",
+      "body": "You're in the running — we'll let you know if a spot is yours."
+    },
+    "vibe_updated": {
+      "title": "New time for {title}",
+      "body": "The host changed the date or time. Check the details."
+    },
+    "vibe_starting_soon": {
+      "title": "Your Vibe is tomorrow: {title}",
+      "body": "It kicks off soon — open the chat to coordinate with your group."
+    },
+    "unread_messages": {
+      "title": "You have new messages",
+      "body": "New messages are waiting — jump back in."
+    },
+    "weekly_digest": {
+      "title": "{count, plural, =1 {# new Vibe this week} other {# new Vibes this week}}",
+      "body": "Fresh Vibes picked for you — take a look."
+    }
+  }
 }

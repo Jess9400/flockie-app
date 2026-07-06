@@ -8,5 +8,89 @@
   "viewConfirm": "Ver e confirmar →",
   "sayHi": "Diga oi no chat do grupo →",
   "openMyTrips": "Abrir Minhas viagens →",
-  "open": "Abrir →"
+  "open": "Abrir →",
+  "fallbackVibe": "uma Vibe",
+  "fallbackTrip": "sua viagem",
+  "types": {
+    "buddy_match": {
+      "title": "Deu match! 🎉",
+      "body": "Vocês dois se curtiram. Diga oi."
+    },
+    "buddy_left": {
+      "title": "Um match de viagem terminou",
+      "body": "Um dos seus matches de viagem saiu do chat."
+    },
+    "buddy_review_reminder": {
+      "title": "Como foi sua viagem?",
+      "body": "Avalie os buddies com quem você viajou."
+    },
+    "flock_approved": {
+      "title": "Você está dentro! 🎉",
+      "body": "Seu pedido para entrar em {title} foi aprovado."
+    },
+    "flock_created": {
+      "title": "{title} agora é um Flock",
+      "body": "Você e seu buddy abriram a viagem para um grupo — aprovem juntos quem entra."
+    },
+    "flock_declined": {
+      "title": "Novidade sobre {title}",
+      "body": "O anfitrião escolheu outros viajantes desta vez. Há mais Flocks esperando por você."
+    },
+    "flock_left": {
+      "title": "Alguém saiu do seu Flock",
+      "body": "Um integrante saiu da viagem em grupo."
+    },
+    "flock_removed": {
+      "title": "Você foi removido de um Flock",
+      "body": "Um anfitrião removeu você da viagem em grupo."
+    },
+    "trip_join_request": {
+      "title": "Alguém quer entrar na sua viagem",
+      "body": "Um flockie pediu para entrar em {title}."
+    },
+    "vibe_cancelled": {
+      "title": "Cancelada: {title}",
+      "body": "O anfitrião cancelou esta Vibe."
+    },
+    "vibe_confirmed": {
+      "title": "Você está confirmado para {title}",
+      "body": "Você está confirmado — o Vibing Chat já está aberto."
+    },
+    "vibe_invitation": {
+      "title": "Você foi convidado para {title}",
+      "body": "Confirme em até 24 horas para garantir sua vaga."
+    },
+    "vibe_private_request": {
+      "title": "Alguém entrou em {title} com o seu código",
+      "body": "Essa pessoa está confirmada em uma das suas vagas."
+    },
+    "vibe_review_ready": {
+      "title": "Sua lista de matches para {title} está pronta",
+      "body": "Revise: tire alguns antes de enviar os convites, ou envie agora."
+    },
+    "vibe_review_reminder": {
+      "title": "Como foi {title}?",
+      "body": "Deixe uma avaliação rápida da Vibe."
+    },
+    "vibe_shortlisted": {
+      "title": "Uma Vibe que você pode amar: {title}",
+      "body": "Você está na disputa — a gente avisa se uma vaga for sua."
+    },
+    "vibe_updated": {
+      "title": "Novo horário para {title}",
+      "body": "O anfitrião mudou a data ou o horário. Confira os detalhes."
+    },
+    "vibe_starting_soon": {
+      "title": "Sua Vibe é amanhã: {title}",
+      "body": "Começa em breve — abra o chat para combinar com o seu grupo."
+    },
+    "unread_messages": {
+      "title": "Você tem mensagens novas",
+      "body": "Há mensagens novas esperando — volte para a conversa."
+    },
+    "weekly_digest": {
+      "title": "{count, plural, =1 {# Vibe nova esta semana} other {# Vibes novas esta semana}}",
+      "body": "Vibes novas escolhidas para você — dê uma olhada."
+    }
+  }
 }
