@@ -44,7 +44,7 @@ begin
       and array_length(coalesce(p.activities,'{}'), 1) is not null       -- did the activity vibe-check
       and p.home_city is not null and lower(p.home_city) = lower(v.city)  -- same city
       and not exists (select 1 from public.vibe_interests vi where vi.vibe_id=p_vibe and vi.user_id=p.id)
-      and not exists (select 1 from public.vi_feedback vf where vf.vibe_id=p_vibe and vf.user_id=p.id and vf.signal='not_for_me')
+      and not exists (select 1 from public.vibe_feedback vf where vf.vibe_id=p_vibe and vf.user_id=p.id and vf.signal='not_for_me')
       and not exists (select 1 from public.notifications n                -- recommend at most once per person per vibe
                       where n.user_id=p.id and n.type='vibe_recommendation'
                         and n.data->>'vibe_id' = p_vibe::text)
