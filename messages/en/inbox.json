@@ -74,7 +74,7 @@
     },
     "vibe_shortlisted": {
       "title": "You're in the running",
-      "body": "You made the shortlist for {title}. We'll confirm your spot soon."
+      "body": "You're in the running for {title}. We'll confirm your spot soon."
     },
     "vibe_updated": {
       "title": "New time for {title}",

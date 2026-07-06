@@ -318,19 +318,19 @@ const EMAIL_TEMPLATES: Record<NotifType, Record<Locale, Template>> = {
     en: {
       subject: "You're in the running",
       heading: "You're in the running",
-      body: "You made the shortlist for a Vibe. We'll confirm your spot soon — keep an eye out.",
+      body: "You're in the running for a Vibe. We'll confirm your spot soon — keep an eye out.",
       cta: "See the Vibe",
     },
     es: {
       subject: "Estás en la lista",
       heading: "Estás en la lista",
-      body: "Entraste en la preselección de una Vibe. Pronto confirmamos tu lugar — mantente atento.",
+      body: "Estás en la lista para una Vibe. Pronto confirmamos tu lugar — mantente atento.",
       cta: "Ver la Vibe",
     },
     pt: {
       subject: "Você está concorrendo a uma vaga",
       heading: "Você está concorrendo",
-      body: "Você entrou na pré-seleção de uma Vibe. Em breve confirmamos a sua vaga — fique de olho.",
+      body: "Você está concorrendo a uma vaga em uma Vibe. Em breve confirmamos a sua vaga — fique de olho.",
       cta: "Ver a Vibe",
     },
   },
