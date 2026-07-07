@@ -117,7 +117,7 @@ export default async function HomePage({
   let nearQuery = supabase
     .from("vibe_directory")
     .select(VIBE_COLS)
-    .in("status", ["open", "ranking", "finalized"])
+    .in("status", ["open", "reviewing", "ranking", "finalized"])
     .gte("starts_at", nowIso)
     .order("starts_at", { ascending: true })
     .limit(10);
@@ -133,7 +133,7 @@ export default async function HomePage({
   let allQuery = supabase
     .from("vibe_directory")
     .select(VIBE_COLS)
-    .in("status", ["open", "ranking", "finalized"])
+    .in("status", ["open", "reviewing", "ranking", "finalized"])
     .gte("starts_at", nowIso)
     .order("starts_at", { ascending: true })
     .limit(15);
@@ -144,7 +144,7 @@ export default async function HomePage({
   let cityWeekQuery = supabase
     .from("vibe_directory")
     .select("id", { count: "exact", head: true })
-    .in("status", ["open", "ranking", "finalized"])
+    .in("status", ["open", "reviewing", "ranking", "finalized"])
     .gte("starts_at", nowIso)
     .lte("starts_at", weekIso);
   if (homeCity) cityWeekQuery = cityWeekQuery.ilike("city", homeCity);
