@@ -56,7 +56,7 @@ export default async function VibesPage({
     const cutoff = new Date(Date.now() - 45 * 24 * 3600 * 1000).toISOString();
     query = query.lt("starts_at", nowIso).gte("starts_at", cutoff).neq("status", "cancelled");
   } else {
-    query = query.gte("starts_at", nowIso).in("status", ["open", "ranking", "finalized"]);
+    query = query.gte("starts_at", nowIso).in("status", ["open", "reviewing", "ranking", "finalized"]);
   }
 
   if (city) query = query.ilike("city", `%${city}%`);
