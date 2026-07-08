@@ -170,7 +170,7 @@ export default async function MyVibesPage({
             </span>
           </div>
         </Link>
-        {!faded && v.status === "open" && (
+        {!faded && ["open", "reviewing", "ranking", "finalized"].includes(v.status) && (
           <div className="mt-3 flex items-center justify-between gap-2 border-t-2 border-ink/10 pt-3">
             <p className="text-xs font-medium text-muted">{t("shareToFill")}</p>
             <ShareVibeButton vibeId={v.id} />
