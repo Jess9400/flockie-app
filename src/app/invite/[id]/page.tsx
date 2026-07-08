@@ -131,7 +131,8 @@ export default async function InvitePage({
             >
               {t("invite.requestToJoin")}
             </Link>
-          ) : v.status === "open" ? (
+          ) : ["open", "reviewing", "ranking", "finalized"].includes(v.status) &&
+            new Date(v.starts_at) > new Date() ? (
             <Link
               href={`/vibes/${v.id}?interested=1`}
               className="mt-6 block rounded-full border-2 border-navy bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
