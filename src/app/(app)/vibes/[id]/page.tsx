@@ -134,6 +134,17 @@ export default async function VibeDetailPage({
   const locationLabel = privateLogistics?.location_name
     ? privateLogistics.location_name
     : approximateLocation;
+  // Confirmed members see the exact venue → make it a Google Maps link. Prefer
+  // the precise pin (coords); fall back to the venue name + city. (No link for
+  // the approximate area shown to non-members.)
+  const mapHref =
+    privateLogistics?.location_lat != null && privateLogistics?.location_lng != null
+      ? `https://www.google.com/maps/search/?api=1&query=${privateLogistics.location_lat},${privateLogistics.location_lng}`
+      : privateLogistics?.location_name
+        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+            `${privateLogistics.location_name}, ${vibe.city}`
+          )}`
+        : null;
 
   // Host-only matching tally (Interested / Invited / Going / Standby counts).
   const tally: Record<string, number> = {};
@@ -336,7 +347,18 @@ export default async function VibeDetailPage({
             </p>
             <p className="flex items-center gap-2">
               <MapPin size={15} className="shrink-0 text-flockie-orange" />
-              {locationLabel}
+              {mapHref ? (
+                <a
+                  href={mapHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline decoration-flockie-orange/50 underline-offset-2 hover:text-flockie-orange"
+                >
+                  {locationLabel}
+                </a>
+              ) : (
+                locationLabel
+              )}
             </p>
             {!privateLogistics && (
               <p className="pl-[23px] text-xs font-medium text-muted">
