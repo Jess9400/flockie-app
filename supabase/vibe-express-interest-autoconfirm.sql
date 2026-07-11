@@ -12,7 +12,7 @@
 
 create or replace function public.express_interest(p_vibe uuid)
 returns jsonb language plpgsql security definer set search_path = public as $$
-declare v public.vibes; v_existing text; v_held int; v_chat uuid; v_name text;
+declare v public.vibes; v_existing text; v_held int; v_chat uuid; v_name text; v_same_city boolean;
 begin
   select * into v from public.vibes where id = p_vibe for update;
   if v.id is null then raise exception 'vibe not found'; end if;
@@ -30,8 +30,17 @@ begin
     return jsonb_build_object('status', v_existing, 'confirmed', v_existing = 'confirmed');
   end if;
 
-  -- Post-matching fast path: ranked + genuine room → confirm directly.
-  if v.status in ('ranking','finalized') then
+  -- Same-city gate for the ONE-TAP confirm: only auto-confirm people in the
+  -- vibe's city (they can actually show up). A different-city person still gets
+  -- to express interest (falls through below) and can join via the normal flow
+  -- if they're genuinely travelling there — they're just never silently
+  -- confirmed into an event they likely can't attend.
+  select (p.home_city is not null and lower(p.home_city) = lower(v.city))
+    into v_same_city
+    from public.profiles p where p.id = auth.uid();
+
+  -- Post-matching fast path: ranked + genuine room + same city → confirm directly.
+  if v.status in ('ranking','finalized') and coalesce(v_same_city, false) then
     select count(*) into v_held from public.vibe_interests
       where vibe_id = p_vibe
         and (status='confirmed'

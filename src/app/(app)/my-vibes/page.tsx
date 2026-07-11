@@ -36,6 +36,7 @@ type VibeRow = {
   location_name: string | null;
   starts_at: string;
   ends_at: string | null;
+  timezone: string | null;
   capacity: number;
   status: string;
 };
@@ -57,7 +58,7 @@ export default async function MyVibesPage({
 
   const { data: vibes } = await supabase
     .from("vibes")
-    .select("id, title, category, photos, city, location_name, starts_at, ends_at, capacity, status")
+    .select("id, title, category, photos, city, location_name, starts_at, ends_at, timezone, capacity, status")
     .eq("host_id", user!.id)
     .order("starts_at", { ascending: false });
 
@@ -118,12 +119,13 @@ export default async function MyVibesPage({
     city: string;
     area: string | null;
     starts_at: string;
+    timezone: string | null;
     status: string;
   }[] = [];
   if (runningIds.length) {
     const { data: dir } = await supabase
       .from("vibe_directory")
-      .select("id, title, photos, city, area, starts_at, status")
+      .select("id, title, photos, city, area, starts_at, timezone, status")
       .in("id", runningIds);
     running = (dir ?? []).sort(
       (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
@@ -146,7 +148,7 @@ export default async function MyVibesPage({
           <div className="min-w-0 flex-1">
             <p className="truncate font-extrabold">{v.title}</p>
             <p className="truncate text-xs font-medium text-muted">
-              {formatVibeWhen(v.starts_at, locale)} · {v.location_name || v.city}
+              {formatVibeWhen(v.starts_at, locale, v.timezone)} · {v.location_name || v.city}
             </p>
           </div>
           <div className="flex shrink-0 flex-col items-end gap-1">
@@ -229,7 +231,7 @@ export default async function MyVibesPage({
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-extrabold">{v.title}</p>
                   <p className="truncate text-xs font-medium text-muted">
-                    {formatVibeWhen(v.starts_at, locale)} · {v.area || v.city}
+                    {formatVibeWhen(v.starts_at, locale, v.timezone)} · {v.area || v.city}
                   </p>
                 </div>
                 <span
