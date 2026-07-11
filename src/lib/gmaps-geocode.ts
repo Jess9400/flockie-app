@@ -1,8 +1,11 @@
-// Client-side Google geocoding via the Maps JS SDK. Runs in the BROWSER, so it
+// Client-side location lookup via the Maps JS SDK. Runs in the BROWSER, so it
 // uses the referrer-restricted NEXT_PUBLIC_GMAPS_KEY (which works there) instead
-// of the server /api/geocode route (whose calls get REQUEST_DENIED by a
-// referrer-restricted key). Same engine Google Maps itself uses, so messy Indian
-// addresses that OSM can't touch resolve fine.
+// of the server /api/geocode route (whose calls get REQUEST_DENIED).
+//
+// Primary: Places Text Search — the SAME forgiving engine as Google Maps search,
+// so messy/partial Indian addresses that the strict Geocoding API (and OSM) can't
+// resolve still return a match. Falls back to the Geocoder if Places is
+// unavailable.
 
 export type GeocodedPlace = {
   label: string;
@@ -17,11 +20,11 @@ let gmapsPromise: Promise<void> | null = null;
 function loadGmaps(key: string): Promise<void> {
   if (typeof window === "undefined") return Promise.reject(new Error("no window"));
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  if ((window as any).google?.maps) return Promise.resolve();
+  if ((window as any).google?.maps?.importLibrary) return Promise.resolve();
   if (!gmapsPromise) {
     gmapsPromise = new Promise((resolve, reject) => {
       const s = document.createElement("script");
-      s.src = `https://maps.googleapis.com/maps/api/js?key=${key}`;
+      s.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&loading=async`;
       s.async = true;
       s.onload = () => resolve();
       s.onerror = () => reject(new Error("gmaps load failed"));
@@ -31,8 +34,74 @@ function loadGmaps(key: string): Promise<void> {
   return gmapsPromise;
 }
 
-// Geocode a free-text address to coordinates + address parts. Returns null when
-// the SDK can't load or Google finds no match.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function pickNew(components: any[] | undefined, types: string[]): string | null {
+  if (!components) return null;
+  for (const t of types) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const m = components.find((c: any) => c.types?.includes(t));
+    if (m) return m.longText ?? m.long_name ?? null;
+  }
+  return null;
+}
+
+// Places Text Search (new Places API) — matches Google Maps search behaviour.
+async function viaPlaces(query: string): Promise<GeocodedPlace | null> {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const g = (window as any).google;
+    const { Place } = await g.maps.importLibrary("places");
+    const { places } = await Place.searchByText({
+      textQuery: query,
+      fields: ["location", "formattedAddress", "displayName", "addressComponents"],
+      maxResultCount: 1,
+    });
+    const p = places?.[0];
+    if (!p?.location) return null;
+    return {
+      label: p.formattedAddress ?? p.displayName ?? query,
+      lat: p.location.lat(),
+      lng: p.location.lng(),
+      city: pickNew(p.addressComponents, ["locality", "postal_town", "administrative_area_level_2"]),
+      area: pickNew(p.addressComponents, ["neighborhood", "sublocality_level_1", "sublocality"]),
+      country: pickNew(p.addressComponents, ["country"]),
+    };
+  } catch {
+    return null;
+  }
+}
+
+// Stricter Geocoder fallback (Geocoding API).
+async function viaGeocoder(query: string): Promise<GeocodedPlace | null> {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const g = (window as any).google;
+    const { Geocoder } = await g.maps.importLibrary("geocoding");
+    const geocoder = new Geocoder();
+    return await new Promise((resolve) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      geocoder.geocode({ address: query }, (results: any[], status: string) => {
+        if (status === "OK" && results?.[0]) {
+          const r = results[0];
+          const loc = r.geometry.location;
+          resolve({
+            label: r.formatted_address,
+            lat: loc.lat(),
+            lng: loc.lng(),
+            city: pickNew(r.address_components, ["locality", "postal_town", "administrative_area_level_2"]),
+            area: pickNew(r.address_components, ["neighborhood", "sublocality_level_1", "sublocality"]),
+            country: pickNew(r.address_components, ["country"]),
+          });
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  } catch {
+    return null;
+  }
+}
+
 export async function geocodeAddress(query: string): Promise<GeocodedPlace | null> {
   const key = process.env.NEXT_PUBLIC_GMAPS_KEY;
   if (!key || !query.trim()) return null;
@@ -41,35 +110,5 @@ export async function geocodeAddress(query: string): Promise<GeocodedPlace | nul
   } catch {
     return null;
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const g = (window as any).google;
-  if (!g?.maps?.Geocoder) return null;
-  const geocoder = new g.maps.Geocoder();
-  return new Promise((resolve) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    geocoder.geocode({ address: query }, (results: any[], status: string) => {
-      if (status === "OK" && results?.[0]) {
-        const r = results[0];
-        const loc = r.geometry.location;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const pick = (types: string[]): string | null => {
-          for (const t of types) {
-            const m = r.address_components.find((c: any) => c.types.includes(t));
-            if (m) return m.long_name;
-          }
-          return null;
-        };
-        resolve({
-          label: r.formatted_address,
-          lat: loc.lat(),
-          lng: loc.lng(),
-          city: pick(["locality", "postal_town", "administrative_area_level_2"]),
-          area: pick(["neighborhood", "sublocality_level_1", "sublocality"]),
-          country: pick(["country"]),
-        });
-      } else {
-        resolve(null);
-      }
-    });
-  });
+  return (await viaPlaces(query)) ?? (await viaGeocoder(query));
 }
