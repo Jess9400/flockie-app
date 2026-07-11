@@ -44,6 +44,7 @@ type NotifType =
   | "buddy_review_reminder"
   | "vibe_review_ready"
   | "vibe_starting_soon"
+  | "vibe_final_reminder"
   | "unread_messages"
   | "weekly_digest"
   | "vibe_recommendation"
@@ -254,6 +255,26 @@ const EMAIL_TEMPLATES: Record<NotifType, Record<Locale, Template>> = {
       cta: "Abrir o chat",
     },
   },
+  vibe_final_reminder: {
+    en: {
+      subject: "Your Vibe starts soon 📍",
+      heading: "Almost time!",
+      body: "{title} starts {when}. Where to go: {location}. Tap the map for directions, and open the chat to coordinate with your group.",
+      cta: "Open the chat",
+    },
+    es: {
+      subject: "Tu Vibe empieza pronto 📍",
+      heading: "¡Ya casi es hora!",
+      body: "{title} empieza {when}. Dónde ir: {location}. Toca el mapa para las indicaciones y abre el chat para coordinar con tu grupo.",
+      cta: "Abrir el chat",
+    },
+    pt: {
+      subject: "Sua Vibe começa em breve 📍",
+      heading: "Está quase na hora!",
+      body: "{title} começa {when}. Onde ir: {location}. Toque no mapa para ver como chegar e abra o chat para combinar com o seu grupo.",
+      cta: "Abrir o chat",
+    },
+  },
   unread_messages: {
     en: {
       subject: "You have new messages",
@@ -337,21 +358,24 @@ const EMAIL_TEMPLATES: Record<NotifType, Record<Locale, Template>> = {
 };
 
 // Email chrome (greeting + footer note + unsubscribe label), per locale.
-const CHROME: Record<Locale, { greeting: string; why: string; unsubscribe: string }> = {
+const CHROME: Record<Locale, { greeting: string; why: string; unsubscribe: string; map: string }> = {
   en: {
     greeting: "Hey there,",
     why: "You're getting this because of activity on your Flockie account.",
     unsubscribe: "Unsubscribe from these emails",
+    map: "📍 Open in Google Maps",
   },
   es: {
     greeting: "Hola,",
     why: "Recibes este correo por la actividad en tu cuenta de Flockie.",
     unsubscribe: "Darte de baja de estos correos",
+    map: "📍 Abrir en Google Maps",
   },
   pt: {
     greeting: "Oi,",
     why: "Você está recebendo este e-mail por causa da atividade na sua conta do Flockie.",
     unsubscribe: "Cancelar o recebimento destes e-mails",
+    map: "📍 Abrir no Google Maps",
   },
 };
 
@@ -364,6 +388,8 @@ function linkFor(n: NotifRecord): string {
   if (n.type === "vibe_confirmed" && d.vibe_id) return `${SITE}/vibes/${d.vibe_id}/chat`;
   // "Your Vibe is tomorrow" → the vibe chat to coordinate.
   if (n.type === "vibe_starting_soon" && d.vibe_id) return `${SITE}/vibes/${d.vibe_id}/chat`;
+  // 6h "final reminder" → the vibe chat.
+  if (n.type === "vibe_final_reminder" && d.vibe_id) return `${SITE}/vibes/${d.vibe_id}/chat`;
   // Weekly digest → the Vibes browse page.
   if (n.type === "weekly_digest") return `${SITE}/vibes`;
   // Approved flock member → the flock chat (/my-trips only lists trips they host).
@@ -396,9 +422,13 @@ function layout(opts: {
   cta: string;
   url: string;
   unsubUrl: string;
-  chrome: { greeting: string; why: string; unsubscribe: string };
+  chrome: { greeting: string; why: string; unsubscribe: string; map: string };
+  mapUrl?: string;
 }): string {
-  const { heading, body, cta, url, unsubUrl, chrome } = opts;
+  const { heading, body, cta, url, unsubUrl, chrome, mapUrl } = opts;
+  const mapLine = mapUrl
+    ? `<p style="margin:16px 0 0;font-size:14px;"><a href="${mapUrl}" style="color:#0A2545;font-weight:600;text-decoration:underline;">${escapeHtml(chrome.map)}</a></p>`
+    : "";
   return `<!doctype html>
 <html><body style="margin:0;background:#f4efe6;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
   <div style="max-width:480px;margin:0 auto;padding:24px;">
@@ -408,6 +438,7 @@ function layout(opts: {
       <h1 style="margin:0 0 8px;font-size:20px;color:#1a1a1a;">${escapeHtml(heading)}</h1>
       <p style="margin:0 0 20px;font-size:15px;line-height:1.5;color:#444;">${escapeHtml(body)}</p>
       <a href="${url}" style="display:inline-block;background:#FF6B4A;color:#fff;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:999px;border:2px solid #0A2545;">${escapeHtml(cta)} →</a>
+      ${mapLine}
     </div>
     <p style="text-align:center;margin:18px 0 0;font-size:12px;color:#888;">
       ${escapeHtml(chrome.why)}<br/>
@@ -433,6 +464,8 @@ export function buildEmail(
   const chrome = CHROME[loc] ?? CHROME[DEFAULT_LOCALE];
 
   const body = interpolate(tpl.body, n.data);
+  const d = (n.data ?? {}) as Record<string, unknown>;
+  const mapUrl = typeof d.mapUrl === "string" ? d.mapUrl : undefined;
   return {
     subject: tpl.subject,
     html: layout({
@@ -442,6 +475,7 @@ export function buildEmail(
       url: linkFor(n),
       unsubUrl,
       chrome,
+      mapUrl,
     }),
   };
 }

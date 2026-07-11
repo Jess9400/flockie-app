@@ -57,15 +57,17 @@ export async function POST(req: Request) {
   const to = u?.user?.email;
   if (!to) return NextResponse.json({ ok: true, skipped: "no-email" });
 
-  // 3b. Enrich the confirmed email with the details a confirmed guest needs —
-  // title, day, and (they're confirmed, so) the exact location. The vibe stores
-  // no timezone, so we show the DATE only and leave the exact time to the chat
-  // rather than risk a wrong hour in a server-rendered (UTC) email.
+  // 3b. Enrich the confirmed email AND the 6h final reminder with the details a
+  // confirmed guest needs — title, day/time, the exact location, and a Google
+  // Maps link. Both go only to confirmed attendees, so the exact venue is fine.
+  // Without a stored timezone we show the DATE only and leave the exact time to
+  // the chat rather than risk a wrong hour in a server-rendered (UTC) email.
   const vibeId = record.data?.vibe_id;
-  if (record.type === "vibe_confirmed" && typeof vibeId === "string") {
+  const needsVenue = record.type === "vibe_confirmed" || record.type === "vibe_final_reminder";
+  if (needsVenue && typeof vibeId === "string") {
     const { data: v } = await admin
       .from("vibes")
-      .select("title, starts_at, timezone, location_name, area, city")
+      .select("title, starts_at, timezone, location_name, area, city, location_lat, location_lng")
       .eq("id", vibeId)
       .maybeSingle();
     if (v) {
@@ -81,11 +83,21 @@ export async function POST(req: Request) {
             ...(tz ? { hour: "numeric", minute: "2-digit", timeZone: tz } : {}),
           }).format(new Date(v.starts_at as string))
         : "";
+      // Confirmed guests get the exact venue, so include a Google Maps link:
+      // prefer the precise pin (lat/lng), else geocode the written address.
+      const address = [v.location_name, v.area, v.city].filter(Boolean).join(", ");
+      const mapUrl =
+        v.location_lat != null && v.location_lng != null
+          ? `https://www.google.com/maps/search/?api=1&query=${v.location_lat},${v.location_lng}`
+          : address
+            ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
+            : undefined;
       record.data = {
         ...record.data,
         title: v.title ?? "the Vibe",
         when,
         location: v.location_name || v.area || v.city || "shared in the chat",
+        ...(mapUrl ? { mapUrl } : {}),
       };
     }
   }
