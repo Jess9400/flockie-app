@@ -114,7 +114,6 @@ export async function geocodeAddress(query: string): Promise<GeocodedPlace | nul
     console.error("[geocode] Maps SDK failed to load:", e);
     return null;
   }
-  console.log("[geocode] looking up:", query);
   return (await viaPlaces(query)) ?? (await viaGeocoder(query));
 }
 
