@@ -728,7 +728,7 @@ export default function CreateVibeForm({
               {resolvingLocation ? t("create.findingPin") : t("create.findExactPin")}
             </button>
           )}
-          {resolvedLocation && (
+          {resolvedLocation && locationLat == null && (
             <div className="mt-2 rounded-2xl border-2 border-ink bg-cream p-3">
               <p className="text-xs font-extrabold text-muted">{t("create.suggestedAddress")}</p>
               <p className="mt-1 text-sm font-bold text-ink">{resolvedLocation.label}</p>
