@@ -123,6 +123,7 @@ export default async function MyVibesPage({
     timezone: string | null;
     status: string;
   };
+  let going: JoinedVibe[] = [];
   let running: JoinedVibe[] = [];
   let attendedPast: JoinedVibe[] = [];
   if (runningIds.length) {
@@ -132,10 +133,12 @@ export default async function MyVibesPage({
       .in("id", runningIds);
     const rows = (dir ?? []) as JoinedVibe[];
     const hasEnded = (v: JoinedVibe) => new Date(v.ends_at ?? v.starts_at).getTime() < now;
-    // Upcoming joined vibes → "In the running" (drop ended/cancelled).
-    running = rows
-      .filter((v) => v.status !== "cancelled" && !hasEnded(v))
-      .sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
+    const byStart = (a: JoinedVibe, b: JoinedVibe) =>
+      new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime();
+    // Upcoming joined vibes, split by whether the user is already confirmed.
+    const upcoming = rows.filter((v) => v.status !== "cancelled" && !hasEnded(v));
+    going = upcoming.filter((v) => interestStatus[v.id] === "confirmed").sort(byStart);
+    running = upcoming.filter((v) => interestStatus[v.id] !== "confirmed").sort(byStart);
     // Vibes the user actually attended (was confirmed) that have ended → "Past Vibes".
     attendedPast = rows
       .filter((v) => interestStatus[v.id] === "confirmed" && hasEnded(v))
@@ -202,6 +205,45 @@ export default async function MyVibesPage({
     );
   }
 
+  // Compact row for a joined vibe (going / in the running / attended-past).
+  function JoinedRow({
+    v,
+    badge,
+    badgeClass,
+    faded,
+  }: {
+    v: JoinedVibe;
+    badge: string;
+    badgeClass: string;
+    faded?: boolean;
+  }) {
+    return (
+      <Link
+        href={`/vibes/${v.id}`}
+        className={`flex items-center gap-3 rounded-2xl border-2 border-ink bg-white p-3 shadow-[0_3px_0_0_rgba(26,26,26,1)] ${
+          faded ? "opacity-60" : ""
+        }`}
+      >
+        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-cream">
+          {v.photos?.[0] ? (
+            <Image src={v.photos[0]} alt="" fill sizes="48px" className="object-cover" />
+          ) : (
+            <span className="flex h-full items-center justify-center text-lg">🎟️</span>
+          )}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-extrabold">{v.title}</p>
+          <p className="truncate text-xs font-medium text-muted">
+            {formatVibeWhen(v.starts_at, locale, v.timezone)} · {v.area || v.city}
+          </p>
+        </div>
+        <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-extrabold ${badgeClass}`}>
+          {badge}
+        </span>
+      </Link>
+    );
+  }
+
   return (
     <main className="px-5 pb-10 pt-6">
       <PageTabs tabs={VIBE_TABS} />
@@ -218,6 +260,23 @@ export default async function MyVibesPage({
         {t("subtitle")}
       </p>
 
+      {going.length > 0 && (
+        <section className="mt-6">
+          <h2 className="text-lg font-extrabold">{t("youreGoing")}</h2>
+          <p className="mt-0.5 text-xs font-medium text-muted">{t("youreGoingHelp")}</p>
+          <div className="mt-3 space-y-3">
+            {going.map((v) => (
+              <JoinedRow
+                key={v.id}
+                v={v}
+                badge={t("interest.confirmed")}
+                badgeClass={INTEREST_STYLE.confirmed ?? "bg-[#06D6A0] text-white"}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
       {running.length > 0 && (
         <section className="mt-6">
           <h2 className="text-lg font-extrabold">{t("inTheRunning")}</h2>
@@ -226,32 +285,12 @@ export default async function MyVibesPage({
           </p>
           <div className="mt-3 space-y-3">
             {running.map((v) => (
-              <Link
+              <JoinedRow
                 key={v.id}
-                href={`/vibes/${v.id}`}
-                className="flex items-center gap-3 rounded-2xl border-2 border-ink bg-white p-3 shadow-[0_3px_0_0_rgba(26,26,26,1)]"
-              >
-                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-cream">
-                  {v.photos?.[0] ? (
-                    <Image src={v.photos[0]} alt="" fill sizes="48px" className="object-cover" />
-                  ) : (
-                    <span className="flex h-full items-center justify-center text-lg">🎟️</span>
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-extrabold">{v.title}</p>
-                  <p className="truncate text-xs font-medium text-muted">
-                    {formatVibeWhen(v.starts_at, locale, v.timezone)} · {v.area || v.city}
-                  </p>
-                </div>
-                <span
-                  className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-extrabold ${
-                    INTEREST_STYLE[interestStatus[v.id]] ?? "bg-cream text-ink"
-                  }`}
-                >
-                  {t(`interest.${interestStatus[v.id]}`)}
-                </span>
-              </Link>
+                v={v}
+                badge={t(`interest.${interestStatus[v.id]}`)}
+                badgeClass={INTEREST_STYLE[interestStatus[v.id]] ?? "bg-cream text-ink"}
+              />
             ))}
           </div>
         </section>
@@ -277,28 +316,13 @@ export default async function MyVibesPage({
           <div className="mt-3 space-y-3">
             {/* Attended (joined + confirmed) vibes that have ended. */}
             {attendedPast.map((v) => (
-              <Link
+              <JoinedRow
                 key={v.id}
-                href={`/vibes/${v.id}`}
-                className="flex items-center gap-3 rounded-2xl border-2 border-ink bg-white p-3 opacity-60 shadow-[0_3px_0_0_rgba(26,26,26,1)]"
-              >
-                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-cream">
-                  {v.photos?.[0] ? (
-                    <Image src={v.photos[0]} alt="" fill sizes="48px" className="object-cover" />
-                  ) : (
-                    <span className="flex h-full items-center justify-center text-lg">🎟️</span>
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-extrabold">{v.title}</p>
-                  <p className="truncate text-xs font-medium text-muted">
-                    {formatVibeWhen(v.starts_at, locale, v.timezone)} · {v.area || v.city}
-                  </p>
-                </div>
-                <span className="shrink-0 rounded-full bg-[#06D6A0] px-2.5 py-0.5 text-[11px] font-extrabold text-white">
-                  {t("status.completed")}
-                </span>
-              </Link>
+                v={v}
+                faded
+                badge={t("status.completed")}
+                badgeClass="bg-[#06D6A0] text-white"
+              />
             ))}
             {pastPageList.map((v) => (
               <VibeRowCard key={v.id} v={v} faded />
