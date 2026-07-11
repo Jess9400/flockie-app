@@ -21,11 +21,13 @@ export default function VibeSettingsButton({
   startsAt,
   endsAt,
   signupDeadline,
+  capacity,
 }: {
   vibeId: string;
   startsAt: string;
   endsAt: string | null;
   signupDeadline: string;
+  capacity: number;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -36,6 +38,7 @@ export default function VibeSettingsButton({
   const [starts, setStarts] = useState(toLocalInput(startsAt));
   const [ends, setEnds] = useState(toLocalInput(endsAt));
   const [deadline, setDeadline] = useState(toLocalInput(signupDeadline));
+  const [spots, setSpots] = useState(capacity);
 
   function setDeadlineBefore(hours: number) {
     if (!starts) return;
@@ -56,6 +59,19 @@ export default function VibeSettingsButton({
     setBusy(false);
     if (error) return setMsg(error.message);
     setMsg(t("settings.updated"));
+    router.refresh();
+  }
+
+  async function saveSpots() {
+    setBusy(true);
+    setMsg(null);
+    const { error } = await supabase.rpc("update_vibe_capacity", {
+      p_vibe: vibeId,
+      p_capacity: spots,
+    });
+    setBusy(false);
+    if (error) return setMsg(error.message);
+    setMsg(t("settings.spotsUpdated"));
     router.refresh();
   }
 
@@ -141,6 +157,28 @@ export default function VibeSettingsButton({
               >
                 {t("settings.saveNotify")}
               </button>
+
+              <div className="border-t-2 border-ink/10 pt-4">
+                <label className="block text-sm font-bold">
+                  {t("settings.spots")}
+                  <input
+                    type="number"
+                    min={2}
+                    max={100}
+                    value={spots}
+                    onChange={(e) => setSpots(Number(e.target.value))}
+                    className={fieldCls}
+                  />
+                </label>
+                <p className="mt-1 text-xs font-medium text-muted">{t("settings.spotsHelp")}</p>
+                <button
+                  onClick={saveSpots}
+                  disabled={busy || spots === capacity || spots < 2 || spots > 100}
+                  className="mt-2 w-full rounded-full border-2 border-ink bg-white py-2.5 font-bold text-ink shadow-[0_3px_0_0_rgba(10,37,69,0.15)] disabled:opacity-50"
+                >
+                  {t("settings.saveSpots")}
+                </button>
+              </div>
 
               <button
                 onClick={del}

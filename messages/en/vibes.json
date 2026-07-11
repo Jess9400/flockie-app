@@ -268,7 +268,11 @@
     "saveNotify": "Save & notify everyone",
     "deleteVibe": "Delete Vibe",
     "updated": "Updated — everyone in was notified.",
-    "cancelConfirm": "Cancel this Vibe? Attendees are notified and the chat becomes inactive."
+    "cancelConfirm": "Cancel this Vibe? Attendees are notified and the chat becomes inactive.",
+    "spots": "Spots",
+    "spotsHelp": "Total seats for this Vibe. You can’t set it below the number already confirmed. Adding spots fills them right away.",
+    "saveSpots": "Save spots",
+    "spotsUpdated": "Spots updated."
   },
   "share": {
     "shareTitle": "Join my Vibe on Flockie",

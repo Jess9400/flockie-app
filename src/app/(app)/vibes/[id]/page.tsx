@@ -307,6 +307,7 @@ export default async function VibeDetailPage({
             startsAt={vibe.starts_at}
             endsAt={vibe.ends_at}
             signupDeadline={vibe.signup_deadline}
+            capacity={vibe.capacity}
           />
         ) : (
           myInterest?.status === "confirmed" && <LeaveVibeButton vibeId={vibe.id} />

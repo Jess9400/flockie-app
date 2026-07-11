@@ -268,7 +268,11 @@
     "saveNotify": "Salvar e avisar todo mundo",
     "deleteVibe": "Excluir Vibe",
     "updated": "Atualizado — todo mundo que está dentro foi avisado.",
-    "cancelConfirm": "Cancelar esta Vibe? Os participantes são avisados e o chat fica inativo."
+    "cancelConfirm": "Cancelar esta Vibe? Os participantes são avisados e o chat fica inativo.",
+    "spots": "Vagas",
+    "spotsHelp": "Vagas totais desta Vibe. Você não pode definir abaixo do número já confirmado. Ao adicionar vagas, elas são preenchidas na hora.",
+    "saveSpots": "Salvar vagas",
+    "spotsUpdated": "Vagas atualizadas."
   },
   "share": {
     "shareTitle": "Entre na minha Vibe no Flockie",
