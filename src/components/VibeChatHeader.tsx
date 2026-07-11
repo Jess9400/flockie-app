@@ -27,6 +27,7 @@ export default function VibeChatHeader({
   title,
   cover,
   startsAt,
+  timeZone,
   locationLabel,
   mapSrc,
   description,
@@ -39,6 +40,7 @@ export default function VibeChatHeader({
   title: string;
   cover: string | null;
   startsAt: string | null;
+  timeZone?: string | null;
   locationLabel: string;
   mapSrc: string | null;
   description: string | null;
@@ -122,7 +124,7 @@ export default function VibeChatHeader({
         >
           <p className="truncate font-fredoka text-lg font-semibold text-navy">{title}</p>
           <p className="truncate font-nunito text-sm font-medium text-navy/70">
-            {startsAt ? formatVibeWhen(startsAt, locale) : ""}
+            {startsAt ? formatVibeWhen(startsAt, locale, timeZone) : ""}
             {locationLabel ? ` · ${locationLabel}` : ""}
           </p>
           <div className="mt-1 flex items-center">
@@ -205,7 +207,7 @@ export default function VibeChatHeader({
           {startsAt && (
             <p className="flex items-center gap-1.5 font-nunito text-sm font-medium text-navy">
               <CalendarClock size={15} className="text-flockie-coral" />
-              {formatVibeWhen(startsAt, locale)}
+              {formatVibeWhen(startsAt, locale, timeZone)}
             </p>
           )}
           <p className="flex items-center gap-1.5 font-nunito text-sm font-medium text-navy">

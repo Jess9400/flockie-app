@@ -35,7 +35,7 @@ export default async function VibeChatPage({
 
   const { data: vibe } = await supabase
     .from("vibe_directory")
-    .select("title, description, photos, starts_at, ends_at, city, host_id, status")
+    .select("title, description, photos, starts_at, timezone, ends_at, city, host_id, status")
     .eq("id", params.id)
     .maybeSingle();
 
@@ -118,6 +118,7 @@ export default async function VibeChatPage({
           title={vibe?.title ?? "Vibe"}
           cover={vibe?.photos?.[0] ?? null}
           startsAt={vibe?.starts_at ?? null}
+          timeZone={(vibe as { timezone?: string | null } | null)?.timezone ?? null}
           locationLabel={locationLabel}
           mapSrc={mapSrc}
           description={vibe?.description ?? null}
