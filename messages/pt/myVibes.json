@@ -23,5 +23,7 @@
     "shortlisted": "Pré-selecionado",
     "invited": "Você foi convidado",
     "confirmed": "Confirmado"
-  }
+  },
+  "youreGoing": "Você vai",
+  "youreGoingHelp": "Confirmado — você está dentro. Abra uma para ver os detalhes e o chat."
 }
