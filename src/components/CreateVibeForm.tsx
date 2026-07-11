@@ -704,17 +704,30 @@ export default function CreateVibeForm({
             className={inputCls}
             value={locationName}
             onChange={(e) => onLocationChange(e.target.value)}
+            onBlur={() => {
+              // Auto-pin the exact coordinates when the host finishes typing —
+              // no need to tap the button. Only if not already pinned.
+              if (locationLat == null && locationName.trim().length >= 3 && city.trim()) {
+                findExactLocation();
+              }
+            }}
             placeholder={t("create.exactLocationPlaceholder")}
             required
           />
-          <button
-            type="button"
-            onClick={findExactLocation}
-            disabled={resolvingLocation || locationName.trim().length < 3}
-            className="mt-2 rounded-full border-2 border-ink bg-white px-4 py-2 text-sm font-bold disabled:opacity-50"
-          >
-            {resolvingLocation ? t("create.findingPin") : t("create.findExactPin")}
-          </button>
+          {locationLat != null && locationLng != null ? (
+            <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#06D6A0]/15 px-3 py-1.5 text-xs font-extrabold text-ink">
+              {t("create.exactLocationPinned")}
+            </p>
+          ) : (
+            <button
+              type="button"
+              onClick={findExactLocation}
+              disabled={resolvingLocation || locationName.trim().length < 3}
+              className="mt-2 rounded-full border-2 border-ink bg-white px-4 py-2 text-sm font-bold disabled:opacity-50"
+            >
+              {resolvingLocation ? t("create.findingPin") : t("create.findExactPin")}
+            </button>
+          )}
           {resolvedLocation && (
             <div className="mt-2 rounded-2xl border-2 border-ink bg-cream p-3">
               <p className="text-xs font-extrabold text-muted">{t("create.suggestedAddress")}</p>
@@ -732,8 +745,8 @@ export default function CreateVibeForm({
             <iframe
               title={t("create.locationPreviewTitle")}
               src={`https://maps.google.com/maps?q=${encodeURIComponent(
-                resolvedLocation?.lat != null && resolvedLocation?.lng != null
-                  ? `${resolvedLocation.lat},${resolvedLocation.lng}`
+                locationLat != null && locationLng != null
+                  ? `${locationLat},${locationLng}`
                   : `${locationName}${city ? ", " + city : ""}`
               )}&z=15&output=embed`}
               loading="lazy"

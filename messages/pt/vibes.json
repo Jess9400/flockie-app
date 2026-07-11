@@ -157,7 +157,8 @@
     "errEndAfterStart": "A hora de término deve ser depois da hora de início.",
     "errPickLanguage": "Escolha o idioma principal do evento.",
     "errAgeOrder": "A idade mínima não pode ser maior que a máxima.",
-    "errPhotoUpload": "O envio da foto falhou."
+    "errPhotoUpload": "O envio da foto falhou.",
+    "exactLocationPinned": "📍 Local exato fixado"
   },
   "interest": {
     "ineligible": "Esta Vibe tem preferências que não incluem o seu perfil.",

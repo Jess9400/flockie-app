@@ -157,7 +157,8 @@
     "errEndAfterStart": "End time must be after the start time.",
     "errPickLanguage": "Pick the event’s main language.",
     "errAgeOrder": "Minimum age can’t be greater than the maximum age.",
-    "errPhotoUpload": "Photo upload failed."
+    "errPhotoUpload": "Photo upload failed.",
+    "exactLocationPinned": "📍 Exact location pinned"
   },
   "interest": {
     "ineligible": "This vibe has preferences that don’t include your profile.",
