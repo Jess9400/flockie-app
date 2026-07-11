@@ -112,7 +112,7 @@ export default async function MyVibesPage({
     if (!ids.includes(r.vibe_id)) interestStatus[r.vibe_id] = r.status; // skip own hosted
   });
   const runningIds = Object.keys(interestStatus);
-  let running: {
+  type JoinedVibe = {
     id: string;
     title: string;
     photos: string[] | null;
@@ -122,19 +122,24 @@ export default async function MyVibesPage({
     ends_at: string | null;
     timezone: string | null;
     status: string;
-  }[] = [];
+  };
+  let running: JoinedVibe[] = [];
+  let attendedPast: JoinedVibe[] = [];
   if (runningIds.length) {
     const { data: dir } = await supabase
       .from("vibe_directory")
       .select("id, title, photos, city, area, starts_at, ends_at, timezone, status")
       .in("id", runningIds);
-    running = (dir ?? [])
-      // Drop vibes that have already ended — a joined vibe shouldn't linger in
-      // "In the running" once it's over (cancelled ones drop too).
-      .filter(
-        (v) => v.status !== "cancelled" && new Date(v.ends_at ?? v.starts_at).getTime() >= now
-      )
+    const rows = (dir ?? []) as JoinedVibe[];
+    const hasEnded = (v: JoinedVibe) => new Date(v.ends_at ?? v.starts_at).getTime() < now;
+    // Upcoming joined vibes → "In the running" (drop ended/cancelled).
+    running = rows
+      .filter((v) => v.status !== "cancelled" && !hasEnded(v))
       .sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
+    // Vibes the user actually attended (was confirmed) that have ended → "Past Vibes".
+    attendedPast = rows
+      .filter((v) => interestStatus[v.id] === "confirmed" && hasEnded(v))
+      .sort((a, b) => new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime());
   }
 
   function VibeRowCard({ v, faded }: { v: VibeRow; faded?: boolean }) {
@@ -266,15 +271,42 @@ export default async function MyVibesPage({
       </div>
       <Pagination page={page} totalPages={totalPages} hrefFor={(p) => qs({ page: p, ppage })} />
 
-      {pastList.length > 0 && (
+      {(pastList.length > 0 || attendedPast.length > 0) && (
         <>
           <h2 className="mt-8 text-lg font-extrabold text-muted">{t("pastVibes")}</h2>
           <div className="mt-3 space-y-3">
+            {/* Attended (joined + confirmed) vibes that have ended. */}
+            {attendedPast.map((v) => (
+              <Link
+                key={v.id}
+                href={`/vibes/${v.id}`}
+                className="flex items-center gap-3 rounded-2xl border-2 border-ink bg-white p-3 opacity-60 shadow-[0_3px_0_0_rgba(26,26,26,1)]"
+              >
+                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-cream">
+                  {v.photos?.[0] ? (
+                    <Image src={v.photos[0]} alt="" fill sizes="48px" className="object-cover" />
+                  ) : (
+                    <span className="flex h-full items-center justify-center text-lg">🎟️</span>
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-extrabold">{v.title}</p>
+                  <p className="truncate text-xs font-medium text-muted">
+                    {formatVibeWhen(v.starts_at, locale, v.timezone)} · {v.area || v.city}
+                  </p>
+                </div>
+                <span className="shrink-0 rounded-full bg-[#06D6A0] px-2.5 py-0.5 text-[11px] font-extrabold text-white">
+                  {t("status.completed")}
+                </span>
+              </Link>
+            ))}
             {pastPageList.map((v) => (
               <VibeRowCard key={v.id} v={v} faded />
             ))}
           </div>
-          <Pagination page={ppage} totalPages={pastTotalPages} hrefFor={(p) => qs({ page, ppage: p })} />
+          {pastList.length > 0 && (
+            <Pagination page={ppage} totalPages={pastTotalPages} hrefFor={(p) => qs({ page, ppage: p })} />
+          )}
         </>
       )}
     </main>
