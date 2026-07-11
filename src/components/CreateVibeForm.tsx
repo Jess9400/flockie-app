@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { intlLocale } from "@/lib/date-locale";
 import { createClient } from "@/lib/supabase/client";
+import { geocodeAddress } from "@/lib/gmaps-geocode";
 import ShareVibeButton from "@/components/ShareVibeButton";
 import GenerateCoverButton from "@/components/GenerateCoverButton";
 import {
@@ -213,16 +214,17 @@ export default function CreateVibeForm({
     setResolvingLocation(true);
     setLocationMsg(null);
     try {
-      const res = await fetch(`/api/geocode?q=${encodeURIComponent(query)}`);
-      const data = await res.json();
-      if (!res.ok) {
+      // Geocode in the browser with the Maps key (works with the referrer
+      // restriction, unlike the server route) — same engine as Google Maps.
+      const place = await geocodeAddress(query);
+      if (!place) {
         setResolvedLocation(null);
         setLocationMsg(t("create.locationMsgNoPin"));
         return;
       }
-      setResolvedLocation(data as ResolvedLocation);
-      setLocationLat(data.lat);
-      setLocationLng(data.lng);
+      setResolvedLocation(place);
+      setLocationLat(place.lat);
+      setLocationLng(place.lng);
       setLocationMsg(t("create.locationMsgFound"));
     } catch {
       setResolvedLocation(null);
@@ -326,14 +328,10 @@ export default function CreateVibeForm({
     let coordLng = locationLng;
     if ((coordLat == null || coordLng == null) && locationName.trim() && city.trim()) {
       try {
-        const gq = `${locationName.trim()}, ${city.trim()}`;
-        const res = await fetch(`/api/geocode?q=${encodeURIComponent(gq)}`);
-        if (res.ok) {
-          const g = await res.json();
-          if (typeof g.lat === "number" && typeof g.lng === "number") {
-            coordLat = g.lat;
-            coordLng = g.lng;
-          }
+        const place = await geocodeAddress(`${locationName.trim()}, ${city.trim()}`);
+        if (place) {
+          coordLat = place.lat;
+          coordLng = place.lng;
         }
       } catch {
         // ignore — save the vibe without coords
