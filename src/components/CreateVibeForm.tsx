@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { intlLocale } from "@/lib/date-locale";
 import { createClient } from "@/lib/supabase/client";
-import { geocodeAddress } from "@/lib/gmaps-geocode";
+import { geocodeVibeLocation } from "@/lib/gmaps-geocode";
 import ShareVibeButton from "@/components/ShareVibeButton";
 import GenerateCoverButton from "@/components/GenerateCoverButton";
 import {
@@ -209,14 +209,14 @@ export default function CreateVibeForm({
   }
 
   async function findExactLocation() {
-    const query = [locationName.trim(), city.trim()].filter(Boolean).join(", ");
-    if (!query) return;
+    if (!locationName.trim()) return;
     setResolvingLocation(true);
     setLocationMsg(null);
     try {
       // Geocode in the browser with the Maps key (works with the referrer
       // restriction, unlike the server route) — same engine as Google Maps.
-      const place = await geocodeAddress(query);
+      // Robust to a mismatched city (address alone is tried as a fallback).
+      const place = await geocodeVibeLocation(locationName, city);
       if (!place) {
         setResolvedLocation(null);
         setLocationMsg(t("create.locationMsgNoPin"));
@@ -326,9 +326,9 @@ export default function CreateVibeForm({
     // (the pin comes from lat/lng now, not the text).
     let coordLat = locationLat;
     let coordLng = locationLng;
-    if ((coordLat == null || coordLng == null) && locationName.trim() && city.trim()) {
+    if ((coordLat == null || coordLng == null) && locationName.trim()) {
       try {
-        const place = await geocodeAddress(`${locationName.trim()}, ${city.trim()}`);
+        const place = await geocodeVibeLocation(locationName, city);
         if (place) {
           coordLat = place.lat;
           coordLng = place.lng;

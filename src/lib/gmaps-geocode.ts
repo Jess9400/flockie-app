@@ -117,3 +117,22 @@ export async function geocodeAddress(query: string): Promise<GeocodedPlace | nul
   console.log("[geocode] looking up:", query);
   return (await viaPlaces(query)) ?? (await viaGeocoder(query));
 }
+
+// Geocode a vibe's location robustly. Tries "address, city" first (the city
+// helps when the address is partial), then the address ALONE — so a mismatched
+// or leftover city (e.g. a traveller in Thane creating a Bengaluru vibe) can't
+// break the pin: the address itself carries the real place.
+export async function geocodeVibeLocation(
+  locationName: string,
+  city: string
+): Promise<GeocodedPlace | null> {
+  const name = locationName.trim();
+  const c = city.trim();
+  if (!name) return null;
+  if (c) {
+    const withCity = await geocodeAddress(`${name}, ${c}`);
+    if (withCity) return withCity;
+    console.log("[geocode] retrying without city");
+  }
+  return geocodeAddress(name);
+}
