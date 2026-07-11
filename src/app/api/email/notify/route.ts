@@ -83,14 +83,18 @@ export async function POST(req: Request) {
             ...(tz ? { hour: "numeric", minute: "2-digit", timeZone: tz } : {}),
           }).format(new Date(v.starts_at as string))
         : "";
-      // Confirmed guests get the exact venue, so include a Google Maps link:
-      // prefer the precise pin (lat/lng), else geocode the written address.
-      const address = [v.location_name, v.area, v.city].filter(Boolean).join(", ");
+      // Confirmed guests get the exact venue, so include a Google Maps link.
+      // ALWAYS pin by coordinates when we have them — `?query=lat,lng` drops an
+      // exact pin. Never pass the raw written address: a messy formatted address
+      // (Plus Codes, repeated parts) doesn't resolve to one point and sends
+      // Google into hotel-search mode with no pin. Without coords, fall back to
+      // the city only (centers the map cleanly; the venue name is still in the
+      // body text) rather than that broken address search.
       const mapUrl =
         v.location_lat != null && v.location_lng != null
           ? `https://www.google.com/maps/search/?api=1&query=${v.location_lat},${v.location_lng}`
-          : address
-            ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
+          : v.city
+            ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.city)}`
             : undefined;
       record.data = {
         ...record.data,
