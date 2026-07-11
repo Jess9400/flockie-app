@@ -66,7 +66,8 @@ async function viaPlaces(query: string): Promise<GeocodedPlace | null> {
       area: pickNew(p.addressComponents, ["neighborhood", "sublocality_level_1", "sublocality"]),
       country: pickNew(p.addressComponents, ["country"]),
     };
-  } catch {
+  } catch (e) {
+    console.error("[geocode] Places searchByText failed:", e);
     return null;
   }
 }
@@ -93,11 +94,13 @@ async function viaGeocoder(query: string): Promise<GeocodedPlace | null> {
             country: pickNew(r.address_components, ["country"]),
           });
         } else {
+          console.error("[geocode] Geocoder status:", status);
           resolve(null);
         }
       });
     });
-  } catch {
+  } catch (e) {
+    console.error("[geocode] Geocoder failed:", e);
     return null;
   }
 }
@@ -107,8 +110,10 @@ export async function geocodeAddress(query: string): Promise<GeocodedPlace | nul
   if (!key || !query.trim()) return null;
   try {
     await loadGmaps(key);
-  } catch {
+  } catch (e) {
+    console.error("[geocode] Maps SDK failed to load:", e);
     return null;
   }
+  console.log("[geocode] looking up:", query);
   return (await viaPlaces(query)) ?? (await viaGeocoder(query));
 }
