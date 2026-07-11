@@ -271,7 +271,7 @@
     "cancelConfirm": "¿Cancelar este Vibe? Se avisa a los asistentes y el chat queda inactivo.",
     "spots": "Cupos",
     "spotsHelp": "Cupos totales de esta Vibe. No puedes ponerlo por debajo de los ya confirmados. Al agregar cupos se llenan enseguida.",
-    "saveSpots": "Guardar cupos",
+    "saveSpots": "Actualizar cupos",
     "spotsUpdated": "Cupos actualizados."
   },
   "share": {

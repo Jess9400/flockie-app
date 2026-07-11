@@ -271,7 +271,7 @@
     "cancelConfirm": "Cancelar esta Vibe? Os participantes são avisados e o chat fica inativo.",
     "spots": "Vagas",
     "spotsHelp": "Vagas totais desta Vibe. Você não pode definir abaixo do número já confirmado. Ao adicionar vagas, elas são preenchidas na hora.",
-    "saveSpots": "Salvar vagas",
+    "saveSpots": "Atualizar vagas",
     "spotsUpdated": "Vagas atualizadas."
   },
   "share": {
