@@ -13,6 +13,7 @@ returns table (
   area text,
   country text,
   starts_at timestamptz,
+  timezone text,
   capacity int,
   event_vibe_tags text[],
   status text,
@@ -23,7 +24,7 @@ returns table (
 language sql security definer set search_path = public stable as $$
   select
     v.id, v.title, v.description, v.category, v.photos, v.city, v.area, v.country,
-    v.starts_at, v.capacity, v.event_vibe_tags, v.status,
+    v.starts_at, v.timezone, v.capacity, v.event_vibe_tags, v.status,
     h.display_name as host_name,
     h.photos[1] as host_photo,
     (select count(*)::int from public.vibe_interests vi

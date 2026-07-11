@@ -18,6 +18,7 @@ type PublicVibe = {
   area: string | null;
   country: string | null;
   starts_at: string;
+  timezone: string | null;
   capacity: number;
   event_vibe_tags: string[] | null;
   status: string;
@@ -91,7 +92,7 @@ export default async function InvitePage({
           <h1 className="mt-1 font-fredoka text-3xl font-bold leading-tight text-navy">{v.title}</h1>
 
           <div className="mt-3 space-y-1.5 font-nunito text-sm font-medium text-navy">
-            <p className="flex items-center gap-2"><CalendarClock size={16} className="text-flockie-coral" /> {formatVibeWhen(v.starts_at, locale)}</p>
+            <p className="flex items-center gap-2"><CalendarClock size={16} className="text-flockie-coral" /> {formatVibeWhen(v.starts_at, locale, v.timezone)}</p>
             <p className="flex items-center gap-2"><MapPin size={16} className="text-flockie-coral" /> {approximateLocation}</p>
             <p className="flex items-center gap-2"><Users size={16} className="text-flockie-coral" /> {v.confirmed_count}/{v.capacity} {t("invite.going")}</p>
           </div>
