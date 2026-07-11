@@ -206,7 +206,9 @@
       "placeholder": "Sua cidade",
       "save": "Salvar",
       "cancel": "Cancelar"
-    }
+    },
+    "joinNow": "Entrar agora",
+    "joinNowHint": "Tem uma vaga aberta — você será confirmado na hora."
   },
   "host": {
     "youCancelled": "Você cancelou esta Vibe.",

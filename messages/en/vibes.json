@@ -206,7 +206,9 @@
       "placeholder": "Your city",
       "save": "Save",
       "cancel": "Cancel"
-    }
+    },
+    "joinNow": "Join now",
+    "joinNowHint": "A spot is open — you’ll be confirmed instantly."
   },
   "host": {
     "youCancelled": "You cancelled this Vibe.",

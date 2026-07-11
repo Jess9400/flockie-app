@@ -582,6 +582,11 @@ export default async function VibeDetailPage({
               initialNotForMe={!!myFeedback}
               vibeFormDone={!!me?.vibe_completed_at}
               hasCity={!!me?.home_city?.trim()}
+              directConfirm={
+                ["ranking", "finalized"].includes(vibe.status) &&
+                (confirmedCount ?? 0) < vibe.capacity &&
+                new Date(vibe.starts_at) > new Date()
+              }
             />
           </>
         )}

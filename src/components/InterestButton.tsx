@@ -28,6 +28,7 @@ type Props = {
   initialNotForMe?: boolean;
   vibeFormDone?: boolean;
   hasCity?: boolean;
+  directConfirm?: boolean;
 };
 
 export default function InterestButton({
@@ -44,6 +45,7 @@ export default function InterestButton({
   initialNotForMe = false,
   vibeFormDone,
   hasCity = true,
+  directConfirm = false,
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
@@ -129,20 +131,21 @@ export default function InterestButton({
       return setMessage(INELIGIBLE_MESSAGE);
     }
     await supabase.rpc("undo_vibe_not_for_me", { p_vibe: vibeId });
-    const { error } = await supabase
-      .from("vibe_interests")
-      .insert({ vibe_id: vibeId, user_id: userId, status: "interested" });
+    // express_interest decides: after matching with room open, it confirms the
+    // person straight away (one tap); otherwise it records soft interest.
+    const { data, error } = await supabase.rpc("express_interest", { p_vibe: vibeId });
     setBusy(false);
     if (error) {
-      // The insert policy enforces eligibility too — translate a raw RLS
-      // violation (pre-check skipped/raced) into the same friendly message.
-      const rlsViolation =
-        error.code === "42501" || /row-level security/i.test(error.message);
-      return setMessage(rlsViolation ? INELIGIBLE_MESSAGE : error.message);
+      // Eligibility is enforced server-side too — translate the raw violation
+      // (pre-check skipped/raced) into the same friendly message.
+      const ineligible =
+        error.code === "42501" || /row-level security|not eligible/i.test(error.message);
+      return setMessage(ineligible ? INELIGIBLE_MESSAGE : error.message);
     }
     setNotForMe(false);
-    setStatus("interested");
-    setPopup("interested");
+    const newStatus = ((data as { status?: string })?.status as InterestStatus) ?? "interested";
+    setStatus(newStatus);
+    setPopup(newStatus === "confirmed" ? "confirmed" : "interested");
     router.refresh();
   }
 
@@ -388,8 +391,11 @@ export default function InterestButton({
     control = (
       <div className="space-y-2">
         <button onClick={express} disabled={busy} className={`${base} bg-flockie-orange text-white shadow-[0_4px_0_0_#E0512C]`}>
-          {t("interest.imInterested")}
+          {directConfirm ? t("interest.joinNow") : t("interest.imInterested")}
         </button>
+        {directConfirm && (
+          <p className="text-center text-xs font-bold text-flockie-orange">{t("interest.joinNowHint")}</p>
+        )}
         <button onClick={markNotForMe} disabled={busy} className={`${base} bg-white text-muted`}>
           {t("interest.notForMe")}
         </button>
