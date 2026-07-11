@@ -133,7 +133,8 @@
     "interested": "Tenho interesse",
     "joinWithCode": "Entrar com código do anfitrião",
     "locationFallback": "Localização compartilhada após confirmação",
-    "requestToJoin": "Solicitar participação"
+    "requestToJoin": "Solicitar participação",
+    "joinNow": "Entrar agora"
   },
   "join": {
     "body": "Encontre pessoas para um jantar espontâneo, uma viagem de fim de semana ou a atividade que você sempre quis fazer.",

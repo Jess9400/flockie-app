@@ -133,7 +133,8 @@
     "interested": "I'm interested",
     "joinWithCode": "Join with host code",
     "locationFallback": "Location shared after confirmation",
-    "requestToJoin": "Request to join"
+    "requestToJoin": "Request to join",
+    "joinNow": "Join now"
   },
   "join": {
     "body": "Find people for a spontaneous dinner, a weekend trip, or the activity you keep meaning to try.",

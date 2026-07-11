@@ -57,6 +57,14 @@ export default async function InvitePage({
   if (!v) notFound();
   const viaHost = searchParams.via === "host";
   const hostCode = searchParams.code?.trim() || "";
+  // Once matching has run (ranking/finalized) and there's still room, tapping
+  // through confirms instantly on the vibe page — so the CTA reads "Join now"
+  // to match. (Same-city is enforced server-side there; this public page can't
+  // know the viewer's city, so it shows the optimistic label.)
+  const directConfirm =
+    ["ranking", "finalized"].includes(v.status) &&
+    v.confirmed_count < v.capacity &&
+    new Date(v.starts_at) > new Date();
   const approximateLocation =
     formatApproximateVibeLocation(v) || t("invite.locationFallback");
 
@@ -137,7 +145,7 @@ export default async function InvitePage({
               href={`/vibes/${v.id}?interested=1`}
               className="mt-6 block rounded-full border-2 border-navy bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
             >
-              {t("invite.interested")}
+              {directConfirm ? t("invite.joinNow") : t("invite.interested")}
             </Link>
           ) : (
             <div className="mt-6 rounded-full border-2 border-navy bg-cream py-3.5 text-center font-fredoka text-sm font-semibold text-navy/60">
