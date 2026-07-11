@@ -75,6 +75,13 @@ export async function GET(req: Request) {
   const q = searchParams.get("q")?.trim();
   if (!q) return NextResponse.json({ error: "missing query" }, { status: 400 });
 
+  // Pasted addresses often repeat the neighbourhood and trail a comma, which
+  // makes geocoders (esp. OSM) fail to lock onto one place. De-duplicate the
+  // comma segments (order preserved) and drop empties before sending.
+  const cleanQ = Array.from(
+    new Set(q.split(",").map((s) => s.trim()).filter(Boolean))
+  ).join(", ");
+
   // Auth-gate + rate limit (this can hit the paid Google Geocoding API).
   const supabase = await createClient();
   const {
@@ -88,14 +95,17 @@ export async function GET(req: Request) {
   });
   if (allowed === false) return NextResponse.json({ error: "Too many requests — slow down." }, { status: 429 });
 
-  const key = process.env.GEOCODING_KEY;
+  // Prefer a dedicated server key, but fall back to the Google Maps key the app
+  // already ships (its Geocoding is enabled per env comment). Without a Google
+  // key, Nominatim (OSM) can't resolve Indian addresses / Plus Codes.
+  const key = process.env.GEOCODING_KEY || process.env.NEXT_PUBLIC_GMAPS_KEY;
 
   try {
     let result: GeocodeResult | null = null;
 
     if (key) {
       const res = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(q)}&key=${key}`
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(cleanQ)}&key=${key}`
       );
       const data = await res.json();
       const first = data.results?.[0];
@@ -109,10 +119,13 @@ export async function GET(req: Request) {
           area: pickGoogleArea(first.address_components),
           country: pickGoogleComponent(first.address_components, ["country"]),
         };
+      } else if (data.status && data.status !== "OK") {
+        // Surface e.g. REQUEST_DENIED (key restricted server-side) vs ZERO_RESULTS.
+        console.warn("[geocode] Google status:", data.status, data.error_message ?? "");
       }
     } else {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&addressdetails=1&q=${encodeURIComponent(q)}`,
+        `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&addressdetails=1&q=${encodeURIComponent(cleanQ)}`,
         { headers: { "User-Agent": "Flockie/1.0 (hello@findflockie.com)" } }
       );
       const data = await res.json();

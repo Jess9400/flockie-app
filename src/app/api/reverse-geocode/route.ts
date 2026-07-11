@@ -25,7 +25,7 @@ export async function GET(req: Request) {
   });
   if (allowed === false) return NextResponse.json({ error: "Too many requests — slow down." }, { status: 429 });
 
-  const key = process.env.GEOCODING_KEY;
+  const key = process.env.GEOCODING_KEY || process.env.NEXT_PUBLIC_GMAPS_KEY;
   try {
     let city: string | null = null;
 
