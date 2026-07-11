@@ -129,10 +129,18 @@ export async function geocodeVibeLocation(
   const name = locationName.trim();
   const c = city.trim();
   if (!name) return null;
-  if (c) {
-    const withCity = await geocodeAddress(`${name}, ${c}`);
-    if (withCity) return withCity;
-    console.log("[geocode] retrying without city");
+  // An address that already carries an area/street (has a comma) is usually
+  // self-sufficient — look it up ALONE first so a wrong/leftover city can't
+  // skew or block it (a Thane resident creating a Bengaluru vibe). A bare venue
+  // name ("Blue Tokai") needs the city to disambiguate, so try that first.
+  const hasArea = name.includes(",");
+  const attempts = hasArea
+    ? [name, c ? `${name}, ${c}` : null]
+    : [c ? `${name}, ${c}` : name, name];
+  for (const q of attempts) {
+    if (!q) continue;
+    const r = await geocodeAddress(q);
+    if (r) return r;
   }
-  return geocodeAddress(name);
+  return null;
 }

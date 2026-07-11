@@ -225,6 +225,10 @@ export default function CreateVibeForm({
       setResolvedLocation(place);
       setLocationLat(place.lat);
       setLocationLng(place.lng);
+      // The city/area come from the VENUE, not the host's profile — so a vibe in
+      // another city gets the right public city automatically.
+      if (place.city) setCity(place.city);
+      if (place.area && !area.trim()) setArea(place.area);
       setLocationMsg(t("create.locationMsgFound"));
     } catch {
       setResolvedLocation(null);

@@ -50,12 +50,6 @@ export default async function NewVibePage({
     }
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("home_city")
-    .eq("id", user!.id)
-    .single();
-
   // Activity vibe gate (migration-safe: degrade open if column missing).
   const { data: prefs, error: prefsErr } = await supabase
     .from("profiles")
@@ -82,7 +76,7 @@ export default async function NewVibePage({
       <div className="mt-6">
         <CreateVibeForm
           userId={user!.id}
-          defaultCity={searchParams.city ?? profile?.home_city ?? ""}
+          defaultCity={searchParams.city ?? ""}
           defaultActivityUrl={searchParams.activity ?? ""}
           defaultTitle={searchParams.title ?? ""}
           clone={clone}
