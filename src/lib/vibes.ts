@@ -1,12 +1,53 @@
 // Constants for the Vibe Buddy / "Create a Vibe" module.
 import { format, isToday, isTomorrow } from "date-fns";
-import { dfLocale, relativeWords } from "@/lib/date-locale";
+import { dfLocale, relativeWords, intlLocale } from "@/lib/date-locale";
 
-// "Today, 3pm" / "Tomorrow, 3pm" / "Sat Jun 21, 3pm"
-export function formatVibeWhen(iso: string, locale = "en"): string {
+// "Today, 3pm" / "Tomorrow, 3pm" / "Sat Jun 21, 3pm".
+//
+// `timeZone` (IANA, e.g. "Asia/Kolkata") renders the instant in the VIBE's own
+// zone, so a Bangalore vibe reads "5pm" for everyone — server- or client-
+// rendered, and regardless of the viewer's location. Without it, the time was
+// rendered in the runtime zone, so a server component (UTC) and a client
+// component (the viewer's browser) disagreed for the same vibe. Legacy vibes
+// with no stored timezone keep the old ambient-zone behavior.
+export function formatVibeWhen(iso: string, locale = "en", timeZone?: string | null): string {
   const d = new Date(iso);
-  const df = dfLocale(locale);
   const rel = relativeWords(locale);
+
+  if (timeZone) {
+    const tag = intlLocale(locale);
+    const time = new Intl.DateTimeFormat(tag, {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+      timeZone,
+    })
+      .format(d)
+      .toLowerCase()
+      .replace(/\s/g, "") // "5:00 pm" -> "5:00pm"
+      .replace(":00", ""); // "5:00pm" -> "5pm"
+    // Compute Today/Tomorrow by comparing calendar dates IN the vibe's zone.
+    const dayKey = (x: Date) =>
+      new Intl.DateTimeFormat("en-CA", {
+        timeZone,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(x);
+    const day = dayKey(d);
+    if (day === dayKey(new Date())) return `${rel.today}, ${time}`;
+    if (day === dayKey(new Date(Date.now() + 86_400_000))) return `${rel.tomorrow}, ${time}`;
+    const datePart = new Intl.DateTimeFormat(tag, {
+      timeZone,
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+    }).format(d);
+    return `${datePart}, ${time}`;
+  }
+
+  // No timezone (legacy vibes): ambient-zone behavior, unchanged.
+  const df = dfLocale(locale);
   const t = format(d, "h:mmaaa", { locale: df }).toLowerCase().replace(":00", "");
   if (isToday(d)) return `${rel.today}, ${t}`;
   if (isTomorrow(d)) return `${rel.tomorrow}, ${t}`;

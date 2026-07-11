@@ -19,6 +19,7 @@ export type VibeCardData = {
   area: string | null;
   country: string | null;
   starts_at: string;
+  timezone?: string | null;
   capacity: number;
   event_vibe_tags: string[] | null;
   host: { display_name: string | null; photos: string[] | null } | null;
@@ -163,7 +164,7 @@ export default function VibeCard({
             {vibe.title}
           </p>
           <p className="mt-1 text-[11px] font-bold leading-tight text-flockie-orange">
-            {formatVibeWhen(vibe.starts_at, locale)}
+            {formatVibeWhen(vibe.starts_at, locale, vibe.timezone)}
           </p>
           <p className="mt-0.5 flex items-center gap-1 text-[11px] font-medium text-muted">
             <MapPin size={11} className="shrink-0" />

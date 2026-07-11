@@ -331,7 +331,7 @@ export default async function VibeDetailPage({
           <div className="mt-2 space-y-1 text-sm font-medium text-ink">
             <p className="flex items-center gap-2">
               <CalendarClock size={15} className="shrink-0 text-flockie-orange" />
-              {formatVibeWhen(vibe.starts_at, locale)}
+              {formatVibeWhen(vibe.starts_at, locale, (vibe as { timezone?: string | null }).timezone)}
             </p>
             <p className="flex items-center gap-2">
               <MapPin size={15} className="shrink-0 text-flockie-orange" />
