@@ -123,7 +123,12 @@ export async function GET(req: Request) {
         // Surface e.g. REQUEST_DENIED (key restricted server-side) vs ZERO_RESULTS.
         console.warn("[geocode] Google status:", data.status, data.error_message ?? "");
       }
-    } else {
+    }
+
+    // Fall back to OpenStreetMap when Google produced nothing — no key, no
+    // result, or REQUEST_DENIED from a referrer-restricted key. This restores
+    // the old behaviour so a restricted Google key can't kill all geocoding.
+    if (!result) {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&addressdetails=1&q=${encodeURIComponent(cleanQ)}`,
         { headers: { "User-Agent": "Flockie/1.0 (hello@findflockie.com)" } }

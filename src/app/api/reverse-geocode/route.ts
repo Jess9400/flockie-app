@@ -41,7 +41,10 @@ export async function GET(req: Request) {
         comps.find((c) => c.types?.includes("postal_town"))?.long_name ??
         comps.find((c) => c.types?.includes("administrative_area_level_2"))?.long_name ??
         null;
-    } else {
+    }
+
+    // Fall back to OpenStreetMap if Google produced nothing (no key / restricted).
+    if (!city) {
       const r = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`,
         { headers: { "User-Agent": "Flockie/1.0 (hello@findflockie.com)" } }
