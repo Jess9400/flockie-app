@@ -119,17 +119,22 @@ export default async function MyVibesPage({
     city: string;
     area: string | null;
     starts_at: string;
+    ends_at: string | null;
     timezone: string | null;
     status: string;
   }[] = [];
   if (runningIds.length) {
     const { data: dir } = await supabase
       .from("vibe_directory")
-      .select("id, title, photos, city, area, starts_at, timezone, status")
+      .select("id, title, photos, city, area, starts_at, ends_at, timezone, status")
       .in("id", runningIds);
-    running = (dir ?? []).sort(
-      (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
-    );
+    running = (dir ?? [])
+      // Drop vibes that have already ended — a joined vibe shouldn't linger in
+      // "In the running" once it's over (cancelled ones drop too).
+      .filter(
+        (v) => v.status !== "cancelled" && new Date(v.ends_at ?? v.starts_at).getTime() >= now
+      )
+      .sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
   }
 
   function VibeRowCard({ v, faded }: { v: VibeRow; faded?: boolean }) {
