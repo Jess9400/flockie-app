@@ -316,6 +316,30 @@ export default function CreateVibeForm({
     }
 
     setSaving(true);
+
+    // Always capture coordinates so every vibe gets an exact map pin — even if
+    // the host never tapped "find exact location". Geocode from the typed
+    // location + city; on any failure just save without coords (the map link
+    // then falls back to the city). We keep the host's typed location_name as-is
+    // (the pin comes from lat/lng now, not the text).
+    let coordLat = locationLat;
+    let coordLng = locationLng;
+    if ((coordLat == null || coordLng == null) && locationName.trim() && city.trim()) {
+      try {
+        const gq = `${locationName.trim()}, ${city.trim()}`;
+        const res = await fetch(`/api/geocode?q=${encodeURIComponent(gq)}`);
+        if (res.ok) {
+          const g = await res.json();
+          if (typeof g.lat === "number" && typeof g.lng === "number") {
+            coordLat = g.lat;
+            coordLng = g.lng;
+          }
+        }
+      } catch {
+        // ignore — save the vibe without coords
+      }
+    }
+
     // Make sure a profile row exists (FK target) before creating the vibe.
     await supabase
       .from("profiles")
@@ -334,8 +358,8 @@ export default function CreateVibeForm({
         city,
         area: area.trim() || null,
         location_name: locationName || null,
-        location_lat: locationLat,
-        location_lng: locationLng,
+        location_lat: coordLat,
+        location_lng: coordLng,
         activity_url: activityUrl.trim() || null,
         starts_at: new Date(startsAt).toISOString(),
         ends_at: endsAt ? new Date(endsAt).toISOString() : null,
