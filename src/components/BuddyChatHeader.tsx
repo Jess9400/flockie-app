@@ -143,8 +143,8 @@ export default function BuddyChatHeader({
     const shown = groupMembers.slice(0, 6);
     return (
       <div className="z-20 -mx-5 shrink-0 border-b-2 border-navy bg-white px-5">
-        <div className="flex items-center justify-between pt-3">
-          <Link href="/chats" className="flex items-center gap-1 font-nunito text-sm font-bold text-navy/60">
+        <div className="flex items-center justify-between pt-3 lg:justify-end">
+          <Link href="/chats" className="flex items-center gap-1 font-nunito text-sm font-bold text-navy/60 lg:hidden">
             <ChevronLeft size={16} /> {t("shared.chats")}
           </Link>
           <div className="flex items-center gap-2">
@@ -261,8 +261,8 @@ export default function BuddyChatHeader({
   return (
     <div className="sticky top-16 z-20 -mx-5 border-b-2 border-navy bg-white px-5">
       {/* top row */}
-      <div className="flex items-center justify-between pt-3">
-        <Link href="/chats" className="flex items-center gap-1 font-nunito text-sm font-bold text-navy/60">
+      <div className="flex items-center justify-between pt-3 lg:justify-end">
+        <Link href="/chats" className="flex items-center gap-1 font-nunito text-sm font-bold text-navy/60 lg:hidden">
           <ChevronLeft size={16} /> {t("shared.chats")}
         </Link>
         <div className="relative">

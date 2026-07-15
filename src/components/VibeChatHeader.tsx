@@ -107,16 +107,16 @@ export default function VibeChatHeader({
 
   return (
     <div className="z-20 -mx-5 shrink-0 border-b-2 border-navy bg-cream px-5">
-      {/* Back to the chat list (essential on mobile, where the list rail is
-          hidden and the thread fills the screen). */}
+      {/* Back to the chat list — mobile only. On desktop the list rail is
+          always beside the thread, so a back link there is redundant. */}
       <Link
         href="/chats"
-        className="flex items-center gap-1 pt-3 font-nunito text-sm font-bold text-navy/60"
+        className="flex items-center gap-1 pt-3 font-nunito text-sm font-bold text-navy/60 lg:hidden"
       >
         <ChevronLeft size={16} /> {t("shared.chats")}
       </Link>
       {/* Collapsed bar */}
-      <div className="flex items-center gap-3 pb-3 pt-2">
+      <div className="flex items-center gap-3 py-3">
         <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-cream">
           {cover ? (
             <Image src={cover} alt="" fill sizes="64px" className="object-cover" />
