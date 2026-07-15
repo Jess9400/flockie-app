@@ -161,12 +161,18 @@ export default function AppShell({
 
   useEffect(() => {
     const supabase = createClient();
-    const channel = supabase
-      .channel("shell-chat-unread")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "vibing_messages" }, () => loadChatUnread())
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "buddy_messages" }, () => loadChatUnread())
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    try {
+      const channel = supabase
+        .channel("shell-chat-unread")
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "vibing_messages" }, () => loadChatUnread())
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "buddy_messages" }, () => loadChatUnread())
+        .subscribe();
+      return () => { supabase.removeChannel(channel); };
+    } catch {
+      // Never let a realtime subscription error crash the shell (it wraps every
+      // page). Badge still refreshes on navigation via the effect above.
+      return;
+    }
   }, [loadChatUnread]);
 
   function navItemCls(active: boolean) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -18,6 +18,11 @@ type Filter = "all" | "groups" | "direct";
 export default function ChatList({ variant = "page" }: { variant?: "page" | "rail" }) {
   const t = useTranslations("buddies");
   const pathname = usePathname();
+  // Unique per mounted instance. The browser Supabase client is a singleton, so
+  // two ChatLists on the same route (mobile page + desktop rail) would otherwise
+  // both grab the same-named channel — and calling .on() on an already-
+  // subscribed channel throws and crashes the page.
+  const instanceId = useId();
   const [rows, setRows] = useState<ChatListRow[] | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
 
@@ -42,15 +47,21 @@ export default function ChatList({ variant = "page" }: { variant?: "page" | "rai
   // ordering, so we just re-pull. Low volume; fine for beta.
   useEffect(() => {
     const supabase = createClient();
-    const channel = supabase
-      .channel("chat-list-feed")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "vibing_messages" }, () => load())
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "buddy_messages" }, () => load())
-      .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [load]);
+    try {
+      const channel = supabase
+        .channel(`chat-list-feed-${instanceId}`)
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "vibing_messages" }, () => load())
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "buddy_messages" }, () => load())
+        .subscribe();
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    } catch {
+      // Realtime setup failed — fall back to fetch-on-navigation only. Never let
+      // a subscription error crash the surrounding page.
+      return;
+    }
+  }, [load, instanceId]);
 
   const filtered = useMemo(() => {
     if (!rows) return [];
