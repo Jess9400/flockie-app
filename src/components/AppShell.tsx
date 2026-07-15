@@ -216,7 +216,9 @@ export default function AppShell({
       <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b-2 border-ink bg-cream px-4 sm:px-6">
         <div className="flex items-center gap-2">
           <button type="button" onClick={() => setOpen((v) => !v)} aria-label={tc("appShell.menu")}
-            className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-ink lg:hidden">
+            className={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-ink ${
+              inChatSurface ? "" : "lg:hidden"
+            }`}>
             {open ? <X size={18} /> : <Menu size={18} />}
           </button>
           <Link href="/home" aria-label={tc("appShell.home")}>
@@ -269,16 +271,28 @@ export default function AppShell({
         </div>
       </header>
 
-      {/* Sidebar (desktop) */}
-      <aside className="fixed left-0 top-16 z-30 hidden h-[calc(100vh-4rem)] w-[200px] border-r-2 border-ink bg-cream p-3 lg:block">
+      {/* Sidebar (desktop). Hidden on chat surfaces, where the nav collapses to
+          the ☰ button to give the two chat panes room. */}
+      <aside
+        className={`fixed left-0 top-16 z-30 hidden h-[calc(100vh-4rem)] w-[200px] border-r-2 border-ink bg-cream p-3 ${
+          inChatSurface ? "" : "lg:block"
+        }`}
+      >
         {NavList}
       </aside>
 
-      {/* Drawer (mobile/tablet) */}
+      {/* Drawer (mobile/tablet — and desktop on chat surfaces via ☰). */}
       {open && (
         <>
-          <div className="fixed inset-0 top-16 z-30 bg-navy/30 lg:hidden" onClick={() => setOpen(false)} />
-          <aside className="fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] w-64 border-r-2 border-ink bg-cream p-3 lg:hidden">
+          <div
+            className={`fixed inset-0 top-16 z-30 bg-navy/30 ${inChatSurface ? "" : "lg:hidden"}`}
+            onClick={() => setOpen(false)}
+          />
+          <aside
+            className={`fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] w-64 border-r-2 border-ink bg-cream p-3 ${
+              inChatSurface ? "" : "lg:hidden"
+            }`}
+          >
             {NavList}
           </aside>
         </>
@@ -291,7 +305,7 @@ export default function AppShell({
         // conversation" placeholder) on the right. On mobile the rail is hidden
         // and the page renders full-width (list, or a full-screen thread).
         <div
-          className={`flex pt-16 lg:pl-[200px] ${
+          className={`flex pt-16 ${
             isChatRoom
               ? "h-[100dvh] overflow-hidden"
               : "min-h-screen pb-[calc(4.5rem+env(safe-area-inset-bottom))] sm:pb-0 lg:h-[100dvh] lg:overflow-hidden lg:pb-0"
