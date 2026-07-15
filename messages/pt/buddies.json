@@ -36,6 +36,13 @@
     "browseVibes": "Explorar Vibes",
     "youPrefix": "Você: {message}",
     "tripMatch": "Match de viagem",
+    "filterAll": "Todos",
+    "filterGroups": "Grupos",
+    "filterDirect": "Diretos",
+    "filterEmpty": "Nada por aqui ainda.",
+    "buddyTag": "buddy",
+    "pickTitle": "Escolha uma conversa",
+    "pickBody": "Escolha um chat à esquerda para abri-lo aqui.",
     "tags": {
       "travel_buddy": "Travel Buddy",
       "activity_buddy": "Activity Buddy",

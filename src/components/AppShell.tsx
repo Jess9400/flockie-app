@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -11,6 +11,7 @@ import { useTranslations } from "next-intl";
 import Footer from "@/components/Footer";
 import SignOutButton from "@/components/SignOutButton";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ChatList from "@/components/ChatList";
 import { FeedbackProvider } from "@/components/ui/feedback";
 import { createClient } from "@/lib/supabase/client";
 
@@ -94,9 +95,14 @@ export default function AppShell({
   // chat window stays static and only the message list scrolls inside it.
   const isChatRoom =
     /^\/vibes\/[^/]+\/chat$/.test(pathname) || /^\/buddies\/[^/]+$/.test(pathname);
+  const isChatsList = pathname === "/chats" || pathname.startsWith("/chats/");
+  // Any chat surface gets the persistent desktop rail (list on the left,
+  // conversation/placeholder on the right).
+  const inChatSurface = isChatRoom || isChatsList;
   const [open, setOpen] = useState(false);
   const [menu, setMenu] = useState(false);
   const [unread, setUnread] = useState(0);
+  const [chatUnread, setChatUnread] = useState(0);
   const [name, setName] = useState("");
   const [photo, setPhoto] = useState<string | null>(null);
 
@@ -134,6 +140,35 @@ export default function AppShell({
     return () => { active = false; supabase.removeChannel(channel); };
   }, [userId]);
 
+  // Total unread chat messages — powers the Chats nav badge (sidebar + mobile
+  // tab). Sourced from the same unified feed as the list so the count always
+  // agrees with the rows. Refetched on navigation (so it drops after a thread
+  // marks itself read) and on any new message.
+  const loadChatUnread = useCallback(async () => {
+    try {
+      const res = await fetch("/api/chats/list", { cache: "no-store" });
+      if (!res.ok) return;
+      const d = (await res.json()) as { unreadTotal?: number };
+      setChatUnread(d.unreadTotal ?? 0);
+    } catch {
+      /* transient — keep last known count */
+    }
+  }, []);
+
+  useEffect(() => {
+    loadChatUnread();
+  }, [loadChatUnread, pathname]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel("shell-chat-unread")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "vibing_messages" }, () => loadChatUnread())
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "buddy_messages" }, () => loadChatUnread())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [loadChatUnread]);
+
   function navItemCls(active: boolean) {
     return `flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-bold transition-colors ${
       active ? "bg-flockie-blue text-white" : "text-ink hover:bg-navy/5"
@@ -153,6 +188,11 @@ export default function AppShell({
           >
             <Icon size={18} />
             <span className="flex-1">{t(item.labelKey)}</span>
+            {item.href === "/chats" && chatUnread > 0 && (
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-flockie-coral px-1.5 text-[11px] font-extrabold text-white">
+                {chatUnread > 9 ? "9+" : chatUnread}
+              </span>
+            )}
           </Link>
         );
       })}
@@ -239,18 +279,29 @@ export default function AppShell({
       )}
 
       {/* Main */}
-      <div
-        className={`flex flex-col pt-16 lg:pl-[200px] ${
-          isChatRoom
-            ? "h-[100dvh] overflow-hidden"
-            : "min-h-screen pb-[calc(4.5rem+env(safe-area-inset-bottom))] sm:pb-0"
-        }`}
-      >
-        <div className={`w-full flex-1 ${isChatRoom ? "min-h-0" : "mx-auto max-w-4xl"}`}>
-          {children}
+      {inChatSurface ? (
+        // Chat surfaces are a two-pane layout on desktop: a persistent
+        // conversation-list rail on the left, the open thread (or a "pick a
+        // conversation" placeholder) on the right. On mobile the rail is hidden
+        // and the page renders full-width (list, or a full-screen thread).
+        <div
+          className={`flex pt-16 lg:pl-[200px] ${
+            isChatRoom
+              ? "h-[100dvh] overflow-hidden"
+              : "min-h-screen pb-[calc(4.5rem+env(safe-area-inset-bottom))] sm:pb-0 lg:h-[100dvh] lg:overflow-hidden lg:pb-0"
+          }`}
+        >
+          <aside className="hidden w-[320px] shrink-0 flex-col border-r-2 border-ink bg-cream lg:flex">
+            <ChatList variant="rail" />
+          </aside>
+          <div className="min-h-0 min-w-0 flex-1">{children}</div>
         </div>
-        {!isChatRoom && <Footer />}
-      </div>
+      ) : (
+        <div className="flex min-h-screen flex-col pb-[calc(4.5rem+env(safe-area-inset-bottom))] pt-16 sm:pb-0 lg:pl-[200px]">
+          <div className="mx-auto w-full max-w-4xl flex-1">{children}</div>
+          <Footer />
+        </div>
+      )}
 
       {/* Bottom tab bar (mobile only). Hidden in chat rooms so the composer
           keeps the bottom edge, and hidden at sm+ where the drawer/sidebar
@@ -275,9 +326,9 @@ export default function AppShell({
                 >
                   <span className="relative">
                     <Icon size={22} strokeWidth={active ? 2.5 : 2} />
-                    {tab.href === "/chats" && unread > 0 && (
+                    {tab.href === "/chats" && chatUnread > 0 && (
                       <span className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full border border-white bg-flockie-coral px-0.5 text-[9px] font-bold leading-none text-white">
-                        {unread > 9 ? "9+" : unread}
+                        {chatUnread > 9 ? "9+" : chatUnread}
                       </span>
                     )}
                   </span>
