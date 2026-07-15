@@ -72,3 +72,26 @@ body {
   .animate-ping { animation: none !important; }
   .home-stagger > * { animation: none !important; }
 }
+
+/* Always-visible slim scrollbar for scrollable panels (e.g. the Chats list
+   rail). macOS hides overlay scrollbars by default, which makes a scroll area
+   read as "cut off" — this keeps a subtle track/thumb visible. */
+.scroll-slim {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(10, 37, 69, 0.28) transparent;
+}
+.scroll-slim::-webkit-scrollbar {
+  width: 8px;
+}
+.scroll-slim::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-slim::-webkit-scrollbar-thumb {
+  background-color: rgba(10, 37, 69, 0.22);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.scroll-slim::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(10, 37, 69, 0.4);
+}

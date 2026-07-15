@@ -101,7 +101,7 @@ export default function ChatList({ variant = "page" }: { variant?: "page" | "rai
 
       <div
         className={`mt-3 min-h-0 flex-1 space-y-2 ${
-          variant === "rail" ? "overflow-y-auto px-3 pb-4" : "px-1"
+          variant === "rail" ? "scroll-slim overflow-y-auto px-3 pb-4" : "px-1"
         }`}
       >
         {rows === null ? (
