@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronDown, MapPin, CalendarClock, Users, X, MoreVertical } from "lucide-react";
+import { ChevronDown, ChevronLeft, MapPin, CalendarClock, Users, X, MoreVertical } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import BrandedMap from "@/components/BrandedMap";
@@ -107,8 +107,16 @@ export default function VibeChatHeader({
 
   return (
     <div className="z-20 -mx-5 shrink-0 border-b-2 border-navy bg-cream px-5">
+      {/* Back to the chat list (essential on mobile, where the list rail is
+          hidden and the thread fills the screen). */}
+      <Link
+        href="/chats"
+        className="flex items-center gap-1 pt-3 font-nunito text-sm font-bold text-navy/60"
+      >
+        <ChevronLeft size={16} /> {t("shared.chats")}
+      </Link>
       {/* Collapsed bar */}
-      <div className="flex items-center gap-3 py-3">
+      <div className="flex items-center gap-3 pb-3 pt-2">
         <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-cream">
           {cover ? (
             <Image src={cover} alt="" fill sizes="64px" className="object-cover" />
