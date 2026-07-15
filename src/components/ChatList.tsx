@@ -4,6 +4,7 @@ import { useCallback, useEffect, useId, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import type { ChatListRow, ChatListPayload } from "@/lib/chat-list-data";
@@ -25,6 +26,10 @@ export default function ChatList({ variant = "page" }: { variant?: "page" | "rai
   const instanceId = useId();
   const [rows, setRows] = useState<ChatListRow[] | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
+  // Search is a collapsed magnifying glass by default; expands to an input only
+  // when tapped, so it adds no clutter until you have enough chats to need it.
+  const [searching, setSearching] = useState(false);
+  const [query, setQuery] = useState("");
 
   const load = useCallback(async () => {
     try {
@@ -65,10 +70,17 @@ export default function ChatList({ variant = "page" }: { variant?: "page" | "rai
 
   const filtered = useMemo(() => {
     if (!rows) return [];
-    if (filter === "groups") return rows.filter((r) => r.group === "group");
-    if (filter === "direct") return rows.filter((r) => r.group === "direct");
-    return rows;
-  }, [rows, filter]);
+    let out = rows;
+    if (filter === "groups") out = out.filter((r) => r.group === "group");
+    else if (filter === "direct") out = out.filter((r) => r.group === "direct");
+    const q = query.trim().toLowerCase();
+    if (q) {
+      out = out.filter(
+        (r) => r.title.toLowerCase().includes(q) || r.subtitle.toLowerCase().includes(q)
+      );
+    }
+    return out;
+  }, [rows, filter, query]);
 
   const chips: { key: Filter; label: string }[] = [
     { key: "all", label: t("list.filterAll") },
@@ -79,7 +91,42 @@ export default function ChatList({ variant = "page" }: { variant?: "page" | "rai
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div className={variant === "rail" ? "px-3 pt-4" : "px-1"}>
-        <h1 className="font-fredoka text-2xl font-bold text-navy lg:text-xl">{t("list.title")}</h1>
+        {searching ? (
+          <div className="flex items-center gap-2 rounded-full border-2 border-navy bg-white px-3 py-1.5">
+            <Search size={16} className="shrink-0 text-navy/50" />
+            {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
+            <input
+              autoFocus
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t("list.searchPlaceholder")}
+              className="min-w-0 flex-1 bg-transparent font-nunito text-sm font-medium text-navy outline-none placeholder:text-navy/40"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                setSearching(false);
+                setQuery("");
+              }}
+              aria-label={t("list.searchClose")}
+              className="shrink-0 text-navy/50 hover:text-navy"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between">
+            <h1 className="font-fredoka text-2xl font-bold text-navy lg:text-xl">{t("list.title")}</h1>
+            <button
+              type="button"
+              onClick={() => setSearching(true)}
+              aria-label={t("list.searchOpen")}
+              className="flex h-8 w-8 items-center justify-center rounded-full text-navy/60 transition-colors hover:bg-navy/5 hover:text-navy"
+            >
+              <Search size={18} />
+            </button>
+          </div>
+        )}
         <div className="mt-3 flex gap-1.5">
           {chips.map((c) => {
             const active = filter === c.key;
@@ -108,7 +155,7 @@ export default function ChatList({ variant = "page" }: { variant?: "page" | "rai
           <ListSkeleton />
         ) : filtered.length === 0 ? (
           <p className="px-2 py-8 text-center font-nunito text-sm font-medium text-navy/50">
-            {t("list.filterEmpty")}
+            {query.trim() ? t("list.searchEmpty") : t("list.filterEmpty")}
           </p>
         ) : (
           filtered.map((r) => (
