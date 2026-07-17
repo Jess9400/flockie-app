@@ -14,8 +14,15 @@ import LeaveVibeButton from "@/components/LeaveVibeButton";
 import ShareVibeButton from "@/components/ShareVibeButton";
 import VibeReviewSummary from "@/components/VibeReviewSummary";
 import Stars from "@/components/Stars";
-import { formatVibeWhen, DEALBREAKER_RULES, VIBE_REVIEW_TAGS, type InterestStatus } from "@/lib/vibes";
+import {
+  formatVibeWhen,
+  getVibeMatchingRunAt,
+  DEALBREAKER_RULES,
+  VIBE_REVIEW_TAGS,
+  type InterestStatus,
+} from "@/lib/vibes";
 import { formatApproximateVibeLocation } from "@/lib/vibe-location";
+import { loadVibeMatch } from "@/lib/vibe-stats";
 
 export default async function VibeDetailPage({
   params,
@@ -63,6 +70,7 @@ export default async function VibeDetailPage({
     { data: attendeeRows },
     { data: reviewRows },
     { data: hostMeta },
+    vibeMatches,
   ] = await Promise.all([
     supabase
       .from("public_profiles")
@@ -96,6 +104,9 @@ export default async function VibeDetailPage({
           .eq("id", params.id)
           .maybeSingle()
       : Promise.resolve({ data: null }),
+    isHost
+      ? Promise.resolve({} as Record<string, number>)
+      : loadVibeMatch(supabase, [params.id]),
   ]);
 
   // For Vibe interest we only need the activity vibe check (not full onboarding).
@@ -127,6 +138,7 @@ export default async function VibeDetailPage({
   }[];
   const confirmedCount = allAttendees.length;
   const attendees = allAttendees.slice(0, 8);
+  const matchPercent = vibeMatches[vibe.id];
 
   const eventStarted = new Date(vibe.starts_at) <= new Date();
   const approximateLocation =
@@ -274,6 +286,15 @@ export default async function VibeDetailPage({
 
   const ended = new Date(vibe.ends_at ?? vibe.starts_at) <= new Date();
   const canReview = ended && myInterest?.status === "confirmed";
+  const directConfirm =
+    !differentCity &&
+    ["ranking", "finalized"].includes(vibe.status) &&
+    confirmedCount < vibe.capacity &&
+    new Date(vibe.starts_at) > new Date();
+  const matchingRunAt = getVibeMatchingRunAt(vibe.starts_at, vibe.signup_deadline);
+  const primaryCategory = vibeCategories[0] || vibe.category;
+  const primaryTag = (vibe.event_vibe_tags ?? [])[0] as string | undefined;
+  const showAttendeeDetails = isHost || myInterest?.status === "confirmed";
 
   // If the viewer didn't get in, suggest better-matched Vibes.
   let suggestions: { id: string; title: string; photos: string[] | null; match_score: number | null }[] = [];
@@ -285,7 +306,7 @@ export default async function VibeDetailPage({
   }
 
   return (
-    <main className="px-5 pb-10 pt-6">
+    <main className="mx-auto w-full max-w-5xl px-5 pb-10 pt-6">
       <Link
         href="/vibes"
         className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted"
@@ -299,19 +320,7 @@ export default async function VibeDetailPage({
         </div>
       )}
 
-      <div className="mt-4 flex items-center justify-between gap-2">
-        <div className="flex min-w-0 flex-wrap items-center gap-1.5">
-          {(vibeCategories.length > 0 ? vibeCategories : [vibe.category])
-            .filter(Boolean)
-            .map((c: string) => (
-              <span
-                key={c}
-                className="inline-block rounded-full border-2 border-ink bg-white px-3 py-0.5 text-xs font-extrabold lowercase"
-              >
-                {t.has(`categories.${c}`) ? t(`categories.${c}`) : c}
-              </span>
-            ))}
-        </div>
+      <div className="mt-4 flex justify-end">
         {isHost ? (
           <VibeSettingsButton
             vibeId={vibe.id}
@@ -325,21 +334,22 @@ export default async function VibeDetailPage({
         )}
       </div>
 
-      {/* Cover stacks above the info on phones, sits beside it at sm+. */}
-      <div className="mt-3 flex flex-col gap-4 sm:flex-row">
-        {vibe.photos?.[0] && (
-          <div className="relative aspect-square w-full max-w-sm shrink-0 self-start overflow-hidden rounded-2xl border-2 border-ink bg-cream sm:w-1/2">
+      <section className="mt-3 overflow-hidden rounded-3xl border-2 border-ink bg-white shadow-[0_4px_0_0_rgba(10,37,69,1)] sm:grid sm:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
+        <div className="relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-[#FFB36B] to-flockie-orange sm:aspect-auto sm:min-h-[390px]">
+          {vibe.photos?.[0] ? (
             <Image
               src={vibe.photos[0]}
               alt=""
               fill
-              sizes="(max-width:640px) 50vw, 384px"
-              className="object-contain"
+              sizes="(max-width:640px) 100vw, 50vw"
+              className="object-cover"
             />
-          </div>
-        )}
-        <div className="min-w-0 flex-1">
-          <h1 className="text-xl font-black leading-tight sm:text-2xl">{vibe.title}</h1>
+          ) : (
+            <div className="flex h-full items-center justify-center text-5xl">🎟️</div>
+          )}
+        </div>
+        <div className="min-w-0 p-4 sm:p-6">
+          <h1 className="font-fredoka text-2xl font-bold leading-tight sm:text-3xl">{vibe.title}</h1>
           <div className="mt-2 space-y-1 text-sm font-medium text-ink">
             <p className="flex items-center gap-2">
               <CalendarClock size={15} className="shrink-0 text-flockie-orange" />
@@ -367,14 +377,107 @@ export default async function VibeDetailPage({
             )}
             <p className="flex items-center gap-2">
               <Users size={15} className="shrink-0 text-flockie-orange" />
-              {t("detail.going", { count: confirmedCount ?? 0, capacity: vibe.capacity })}
+              {showAttendeeDetails
+                ? t("detail.going", { count: confirmedCount, capacity: vibe.capacity })
+                : t("detail.groupSize", { capacity: vibe.capacity })}
             </p>
+          </div>
+          {host?.id && (
+            <Link
+              href={`/people/${host.id}`}
+              className="mt-3 inline-flex items-center gap-2 rounded-full border border-ink/20 bg-cream py-1 pl-1 pr-3 transition-colors hover:border-ink"
+            >
+              {host.photos?.[0] ? (
+                <Image
+                  src={host.photos[0]}
+                  alt=""
+                  width={28}
+                  height={28}
+                  className="h-7 w-7 rounded-full object-cover"
+                />
+              ) : (
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-flockie-blue text-[10px] font-bold text-white">
+                  {(host.display_name || "F")[0]}
+                </span>
+              )}
+              <span className="text-xs font-bold">
+                {t("detail.hostedBy", { name: host.display_name || t("detail.hostFallback") })}
+              </span>
+            </Link>
+          )}
+          <div className="mt-3 flex flex-wrap gap-2">
+            {primaryCategory && (
+              <span className="rounded-full border border-ink/15 bg-white px-3 py-1 text-xs font-bold text-ink">
+                {t.has(`categories.${primaryCategory}`) ? t(`categories.${primaryCategory}`) : primaryCategory}
+              </span>
+            )}
+            {primaryTag && (
+              <span className="rounded-full border border-ink/15 bg-white px-3 py-1 text-xs font-bold text-ink">
+                {t.has(`eventTags.${primaryTag}`) ? t(`eventTags.${primaryTag}`) : primaryTag}
+              </span>
+            )}
+            {typeof matchPercent === "number" && (
+              <span className="rounded-full bg-[#DDF2FF] px-3 py-1 text-xs font-extrabold text-flockie-blue">
+                {t("card.match", { pct: matchPercent })}
+              </span>
+            )}
           </div>
           <p className="mt-3 whitespace-pre-wrap text-[15px] font-medium text-ink/80">
             {vibe.description}
           </p>
         </div>
-      </div>
+      </section>
+
+      {!isHost && (
+        <section className="mt-5">
+          {differentCity && !ended && vibe.status !== "cancelled" && (
+            <div className="mb-3 flex items-start gap-2 rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-bold text-ink">
+              <span className="text-base leading-none">📍</span>
+              <span>
+                {t.rich("detail.differentCity", {
+                  city: vibe.city,
+                  hl: (chunks) => <span className="text-flockie-coral">{chunks}</span>,
+                })}
+              </span>
+            </div>
+          )}
+          <InterestButton
+            vibeId={vibe.id}
+            userId={user!.id}
+            activitiesDone={activitiesDone}
+            initialStatus={(myInterest?.status as InterestStatus) ?? null}
+            invitationExpiresAt={myInterest?.invitation_expires_at ?? null}
+            cancelled={vibe.status === "cancelled"}
+            ended={ended}
+            autoInterest={searchParams.interested === "1"}
+            requestMode={searchParams.request === "1"}
+            hostCode={searchParams.code ?? null}
+            initialNotForMe={!!myFeedback}
+            hasCity={!!me?.home_city?.trim()}
+            directConfirm={directConfirm}
+            matchingRunAt={matchingRunAt}
+            matchingTimeZone={(vibe as { timezone?: string | null }).timezone}
+          />
+          {myInterest?.status !== "confirmed" && (
+            <details className="group mt-3 rounded-2xl border-2 border-ink/15 bg-white px-4 py-3">
+              <summary className="cursor-pointer list-none text-sm font-extrabold text-ink marker:content-none">
+                <span className="flex items-center justify-between gap-3">
+                  {t("detail.howJoiningWorks")}
+                  <span className="text-lg leading-none text-muted group-open:rotate-45">+</span>
+                </span>
+              </summary>
+              <ol className="mt-3 space-y-2 pl-5 text-sm font-medium leading-relaxed text-muted">
+                <li className="list-decimal">{t("detail.joiningStep1")}</li>
+                <li className="list-decimal">{t("detail.joiningStep2")}</li>
+                <li className="list-decimal">{t("detail.joiningStep3")}</li>
+              </ol>
+            </details>
+          )}
+          <div className="mt-3 flex justify-center">
+            <ShareVibeButton vibeId={vibe.id} />
+          </div>
+        </section>
+      )}
 
       {privateLogistics?.activity_url && (
         <a
@@ -394,70 +497,55 @@ export default async function VibeDetailPage({
         </div>
       )}
 
-      {/* host — compact tag, tap to view profile */}
-      {host?.id && (
-        <Link
-          href={`/people/${host.id}`}
-          className="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-white py-1 pl-1 pr-3 transition-colors hover:bg-cream"
-        >
-          {host.photos?.[0] ? (
-            <Image
-              src={host.photos[0]}
-              alt=""
-              width={24}
-              height={24}
-              className="h-6 w-6 rounded-full object-cover"
-            />
-          ) : (
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-flockie-blue text-[10px] font-bold text-white">
-              {(host.display_name || "F")[0]}
-            </span>
-          )}
-          <span className="text-xs font-bold">{t("detail.hostedBy", { name: host.display_name || t("detail.hostFallback") })}</span>
-        </Link>
-      )}
-
-      {/* tags + rules */}
+      {/* Full preferences stay available without crowding the first scan. */}
       {((vibe.event_vibe_tags?.length ?? 0) > 0 ||
         activeRules.length > 0 ||
         vibe.language ||
         (vibe.age_min != null && vibe.age_min > 18) ||
         (vibe.age_max != null && vibe.age_max < 99) ||
         (vibe.gender_pref && vibe.gender_pref !== "any")) && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {vibe.event_vibe_tags?.map((tag: string) => (
-            <span key={tag} className="rounded-full bg-cream px-3 py-1 text-xs font-bold text-ink">
-              {t.has(`eventTags.${tag}`) ? t(`eventTags.${tag}`) : tag}
+        <details className="group mt-4 rounded-2xl border-2 border-ink/15 bg-white px-4 py-3">
+          <summary className="cursor-pointer list-none text-sm font-extrabold text-ink marker:content-none">
+            <span className="flex items-center justify-between gap-3">
+              {t("detail.detailsAndRequirements")}
+              <span className="text-lg leading-none text-muted group-open:rotate-45">+</span>
             </span>
-          ))}
-          {vibe.language && (
-            <span className="rounded-full border-2 border-ink px-3 py-1 text-xs font-bold">
-              🗣️ {vibe.language}
-            </span>
-          )}
-          {((vibe.age_min != null && vibe.age_min > 18) || (vibe.age_max != null && vibe.age_max < 99)) && (
-            <span className="rounded-full border-2 border-ink px-3 py-1 text-xs font-bold">
-              {t("detail.ages", { min: vibe.age_min ?? 18, max: vibe.age_max ?? 99 })}
-            </span>
-          )}
-          {activeRules.map((r) => (
-            <span key={r.key} className="rounded-full border-2 border-ink px-3 py-1 text-xs font-bold">
-              {t.has(`rules.${r.key}`) ? t(`rules.${r.key}`) : r.label}
-            </span>
-          ))}
-          {vibe.gender_pref && vibe.gender_pref !== "any" && (
-            <span className="rounded-full border-2 border-ink bg-ink px-3 py-1 text-xs font-bold text-white">
-              {vibe.gender_pref === "women" ? t("detail.womenOnly") : t("detail.menOnly")}
-            </span>
-          )}
-        </div>
+          </summary>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {vibe.event_vibe_tags?.map((tag: string) => (
+              <span key={tag} className="rounded-full bg-cream px-3 py-1 text-xs font-bold text-ink">
+                {t.has(`eventTags.${tag}`) ? t(`eventTags.${tag}`) : tag}
+              </span>
+            ))}
+            {vibe.language && (
+              <span className="rounded-full border-2 border-ink px-3 py-1 text-xs font-bold">
+                🗣️ {vibe.language}
+              </span>
+            )}
+            {((vibe.age_min != null && vibe.age_min > 18) || (vibe.age_max != null && vibe.age_max < 99)) && (
+              <span className="rounded-full border-2 border-ink px-3 py-1 text-xs font-bold">
+                {t("detail.ages", { min: vibe.age_min ?? 18, max: vibe.age_max ?? 99 })}
+              </span>
+            )}
+            {activeRules.map((r) => (
+              <span key={r.key} className="rounded-full border-2 border-ink px-3 py-1 text-xs font-bold">
+                {t.has(`rules.${r.key}`) ? t(`rules.${r.key}`) : r.label}
+              </span>
+            ))}
+            {vibe.gender_pref && vibe.gender_pref !== "any" && (
+              <span className="rounded-full border-2 border-ink bg-ink px-3 py-1 text-xs font-bold text-white">
+                {vibe.gender_pref === "women" ? t("detail.womenOnly") : t("detail.menOnly")}
+              </span>
+            )}
+          </div>
+        </details>
       )}
 
       {/* confirmed attendees — tap any to view their profile */}
-      {(confirmedCount ?? 0) > 0 && (
+      {showAttendeeDetails && confirmedCount > 0 && (
         <div className="mt-5">
           <p className="text-sm font-bold">
-            {t("detail.goingWithCount", { count: confirmedCount ?? 0 })}
+            {t("detail.goingWithCount", { count: confirmedCount })}
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
             {attendees.map((a) => (
@@ -482,9 +570,9 @@ export default async function VibeDetailPage({
                 <span className="text-xs font-bold">{a.display_name || t("detail.attendeeFallback")}</span>
               </Link>
             ))}
-            {(confirmedCount ?? 0) > attendees.length && (
+            {confirmedCount > attendees.length && (
               <span className="flex items-center rounded-full bg-cream px-3 py-1 text-xs font-bold text-muted">
-                {t("detail.moreAttendees", { count: (confirmedCount ?? 0) - attendees.length })}
+                {t("detail.moreAttendees", { count: confirmedCount - attendees.length })}
               </span>
             )}
           </div>
@@ -565,9 +653,9 @@ export default async function VibeDetailPage({
         />
       )}
 
-      <div className="mt-6">
-        {isHost ? (
-          ended ? (
+      {isHost && (
+        <div className="mt-6">
+          {ended ? (
             <Link
               href={`/vibes/new?from=${vibe.id}`}
               className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3.5 text-center font-bold text-white shadow-[0_4px_0_0_#E0512C]"
@@ -576,48 +664,7 @@ export default async function VibeDetailPage({
             </Link>
           ) : (
             <HostVibeControls vibeId={vibe.id} status={vibe.status} />
-          )
-        ) : (
-          <>
-            {differentCity && !ended && vibe.status !== "cancelled" && (
-              <div className="mb-2 flex items-start gap-2 rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-bold text-ink">
-                <span className="text-base leading-none">📍</span>
-                <span>
-                  {t.rich("detail.differentCity", {
-                    city: vibe.city,
-                    hl: (chunks) => <span className="text-flockie-coral">{chunks}</span>,
-                  })}
-                </span>
-              </div>
-            )}
-            <InterestButton
-              vibeId={vibe.id}
-              userId={user!.id}
-              activitiesDone={activitiesDone}
-              initialStatus={(myInterest?.status as InterestStatus) ?? null}
-              invitationExpiresAt={myInterest?.invitation_expires_at ?? null}
-              cancelled={vibe.status === "cancelled"}
-              ended={ended}
-              autoInterest={searchParams.interested === "1"}
-              requestMode={searchParams.request === "1"}
-              hostCode={searchParams.code ?? null}
-              initialNotForMe={!!myFeedback}
-              vibeFormDone={!!me?.vibe_completed_at}
-              hasCity={!!me?.home_city?.trim()}
-              directConfirm={
-                !differentCity &&
-                ["ranking", "finalized"].includes(vibe.status) &&
-                (confirmedCount ?? 0) < vibe.capacity &&
-                new Date(vibe.starts_at) > new Date()
-              }
-            />
-          </>
-        )}
-      </div>
-
-      {!isHost && (
-        <div className="mt-3 flex justify-center">
-          <ShareVibeButton vibeId={vibe.id} />
+          )}
         </div>
       )}
 

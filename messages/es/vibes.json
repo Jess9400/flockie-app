@@ -41,6 +41,12 @@
     "cancelledBanner": "El anfitrión canceló este Vibe. El chat ahora está inactivo.",
     "approxArea": "Zona aproximada · la ubicación exacta se desbloquea tras confirmar",
     "going": "{count}/{capacity} asisten",
+    "groupSize": "Grupo pequeño · hasta {capacity} personas",
+    "howJoiningWorks": "Cómo funciona unirse",
+    "joiningStep1": "Toca Me interesa — todavía no hay compromiso.",
+    "joiningStep2": "Flockie crea un grupo compatible. El anfitrión puede hacer algunos cambios.",
+    "joiningStep3": "Si haces match, recibirás una invitación para confirmar tu lugar. Si el grupo está lleno, podemos avisarte cuando se libere un lugar.",
+    "detailsAndRequirements": "Detalles y requisitos",
     "viewActivity": "🎟️ Ver actividad ↗",
     "whatToBring": "Qué llevar / costo",
     "hostedBy": "Organizado por {name}",
@@ -209,7 +215,19 @@
       "cancel": "Cancelar"
     },
     "joinNow": "Unirme ahora",
-    "joinNowHint": "Hay un lugar libre — quedarás confirmado al instante."
+    "joinNowHint": "Hay un lugar libre — quedarás confirmado al instante.",
+    "matchingScheduled": "El match está programado para {time}.",
+    "runningTitle": "Estás en la selección",
+    "runningBody": "Estamos creando el grupo. Te avisaremos después del match.",
+    "invitedTitle": "Estás invitado 🎉",
+    "invitedBody": "Este lugar está reservado para ti.",
+    "confirmedBody": "El Vibing Chat está abierto y la ubicación exacta está desbloqueada.",
+    "standbyTitle": "Estás en espera",
+    "standbyBody": "Te añadiremos automáticamente si se libera un lugar.",
+    "fastFillTitle": "Quedan algunos lugares",
+    "fastFillBody": "El match terminó. Únete ahora y quedarás confirmado al instante.",
+    "withdrawInterest": "Retirar interés",
+    "pass": "Pasar"
   },
   "host": {
     "youCancelled": "Cancelaste este Vibe.",
