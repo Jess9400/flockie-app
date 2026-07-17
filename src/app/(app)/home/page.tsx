@@ -238,6 +238,7 @@ export default async function HomePage({
         myStatus={cardStatuses[v.id] ?? null}
         matchPct={v.host_id === user!.id ? undefined : vibeMatch[v.id]}
         canDismiss={v.host_id !== user!.id && !cardStatuses[v.id]}
+        variant="home"
       />
     </div>
   );
