@@ -96,5 +96,12 @@
       "title": "A Vibe you might love",
       "body": "{title} — a Vibe in your city. Tap to check it out."
     }
-  }
+  },
+  "groupToday": "Today",
+  "groupEarlier": "Earlier",
+  "dismissedArchive": "Dismissed ({count})",
+  "undo": "Undo",
+  "dismissedToast": "Dismissed",
+  "confirmIn": "{time} to confirm",
+  "justNow": "now"
 }

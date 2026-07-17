@@ -96,5 +96,12 @@
       "title": "Una Vibe que te puede gustar",
       "body": "{title}: una Vibe en tu ciudad. Toca para verla."
     }
-  }
+  },
+  "groupToday": "Hoy",
+  "groupEarlier": "Antes",
+  "dismissedArchive": "Descartadas ({count})",
+  "undo": "Deshacer",
+  "dismissedToast": "Descartada",
+  "confirmIn": "{time} para confirmar",
+  "justNow": "ahora"
 }
