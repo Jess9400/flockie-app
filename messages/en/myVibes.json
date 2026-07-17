@@ -25,5 +25,15 @@
     "confirmed": "Confirmed"
   },
   "youreGoing": "You’re going",
-  "youreGoingHelp": "Confirmed — you’re in. Open one to see the details and chat."
+  "youreGoingHelp": "Confirmed — you’re in. Open one to see the details and chat.",
+  "seatsFilled": "{filled} of {capacity} seats filled",
+  "openChat": "Open chat",
+  "directions": "Directions",
+  "manage": "Manage",
+  "went": "Went",
+  "step": {
+    "interested": "Interested",
+    "shortlisted": "Shortlisted",
+    "invited": "Invited"
+  }
 }

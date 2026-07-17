@@ -25,5 +25,15 @@
     "confirmed": "Confirmado"
   },
   "youreGoing": "Você vai",
-  "youreGoingHelp": "Confirmado — você está dentro. Abra uma para ver os detalhes e o chat."
+  "youreGoingHelp": "Confirmado — você está dentro. Abra uma para ver os detalhes e o chat.",
+  "seatsFilled": "{filled} de {capacity} vagas preenchidas",
+  "openChat": "Abrir chat",
+  "directions": "Como chegar",
+  "manage": "Gerenciar",
+  "went": "Você foi",
+  "step": {
+    "interested": "Interessado",
+    "shortlisted": "Pré-selecionado",
+    "invited": "Convidado"
+  }
 }

@@ -4,7 +4,15 @@ import { useState } from "react";
 import { Share2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-export default function ShareVibeButton({ vibeId, tile }: { vibeId: string; tile?: boolean }) {
+export default function ShareVibeButton({
+  vibeId,
+  tile,
+  fill,
+}: {
+  vibeId: string;
+  tile?: boolean;
+  fill?: boolean;
+}) {
   const t = useTranslations("vibes");
   const [copied, setCopied] = useState(false);
 
@@ -23,6 +31,20 @@ export default function ShareVibeButton({ vibeId, tile }: { vibeId: string; tile
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {}
+  }
+
+  // Coral "Share to fill" pill — the primary action on a hosting card while
+  // seats are still open (My Vibes).
+  if (fill) {
+    return (
+      <button
+        type="button"
+        onClick={share}
+        className="inline-flex shrink-0 items-center gap-1.5 rounded-full border-2 border-ink bg-flockie-coral px-3.5 py-1.5 text-xs font-extrabold text-white shadow-[0_2px_0_0_#E0512C]"
+      >
+        <Share2 size={14} /> {copied ? t("share.linkCopied") : t("share.fill")}
+      </button>
+    );
   }
 
   // Compact tile for the side-by-side host action row.

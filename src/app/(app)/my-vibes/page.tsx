@@ -1,6 +1,7 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, Users, RefreshCw } from "lucide-react";
+import { Plus, MessageCircle, MapPin, RefreshCw } from "lucide-react";
 import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
@@ -19,13 +20,13 @@ const STATUS_STYLE: Record<string, string> = {
   cancelled: "bg-ink text-white",
 };
 
-// Participant-side interest states shown in "In the running".
-const INTEREST_STYLE: Record<string, string> = {
-  interested: "bg-flockie-blue text-white",
-  shortlisted: "bg-flockie-orange text-white",
-  invited: "bg-flockie-coral text-white",
-  confirmed: "bg-[#06D6A0] text-white",
-};
+const CARD = "rounded-2xl border-2 border-ink bg-white p-3 shadow-[0_3px_0_0_rgba(10,37,69,1)]";
+const GHOST_BTN =
+  "flex items-center justify-center gap-1.5 rounded-full border-2 border-ink bg-white py-2 text-xs font-bold text-ink";
+
+// Google Maps search deep-link from a place label.
+const mapsUrl = (q: string) =>
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
 
 type VibeRow = {
   id: string;
@@ -38,6 +39,18 @@ type VibeRow = {
   ends_at: string | null;
   timezone: string | null;
   capacity: number;
+  status: string;
+};
+
+type JoinedVibe = {
+  id: string;
+  title: string;
+  photos: string[] | null;
+  city: string;
+  area: string | null;
+  starts_at: string;
+  ends_at: string | null;
+  timezone: string | null;
   status: string;
 };
 
@@ -97,11 +110,9 @@ export default async function MyVibesPage({
     confirmed?.forEach((r) => (counts[r.vibe_id] = (counts[r.vibe_id] ?? 0) + 1));
   }
 
-  // "In the running" — Vibes the user is a PARTICIPANT in (not hosting). These
-  // otherwise have no home: interested/shortlisted/invited/confirmed rows never
-  // surface, and 'reviewing'-status vibes drop out of browse/home entirely.
-  // Own rows are readable by RLS; display data comes from vibe_directory (no GPS,
-  // and — unlike the browse filters — it includes every status).
+  // "In the running" / "You're going" — Vibes the user is a PARTICIPANT in (not
+  // hosting). Own rows are readable by RLS; display data comes from
+  // vibe_directory (no GPS, and — unlike browse filters — it includes every status).
   const { data: myInterests } = await supabase
     .from("vibe_interests")
     .select("vibe_id, status")
@@ -112,17 +123,6 @@ export default async function MyVibesPage({
     if (!ids.includes(r.vibe_id)) interestStatus[r.vibe_id] = r.status; // skip own hosted
   });
   const runningIds = Object.keys(interestStatus);
-  type JoinedVibe = {
-    id: string;
-    title: string;
-    photos: string[] | null;
-    city: string;
-    area: string | null;
-    starts_at: string;
-    ends_at: string | null;
-    timezone: string | null;
-    status: string;
-  };
   let going: JoinedVibe[] = [];
   let running: JoinedVibe[] = [];
   let attendedPast: JoinedVibe[] = [];
@@ -135,62 +135,123 @@ export default async function MyVibesPage({
     const hasEnded = (v: JoinedVibe) => new Date(v.ends_at ?? v.starts_at).getTime() < now;
     const byStart = (a: JoinedVibe, b: JoinedVibe) =>
       new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime();
-    // Upcoming joined vibes, split by whether the user is already confirmed.
     const upcoming = rows.filter((v) => v.status !== "cancelled" && !hasEnded(v));
     going = upcoming.filter((v) => interestStatus[v.id] === "confirmed").sort(byStart);
     running = upcoming.filter((v) => interestStatus[v.id] !== "confirmed").sort(byStart);
-    // Vibes the user actually attended (was confirmed) that have ended → "Past Vibes".
     attendedPast = rows
       .filter((v) => interestStatus[v.id] === "confirmed" && hasEnded(v))
       .sort((a, b) => new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime());
   }
 
-  function VibeRowCard({ v, faded }: { v: VibeRow; faded?: boolean }) {
+  const twoCol = going.length > 0 && running.length > 0;
+  const hasPast = pastList.length > 0 || attendedPast.length > 0;
+
+  function SectionLabel({ children }: { children: React.ReactNode }) {
     return (
-      <div
-        className={`rounded-2xl border-2 border-ink bg-white p-3 shadow-[0_3px_0_0_rgba(26,26,26,1)] ${faded ? "opacity-60" : ""}`}
-      >
-        <Link href={`/vibes/${v.id}`} className="flex items-center gap-3">
-          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-cream">
-            {v.photos?.[0] ? (
-              <Image src={v.photos[0]} alt="" fill sizes="48px" className="object-cover" />
-            ) : (
-              <span className="flex h-full items-center justify-center text-lg">🎟️</span>
+      <p className="mb-2 mt-6 text-xs font-extrabold uppercase tracking-wide text-muted">{children}</p>
+    );
+  }
+
+  function Thumb({ photo, emoji = "🎟️" }: { photo?: string | null; emoji?: string }) {
+    return (
+      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-cream">
+        {photo ? (
+          <Image src={photo} alt="" fill sizes="48px" className="object-cover" />
+        ) : (
+          <span className="flex h-full w-full items-center justify-center text-lg">{emoji}</span>
+        )}
+      </div>
+    );
+  }
+
+  // Interested → Shortlisted → Invited progress, mirrors the vibe detail stepper.
+  function Stepper({ status }: { status: string }) {
+    const steps = ["interested", "shortlisted", "invited"] as const;
+    const cur = Math.max(0, steps.indexOf(status as (typeof steps)[number]));
+    return (
+      <div className="mt-3 flex items-start">
+        {steps.map((s, i) => (
+          <Fragment key={s}>
+            <div className="flex flex-1 flex-col items-center gap-1.5">
+              <span
+                className={`h-3 w-3 rounded-full border-2 ${
+                  i < cur
+                    ? "border-[#06D6A0] bg-[#06D6A0]"
+                    : i === cur
+                      ? "border-flockie-coral bg-white ring-2 ring-flockie-coral/25"
+                      : "border-ink/20 bg-cream"
+                }`}
+              />
+              <span className={`text-[10px] font-bold ${i <= cur ? "text-ink" : "text-muted"}`}>
+                {t(`step.${s}`)}
+              </span>
+            </div>
+            {i < steps.length - 1 && (
+              <span className={`mt-[5px] h-0.5 flex-1 ${i < cur ? "bg-[#06D6A0]" : "bg-ink/15"}`} />
             )}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate font-extrabold">{v.title}</p>
-            <p className="truncate text-xs font-medium text-muted">
-              {formatVibeWhen(v.starts_at, locale, v.timezone)} · {v.location_name || v.city}
-            </p>
-          </div>
-          <div className="flex shrink-0 flex-col items-end gap-1">
-            <span
-              className={`rounded-full px-2.5 py-0.5 text-[11px] font-extrabold ${
-                faded
-                  ? v.status === "cancelled"
-                    ? "bg-ink text-white"
-                    : "bg-[#06D6A0] text-white"
-                  : STATUS_STYLE[v.status] ?? "bg-cream text-ink"
-              }`}
-            >
-              {faded
+          </Fragment>
+        ))}
+      </div>
+    );
+  }
+
+  // Hosting card: fill meter + Share-to-fill + Manage. `faded` = a past host.
+  function HostingCard({ v, faded }: { v: VibeRow; faded?: boolean }) {
+    const filled = counts[v.id] ?? 0;
+    const pct = v.capacity > 0 ? Math.min(100, Math.round((filled / v.capacity) * 100)) : 0;
+    const shareEligible =
+      ["open", "reviewing", "ranking", "finalized"].includes(v.status) && filled < v.capacity;
+    return (
+      <div className={`${CARD} ${faded ? "opacity-60" : ""}`}>
+        <div className="flex items-center gap-3">
+          <Link href={`/vibes/${v.id}`} className="flex min-w-0 flex-1 items-center gap-3">
+            <Thumb photo={v.photos?.[0]} />
+            <div className="min-w-0">
+              <p className="truncate font-extrabold">{v.title}</p>
+              <p className="truncate text-xs font-medium text-muted">
+                {formatVibeWhen(v.starts_at, locale, v.timezone)} · {v.location_name || v.city}
+              </p>
+            </div>
+          </Link>
+          <span
+            className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-extrabold ${
+              faded
                 ? v.status === "cancelled"
-                  ? t("status.cancelled")
-                  : t("status.completed")
-                : t(`status.${v.status}`)}
-            </span>
-            <span className="flex items-center gap-1 text-xs font-bold text-muted">
-              <Users size={13} /> {counts[v.id] ?? 0}/{v.capacity}
-            </span>
-          </div>
-        </Link>
-        {!faded && ["open", "reviewing", "ranking", "finalized"].includes(v.status) && (
-          <div className="mt-3 flex items-center justify-between gap-2 border-t-2 border-ink/10 pt-3">
-            <p className="text-xs font-medium text-muted">{t("shareToFill")}</p>
-            <ShareVibeButton vibeId={v.id} />
+                  ? "bg-ink text-white"
+                  : "bg-[#06D6A0] text-white"
+                : STATUS_STYLE[v.status] ?? "bg-cream text-ink"
+            }`}
+          >
+            {faded
+              ? v.status === "cancelled"
+                ? t("status.cancelled")
+                : t("status.completed")
+              : t(`status.${v.status}`)}
+          </span>
+        </div>
+
+        {!faded && (
+          <div className="mt-3">
+            <div className="h-1.5 overflow-hidden rounded-full bg-cream">
+              <div className="h-full rounded-full bg-flockie-coral" style={{ width: `${pct}%` }} />
+            </div>
+            <div className="mt-2 flex items-center justify-between gap-2">
+              <span className="text-xs font-bold text-muted">
+                {t("seatsFilled", { filled, capacity: v.capacity })}
+              </span>
+              <div className="flex shrink-0 items-center gap-2">
+                {shareEligible && <ShareVibeButton vibeId={v.id} fill />}
+                <Link
+                  href={`/vibes/${v.id}`}
+                  className="rounded-full border-2 border-ink bg-white px-3.5 py-1.5 text-xs font-bold text-ink"
+                >
+                  {t("manage")}
+                </Link>
+              </div>
+            </div>
           </div>
         )}
+
         {faded && (
           <div className="mt-3 border-t-2 border-ink/10 pt-3">
             <Link
@@ -205,40 +266,93 @@ export default async function MyVibesPage({
     );
   }
 
-  // Compact row for a joined vibe (going / in the running / attended-past).
-  function JoinedRow({
-    v,
-    badge,
-    badgeClass,
-    faded,
+  // "You're going" — confirmed, green card with chat + directions inline.
+  function GoingCard({ v }: { v: JoinedVibe }) {
+    const place = [v.area, v.city].filter(Boolean).join(", ");
+    return (
+      <div className={`${CARD} border-[#06D6A0] bg-[#E9F6F1]`}>
+        <div className="flex items-center gap-3">
+          <Link href={`/vibes/${v.id}`} className="flex min-w-0 flex-1 items-center gap-3">
+            <Thumb photo={v.photos?.[0]} />
+            <div className="min-w-0">
+              <p className="truncate font-extrabold">{v.title}</p>
+              <p className="truncate text-xs font-medium text-muted">
+                {formatVibeWhen(v.starts_at, locale, v.timezone)}
+                {place ? ` · ${place}` : ""}
+              </p>
+            </div>
+          </Link>
+          <span className="shrink-0 rounded-full bg-[#06D6A0] px-2.5 py-0.5 text-[11px] font-extrabold text-white">
+            {t("interest.confirmed")}
+          </span>
+        </div>
+        <div className="mt-3 flex gap-2">
+          <Link href={`/vibes/${v.id}/chat`} className={`flex-1 ${GHOST_BTN}`}>
+            <MessageCircle size={14} /> {t("openChat")}
+          </Link>
+          {place && (
+            <a href={mapsUrl(place)} target="_blank" rel="noopener noreferrer" className={`flex-1 ${GHOST_BTN}`}>
+              <MapPin size={14} /> {t("directions")}
+            </a>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // "In the running" — pending, carries the mini-stepper.
+  function RunningCard({ v }: { v: JoinedVibe }) {
+    return (
+      <div className={CARD}>
+        <Link href={`/vibes/${v.id}`} className="flex items-center gap-3">
+          <Thumb photo={v.photos?.[0]} />
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-extrabold">{v.title}</p>
+            <p className="truncate text-xs font-medium text-muted">
+              {formatVibeWhen(v.starts_at, locale, v.timezone)} · {v.area || v.city}
+            </p>
+          </div>
+        </Link>
+        <Stepper status={interestStatus[v.id] ?? "interested"} />
+      </div>
+    );
+  }
+
+  // Small faded card for the Past grid.
+  function PastRow({
+    href,
+    photo,
+    title,
+    meta,
+    label,
+    tone = "green",
   }: {
-    v: JoinedVibe;
-    badge: string;
-    badgeClass: string;
-    faded?: boolean;
+    href: string;
+    photo?: string | null;
+    title: string;
+    meta: string;
+    label: string;
+    tone?: "green" | "ink";
   }) {
     return (
-      <Link
-        href={`/vibes/${v.id}`}
-        className={`flex items-center gap-3 rounded-2xl border-2 border-ink bg-white p-3 shadow-[0_3px_0_0_rgba(26,26,26,1)] ${
-          faded ? "opacity-60" : ""
-        }`}
-      >
-        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-cream">
-          {v.photos?.[0] ? (
-            <Image src={v.photos[0]} alt="" fill sizes="48px" className="object-cover" />
+      <Link href={href} className={`${CARD} flex items-center gap-3 opacity-60`}>
+        <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-lg bg-cream">
+          {photo ? (
+            <Image src={photo} alt="" fill sizes="36px" className="object-cover" />
           ) : (
-            <span className="flex h-full items-center justify-center text-lg">🎟️</span>
+            <span className="flex h-full w-full items-center justify-center text-base">🎟️</span>
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate font-extrabold">{v.title}</p>
-          <p className="truncate text-xs font-medium text-muted">
-            {formatVibeWhen(v.starts_at, locale, v.timezone)} · {v.area || v.city}
-          </p>
+          <p className="truncate text-sm font-extrabold">{title}</p>
+          <p className="truncate text-xs font-medium text-muted">{meta}</p>
         </div>
-        <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-extrabold ${badgeClass}`}>
-          {badge}
+        <span
+          className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-extrabold text-white ${
+            tone === "ink" ? "bg-ink" : "bg-[#06D6A0]"
+          }`}
+        >
+          {label}
         </span>
       </Link>
     );
@@ -256,76 +370,72 @@ export default async function MyVibesPage({
           <Plus size={16} /> {t("create")}
         </Link>
       </div>
-      <p className="mt-1 text-sm font-medium text-muted">
-        {t("subtitle")}
-      </p>
+      <p className="mt-1 text-sm font-medium text-muted">{t("subtitle")}</p>
 
-      {going.length > 0 && (
-        <section className="mt-6">
-          <h2 className="text-lg font-extrabold">{t("youreGoing")}</h2>
-          <p className="mt-0.5 text-xs font-medium text-muted">{t("youreGoingHelp")}</p>
-          <div className="mt-3 space-y-3">
-            {going.map((v) => (
-              <JoinedRow
-                key={v.id}
-                v={v}
-                badge={t("interest.confirmed")}
-                badgeClass={INTEREST_STYLE.confirmed ?? "bg-[#06D6A0] text-white"}
-              />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {running.length > 0 && (
-        <section className="mt-6">
-          <h2 className="text-lg font-extrabold">{t("inTheRunning")}</h2>
-          <p className="mt-0.5 text-xs font-medium text-muted">
-            {t("inTheRunningHelp")}
-          </p>
-          <div className="mt-3 space-y-3">
-            {running.map((v) => (
-              <JoinedRow
-                key={v.id}
-                v={v}
-                badge={t(`interest.${interestStatus[v.id]}`)}
-                badgeClass={INTEREST_STYLE[interestStatus[v.id]] ?? "bg-cream text-ink"}
-              />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {(running.length > 0 || activeList.length > 0) && (
-        <h2 className="mt-8 text-lg font-extrabold">{t("hosting")}</h2>
-      )}
-      <div className="mt-3 space-y-3">
+      {/* Hosting */}
+      <SectionLabel>{t("hosting")}</SectionLabel>
+      <div className="space-y-3">
         {activeList.length === 0 ? (
-          <div className="rounded-3xl border-2 border-dashed border-ink/30 py-16 text-center font-medium text-muted">
+          <div className="rounded-3xl border-2 border-dashed border-ink/30 py-12 text-center font-medium text-muted">
             {t("emptyHosting")}
           </div>
         ) : (
-          pageList.map((v) => <VibeRowCard key={v.id} v={v} />)
+          pageList.map((v) => <HostingCard key={v.id} v={v} />)
         )}
       </div>
       <Pagination page={page} totalPages={totalPages} hrefFor={(p) => qs({ page: p, ppage })} />
 
-      {(pastList.length > 0 || attendedPast.length > 0) && (
+      {/* You're going + In the running (side by side on desktop) */}
+      {(going.length > 0 || running.length > 0) && (
+        <div className={twoCol ? "grid gap-x-6 lg:grid-cols-2" : ""}>
+          {going.length > 0 && (
+            <section>
+              <SectionLabel>{t("youreGoing")}</SectionLabel>
+              <div className="space-y-3">
+                {going.map((v) => (
+                  <GoingCard key={v.id} v={v} />
+                ))}
+              </div>
+            </section>
+          )}
+          {running.length > 0 && (
+            <section>
+              <SectionLabel>{t("inTheRunning")}</SectionLabel>
+              <div className="space-y-3">
+                {running.map((v) => (
+                  <RunningCard key={v.id} v={v} />
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+      )}
+
+      {/* Past */}
+      {hasPast && (
         <>
-          <h2 className="mt-8 text-lg font-extrabold text-muted">{t("pastVibes")}</h2>
-          <div className="mt-3 space-y-3">
-            {/* Attended (joined + confirmed) vibes that have ended. */}
+          <SectionLabel>{t("pastVibes")}</SectionLabel>
+          <div className="grid gap-3 sm:grid-cols-2">
             {attendedPast.map((v) => (
-              <JoinedRow
+              <PastRow
                 key={v.id}
-                v={v}
-                faded
-                badge={t("status.completed")}
-                badgeClass="bg-[#06D6A0] text-white"
+                href={`/vibes/${v.id}`}
+                photo={v.photos?.[0]}
+                title={v.title}
+                meta={`${formatVibeWhen(v.starts_at, locale, v.timezone)} · ${v.area || v.city}`}
+                label={t("went")}
               />
             ))}
             {pastPageList.map((v) => (
-              <VibeRowCard key={v.id} v={v} faded />
+              <PastRow
+                key={v.id}
+                href={`/vibes/${v.id}`}
+                photo={v.photos?.[0]}
+                title={v.title}
+                meta={`${formatVibeWhen(v.starts_at, locale, v.timezone)} · ${v.location_name || v.city}`}
+                label={v.status === "cancelled" ? t("status.cancelled") : t("status.completed")}
+                tone={v.status === "cancelled" ? "ink" : "green"}
+              />
             ))}
           </div>
           {pastList.length > 0 && (
