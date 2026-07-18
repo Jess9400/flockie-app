@@ -404,7 +404,10 @@ export default async function HomePage({
             <span className="mb-1.5 inline-block -rotate-2 rounded-full bg-flockie-coral px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
               ✨ {th("buddies.topPicks")}
             </span>
-            <h2 className="text-[22px] font-extrabold sm:text-[28px]">{t("findBuddyHeading")}</h2>
+            {/* Sized to stay on ONE line on small phones. */}
+            <h2 className="whitespace-nowrap text-[19px] font-extrabold tracking-tight sm:text-[28px] sm:tracking-normal">
+              {t("findBuddyHeading")}
+            </h2>
             <Squiggle />
             <p className="mt-0.5 font-bold text-navy/60">
               {th("buddies.subtitle", { city: homeCity ?? th("buddies.yourCity") })}
