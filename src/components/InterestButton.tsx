@@ -410,14 +410,14 @@ export default function InterestButton({
           <button
             onClick={express}
             disabled={busy}
-            className="rounded-full border-2 border-ink bg-flockie-orange py-2.5 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C] disabled:opacity-50"
+            className="rounded-2xl border-2 border-ink bg-flockie-orange py-2.5 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C] disabled:opacity-50"
           >
             {directConfirm ? t("interest.joinNow") : t("interest.imInterested")}
           </button>
           <button
             onClick={markNotForMe}
             disabled={busy}
-            className="rounded-full border-2 border-ink bg-white py-2.5 text-sm font-bold text-muted disabled:opacity-50"
+            className="rounded-2xl border-2 border-ink bg-white py-2.5 text-sm font-bold text-muted disabled:opacity-50"
           >
             {t("interest.notForMe")}
           </button>

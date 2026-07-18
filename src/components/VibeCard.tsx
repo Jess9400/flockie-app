@@ -235,11 +235,6 @@ export default function VibeCard({
                   <Star size={11} className="fill-flockie-coral text-flockie-coral" /> {rating.toFixed(1)}
                 </span>
               )}
-              <span className="truncate text-xs font-bold text-muted">
-                {faded
-                  ? t("card.went", { count: confirmedCount })
-                  : t("card.going", { count: confirmedCount, capacity: vibe.capacity })}
-              </span>
             </div>
           )}
 
