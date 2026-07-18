@@ -48,7 +48,7 @@ export default async function VibeDetailPage({
         <p className="mt-1 font-medium text-muted">{t("detail.notFoundBody")}</p>
         <Link
           href="/vibes"
-          className="mt-6 inline-block rounded-full border-2 border-ink bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
+          className="mt-6 inline-block rounded-full border border-ink/15 bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
         >
           {t("detail.exploreVibes")}
         </Link>
@@ -315,7 +315,7 @@ export default async function VibeDetailPage({
       </Link>
 
       {vibe.status === "cancelled" && (
-        <div className="mt-4 rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-bold text-muted">
+        <div className="mt-4 rounded-2xl border border-ink/15 bg-cream p-3 text-sm font-bold text-muted">
           {t("detail.cancelledBanner")}
         </div>
       )}
@@ -515,7 +515,7 @@ export default async function VibeDetailPage({
           href={privateLogistics.activity_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-4 flex w-fit items-center gap-2 rounded-full border-2 border-ink bg-flockie-blue px-4 py-2 text-sm font-bold text-white"
+          className="mt-4 flex w-fit items-center gap-2 rounded-full border border-ink/15 bg-flockie-blue px-4 py-2 text-sm font-bold text-white"
         >
           {t("detail.viewActivity")}
         </a>
@@ -532,7 +532,7 @@ export default async function VibeDetailPage({
               <Link
                 key={a.id}
                 href={`/people/${a.id}`}
-                className="flex items-center gap-1.5 rounded-full border-2 border-ink bg-white py-1 pl-1 pr-3 transition-colors hover:bg-cream"
+                className="flex items-center gap-1.5 rounded-full border border-ink/15 bg-white py-1 pl-1 pr-3 transition-colors hover:bg-cream"
               >
                 {a.photos?.[0] ? (
                   <Image
@@ -573,7 +573,7 @@ export default async function VibeDetailPage({
       {canReview && (
         <Link
           href={`/vibes/${vibe.id}/review`}
-          className="mt-4 flex w-fit items-center gap-2 rounded-full border-2 border-ink bg-flockie-orange px-5 py-2.5 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
+          className="mt-4 flex w-fit items-center gap-2 rounded-full border border-ink/15 bg-flockie-orange px-5 py-2.5 text-sm font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
         >
           {t("detail.reviewCta")}
         </Link>
@@ -603,7 +603,7 @@ export default async function VibeDetailPage({
       )}
 
       {isHost && !ended && (
-        <div className="mt-6 rounded-2xl border-2 border-ink bg-white p-4">
+        <div className="mt-6 rounded-2xl border border-ink/15 bg-white p-4">
           <p className="text-sm font-extrabold">{t("detail.matchingResults")}</p>
           <p className="mt-0.5 text-xs font-medium text-muted">
             {t("detail.matchingSubtitle")}
@@ -661,7 +661,7 @@ export default async function VibeDetailPage({
           {ended ? (
             <Link
               href={`/vibes/new?from=${vibe.id}`}
-              className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3.5 text-center font-bold text-white shadow-[0_4px_0_0_#E0512C]"
+              className="flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-flockie-orange py-3.5 text-center font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
             >
               <RefreshCw size={18} /> {t("detail.reRun")}
             </Link>
@@ -682,7 +682,7 @@ export default async function VibeDetailPage({
               <Link
                 key={s.id}
                 href={`/vibes/${s.id}`}
-                className="flex flex-col overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-[0_3px_0_0_rgba(26,26,26,1)]"
+                className="flex flex-col overflow-hidden rounded-2xl border border-ink/15 bg-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
               >
                 <div className="relative aspect-square w-full bg-cream">
                   {s.photos?.[0] ? (
@@ -691,7 +691,7 @@ export default async function VibeDetailPage({
                     <div className="flex h-full items-center justify-center text-2xl">🎟️</div>
                   )}
                   {typeof s.match_score === "number" && (
-                    <span className="absolute right-1.5 top-1.5 rounded-full border-2 border-ink bg-flockie-coral px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-white">
+                    <span className="absolute right-1.5 top-1.5 rounded-full border border-ink/15 bg-flockie-coral px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-white">
                       {s.match_score}%
                     </span>
                   )}

@@ -40,7 +40,7 @@ export default function ShareVibeButton({
       <button
         type="button"
         onClick={share}
-        className="inline-flex shrink-0 items-center gap-1.5 rounded-full border-2 border-ink bg-flockie-coral px-3.5 py-1.5 text-xs font-extrabold text-white shadow-[0_2px_0_0_#E0512C]"
+        className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-ink/15 bg-flockie-coral px-3.5 py-1.5 text-xs font-extrabold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
       >
         <Share2 size={14} /> {copied ? t("share.linkCopied") : t("share.fill")}
       </button>
@@ -53,7 +53,7 @@ export default function ShareVibeButton({
       <button
         type="button"
         onClick={share}
-        className="flex flex-col items-center justify-center gap-1 rounded-2xl border-2 border-ink bg-white py-3 text-[11px] font-bold text-ink"
+        className="flex flex-col items-center justify-center gap-1 rounded-2xl border border-ink/15 bg-white py-3 text-[11px] font-bold text-ink"
       >
         <Share2 size={18} /> {copied ? t("share.copiedTile") : t("share.share")}
       </button>
@@ -64,7 +64,7 @@ export default function ShareVibeButton({
     <button
       type="button"
       onClick={share}
-      className="inline-flex items-center gap-2 rounded-full border-2 border-ink bg-white px-4 py-2 text-sm font-bold text-ink"
+      className="inline-flex items-center gap-2 rounded-full border border-ink/15 bg-white px-4 py-2 text-sm font-bold text-ink"
     >
       <Share2 size={15} /> {copied ? t("share.linkCopied") : t("share.share")}
     </button>

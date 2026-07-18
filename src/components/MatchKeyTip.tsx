@@ -32,8 +32,8 @@ export default function MatchKeyTip() {
   if (!show) return null;
 
   return (
-    <div className="mx-4 mt-4 flex items-center gap-2 rounded-2xl border-2 border-ink bg-white px-3 py-2 text-left shadow-[0_3px_0_0_rgba(10,37,69,1)]">
-      <span className="shrink-0 rounded-full border-2 border-ink bg-flockie-coral px-1.5 text-[10px] font-extrabold leading-tight text-white">
+    <div className="mx-4 mt-4 flex items-center gap-2 rounded-2xl border border-ink/15 bg-white px-3 py-2 text-left shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
+      <span className="shrink-0 rounded-full border border-ink/15 bg-flockie-coral px-1.5 text-[10px] font-extrabold leading-tight text-white">
         72%
       </span>
       <p className="flex-1 text-xs font-bold text-ink/80">

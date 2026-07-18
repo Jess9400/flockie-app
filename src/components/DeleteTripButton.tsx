@@ -42,7 +42,7 @@ export default function DeleteTripButton({ tripId, label }: { tripId: string; la
       onClick={del}
       disabled={busy}
       aria-label={t("deleteTrip.confirm")}
-      className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-sm font-bold text-flockie-coral disabled:opacity-50"
+      className="flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-white px-3 py-1.5 text-sm font-bold text-flockie-coral disabled:opacity-50"
     >
       <Trash2 size={14} /> {busy ? "…" : t("deleteTrip.confirm")}
     </button>

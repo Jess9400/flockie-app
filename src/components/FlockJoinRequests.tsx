@@ -21,7 +21,7 @@ export type JoinReq = {
 function MatchBadge({ pct }: { pct?: number | null }) {
   if (typeof pct !== "number") return null;
   return (
-    <span className="shrink-0 rounded-full border-2 border-ink bg-flockie-coral px-1.5 py-0.5 text-[10px] font-extrabold leading-none text-white">
+    <span className="shrink-0 rounded-full border border-ink/15 bg-flockie-coral px-1.5 py-0.5 text-[10px] font-extrabold leading-none text-white">
       {pct}%
     </span>
   );
@@ -84,7 +84,7 @@ export default function FlockJoinRequests({
   if (items.length === 0) return null;
 
   return (
-    <div className="mt-3 rounded-2xl border-2 border-ink bg-cream p-3">
+    <div className="mt-3 rounded-2xl border border-ink/15 bg-cream p-3">
       <p className="text-xs font-extrabold uppercase tracking-wide text-muted">
         {t("flockRequests.title")} {pending.length > 0 && t("flockRequests.pendingSuffix", { count: pending.length })}
       </p>
@@ -95,7 +95,7 @@ export default function FlockJoinRequests({
       {pending.length > 0 && (
         <ul className="mt-2 space-y-2">
           {pending.map((r) => (
-            <li key={r.userId} className="flex items-center gap-2 rounded-xl border-2 border-ink bg-white p-2">
+            <li key={r.userId} className="flex items-center gap-2 rounded-xl border border-ink/15 bg-white p-2">
               <Link href={`/people/${r.userId}`} className="flex min-w-0 flex-1 items-center gap-2">
                 {r.photo ? (
                   <Image src={r.photo} alt="" width={32} height={32} className="h-8 w-8 rounded-full object-cover" />
@@ -116,7 +116,7 @@ export default function FlockJoinRequests({
                 onClick={() => act(r.userId, true)}
                 disabled={busy === r.userId}
                 aria-label={t("flockRequests.approve")}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-flockie-blue text-white disabled:opacity-50"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-ink/15 bg-flockie-blue text-white disabled:opacity-50"
               >
                 <Check size={16} />
               </button>
@@ -124,7 +124,7 @@ export default function FlockJoinRequests({
                 onClick={() => act(r.userId, false)}
                 disabled={busy === r.userId}
                 aria-label={t("flockRequests.decline")}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-white text-ink disabled:opacity-50"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-ink/15 bg-white text-ink disabled:opacity-50"
               >
                 <X size={16} />
               </button>
@@ -146,7 +146,7 @@ export default function FlockJoinRequests({
             {accepted.map((r) => (
               <span
                 key={r.userId}
-                className="flex items-center gap-1.5 rounded-full border-2 border-ink bg-white py-1 pl-2 pr-1 text-xs font-bold"
+                className="flex items-center gap-1.5 rounded-full border border-ink/15 bg-white py-1 pl-2 pr-1 text-xs font-bold"
               >
                 <Link href={`/people/${r.userId}`} className="flex items-center gap-1.5">
                   {r.photo ? (

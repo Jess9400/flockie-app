@@ -37,7 +37,7 @@ export default function FlockRequestButton({
 
   if (done) {
     return (
-      <span className={`rounded-full border-2 border-ink bg-cream font-bold text-muted ${sizing}`}>
+      <span className={`rounded-full border border-ink/15 bg-cream font-bold text-muted ${sizing}`}>
         {t("flockRequest.requested")}
       </span>
     );
@@ -49,7 +49,7 @@ export default function FlockRequestButton({
       <Link
         href="/match/trip?kind=trip"
         title={t("flockRequest.completePrefsTip")}
-        className={`inline-block rounded-full border-2 border-ink bg-flockie-blue font-bold text-white ${sizing}`}
+        className={`inline-block rounded-full border border-ink/15 bg-flockie-blue font-bold text-white ${sizing}`}
       >
         {compact ? t("flockRequest.completePrefsCompact") : t("flockRequest.completePrefsFull")}
       </Link>
@@ -61,7 +61,7 @@ export default function FlockRequestButton({
       onClick={request}
       disabled={busy}
       title={err ? t("flockRequest.errTip") : undefined}
-      className={`rounded-full border-2 border-ink bg-flockie-orange font-bold text-white shadow-[0_3px_0_0_#E0512C] transition-transform active:translate-y-[2px] active:shadow-[0_1px_0_0_#E0512C] disabled:opacity-50 ${sizing}`}
+      className={`rounded-full border border-ink/15 bg-flockie-orange font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform active:translate-y-[2px] active:shadow-[0_1px_0_0_#E0512C] disabled:opacity-50 ${sizing}`}
     >
       {err ? t("flockRequest.tryAgain") : t("flockRequest.requestToJoin")}
     </button>

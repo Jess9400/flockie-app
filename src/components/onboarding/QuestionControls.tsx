@@ -132,7 +132,7 @@ function Tap({ question, current, disabled, onAnswer }: { question: TapQuestion;
 
 function Continue({ disabled, onClick }: { disabled: boolean; onClick: () => void }) {
   const t = useTranslations("onboarding.vibeCheck");
-  return <button type="button" disabled={disabled} onClick={onClick} className="mt-3.5 w-full rounded-2xl border-2 border-ink border-b-[5px] bg-navy py-3.5 text-[15px] font-extrabold text-white disabled:opacity-40">{t("continue")}</button>;
+  return <button type="button" disabled={disabled} onClick={onClick} className="mt-3.5 w-full rounded-2xl border border-ink/15 border-b-[5px] bg-navy py-3.5 text-[15px] font-extrabold text-white disabled:opacity-40">{t("continue")}</button>;
 }
 
 // CSS-styled emoji medallion so options aren't bare platform glyphs.

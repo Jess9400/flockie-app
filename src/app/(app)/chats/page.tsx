@@ -18,7 +18,7 @@ export default async function ChatsPage() {
 
       {/* Desktop: empty right pane (rail carries the list) */}
       <div className="hidden h-full flex-col items-center justify-center px-8 text-center lg:flex">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-navy bg-cream text-navy">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-navy/15 bg-cream text-navy">
           <MessageCircle size={28} />
         </div>
         <p className="mt-4 font-fredoka text-lg font-semibold text-navy">{t("list.pickTitle")}</p>

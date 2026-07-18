@@ -106,7 +106,7 @@ export default function VibeChatHeader({
   }
 
   return (
-    <div className="z-20 -mx-5 shrink-0 border-b-2 border-navy bg-cream px-5">
+    <div className="z-20 -mx-5 shrink-0 border-b border-navy/12 bg-cream px-5">
       {/* Back to the chat list — mobile only. On desktop the list rail is
           always beside the thread, so a back link there is redundant. */}
       <Link
@@ -152,7 +152,7 @@ export default function VibeChatHeader({
             type="button"
             onClick={() => setPanel(true)}
             aria-label={t("shared.members")}
-            className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-navy text-navy"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-navy/15 text-navy"
           >
             <Users size={16} />
           </button>
@@ -160,7 +160,7 @@ export default function VibeChatHeader({
             type="button"
             onClick={() => setExpanded((v) => !v)}
             aria-label={expanded ? t("shared.collapse") : t("shared.expand")}
-            className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-navy text-navy"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-navy/15 text-navy"
           >
             <ChevronDown
               size={18}
@@ -179,7 +179,7 @@ export default function VibeChatHeader({
             {menu && (
               <>
                 <div className="fixed inset-0 z-30" onClick={() => setMenu(false)} />
-                <div className="absolute right-0 z-40 mt-1 w-52 rounded-2xl border-2 border-navy bg-white p-1.5 font-nunito text-sm font-semibold text-navy shadow-[0_4px_0_rgba(10,37,69,0.15)]">
+                <div className="absolute right-0 z-40 mt-1 w-52 rounded-2xl border border-navy/15 bg-white p-1.5 font-nunito text-sm font-semibold text-navy shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
                   <button
                     type="button"
                     onClick={() => { setMenu(false); setExpanded(true); }}
@@ -233,7 +233,7 @@ export default function VibeChatHeader({
                 title={t("vibeHeader.mapTitle")}
                 src={mapSrc}
                 loading="lazy"
-                className="h-[150px] w-full rounded-2xl border-2 border-navy"
+                className="h-[150px] w-full rounded-2xl border border-navy/15"
                 referrerPolicy="no-referrer-when-downgrade"
               />
             ))}
@@ -242,7 +242,7 @@ export default function VibeChatHeader({
               href={bookingUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-navy bg-flockie-coral py-3 font-fredoka text-sm font-semibold text-white"
+              className="flex w-full items-center justify-center gap-2 rounded-full border border-navy/15 bg-flockie-coral py-3 font-fredoka text-sm font-semibold text-white"
             >
               {t("shared.bookSpot")}
             </a>
@@ -251,7 +251,7 @@ export default function VibeChatHeader({
             type="button"
             onClick={leave}
             disabled={leaving}
-            className="rounded-full border-2 border-navy bg-white px-4 py-1.5 font-fredoka text-sm font-semibold text-navy disabled:opacity-50"
+            className="rounded-full border border-navy/15 bg-white px-4 py-1.5 font-fredoka text-sm font-semibold text-navy disabled:opacity-50"
           >
             {leaving ? t("shared.leaving") : t("vibeHeader.leaveVibe")}
           </button>
@@ -262,7 +262,7 @@ export default function VibeChatHeader({
       {panel && (
         <>
           <div className="fixed inset-0 z-40 bg-navy/30" onClick={() => setPanel(false)} />
-          <aside className="fixed right-0 top-0 z-50 flex h-full w-72 flex-col border-l-2 border-navy bg-cream p-4">
+          <aside className="fixed right-0 top-0 z-50 flex h-full w-72 flex-col border-l border-navy/12 bg-cream p-4">
             <div className="flex items-center justify-between">
               <p className="font-fredoka text-lg font-semibold text-navy">
                 {t("vibeHeader.membersCount", { count: members.length })}
@@ -271,7 +271,7 @@ export default function VibeChatHeader({
                 type="button"
                 onClick={() => setPanel(false)}
                 aria-label={t("shared.close")}
-                className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-navy text-navy"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-navy/15 text-navy"
               >
                 <X size={16} />
               </button>
@@ -281,7 +281,7 @@ export default function VibeChatHeader({
                 <Link
                   key={m.id}
                   href={`/people/${m.id}`}
-                  className="flex items-center gap-3 rounded-2xl border-2 border-navy bg-white p-2"
+                  className="flex items-center gap-3 rounded-2xl border border-navy/15 bg-white p-2"
                 >
                   <Avatar m={m} size={40} />
                   <span className="min-w-0 flex-1">
@@ -306,7 +306,7 @@ export default function VibeChatHeader({
               type="button"
               onClick={leave}
               disabled={leaving}
-              className="mt-3 rounded-full border-2 border-navy bg-white py-2 font-fredoka text-sm font-semibold text-navy disabled:opacity-50"
+              className="mt-3 rounded-full border border-navy/15 bg-white py-2 font-fredoka text-sm font-semibold text-navy disabled:opacity-50"
             >
               {leaving ? t("shared.leaving") : t("vibeHeader.leaveVibe")}
             </button>

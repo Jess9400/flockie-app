@@ -73,7 +73,7 @@ export default function CookieConsent() {
       role="dialog"
       aria-live="polite"
       aria-label={t("cookie.aria")}
-      className="fixed inset-x-3 bottom-3 z-[60] mx-auto max-w-lg rounded-3xl border-2 border-navy bg-white p-5 font-nunito shadow-[0_8px_0_0_rgba(10,37,69,1)] sm:inset-x-0 sm:bottom-5"
+      className="fixed inset-x-3 bottom-3 z-[60] mx-auto max-w-lg rounded-3xl border border-navy/15 bg-white p-5 font-nunito shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:inset-x-0 sm:bottom-5"
     >
       <p className="text-sm font-medium text-navy/80">
         {t("cookie.body")}{" "}
@@ -90,14 +90,14 @@ export default function CookieConsent() {
         <button
           type="button"
           onClick={decline}
-          className="order-2 rounded-full border-2 border-navy bg-white px-5 py-2 font-fredoka font-semibold text-navy transition-transform hover:scale-105 sm:order-1"
+          className="order-2 rounded-full border border-navy/15 bg-white px-5 py-2 font-fredoka font-semibold text-navy transition-transform hover:scale-105 sm:order-1"
         >
           {t("cookie.decline")}
         </button>
         <button
           type="button"
           onClick={accept}
-          className="order-1 rounded-full border-2 border-navy bg-flockie-coral px-5 py-2 font-fredoka font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] transition-transform hover:scale-105 active:translate-y-1 sm:order-2"
+          className="order-1 rounded-full border border-navy/15 bg-flockie-coral px-5 py-2 font-fredoka font-semibold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:scale-105 active:translate-y-1 sm:order-2"
         >
           {t("cookie.accept")}
         </button>

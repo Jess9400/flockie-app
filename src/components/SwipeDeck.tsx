@@ -142,7 +142,7 @@ export default function SwipeDeck({
           transition: draggingRef.current ? "none" : "transform 0.18s ease-out",
           touchAction: "pan-y",
         }}
-        className="relative h-[60vh] select-none overflow-hidden rounded-3xl border-2 border-ink bg-cream shadow-[0_6px_0_0_rgba(26,26,26,1)]"
+        className="relative h-[60vh] select-none overflow-hidden rounded-3xl border border-ink/15 bg-cream shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
       >
         {/* swipe overlays */}
         {drag > 0 && (
@@ -187,14 +187,14 @@ export default function SwipeDeck({
             <button
               onClick={() => setMedia((m) => (m - 1 + items.length) % items.length)}
               aria-label={t("previous")}
-              className="absolute left-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-2 border-ink bg-white/85 text-ink"
+              className="absolute left-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-ink/15 bg-white/85 text-ink"
             >
               <ChevronLeft size={18} />
             </button>
             <button
               onClick={() => setMedia((m) => (m + 1) % items.length)}
               aria-label={t("next")}
-              className="absolute right-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-2 border-ink bg-white/85 text-ink"
+              className="absolute right-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-ink/15 bg-white/85 text-ink"
             >
               <ChevronRight size={18} />
             </button>
@@ -250,11 +250,11 @@ export default function SwipeDeck({
 
       <div className="mt-4 flex items-center justify-center gap-6">
         <button onClick={() => act(false)} disabled={busy} aria-label={t("pass")}
-          className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-ink bg-white text-ink disabled:opacity-50">
+          className="flex h-14 w-14 items-center justify-center rounded-full border border-ink/15 bg-white text-ink disabled:opacity-50">
           <X size={26} />
         </button>
         <button onClick={() => act(true)} disabled={busy} aria-label={t("likeAria")}
-          className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-ink bg-flockie-orange text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50">
+          className="flex h-16 w-16 items-center justify-center rounded-full border border-ink/15 bg-flockie-orange text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50">
           <Heart size={28} fill="currentColor" />
         </button>
       </div>
@@ -266,13 +266,13 @@ export default function SwipeDeck({
 
       {match && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-6">
-          <div className="w-full max-w-sm rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_8px_0_0_rgba(26,26,26,1)]">
+          <div className="w-full max-w-sm rounded-3xl border border-ink/15 bg-white p-6 text-center shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
             <p className="text-3xl font-black">{t("itsAMatch")}</p>
             <p className="mt-2 font-medium text-ink/70">
               {t("matchBody", { name: match.name })}
             </p>
             <Link href={`/buddies/${match.chatId}`}
-              className="mt-5 block rounded-full border-2 border-ink bg-flockie-orange py-3 font-bold text-white shadow-[0_4px_0_0_#E0512C]">
+              className="mt-5 block rounded-full border border-ink/15 bg-flockie-orange py-3 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
               {t("sayHiPlan")}
             </Link>
             <button onClick={() => setMatch(null)} className="mt-2 w-full py-2 text-center text-sm font-bold text-muted">

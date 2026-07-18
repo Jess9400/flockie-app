@@ -82,12 +82,12 @@ export default function PhotoCropper({
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-navy/60 p-5 font-nunito">
-      <div className="w-full max-w-sm rounded-3xl border-2 border-navy bg-cream p-5 text-center">
+      <div className="w-full max-w-sm rounded-3xl border border-navy/15 bg-cream p-5 text-center">
         <p className="font-fredoka text-lg font-bold text-navy">{t("photoCropper.heading")}</p>
         <p className="mt-1 text-sm font-medium text-navy/60">{t("photoCropper.subtitle")}</p>
 
         <div
-          className="relative mx-auto mt-4 touch-none select-none overflow-hidden rounded-2xl border-2 border-navy bg-navy"
+          className="relative mx-auto mt-4 touch-none select-none overflow-hidden rounded-2xl border border-navy/15 bg-navy"
           style={{ width: S, height: S }}
           onPointerDown={onDown}
           onPointerMove={onMove}
@@ -119,7 +119,7 @@ export default function PhotoCropper({
           type="button"
           onClick={confirm}
           disabled={busy || !img}
-          className="mt-4 w-full rounded-full border-2 border-navy bg-flockie-coral py-3 font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] disabled:opacity-50"
+          className="mt-4 w-full rounded-full border border-navy/15 bg-flockie-coral py-3 font-fredoka text-base font-semibold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
         >
           {busy ? t("photoCropper.uploading") : t("photoCropper.usePhoto")}
         </button>

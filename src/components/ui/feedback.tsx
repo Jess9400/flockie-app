@@ -118,7 +118,7 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
                 aria-modal="true"
                 aria-label={opts.title}
                 onClick={(e) => e.stopPropagation()}
-                className="w-full max-w-sm rounded-3xl border-[3px] border-ink bg-white p-6 shadow-[0_6px_0_0_rgba(10,37,69,1)]"
+                className="w-full max-w-sm rounded-3xl border-2 border-ink/15 bg-white p-6 shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
               >
                 <h2 className="text-xl font-extrabold text-ink">{opts.title}</h2>
                 {opts.message && (
@@ -164,7 +164,7 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
                   <button
                     type="button"
                     onClick={() => settle(null)}
-                    className="flex-1 rounded-full border-2 border-ink bg-white py-2.5 text-sm font-bold text-ink"
+                    className="flex-1 rounded-full border border-ink/15 bg-white py-2.5 text-sm font-bold text-ink"
                   >
                     {opts.cancelLabel ?? t("confirm.cancel")}
                   </button>
@@ -174,7 +174,7 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
                     onClick={() =>
                       settle({ value: choice, note: freeText.trim(), reason: composedReason })
                     }
-                    className={`flex-1 rounded-full border-2 border-ink py-2.5 text-sm font-bold text-white disabled:opacity-50 ${
+                    className={`flex-1 rounded-full border border-ink/15 py-2.5 text-sm font-bold text-white disabled:opacity-50 ${
                       opts.destructive ? "bg-red-600" : "bg-flockie-coral"
                     }`}
                   >
@@ -193,7 +193,7 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
               {toasts.map((t) => (
                 <div
                   key={t.id}
-                  className={`pointer-events-auto max-w-sm rounded-2xl border-2 border-ink px-4 py-2.5 text-sm font-bold shadow-[0_4px_0_0_rgba(10,37,69,1)] ${
+                  className={`pointer-events-auto max-w-sm rounded-2xl border border-ink/15 px-4 py-2.5 text-sm font-bold shadow-[0_2px_10px_rgba(10,37,69,0.08)] ${
                     t.variant === "error" ? "bg-red-600 text-white" : "bg-flockie-blue text-white"
                   }`}
                 >

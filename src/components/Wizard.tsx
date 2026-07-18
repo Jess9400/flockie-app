@@ -137,17 +137,17 @@ export default function Wizard({
   const headerBar = (
     <div className="mx-auto flex w-full max-w-md items-center gap-3 px-5 pb-2 pt-5 md:max-w-2xl">
       {p > 0 ? (
-        <button onClick={back} aria-label={t("wizard.back")} className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-navy bg-white text-navy">
+        <button onClick={back} aria-label={t("wizard.back")} className="flex h-9 w-9 items-center justify-center rounded-full border border-navy/15 bg-white text-navy">
           <ChevronLeft size={18} />
         </button>
       ) : (
         <span className="h-9 w-9" />
       )}
-      <div className="h-3 flex-1 overflow-hidden rounded-full border-2 border-navy bg-white">
+      <div className="h-3 flex-1 overflow-hidden rounded-full border border-navy/15 bg-white">
         <div className="h-full rounded-full bg-flockie-coral transition-all" style={{ width: `${pct}%` }} />
       </div>
       {onClose ? (
-        <button onClick={onClose} aria-label={t("wizard.close")} className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-navy bg-white text-navy">
+        <button onClick={onClose} aria-label={t("wizard.close")} className="flex h-9 w-9 items-center justify-center rounded-full border border-navy/15 bg-white text-navy">
           <X size={18} />
         </button>
       ) : (
@@ -189,7 +189,7 @@ export default function Wizard({
               type="button"
               onClick={next}
               disabled={!canContinue || submitting}
-              className="mt-9 w-full rounded-full border-2 border-navy bg-navy py-3.5 font-fredoka text-base font-semibold text-white disabled:opacity-40"
+              className="mt-9 w-full rounded-full border border-navy/15 bg-navy py-3.5 font-fredoka text-base font-semibold text-white disabled:opacity-40"
             >
               {submitting && last ? t("wizard.saving") : last ? finishLabel : t("wizard.continue")}
             </button>
@@ -225,7 +225,7 @@ export default function Wizard({
             type="button"
             onClick={next}
             disabled={!canContinue || submitting}
-            className="mt-9 w-full rounded-full border-2 border-navy bg-navy py-3.5 font-fredoka text-base font-semibold text-white disabled:opacity-40"
+            className="mt-9 w-full rounded-full border border-navy/15 bg-navy py-3.5 font-fredoka text-base font-semibold text-white disabled:opacity-40"
           >
             {submitting && last ? t("wizard.saving") : last ? finishLabel : t("wizard.continue")}
           </button>
@@ -319,7 +319,7 @@ function Field({
             value={(value as string) ?? ""}
             onChange={(e) => onChange(e.target.value)}
             placeholder={field.placeholder}
-            className="mt-3 h-14 w-full rounded-2xl border-2 border-navy bg-white px-4 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue"
+            className="mt-3 h-14 w-full rounded-2xl border border-navy/15 bg-white px-4 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue"
           />
           <p className="mt-1 text-right font-nunito text-xs font-semibold text-navy/50">
             {((value as string) ?? "").length}/{field.max ?? 100}
@@ -422,7 +422,7 @@ function SliderField({
         <span className="text-flockie-blue">{left}</span>
         <span className="text-flockie-coral">{right}</span>
       </div>
-      <p className={`mt-2 text-center font-fredoka font-semibold text-navy ${compact ? "text-sm" : "rounded-2xl border-2 border-navy bg-white py-2.5"}`}>
+      <p className={`mt-2 text-center font-fredoka font-semibold text-navy ${compact ? "text-sm" : "rounded-2xl border border-navy/15 bg-white py-2.5"}`}>
         {labels[value - 1]}
       </p>
     </div>

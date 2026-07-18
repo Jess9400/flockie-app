@@ -241,7 +241,7 @@ export default function ChatRoom({
           {reviewHref && (
             <Link
               href={reviewHref}
-              className="rounded-full border-2 border-navy bg-flockie-coral px-3 py-1 font-nunito text-xs font-bold text-white"
+              className="rounded-full border border-navy/15 bg-flockie-coral px-3 py-1 font-nunito text-xs font-bold text-white"
             >
               {t("vibeRoom.reviewVibe")}
             </Link>
@@ -251,7 +251,7 @@ export default function ChatRoom({
               href={bookingUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-full border-2 border-navy bg-flockie-coral px-3 py-1 font-nunito text-xs font-bold text-white"
+              className="rounded-full border border-navy/15 bg-flockie-coral px-3 py-1 font-nunito text-xs font-bold text-white"
             >
               {t("shared.bookSpot")}
             </a>
@@ -271,7 +271,7 @@ export default function ChatRoom({
           onClick={() => imgInput.current?.click()}
           disabled={uploading}
           aria-label={t("shared.sendPhoto")}
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-navy text-navy disabled:opacity-50"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-navy/15 text-navy disabled:opacity-50"
         >
           <ImagePlus size={18} />
         </button>
@@ -279,7 +279,7 @@ export default function ChatRoom({
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={uploading ? t("shared.sendingPhoto") : t("vibeRoom.messageGroup")}
-          className="h-12 w-full rounded-full border-2 border-navy bg-cream px-5 font-nunito text-[15px] font-medium text-navy outline-none focus:border-flockie-blue"
+          className="h-12 w-full rounded-full border border-navy/15 bg-cream px-5 font-nunito text-[15px] font-medium text-navy outline-none focus:border-flockie-blue"
         />
         <button
           type="submit"

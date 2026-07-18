@@ -195,7 +195,7 @@ export default function BuddyChatRoom({
   return (
     <div className="relative flex min-h-0 flex-1 flex-col font-nunito">
       {toast && (
-        <div className="absolute left-1/2 top-2 z-30 -translate-x-1/2 rounded-full border-2 border-navy bg-flockie-coral px-4 py-1.5 font-fredoka text-sm font-semibold text-white shadow-[0_3px_0_rgba(10,37,69,1)]">
+        <div className="absolute left-1/2 top-2 z-30 -translate-x-1/2 rounded-full border border-navy/15 bg-flockie-coral px-4 py-1.5 font-fredoka text-sm font-semibold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
           {t("room.matchedToast")}
         </div>
       )}
@@ -234,10 +234,10 @@ export default function BuddyChatRoom({
                         <img
                           src={mem.photo}
                           alt=""
-                          className="h-7 w-7 rounded-full border-2 border-ink object-cover"
+                          className="h-7 w-7 rounded-full border border-ink/15 object-cover"
                         />
                       ) : (
-                        <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-ink bg-flockie-blue text-[10px] font-bold text-white">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-full border border-ink/15 bg-flockie-blue text-[10px] font-bold text-white">
                           {(mem?.name ?? "F")[0]}
                         </span>
                       ))}
@@ -317,7 +317,7 @@ export default function BuddyChatRoom({
           onClick={() => imgInput.current?.click()}
           disabled={uploading}
           aria-label={t("shared.sendPhoto")}
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-navy text-navy disabled:opacity-50"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-navy/15 text-navy disabled:opacity-50"
         >
           <ImagePlus size={18} />
         </button>
@@ -325,7 +325,7 @@ export default function BuddyChatRoom({
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={uploading ? t("shared.sendingPhoto") : t("room.messagePerson", { name: otherName })}
-          className="h-12 w-full rounded-full border-2 border-navy bg-cream px-5 font-nunito text-[15px] font-medium text-navy outline-none focus:border-flockie-blue"
+          className="h-12 w-full rounded-full border border-navy/15 bg-cream px-5 font-nunito text-[15px] font-medium text-navy outline-none focus:border-flockie-blue"
         />
         <button
           type="submit"

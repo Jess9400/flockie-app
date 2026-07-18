@@ -336,7 +336,7 @@ export default async function HomePage({
                 </div>
                 <Link
                   href={`/vibes/${p.id}`}
-                  className="shrink-0 rounded-full border-2 border-ink bg-flockie-coral px-4 py-2 text-xs font-bold text-white shadow-[0_2px_0_0_#E0512C]"
+                  className="shrink-0 rounded-full border border-ink/15 bg-flockie-coral px-4 py-2 text-xs font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
                 >
                   {th("plans.confirm")}
                 </Link>
@@ -362,7 +362,7 @@ export default async function HomePage({
               <div className="mt-2.5 flex gap-2">
                 <Link
                   href={`/vibes/${p.id}/chat`}
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full border-2 border-ink bg-white py-2 text-xs font-bold text-ink"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-ink/15 bg-white py-2 text-xs font-bold text-ink"
                 >
                   <MessageCircle size={14} /> {th("plans.openChat")}
                 </Link>
@@ -370,7 +370,7 @@ export default async function HomePage({
                   href={mapsUrl([p.area, p.city].filter(Boolean).join(", "))}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full border-2 border-ink bg-white py-2 text-xs font-bold text-ink"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-ink/15 bg-white py-2 text-xs font-bold text-ink"
                 >
                   <MapPin size={14} /> {th("plans.directions")}
                 </a>
@@ -396,7 +396,7 @@ export default async function HomePage({
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-[22px] font-extrabold sm:text-[28px]">{t("findBuddyHeading")}</h2>
-              <span className="-rotate-6 rounded-full border-2 border-ink bg-flockie-coral px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-white shadow-[0_2px_0_0_rgba(10,37,69,1)]">
+              <span className="-rotate-6 rounded-full border border-ink/15 bg-flockie-coral px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
                 {th("buddies.topPicks")}
               </span>
             </div>
@@ -431,7 +431,7 @@ export default async function HomePage({
               />
               <Link
                 href="/vibes"
-                className="inline-flex items-center justify-center rounded-full border-2 border-ink bg-white px-5 py-2.5 text-sm font-bold text-ink"
+                className="inline-flex items-center justify-center rounded-full border border-ink/15 bg-white px-5 py-2.5 text-sm font-bold text-ink"
               >
                 {th("buddies.exploreVibes")}
               </Link>
@@ -468,7 +468,7 @@ export default async function HomePage({
                         )}
                       </div>
                       {typeof p.score === "number" && (
-                        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full border-2 border-ink bg-flockie-coral px-1.5 text-[10px] font-extrabold leading-tight text-white">
+                        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full border border-ink/15 bg-flockie-coral px-1.5 text-[10px] font-extrabold leading-tight text-white">
                           {Math.round(p.score)}%
                         </span>
                       )}
@@ -507,7 +507,7 @@ export default async function HomePage({
           </div>
           <Link
             href="/vibes"
-            className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-sm font-bold text-ink"
+            className="flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-white px-3 py-1.5 text-sm font-bold text-ink"
           >
             {th("seeAll")} <ArrowRight size={15} />
           </Link>
@@ -520,7 +520,7 @@ export default async function HomePage({
             </p>
             <Link
               href="/vibes/new"
-              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-coral px-4 py-1.5 text-sm font-bold text-white"
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-ink/15 bg-flockie-coral px-4 py-1.5 text-sm font-bold text-white"
             >
               <Plus size={14} /> {th("nearYou.createVibe")}
             </Link>
@@ -544,20 +544,20 @@ export default async function HomePage({
           {!vibeFormDone && (
             <Link
               href="/onboarding/vibe-check"
-              className="flex items-center justify-center gap-2 rounded-2xl border-[3px] border-ink bg-ink px-5 py-3 font-bold text-white shadow-[0_4px_0_0_rgba(10,37,69,0.45)] transition-transform hover:-translate-y-0.5 sm:col-span-2"
+              className="flex items-center justify-center gap-2 rounded-2xl border-2 border-ink/15 bg-ink px-5 py-3 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5 sm:col-span-2"
             >
               {th("notFound.completeVibeCheck")}
             </Link>
           )}
           <Link
             href="/vibes/new"
-            className="flex items-center justify-center gap-2 rounded-2xl border-[3px] border-ink bg-flockie-coral px-5 py-3 font-bold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-0.5"
+            className="flex items-center justify-center gap-2 rounded-2xl border-2 border-ink/15 bg-flockie-coral px-5 py-3 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5"
           >
             <Plus size={18} /> {th("notFound.createVibe")}
           </Link>
           <Link
             href="/match/trip?kind=activity"
-            className="flex items-center justify-center gap-2 rounded-2xl border-[3px] border-ink bg-flockie-blue px-5 py-3 font-bold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-0.5"
+            className="flex items-center justify-center gap-2 rounded-2xl border-2 border-ink/15 bg-flockie-blue px-5 py-3 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5"
           >
             <Plus size={18} /> {th("notFound.createActivity")}
           </Link>

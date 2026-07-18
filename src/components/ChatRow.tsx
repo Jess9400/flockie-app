@@ -37,7 +37,7 @@ export default async function ChatRow({
   return (
     <Link
       href={href}
-      className="flex h-20 items-center gap-2 rounded-2xl border-2 border-navy bg-[#FCF9F4] px-2 transition-all hover:scale-[1.01] hover:shadow-[0_3px_10px_rgba(10,37,69,0.1)]"
+      className="flex h-20 items-center gap-2 rounded-2xl border border-navy/15 bg-[#FCF9F4] px-2 transition-all hover:scale-[1.01] hover:shadow-[0_3px_10px_rgba(10,37,69,0.1)]"
     >
       {/* Photo */}
       <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl">

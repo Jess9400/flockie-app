@@ -20,9 +20,9 @@ const STATUS_STYLE: Record<string, string> = {
   cancelled: "bg-ink text-white",
 };
 
-const CARD = "rounded-2xl border-2 border-ink bg-white p-3 shadow-[0_3px_0_0_rgba(10,37,69,1)]";
+const CARD = "rounded-2xl border border-ink/15 bg-white p-3 shadow-[0_2px_10px_rgba(10,37,69,0.08)]";
 const GHOST_BTN =
-  "flex items-center justify-center gap-1.5 rounded-full border-2 border-ink bg-white py-2 text-xs font-bold text-ink";
+  "flex items-center justify-center gap-1.5 rounded-full border border-ink/15 bg-white py-2 text-xs font-bold text-ink";
 
 // Google Maps search deep-link from a place label.
 const mapsUrl = (q: string) =>
@@ -243,7 +243,7 @@ export default async function MyVibesPage({
                 {shareEligible && <ShareVibeButton vibeId={v.id} fill />}
                 <Link
                   href={`/vibes/${v.id}`}
-                  className="rounded-full border-2 border-ink bg-white px-3.5 py-1.5 text-xs font-bold text-ink"
+                  className="rounded-full border border-ink/15 bg-white px-3.5 py-1.5 text-xs font-bold text-ink"
                 >
                   {t("manage")}
                 </Link>
@@ -256,7 +256,7 @@ export default async function MyVibesPage({
           <div className="mt-3 border-t-2 border-ink/10 pt-3">
             <Link
               href={`/vibes/new?from=${v.id}`}
-              className="flex items-center justify-center gap-1 rounded-full border-2 border-ink bg-flockie-orange py-2 text-xs font-bold text-white shadow-[0_2px_0_0_#E0512C]"
+              className="flex items-center justify-center gap-1 rounded-full border border-ink/15 bg-flockie-orange py-2 text-xs font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
             >
               <RefreshCw size={13} /> {t("runAgain")}
             </Link>
@@ -365,7 +365,7 @@ export default async function MyVibesPage({
         <h1 className="text-2xl font-black">{t("title")}</h1>
         <Link
           href="/vibes/new"
-          className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
+          className="inline-flex items-center gap-1 rounded-full border border-ink/15 bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
         >
           <Plus size={16} /> {t("create")}
         </Link>

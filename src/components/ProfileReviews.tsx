@@ -45,7 +45,7 @@ export default function ProfileReviews({
       ) : (
         <ul className="mt-4 space-y-3">
           {items.map((r) => (
-            <li key={r.id} className="rounded-2xl border-2 border-navy bg-[#FCF9F4] p-4">
+            <li key={r.id} className="rounded-2xl border border-navy/15 bg-[#FCF9F4] p-4">
               <div className="flex items-center gap-2">
                 {r.reviewerPhoto ? (
                   <Image

@@ -58,18 +58,18 @@ export default async function MyActivitiesPage({
   function ActivityCard({ row, faded }: { row: ActivityRow; faded?: boolean }) {
     return (
       <div
-        className={`rounded-2xl border-2 border-ink bg-white p-4 shadow-[0_3px_0_0_rgba(26,26,26,1)] ${faded ? "opacity-60" : ""}`}
+        className={`rounded-2xl border border-ink/15 bg-white p-4 shadow-[0_2px_10px_rgba(10,37,69,0.08)] ${faded ? "opacity-60" : ""}`}
       >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
           <div className="flex min-w-0 flex-1 items-start gap-3">
             {row.cover_photo && (
-              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 border-ink bg-cream">
+              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-ink/15 bg-cream">
                 <Image src={row.cover_photo} alt="" fill sizes="64px" className="object-cover" />
               </div>
             )}
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <span className="rounded-full border-2 border-ink bg-flockie-blue px-2 py-0.5 text-[10px] font-extrabold uppercase text-white">
+                <span className="rounded-full border border-ink/15 bg-flockie-blue px-2 py-0.5 text-[10px] font-extrabold uppercase text-white">
                   {t("badge")}
                 </span>
                 {faded ? (
@@ -110,7 +110,7 @@ export default async function MyActivitiesPage({
             {!faded && (
               <Link
                 href={`/match/trip?id=${row.id}`}
-                className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-sm font-bold"
+                className="flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-white px-3 py-1.5 text-sm font-bold"
               >
                 <Pencil size={14} /> {t("edit")}
               </Link>
@@ -129,7 +129,7 @@ export default async function MyActivitiesPage({
         <h1 className="text-2xl font-black">{t("heading")}</h1>
         <Link
           href="/match/trip?kind=activity"
-          className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
+          className="inline-flex items-center gap-1 rounded-full border border-ink/15 bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
         >
           <Plus size={16} /> {t("new")}
         </Link>

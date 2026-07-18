@@ -85,7 +85,7 @@ export default function VibeSettingsButton({
     router.refresh();
   }
 
-  const fieldCls = "mt-1 w-full rounded-xl border-2 border-ink px-3 py-2 font-medium outline-none";
+  const fieldCls = "mt-1 w-full rounded-xl border border-ink/15 px-3 py-2 font-medium outline-none";
 
   return (
     <>
@@ -93,7 +93,7 @@ export default function VibeSettingsButton({
         type="button"
         onClick={() => setOpen(true)}
         aria-label={t("settings.manageVibeAria")}
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-white text-ink"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-ink/15 bg-white text-ink"
       >
         <Settings size={18} />
       </button>
@@ -104,7 +104,7 @@ export default function VibeSettingsButton({
           onClick={() => setOpen(false)}
         >
           <div
-            className="flex max-h-[85vh] w-full flex-col rounded-t-3xl border-2 border-ink bg-white sm:max-w-md sm:rounded-3xl"
+            className="flex max-h-[85vh] w-full flex-col rounded-t-3xl border border-ink/15 bg-white sm:max-w-md sm:rounded-3xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b-2 border-ink/10 px-5 py-4">
@@ -153,7 +153,7 @@ export default function VibeSettingsButton({
               <button
                 onClick={saveDates}
                 disabled={busy}
-                className="w-full rounded-full border-2 border-ink bg-flockie-orange py-2.5 font-bold text-white shadow-[0_3px_0_0_#E0512C] disabled:opacity-50"
+                className="w-full rounded-full border border-ink/15 bg-flockie-orange py-2.5 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
               >
                 {t("settings.saveNotify")}
               </button>
@@ -174,7 +174,7 @@ export default function VibeSettingsButton({
                 <button
                   onClick={saveSpots}
                   disabled={busy || spots === capacity || spots < 2 || spots > 100}
-                  className="mt-2 w-full rounded-full border-2 border-ink bg-white py-2.5 font-bold text-ink shadow-[0_3px_0_0_rgba(10,37,69,0.15)] disabled:opacity-50"
+                  className="mt-2 w-full rounded-full border border-ink/15 bg-white py-2.5 font-bold text-ink shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
                 >
                   {t("settings.saveSpots")}
                 </button>
@@ -183,7 +183,7 @@ export default function VibeSettingsButton({
               <button
                 onClick={del}
                 disabled={busy}
-                className="w-full rounded-full border-2 border-ink bg-white py-2.5 font-bold text-ink/70"
+                className="w-full rounded-full border border-ink/15 bg-white py-2.5 font-bold text-ink/70"
               >
                 {t("settings.deleteVibe")}
               </button>

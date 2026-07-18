@@ -83,7 +83,7 @@ function LoginForm() {
         <button
           onClick={handleGoogle}
           disabled={loading || !agreed}
-          className="mt-5 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-3.5 font-bold disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-5 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-white py-3.5 font-bold disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? t("login.connecting") : t("login.continueGoogle")}
         </button>

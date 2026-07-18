@@ -62,14 +62,14 @@ export default function LanguageSwitcher() {
         aria-label={t("language")}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-ink bg-white"
+        className="flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 bg-white"
       >
         <Globe size={18} />
       </button>
       {open && (
         <div
           role="menu"
-          className="absolute right-0 z-50 mt-2 w-44 rounded-2xl border-2 border-ink bg-white p-2 shadow-[0_4px_0_rgba(10,37,69,0.15)]"
+          className="absolute right-0 z-50 mt-2 w-44 rounded-2xl border border-ink/15 bg-white p-2 shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
         >
           {OPTIONS.map((opt) => {
             const active = opt.code === locale;

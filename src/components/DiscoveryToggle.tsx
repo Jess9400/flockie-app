@@ -34,7 +34,7 @@ export default function DiscoveryToggle({
   }
 
   return (
-    <div className="rounded-2xl border-2 border-ink bg-white p-4 font-nunito">
+    <div className="rounded-2xl border border-ink/15 bg-white p-4 font-nunito">
       <div className="flex items-center justify-between">
         <div className="pr-3">
           <p className="text-sm font-extrabold text-navy">{t("discovery.title")}</p>
@@ -46,12 +46,12 @@ export default function DiscoveryToggle({
           onClick={toggle}
           disabled={busy}
           aria-pressed={on}
-          className={`relative h-7 w-12 shrink-0 rounded-full border-2 border-ink transition-colors ${
+          className={`relative h-7 w-12 shrink-0 rounded-full border border-ink/15 transition-colors ${
             on ? "bg-flockie-orange" : "bg-cream"
           }`}
         >
           <span
-            className={`absolute top-0.5 h-5 w-5 rounded-full border-2 border-ink bg-white transition-all ${
+            className={`absolute top-0.5 h-5 w-5 rounded-full border border-ink/15 bg-white transition-all ${
               on ? "left-[22px]" : "left-0.5"
             }`}
           />

@@ -107,7 +107,7 @@ export default function ActivityVibePopup({
         role="dialog"
         aria-modal="true"
         aria-label={t("activityVibePopup.quickVibeCheck")}
-        className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-3xl border-2 border-navy bg-cream p-5 font-nunito sm:rounded-3xl"
+        className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-3xl border border-navy/15 bg-cream p-5 font-nunito sm:rounded-3xl"
       >
         <div className="flex items-start justify-between">
           <div>
@@ -116,7 +116,7 @@ export default function ActivityVibePopup({
               {t("activityVibePopup.subtitle")}
             </p>
           </div>
-          <button onClick={onClose} aria-label={t("activityVibePopup.close")} className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-navy text-navy">
+          <button onClick={onClose} aria-label={t("activityVibePopup.close")} className="flex h-9 w-9 items-center justify-center rounded-full border border-navy/15 text-navy">
             <X size={18} />
           </button>
         </div>
@@ -128,7 +128,7 @@ export default function ActivityVibePopup({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t("activityVibePopup.firstNamePlaceholder")}
-              className="h-12 w-full rounded-2xl border-2 border-navy bg-white px-4 font-nunito font-medium text-navy outline-none focus:border-flockie-blue"
+              className="h-12 w-full rounded-2xl border border-navy/15 bg-white px-4 font-nunito font-medium text-navy outline-none focus:border-flockie-blue"
             />
           </label>
 
@@ -136,7 +136,7 @@ export default function ActivityVibePopup({
             <span className="mb-1.5 block font-nunito text-sm font-semibold text-navy">{t("activityVibePopup.photosLabel")}</span>
             <div className="grid grid-cols-3 gap-2">
               {photos.map((url, i) => (
-                <div key={url} className="relative aspect-square overflow-hidden rounded-2xl border-2 border-navy">
+                <div key={url} className="relative aspect-square overflow-hidden rounded-2xl border border-navy/15">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={url} alt="" className="h-full w-full object-cover" />
                   <button
@@ -172,7 +172,7 @@ export default function ActivityVibePopup({
           <button
             type="submit"
             disabled={saving || uploading}
-            className="w-full rounded-full border-2 border-navy bg-flockie-coral py-3.5 font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] disabled:opacity-50"
+            className="w-full rounded-full border border-navy/15 bg-flockie-coral py-3.5 font-fredoka text-base font-semibold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
           >
             {saving ? t("activityVibePopup.saving") : t("activityVibePopup.submit")}
           </button>

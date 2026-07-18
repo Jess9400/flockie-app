@@ -47,9 +47,9 @@ export default function ReviewsToDoBanner({
   return (
     <div
       role="status"
-      className="mx-4 mt-4 flex items-center gap-3 rounded-2xl border-2 border-ink bg-flockie-coral px-3 py-2.5 text-left text-white shadow-[0_3px_0_0_rgba(10,37,69,1)]"
+      className="mx-4 mt-4 flex items-center gap-3 rounded-2xl border border-ink/15 bg-flockie-coral px-3 py-2.5 text-left text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
     >
-      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 border-ink bg-white text-ink">
+      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-ink/15 bg-white text-ink">
         <Star size={16} className="fill-flockie-coral text-flockie-coral" />
       </span>
       <p className="flex-1 text-sm font-extrabold leading-snug">
@@ -57,7 +57,7 @@ export default function ReviewsToDoBanner({
       </p>
       <Link
         href={href}
-        className="shrink-0 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-extrabold text-ink"
+        className="shrink-0 rounded-full border border-ink/15 bg-white px-3 py-1.5 text-xs font-extrabold text-ink"
       >
         {count === 1 ? t("reviewsBanner.leaveOne") : t("reviewsBanner.leaveMany")}
       </Link>

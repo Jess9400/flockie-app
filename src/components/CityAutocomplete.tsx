@@ -128,7 +128,7 @@ export default function CityAutocomplete({
         <ul
           id={listboxId}
           role="listbox"
-          className="absolute left-0 right-0 top-full z-20 mt-1.5 max-h-64 overflow-y-auto rounded-2xl border-2 border-ink bg-white py-1 shadow-[3px_4px_0_0_rgba(10,37,69,1)]"
+          className="absolute left-0 right-0 top-full z-20 mt-1.5 max-h-64 overflow-y-auto rounded-2xl border border-ink/15 bg-white py-1 shadow-[3px_4px_0_0_rgba(10,37,69,1)]"
         >
           {suggestions.map((city, index) => {
             const active = index === activeIndex;

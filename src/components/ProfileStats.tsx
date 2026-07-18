@@ -20,7 +20,7 @@ export default function ProfileStats({ stats }: { stats: Record<string, number> 
       <p className="text-sm font-extrabold text-navy">{t("profileStats.onFlockie")}</p>
       <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4">
         {items.map((s) => (
-          <div key={s.key} className="rounded-2xl border-2 border-ink bg-white py-2.5 text-center">
+          <div key={s.key} className="rounded-2xl border border-ink/15 bg-white py-2.5 text-center">
             <p className="text-xl font-black text-navy">{s.value}</p>
             <p className="text-[10px] font-bold leading-tight text-muted">{t(`profileStats.${s.key}` as `profileStats.${string}`)}</p>
           </div>

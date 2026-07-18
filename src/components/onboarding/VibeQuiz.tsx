@@ -57,7 +57,7 @@ export function VibeQuiz({
         <div className="mb-4 flex h-[62px] w-[62px] items-center justify-center rounded-full bg-onboarding-green text-2xl text-white">✓</div>
         <h2 className="mb-2 text-[23px] font-black">{t("paused.title")}</h2>
         <p className="mb-6 max-w-[260px] text-[13.5px] font-semibold leading-relaxed text-muted">{t("paused.body", { number: questionIndex + 1 })}</p>
-        <button type="button" onClick={() => setPaused(false)} className="rounded-2xl border-2 border-ink border-b-[5px] bg-flockie-coral px-8 py-3.5 text-[14.5px] font-extrabold text-white">{t("paused.continueNow")}</button>
+        <button type="button" onClick={() => setPaused(false)} className="rounded-2xl border border-ink/15 border-b-[5px] bg-flockie-coral px-8 py-3.5 text-[14.5px] font-extrabold text-white">{t("paused.continueNow")}</button>
       </div>
     );
   }
@@ -89,7 +89,7 @@ export function VibeQuiz({
             <div className="mb-2.5 text-4xl">⏸️</div>
             <h2 className="mb-1.5 text-[19px] font-black">{t("exitSheet.title")}</h2>
             <p className="mb-5 text-[13px] font-semibold leading-relaxed text-muted">{t("exitSheet.body")}</p>
-            <button type="button" onClick={() => setShowExitSheet(false)} className="mb-2.5 w-full rounded-2xl border-2 border-ink border-b-[5px] bg-flockie-coral py-3.5 text-[14.5px] font-extrabold text-white">{t("exitSheet.keepGoing")}</button>
+            <button type="button" onClick={() => setShowExitSheet(false)} className="mb-2.5 w-full rounded-2xl border border-ink/15 border-b-[5px] bg-flockie-coral py-3.5 text-[14.5px] font-extrabold text-white">{t("exitSheet.keepGoing")}</button>
             <button type="button" onClick={() => { setShowExitSheet(false); setPaused(true); }} className="w-full rounded-2xl border-2 border-ink/15 bg-cream py-3.5 text-[14.5px] font-extrabold">{t("exitSheet.pauseForNow")}</button>
           </div>
         </div>

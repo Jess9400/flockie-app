@@ -25,7 +25,7 @@ export default function TripPicker({
         <select
           value={value}
           onChange={(e) => router.push(`/match?mode=${mode}&trip=${e.target.value}`)}
-          className="w-full appearance-none rounded-2xl border-2 border-ink bg-white px-4 py-2.5 pr-10 font-bold outline-none"
+          className="w-full appearance-none rounded-2xl border border-ink/15 bg-white px-4 py-2.5 pr-10 font-bold outline-none"
         >
           {options.map((o) => (
             <option key={o.id} value={o.id}>

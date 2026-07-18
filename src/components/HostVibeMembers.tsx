@@ -92,7 +92,7 @@ export default function HostVibeMembers({
   if (!members.length) return null;
 
   return (
-    <div className="mt-6 rounded-2xl border-2 border-ink bg-white p-4">
+    <div className="mt-6 rounded-2xl border border-ink/15 bg-white p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-extrabold">{t("host.invitedGoing")}</p>
@@ -130,7 +130,7 @@ export default function HostVibeMembers({
               type="button"
               onClick={() => removeMember(member)}
               disabled={busyId === member.id}
-              className="rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-extrabold disabled:opacity-50"
+              className="rounded-full border border-ink/15 bg-white px-3 py-1.5 text-xs font-extrabold disabled:opacity-50"
             >
               {busyId === member.id ? t("host.removing") : t("host.remove")}
             </button>

@@ -145,7 +145,7 @@ export default function TripForm({
     router.refresh();
   }
 
-  const inputCls = "w-full rounded-2xl border-2 border-ink bg-white px-4 py-2.5 font-medium outline-none";
+  const inputCls = "w-full rounded-2xl border border-ink/15 bg-white px-4 py-2.5 font-medium outline-none";
 
   return (
     <form onSubmit={save} className="space-y-5 pb-8">
@@ -204,7 +204,7 @@ export default function TripForm({
       {days > 0 && <p className="text-sm font-semibold text-flockie-orange">{tf("form.days", { count: days })}</p>}
 
       {isActivity ? (
-        <p className="rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-medium text-ink/70">
+        <p className="rounded-2xl border border-ink/15 bg-cream p-3 text-sm font-medium text-ink/70">
           {tf.rich("form.activityNote", { b: (chunks) => <span className="font-bold text-ink">{chunks}</span> })}
         </p>
       ) : isFlock ? (
@@ -216,7 +216,7 @@ export default function TripForm({
           </p>
         </label>
       ) : (
-        <p className="rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-medium text-ink/70">
+        <p className="rounded-2xl border border-ink/15 bg-cream p-3 text-sm font-medium text-ink/70">
           {tf.rich("form.tripNote", { b: (chunks) => <span className="font-bold text-ink">{chunks}</span> })}
         </p>
       )}
@@ -251,7 +251,7 @@ export default function TripForm({
                   key={g.value}
                   type="button"
                   onClick={() => setGroupGender(g.value)}
-                  className={`rounded-full border-2 border-ink py-2 text-sm font-bold ${
+                  className={`rounded-full border border-ink/15 py-2 text-sm font-bold ${
                     groupGender === g.value ? "bg-flockie-blue text-white" : "bg-white"
                   }`}
                 >
@@ -274,7 +274,7 @@ export default function TripForm({
             const disabled = !on && types.length >= TYPE_MAX;
             return (
               <button key={t} type="button" disabled={disabled} onClick={() => toggleType(t)}
-                className={`rounded-full border-2 border-ink px-3 py-1 text-xs font-bold ${on ? "bg-flockie-blue text-white" : disabled ? "bg-white text-muted/40 opacity-50" : "bg-white"}`}>
+                className={`rounded-full border border-ink/15 px-3 py-1 text-xs font-bold ${on ? "bg-flockie-blue text-white" : disabled ? "bg-white text-muted/40 opacity-50" : "bg-white"}`}>
                 {tc(`tripTypes.${t}`)}
               </button>
             );
@@ -285,7 +285,7 @@ export default function TripForm({
       <div>
         <span className="mb-1 block text-sm font-bold">{tf("form.labelCoverPhoto")}</span>
         {cover ? (
-          <div className="relative aspect-[16/9] overflow-hidden rounded-2xl border-2 border-ink">
+          <div className="relative aspect-[16/9] overflow-hidden rounded-2xl border border-ink/15">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={cover} alt="" className="h-full w-full object-cover" />
             <button
@@ -331,7 +331,7 @@ export default function TripForm({
       {err && <p className="text-center text-sm font-bold text-flockie-orange">{err}</p>}
 
       <button type="submit" disabled={saving || uploading}
-        className="w-full rounded-full border-2 border-ink bg-flockie-orange py-3.5 font-bold text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50">
+        className="w-full rounded-full border border-ink/15 bg-flockie-orange py-3.5 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50">
         {saving
           ? tf("form.saving")
           : initial.id

@@ -34,7 +34,7 @@ export default async function CompatPage({ params }: { params: { id: string } })
       <>
         <Link
           href={`/login?redirect=${encodeURIComponent(`/compat/${id}`)}`}
-          className="mt-6 block rounded-full border-2 border-ink bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
+          className="mt-6 block rounded-full border border-ink/15 bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
         >
           {tr("takeCheck")}
         </Link>
@@ -65,7 +65,7 @@ export default async function CompatPage({ params }: { params: { id: string } })
       inner = (
         <Link
           href={`/onboarding/profile?returnTo=${encodeURIComponent(`/compat/${id}`)}`}
-          className="mt-6 block rounded-full border-2 border-ink bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
+          className="mt-6 block rounded-full border border-ink/15 bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
         >
           {tr("takeCheckReveal")}
         </Link>
@@ -99,7 +99,7 @@ export default async function CompatPage({ params }: { params: { id: string } })
           <div className="mt-6 flex flex-col gap-2">
             <Link
               href="/vibes"
-              className="rounded-full border-2 border-ink bg-flockie-coral py-3 text-center font-fredoka text-sm font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
+              className="rounded-full border border-ink/15 bg-flockie-coral py-3 text-center font-fredoka text-sm font-semibold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
             >
               {tr("exploreNearby")}
             </Link>

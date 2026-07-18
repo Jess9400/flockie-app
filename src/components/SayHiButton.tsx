@@ -71,7 +71,7 @@ export default function SayHiButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="mt-3 w-full rounded-full border-2 border-ink bg-flockie-coral py-1.5 text-xs font-bold text-white transition-transform active:scale-95"
+        className="mt-3 w-full rounded-full border border-ink/15 bg-flockie-coral py-1.5 text-xs font-bold text-white transition-transform active:scale-95"
       >
         {t("button")}
       </button>
@@ -87,7 +87,7 @@ export default function SayHiButton({
             role="dialog"
             aria-modal="true"
             aria-label={t("inviteAria", { name: personName })}
-            className="w-full max-w-sm rounded-3xl border-[3px] border-ink bg-white p-6 text-center shadow-[0_6px_0_0_rgba(10,37,69,1)]"
+            className="w-full max-w-sm rounded-3xl border-2 border-ink/15 bg-white p-6 text-center shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
             onClick={(e) => e.stopPropagation()}
           >
             {sent ? (
@@ -103,7 +103,7 @@ export default function SayHiButton({
                 <button
                   type="button"
                   onClick={close}
-                  className="mt-4 w-full rounded-full border-2 border-ink bg-flockie-blue py-2.5 text-sm font-bold text-white"
+                  className="mt-4 w-full rounded-full border border-ink/15 bg-flockie-blue py-2.5 text-sm font-bold text-white"
                 >
                   {t("done")}
                 </button>
@@ -119,7 +119,7 @@ export default function SayHiButton({
                       type="button"
                       disabled={busy}
                       onClick={() => send(t(key))}
-                      className="rounded-2xl border-2 border-ink bg-cream px-3 py-3 text-sm font-bold text-ink transition-colors hover:bg-flockie-coral hover:text-white disabled:opacity-50"
+                      className="rounded-2xl border border-ink/15 bg-cream px-3 py-3 text-sm font-bold text-ink transition-colors hover:bg-flockie-coral hover:text-white disabled:opacity-50"
                     >
                       <span className="mr-1">{ACTIVITY_EMOJI[key]}</span> {t(key)}
                     </button>
@@ -131,13 +131,13 @@ export default function SayHiButton({
                     onChange={(e) => setCustom(e.target.value)}
                     placeholder={t("somethingElse")}
                     maxLength={60}
-                    className="h-11 w-full rounded-full border-2 border-ink px-4 text-sm font-medium outline-none"
+                    className="h-11 w-full rounded-full border border-ink/15 px-4 text-sm font-medium outline-none"
                   />
                   <button
                     type="button"
                     disabled={busy || !custom.trim()}
                     onClick={() => send(custom)}
-                    className="shrink-0 rounded-full border-2 border-ink bg-flockie-coral px-5 text-sm font-bold text-white disabled:opacity-50"
+                    className="shrink-0 rounded-full border border-ink/15 bg-flockie-coral px-5 text-sm font-bold text-white disabled:opacity-50"
                   >
                     {t("send")}
                   </button>

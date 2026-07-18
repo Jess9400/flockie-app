@@ -55,7 +55,7 @@ export default function ProfileEditor({
         {complete && (
           <button
             onClick={() => setEditing(false)}
-            className="mb-6 rounded-full border-2 border-navy bg-white px-5 py-2 font-fredoka text-sm font-semibold text-navy"
+            className="mb-6 rounded-full border border-navy/15 bg-white px-5 py-2 font-fredoka text-sm font-semibold text-navy"
           >
             {t("editor.cancel")}
           </button>

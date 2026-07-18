@@ -34,7 +34,7 @@ export default function VibeSearch({
   return (
     <form
       onSubmit={submit}
-      className="mt-6 flex items-center gap-2 rounded-full border-2 border-ink bg-white py-1.5 pl-4 pr-1.5 shadow-[0_3px_0_0_rgba(26,26,26,1)]"
+      className="mt-6 flex items-center gap-2 rounded-full border border-ink/15 bg-white py-1.5 pl-4 pr-1.5 shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
     >
       <Search size={18} className="shrink-0 text-muted" />
       <input

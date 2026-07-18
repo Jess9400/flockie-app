@@ -28,7 +28,7 @@ export default function Pagination({
   }
 
   const cell =
-    "flex h-9 min-w-9 items-center justify-center rounded-full border-2 border-ink px-3 text-sm font-bold";
+    "flex h-9 min-w-9 items-center justify-center rounded-full border border-ink/15 px-3 text-sm font-bold";
 
   return (
     <nav className="mt-6 flex flex-wrap items-center justify-center gap-1.5" aria-label={t("pagination.ariaLabel")}>

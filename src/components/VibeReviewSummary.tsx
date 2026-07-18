@@ -13,7 +13,7 @@ export default function VibeReviewSummary({
   const t = useTranslations("vibes");
   if (count === 0) return null;
   return (
-    <section className="mt-6 rounded-3xl border-2 border-navy bg-[#FCF9F4] p-5 font-nunito">
+    <section className="mt-6 rounded-3xl border border-navy/15 bg-[#FCF9F4] p-5 font-nunito">
       <div className="flex items-baseline gap-2">
         <span className="font-fredoka text-3xl font-bold text-flockie-coral">{recommendPct}%</span>
         <span className="font-nunito text-sm font-semibold text-navy">

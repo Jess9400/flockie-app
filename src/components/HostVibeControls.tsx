@@ -23,7 +23,7 @@ export default function HostVibeControls({
 
   if (status === "cancelled") {
     return (
-      <div className="rounded-full border-2 border-ink bg-cream py-3 text-center font-bold text-muted">
+      <div className="rounded-full border border-ink/15 bg-cream py-3 text-center font-bold text-muted">
         {t("host.youCancelled")}
       </div>
     );
@@ -40,7 +40,7 @@ export default function HostVibeControls({
     router.refresh();
   }
 
-  const tile = "flex flex-col items-center justify-center gap-1 rounded-2xl border-2 border-ink py-3 text-[11px] font-bold disabled:opacity-50";
+  const tile = "flex flex-col items-center justify-center gap-1 rounded-2xl border border-ink/15 py-3 text-[11px] font-bold disabled:opacity-50";
 
   return (
     <div className="space-y-2">

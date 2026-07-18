@@ -37,7 +37,7 @@ export default function LeaveVibeButton({ vibeId }: { vibeId: string }) {
       type="button"
       onClick={leave}
       disabled={busy}
-      className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1 text-xs font-bold text-muted disabled:opacity-50"
+      className="flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-white px-3 py-1 text-xs font-bold text-muted disabled:opacity-50"
     >
       <LogOut size={14} /> {t("leave.leave")}
     </button>

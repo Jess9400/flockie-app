@@ -18,7 +18,7 @@ export default function EarlyCityState({
 }) {
   const t = useTranslations("components");
   return (
-    <section className="mx-4 mt-6 rounded-3xl border-[3px] border-ink bg-cream p-6 text-center shadow-[0_6px_0_0_rgba(10,37,69,1)] sm:p-8">
+    <section className="mx-4 mt-6 rounded-3xl border-2 border-ink/15 bg-cream p-6 text-center shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:p-8">
       <div className="text-4xl" aria-hidden>
         🌱
       </div>

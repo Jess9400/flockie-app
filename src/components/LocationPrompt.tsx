@@ -61,7 +61,7 @@ export default function LocationPrompt({ trackingEnabled }: { trackingEnabled?: 
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 p-4 sm:left-auto sm:right-4 sm:max-w-sm">
-      <div className="rounded-3xl border-2 border-ink bg-white p-5 shadow-[0_8px_0_0_rgba(26,26,26,1)]">
+      <div className="rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
         <div className="flex items-center gap-2">
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-flockie-blue text-white">
             <MapPin size={18} />
@@ -74,14 +74,14 @@ export default function LocationPrompt({ trackingEnabled }: { trackingEnabled?: 
         <div className="mt-4 flex gap-2">
           <button
             onClick={() => dismiss("dismissed")}
-            className="flex-1 rounded-full border-2 border-ink bg-white py-2.5 text-sm font-bold"
+            className="flex-1 rounded-full border border-ink/15 bg-white py-2.5 text-sm font-bold"
           >
             {t("locationPrompt.notNow")}
           </button>
           <button
             onClick={enable}
             disabled={busy}
-            className="flex-1 rounded-full border-2 border-ink bg-flockie-orange py-2.5 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C] disabled:opacity-50"
+            className="flex-1 rounded-full border border-ink/15 bg-flockie-orange py-2.5 text-sm font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
           >
             {busy ? "…" : t("locationPrompt.turnOn")}
           </button>

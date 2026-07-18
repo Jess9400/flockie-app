@@ -47,14 +47,14 @@ export default function RevealActions({
       <button
         type="button"
         onClick={() => setShowCard(true)}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-ink border-b-[5px] bg-navy py-3.5 text-[14.5px] font-extrabold text-white"
+        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-ink/15 border-b-[5px] bg-navy py-3.5 text-[14.5px] font-extrabold text-white"
       >
         <Share2 size={17} /> {t("revealActions.shareYourVibe")}
       </button>
       <button
         type="button"
         onClick={checkMatch}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-ink border-b-[5px] bg-flockie-coral py-3.5 text-[14.5px] font-extrabold text-white"
+        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-ink/15 border-b-[5px] bg-flockie-coral py-3.5 text-[14.5px] font-extrabold text-white"
       >
         <Sparkles size={17} /> {copied ? t("revealActions.linkCopied") : t("revealActions.checkFriendMatch")}
       </button>

@@ -51,7 +51,7 @@ export default function ProfileSocials({ instagram, x_handle, tiktok }: Props) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={l.label}
-          className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-ink bg-white text-ink hover:bg-flockie-orange hover:text-white hover:border-ink transition-colors"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 bg-white text-ink hover:bg-flockie-orange hover:text-white hover:border-ink transition-colors"
         >
           {ICONS[l.key]}
         </a>

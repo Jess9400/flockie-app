@@ -43,7 +43,7 @@ export default function CompatShareButton({
     <button
       type="button"
       onClick={share}
-      className={`inline-flex items-center justify-center gap-2 rounded-full border-2 border-navy px-5 py-2.5 font-fredoka text-sm font-semibold ${cls}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-full border border-navy/15 px-5 py-2.5 font-fredoka text-sm font-semibold ${cls}`}
     >
       {copied ? t("compatShare.copied") : label ?? t("compatShare.defaultLabel")}
     </button>

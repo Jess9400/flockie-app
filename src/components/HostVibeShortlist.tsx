@@ -70,7 +70,7 @@ export default function HostVibeShortlist({
   }
 
   return (
-    <div className="mt-6 rounded-2xl border-2 border-ink bg-white p-4">
+    <div className="mt-6 rounded-2xl border border-ink/15 bg-white p-4">
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-extrabold">{t("host.reviewMatched")}</p>
         <span className="rounded-full bg-cream px-2.5 py-1 text-[11px] font-bold text-muted">
@@ -108,7 +108,7 @@ export default function HostVibeShortlist({
                 type="button"
                 onClick={() => reject(c.id)}
                 disabled={busy || left <= 0}
-                className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-bold text-ink/70 disabled:opacity-40"
+                className="flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-white px-3 py-1.5 text-xs font-bold text-ink/70 disabled:opacity-40"
               >
                 <X size={14} /> {t("host.remove")}
               </button>
@@ -121,7 +121,7 @@ export default function HostVibeShortlist({
         type="button"
         onClick={sendInvites}
         disabled={busy || candidates.length === 0}
-        className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3 font-bold text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50"
+        className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-flockie-orange py-3 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
       >
         <Send size={16} /> {t("host.sendInvitesNow")}
       </button>

@@ -102,14 +102,14 @@ export default function BrandedMap({
         title={t("brandedMap.eventLocation")}
         src={fallbackSrc}
         loading="lazy"
-        className="h-[250px] w-full rounded-2xl border-2 border-navy"
+        className="h-[250px] w-full rounded-2xl border border-navy/15"
         referrerPolicy="no-referrer-when-downgrade"
       />
     );
   }
 
   return (
-    <div className="relative h-[250px] w-full overflow-hidden rounded-2xl border-2 border-navy">
+    <div className="relative h-[250px] w-full overflow-hidden rounded-2xl border border-navy/15">
       <div ref={ref} className="h-full w-full" />
       {mode === "loading" && (
         <div className="absolute inset-0 flex items-center justify-center bg-cream font-nunito text-sm font-medium text-navy/50">

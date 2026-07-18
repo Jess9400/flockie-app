@@ -19,7 +19,7 @@ export default async function CompleteVibeCard({
   const all = done === 3;
 
   return (
-    <section className="rounded-3xl border-2 border-ink/10 bg-white p-5 shadow-[0_4px_0_0_rgba(26,26,26,0.06)]">
+    <section className="rounded-3xl border-2 border-ink/10 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
       <Ring percent={percent} label={t("complete")} />
 
       <h2 className="mt-4 text-center text-[20px] font-black leading-tight text-ink">
@@ -53,7 +53,7 @@ export default async function CompleteVibeCard({
       {all ? (
         <Link
           href="/profile?vibe_done=1"
-          className="mt-4 block w-full rounded-2xl border-2 border-ink border-b-[5px] bg-flockie-coral py-3.5 text-center text-[15px] font-extrabold text-white"
+          className="mt-4 block w-full rounded-2xl border border-ink/15 border-b-[5px] bg-flockie-coral py-3.5 text-center text-[15px] font-extrabold text-white"
         >
           {t("seeReading")}
         </Link>

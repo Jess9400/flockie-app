@@ -38,7 +38,7 @@ export default function VibeCompletePopup({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-navy/50 p-4 font-nunito sm:items-center">
-      <div className="w-full max-w-sm rounded-3xl border-2 border-navy bg-cream p-5 text-center shadow-[0_6px_0_0_rgba(10,37,69,1)]">
+      <div className="w-full max-w-sm rounded-3xl border border-navy/15 bg-cream p-5 text-center shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
         <p className="text-3xl">🎉</p>
         <p className="mt-2 font-fredoka text-xl font-bold text-navy">{t("completePopup.title")}</p>
         <p className="mt-1 font-nunito text-sm font-medium text-navy/60">

@@ -49,7 +49,7 @@ function Row({
 }) {
   const inner = (
     <>
-      <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl border-2 border-ink bg-cream">
+      <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-ink/15 bg-cream">
         {photo ? (
           <Image src={photo} alt="" fill sizes="44px" className="object-cover" />
         ) : (
@@ -68,7 +68,7 @@ function Row({
     </>
   );
   return (
-    <div className={`rounded-2xl border-2 border-ink bg-white p-2 ${past ? "opacity-70" : ""}`}>
+    <div className={`rounded-2xl border border-ink/15 bg-white p-2 ${past ? "opacity-70" : ""}`}>
       {href ? (
         <Link href={href} className="flex items-center gap-2.5">
           {inner}
@@ -79,7 +79,7 @@ function Row({
       {reviewHref && (
         <Link
           href={reviewHref}
-          className="mt-1.5 flex items-center justify-center gap-1 rounded-full border-2 border-ink bg-flockie-coral py-1.5 text-xs font-bold text-white"
+          className="mt-1.5 flex items-center justify-center gap-1 rounded-full border border-ink/15 bg-flockie-coral py-1.5 text-xs font-bold text-white"
         >
           <Star size={13} /> {reviewLabel}
         </Link>

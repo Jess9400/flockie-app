@@ -172,7 +172,7 @@ export default function ActivityQuestions({ answers, onChange }: Props) {
           maxLength={ONE_LINER_MAX}
           value={answers.activity_one_liner}
           onChange={(e) => onChange({ activity_one_liner: e.target.value })}
-          className="h-14 w-full rounded-2xl border-2 border-navy bg-cream px-4 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue"
+          className="h-14 w-full rounded-2xl border border-navy/15 bg-cream px-4 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue"
           placeholder="…"
         />
         <p className="mt-1 text-right font-nunito text-xs font-semibold text-navy/50">

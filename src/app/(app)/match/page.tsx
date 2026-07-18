@@ -187,7 +187,7 @@ export default async function MatchPage({
 
     if (!enough) {
       body = (
-        <div className="mt-6 rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_5px_0_0_rgba(26,26,26,1)]">
+        <div className="mt-6 rounded-3xl border border-ink/15 bg-white p-6 text-center shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
           <p className="text-3xl">🚀</p>
           <p className="mt-3 text-lg font-extrabold">{t("onListTitle", { label })}</p>
           <p className="mt-1 text-sm font-medium text-ink/70">
@@ -199,7 +199,7 @@ export default async function MatchPage({
               inviterName={profile?.display_name ?? undefined}
               city={label}
             />
-            <Link href="/vibes" className="rounded-full border-2 border-ink bg-white px-5 py-2.5 font-bold text-ink">
+            <Link href="/vibes" className="rounded-full border border-ink/15 bg-white px-5 py-2.5 font-bold text-ink">
               {t("exploreVibesMeanwhile")}
             </Link>
           </div>
@@ -224,7 +224,7 @@ export default async function MatchPage({
         )}
         <Link
           href={`/match/trip?kind=${mode}`}
-          className="flex shrink-0 items-center gap-1 rounded-2xl border-2 border-ink bg-flockie-orange px-4 py-2.5 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
+          className="flex shrink-0 items-center gap-1 rounded-2xl border border-ink/15 bg-flockie-orange px-4 py-2.5 text-sm font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
         >
           <Plus size={16} /> {isActivity ? t("newActivity") : t("newTrip")}
         </Link>
@@ -237,9 +237,9 @@ export default async function MatchPage({
 
 function Gate({ text, cta, href }: { text: string; cta: string; href: string }) {
   return (
-    <div className="mt-6 rounded-3xl border-2 border-ink bg-white p-8 text-center shadow-[0_5px_0_0_rgba(26,26,26,1)]">
+    <div className="mt-6 rounded-3xl border border-ink/15 bg-white p-8 text-center shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
       <p className="font-medium text-ink/70">{text}</p>
-      <Link href={href} className="mt-5 inline-block rounded-full border-2 border-ink bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_4px_0_0_#E0512C]">
+      <Link href={href} className="mt-5 inline-block rounded-full border border-ink/15 bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
         {cta}
       </Link>
     </div>
@@ -272,7 +272,7 @@ async function ActivityEmptyState({
         />
         <Link
           href="/vibes"
-          className="inline-flex items-center justify-center rounded-full border-2 border-ink bg-white px-5 py-2.5 font-bold text-ink"
+          className="inline-flex items-center justify-center rounded-full border border-ink/15 bg-white px-5 py-2.5 font-bold text-ink"
         >
           {t("exploreVibes")}
         </Link>

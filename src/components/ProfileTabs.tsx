@@ -92,7 +92,7 @@ export default function ProfileTabs({
             key={t.key}
             type="button"
             onClick={() => setTab(t.key)}
-            className={`shrink-0 rounded-full border-2 border-navy px-4 py-2 font-fredoka text-sm font-semibold transition-colors ${
+            className={`shrink-0 rounded-full border border-navy/15 px-4 py-2 font-fredoka text-sm font-semibold transition-colors ${
               tab === t.key ? "bg-navy text-white" : "bg-white text-navy hover:bg-cream"
             }`}
           >
@@ -268,7 +268,7 @@ function TabShell({
           <button
             type="button"
             onClick={onEdit}
-            className="inline-flex items-center gap-1.5 rounded-full border-2 border-navy bg-white px-4 py-1.5 font-fredoka text-sm font-semibold text-navy hover:bg-cream"
+            className="inline-flex items-center gap-1.5 rounded-full border border-navy/15 bg-white px-4 py-1.5 font-fredoka text-sm font-semibold text-navy hover:bg-cream"
           >
             <Pencil size={14} /> {editLabel}
           </button>
@@ -297,7 +297,7 @@ function EmptyCTA({
       <button
         type="button"
         onClick={onClick}
-        className="mt-5 inline-block rounded-full border-2 border-navy bg-flockie-coral px-6 py-3 font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
+        className="mt-5 inline-block rounded-full border border-navy/15 bg-flockie-coral px-6 py-3 font-fredoka text-base font-semibold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
       >
         {cta}
       </button>
@@ -369,7 +369,7 @@ function Socials({ instagram, x, tiktok }: { instagram?: string | null; x?: stri
           href={l.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-full border-2 border-navy bg-white px-4 py-2 text-sm font-bold text-navy hover:bg-cream"
+          className="rounded-full border border-navy/15 bg-white px-4 py-2 text-sm font-bold text-navy hover:bg-cream"
         >
           {l.label} ↗
         </a>

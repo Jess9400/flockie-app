@@ -133,20 +133,20 @@ export default function OwnerProfileDashboard({
             <div className="flex flex-wrap gap-2">
               <Link
                 href={`/people/${userId}`}
-                className="inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-white px-3 py-2 text-xs font-extrabold text-navy shadow-[0_3px_0_0_#10233d]"
+                className="inline-flex items-center gap-1.5 rounded-full border border-ink/15 bg-white px-3 py-2 text-xs font-extrabold text-navy shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
               >
                 <Eye size={14} /> {t("dashboard.publicProfile")}
               </Link>
               <button
                 type="button"
                 onClick={onShare}
-                className="inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-white px-3 py-2 text-xs font-extrabold text-navy shadow-[0_3px_0_0_#10233d]"
+                className="inline-flex items-center gap-1.5 rounded-full border border-ink/15 bg-white px-3 py-2 text-xs font-extrabold text-navy shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
               >
                 <Share2 size={14} /> {t("dashboard.share")}
               </button>
               <Link
                 href="/settings"
-                className="inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-white px-3 py-2 text-xs font-extrabold text-navy shadow-[0_3px_0_0_#10233d]"
+                className="inline-flex items-center gap-1.5 rounded-full border border-ink/15 bg-white px-3 py-2 text-xs font-extrabold text-navy shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
               >
                 <Settings size={14} /> {t("dashboard.settings")}
               </Link>
@@ -169,7 +169,7 @@ export default function OwnerProfileDashboard({
                   background: `linear-gradient(135deg, ${vibeArchetype.gradientFrom}14, ${vibeArchetype.gradientTo}14)`,
                 }}
               >
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border-2 border-ink bg-white text-2xl">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-ink/15 bg-white text-2xl">
                   {vibeArchetype.emoji}
                 </span>
                 <span className="min-w-0 flex-1">
@@ -191,7 +191,7 @@ export default function OwnerProfileDashboard({
                 </span>
                 <Link
                   href="/onboarding/vibe-check/reveal?returnTo=%2Fprofile"
-                  className="shrink-0 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-extrabold text-navy"
+                  className="shrink-0 rounded-full border border-ink/15 bg-white px-3 py-1.5 text-xs font-extrabold text-navy"
                 >
                   {t("dashboard.view")}
                 </Link>
@@ -217,7 +217,7 @@ export default function OwnerProfileDashboard({
                       type="button"
                       onClick={redoQuiz}
                       disabled={redoing}
-                      className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-extrabold text-navy disabled:opacity-50"
+                      className="inline-flex items-center gap-1 rounded-full border border-ink/15 bg-white px-3 py-1.5 text-xs font-extrabold text-navy disabled:opacity-50"
                     >
                       <RefreshCw size={12} />{" "}
                       {redoing ? t("dashboard.vibeQuiz.starting") : t("dashboard.vibeQuiz.retake")}
@@ -225,14 +225,14 @@ export default function OwnerProfileDashboard({
                   ) : vibeRetaking ? (
                     <Link
                       href="/onboarding/vibe-check?returnTo=%2Fprofile"
-                      className="rounded-full border-2 border-ink bg-flockie-coral px-3 py-1.5 text-xs font-extrabold text-white"
+                      className="rounded-full border border-ink/15 bg-flockie-coral px-3 py-1.5 text-xs font-extrabold text-white"
                     >
                       {t("dashboard.vibeQuiz.finishQuiz")}
                     </Link>
                   ) : (
                     <Link
                       href="/onboarding/vibe-check?returnTo=%2Fprofile"
-                      className="rounded-full border-2 border-ink bg-flockie-coral px-3 py-1.5 text-xs font-extrabold text-white"
+                      className="rounded-full border border-ink/15 bg-flockie-coral px-3 py-1.5 text-xs font-extrabold text-white"
                     >
                       {t("dashboard.vibeQuiz.start")}
                     </Link>
@@ -256,8 +256,8 @@ export default function OwnerProfileDashboard({
                     onClick={() => setOpenSetup("trip")}
                     className={
                       tripComplete
-                        ? "rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-extrabold text-navy"
-                        : "rounded-full border-2 border-ink bg-flockie-coral px-3 py-1.5 text-xs font-extrabold text-white"
+                        ? "rounded-full border border-ink/15 bg-white px-3 py-1.5 text-xs font-extrabold text-navy"
+                        : "rounded-full border border-ink/15 bg-flockie-coral px-3 py-1.5 text-xs font-extrabold text-white"
                     }
                   >
                     {tripComplete ? t("dashboard.tripVibe.retake") : t("dashboard.tripVibe.start")}
@@ -281,8 +281,8 @@ export default function OwnerProfileDashboard({
                     onClick={() => setOpenSetup("activity")}
                     className={
                       activityComplete
-                        ? "rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-extrabold text-navy"
-                        : "rounded-full border-2 border-ink bg-flockie-coral px-3 py-1.5 text-xs font-extrabold text-white"
+                        ? "rounded-full border border-ink/15 bg-white px-3 py-1.5 text-xs font-extrabold text-navy"
+                        : "rounded-full border border-ink/15 bg-flockie-coral px-3 py-1.5 text-xs font-extrabold text-white"
                     }
                   >
                     {activityComplete
@@ -441,7 +441,7 @@ function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-[26px] border-2 border-ink bg-white p-4 shadow-[0_4px_0_0_#10233d]">
+    <section className="rounded-[26px] border border-ink/15 bg-white p-4 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
           <h3 className="font-fredoka text-xl font-bold text-navy">{title}</h3>
@@ -473,7 +473,7 @@ function SetupCard({
 }) {
   return (
     <div className="grid gap-3 rounded-2xl border-2 border-ink/10 bg-[#FCF9F4] p-3 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
-      <span className="flex h-12 w-12 items-center justify-center rounded-2xl border-2 border-ink bg-cream text-2xl">
+      <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-ink/15 bg-cream text-2xl">
         {emoji}
       </span>
       <div className="min-w-0">
@@ -602,7 +602,7 @@ function UpcomingRow({ item }: { item: UpcomingItem }) {
       href={item.href}
       className="flex items-center gap-3 rounded-2xl border-2 border-ink/10 bg-[#FCF9F4] p-2.5"
     >
-      <span className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-2 border-ink bg-cream text-xl">
+      <span className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-ink/15 bg-cream text-xl">
         {item.photo ? (
           <Image src={item.photo} alt="" fill sizes="48px" className="object-cover" />
         ) : (

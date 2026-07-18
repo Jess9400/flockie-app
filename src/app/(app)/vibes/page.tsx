@@ -184,7 +184,7 @@ export default async function VibesPage({
         <h1 className="text-2xl font-black">{t("list.heading")}</h1>
         <Link
           href="/vibes/new"
-          className="inline-flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
+          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
         >
           <Plus size={16} /> {t("list.create")}
         </Link>
@@ -231,7 +231,7 @@ export default async function VibesPage({
       {!isPast && !activityCheckDone && (
         <Link
           href="/profile"
-          className="mt-4 block rounded-2xl border-2 border-ink bg-flockie-blue p-3 text-sm font-bold text-white"
+          className="mt-4 block rounded-2xl border border-ink/15 bg-flockie-blue p-3 text-sm font-bold text-white"
         >
           {t("list.completeCheck")}
         </Link>

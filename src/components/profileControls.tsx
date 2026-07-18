@@ -48,7 +48,7 @@ export function Chip({
           ? "bg-flockie-coral text-white"
           : disabled
             ? "cursor-not-allowed border-2 border-navy/20 bg-white text-navy/30"
-            : "border-2 border-navy bg-white text-navy hover:bg-cream"
+            : "border border-navy/15 bg-white text-navy hover:bg-cream"
       }`}
     >
       {label}
@@ -70,7 +70,7 @@ export function TogglePill({
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-14 w-full items-center justify-between rounded-full border-2 border-navy px-5 font-nunito text-base font-medium transition-colors ${
+      className={`flex h-14 w-full items-center justify-between rounded-full border border-navy/15 px-5 font-nunito text-base font-medium transition-colors ${
         selected ? "bg-flockie-coral text-white" : "bg-white text-navy"
       }`}
     >

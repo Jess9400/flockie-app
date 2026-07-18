@@ -40,7 +40,7 @@ export default function ProfileIdentityCard({
   const tags = topVibeTags(profile);
 
   return (
-    <section className="overflow-hidden rounded-[28px] border-[3px] border-ink bg-white shadow-[0_6px_0_0_#10233d]">
+    <section className="overflow-hidden rounded-[28px] border-2 border-ink/15 bg-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
       <div className="relative aspect-[4/5] min-h-[390px] overflow-hidden bg-cream">
         {photo ? (
           <Image
@@ -63,7 +63,7 @@ export default function ProfileIdentityCard({
                 type="button"
                 onClick={onShare}
                 aria-label={t("identity.shareAria")}
-                className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink bg-white/95 text-navy shadow-[0_3px_0_0_#10233d]"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-ink/15 bg-white/95 text-navy shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
               >
                 <Share2 size={17} />
               </button>
@@ -71,7 +71,7 @@ export default function ProfileIdentityCard({
             <Link
               href="/settings"
               aria-label={t("identity.settingsAria")}
-              className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink bg-white/95 text-navy shadow-[0_3px_0_0_#10233d]"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-ink/15 bg-white/95 text-navy shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
             >
               <Settings size={17} />
             </Link>
@@ -138,7 +138,7 @@ export default function ProfileIdentityCard({
           <button
             type="button"
             onClick={onEdit}
-            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-coral px-5 py-2.5 font-fredoka text-sm font-semibold text-white shadow-[0_3px_0_0_#10233d]"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-flockie-coral px-5 py-2.5 font-fredoka text-sm font-semibold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
           >
             <Pencil size={15} /> {t("identity.editPublic")}
           </button>

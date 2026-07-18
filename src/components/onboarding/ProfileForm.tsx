@@ -200,7 +200,7 @@ export function ProfileForm({ defaults, returnTo, quick }: ProfileFormProps) {
           type="button"
           onClick={handleSubmit}
           disabled={!canSubmit || submitting || uploading}
-          className="w-full rounded-2xl border-2 border-ink border-b-[5px] bg-flockie-coral py-3.5 text-[15.5px] font-extrabold text-white disabled:opacity-40"
+          className="w-full rounded-2xl border border-ink/15 border-b-[5px] bg-flockie-coral py-3.5 text-[15.5px] font-extrabold text-white disabled:opacity-40"
         >
           {submitting ? tc("saving") : t("continue")}
         </button>

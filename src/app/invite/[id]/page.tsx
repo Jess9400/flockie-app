@@ -75,14 +75,14 @@ export default async function InvitePage({
         <Image src="/logo.svg" alt="Flockie" width={130} height={44} className="h-9 w-auto" priority />
       </Link>
 
-      <div className="mt-6 overflow-hidden rounded-3xl border-2 border-navy bg-white shadow-[0_6px_0_0_rgba(10,37,69,1)]">
+      <div className="mt-6 overflow-hidden rounded-3xl border border-navy/15 bg-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
         <div className="relative aspect-square w-full bg-cream">
           {v.photos?.[0] ? (
             <Image src={v.photos[0]} alt="" fill sizes="512px" className="object-contain" />
           ) : (
             <div className="flex h-full items-center justify-center text-5xl">🎟️</div>
           )}
-          <span className="absolute left-3 top-3 rounded-full border-2 border-navy bg-white px-2.5 py-0.5 text-xs font-extrabold lowercase">
+          <span className="absolute left-3 top-3 rounded-full border border-navy/15 bg-white px-2.5 py-0.5 text-xs font-extrabold lowercase">
             {v.category}
           </span>
         </div>
@@ -123,20 +123,20 @@ export default async function InvitePage({
           )}
 
           {v.status === "cancelled" ? (
-            <div className="mt-6 rounded-full border-2 border-navy bg-cream py-3.5 text-center font-fredoka text-sm font-semibold text-navy/60">
+            <div className="mt-6 rounded-full border border-navy/15 bg-cream py-3.5 text-center font-fredoka text-sm font-semibold text-navy/60">
               {t("invite.closed")}
             </div>
           ) : hostCode ? (
             <Link
               href={`/vibes/${v.id}?code=${encodeURIComponent(hostCode)}`}
-              className="mt-6 block rounded-full border-2 border-navy bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
+              className="mt-6 block rounded-full border border-navy/15 bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
             >
               {t("invite.joinWithCode")}
             </Link>
           ) : viaHost ? (
             <Link
               href={`/vibes/${v.id}?request=1`}
-              className="mt-6 block rounded-full border-2 border-navy bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
+              className="mt-6 block rounded-full border border-navy/15 bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
             >
               {t("invite.requestToJoin")}
             </Link>
@@ -144,12 +144,12 @@ export default async function InvitePage({
             new Date(v.starts_at) > new Date() ? (
             <Link
               href={`/vibes/${v.id}?interested=1`}
-              className="mt-6 block rounded-full border-2 border-navy bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
+              className="mt-6 block rounded-full border border-navy/15 bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
             >
               {directConfirm ? t("invite.joinNow") : t("invite.interested")}
             </Link>
           ) : (
-            <div className="mt-6 rounded-full border-2 border-navy bg-cream py-3.5 text-center font-fredoka text-sm font-semibold text-navy/60">
+            <div className="mt-6 rounded-full border border-navy/15 bg-cream py-3.5 text-center font-fredoka text-sm font-semibold text-navy/60">
               {t("invite.closed")}
             </div>
           )}

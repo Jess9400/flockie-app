@@ -67,7 +67,7 @@ export default function HostVibePrivateRequests({
   }
 
   return (
-    <div className="mt-6 rounded-2xl border-2 border-ink bg-white p-4">
+    <div className="mt-6 rounded-2xl border border-ink/15 bg-white p-4">
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-extrabold">{t("host.privateInvites")}</p>
         <span className="rounded-full bg-cream px-2.5 py-1 text-[11px] font-bold text-muted">
@@ -91,7 +91,7 @@ export default function HostVibePrivateRequests({
       <button
         type="button"
         onClick={copyLink}
-        className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-coral py-2.5 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
+        className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-flockie-coral py-2.5 text-sm font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
       >
         <Link2 size={16} /> {copied ? t("host.linkCopied") : t("host.shareInviteLink")}
       </button>
@@ -117,7 +117,7 @@ export default function HostVibePrivateRequests({
                 type="button"
                 onClick={() => act(r.id, true)}
                 disabled={busy || left <= 0}
-                className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-flockie-orange px-3 py-1.5 text-xs font-extrabold text-white disabled:opacity-40"
+                className="flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-flockie-orange px-3 py-1.5 text-xs font-extrabold text-white disabled:opacity-40"
               >
                 <Check size={14} /> {t("host.add")}
               </button>
@@ -125,7 +125,7 @@ export default function HostVibePrivateRequests({
                 type="button"
                 onClick={() => act(r.id, false)}
                 disabled={busy}
-                className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-xs font-extrabold text-ink/70 disabled:opacity-40"
+                className="flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-white px-3 py-1.5 text-xs font-extrabold text-ink/70 disabled:opacity-40"
               >
                 <X size={14} />
               </button>

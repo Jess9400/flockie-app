@@ -21,14 +21,14 @@ export default function CreateFab() {
         <Link
           href="/vibes/new"
           onClick={() => setOpen(false)}
-          className="flex items-center gap-2 rounded-full border-[3px] border-ink bg-flockie-coral px-4 py-2.5 text-sm font-extrabold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
+          className="flex items-center gap-2 rounded-full border-2 border-ink/15 bg-flockie-coral px-4 py-2.5 text-sm font-extrabold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
         >
           {t("createFab.createVibe")}
         </Link>
         <Link
           href="/match/trip?kind=activity"
           onClick={() => setOpen(false)}
-          className="flex items-center gap-2 rounded-full border-[3px] border-ink bg-flockie-blue px-4 py-2.5 text-sm font-extrabold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
+          className="flex items-center gap-2 rounded-full border-2 border-ink/15 bg-flockie-blue px-4 py-2.5 text-sm font-extrabold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
         >
           {t("createFab.createActivity")}
         </Link>
@@ -38,7 +38,7 @@ export default function CreateFab() {
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-label={open ? t("createFab.closeAriaLabel") : t("createFab.openAriaLabel")}
-        className="flex h-14 w-14 items-center justify-center rounded-full border-[3px] border-ink bg-flockie-coral text-white shadow-[0_5px_0_0_rgba(10,37,69,1)] transition-all active:translate-y-[3px] active:shadow-[0_2px_0_0_rgba(10,37,69,1)]"
+        className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-ink/15 bg-flockie-coral text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-all active:translate-y-[3px] active:shadow-[0_2px_0_0_rgba(10,37,69,1)]"
       >
         <span className={`transition-transform duration-200 ${open ? "rotate-90" : ""}`}>
           {open ? <X size={26} /> : <Plus size={28} />}

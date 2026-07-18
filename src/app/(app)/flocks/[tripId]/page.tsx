@@ -22,7 +22,7 @@ async function Unavailable() {
       <p className="mt-1 font-medium text-muted">{tr("detail.unavailableBody")}</p>
       <Link
         href="/flocks"
-        className="mt-6 inline-block rounded-full border-2 border-ink bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
+        className="mt-6 inline-block rounded-full border border-ink/15 bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
       >
         {tr("detail.exploreFlocks")}
       </Link>
@@ -127,7 +127,7 @@ export default async function FlockDetailPage({
       </Link>
 
       {/* Cover */}
-      <div className="relative mt-4 aspect-square w-full overflow-hidden rounded-3xl border-2 border-ink bg-cream shadow-[0_4px_0_0_rgba(26,26,26,1)] sm:aspect-[16/9]">
+      <div className="relative mt-4 aspect-square w-full overflow-hidden rounded-3xl border border-ink/15 bg-cream shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:aspect-[16/9]">
         {trip.cover_photo ? (
           <Image
             src={trip.cover_photo}
@@ -141,7 +141,7 @@ export default async function FlockDetailPage({
           <div className="flex h-full items-center justify-center text-6xl">🧳</div>
         )}
         {typeof pct === "number" && (
-          <span className="absolute right-3 top-3 rounded-full border-2 border-ink bg-flockie-blue px-2.5 py-1 text-xs font-extrabold text-white">
+          <span className="absolute right-3 top-3 rounded-full border border-ink/15 bg-flockie-blue px-2.5 py-1 text-xs font-extrabold text-white">
             ✨ {tr("detail.matchBadge", { pct })}
           </span>
         )}
@@ -164,27 +164,27 @@ export default async function FlockDetailPage({
 
       <div className="mt-3 flex flex-wrap gap-1.5">
         {trip.group_gender === "women" && (
-          <span className="rounded-full border-2 border-ink bg-flockie-coral/15 px-2.5 py-1 text-xs font-bold text-flockie-coral">
+          <span className="rounded-full border border-ink/15 bg-flockie-coral/15 px-2.5 py-1 text-xs font-bold text-flockie-coral">
             {tr("detail.womenOnly")}
           </span>
         )}
         {trip.continent && (
-          <span className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-white px-2.5 py-1 text-xs font-bold text-ink/70">
+          <span className="inline-flex items-center gap-1 rounded-full border border-ink/15 bg-white px-2.5 py-1 text-xs font-bold text-ink/70">
             <Globe2 size={12} /> {trip.continent}
           </span>
         )}
         {trip.language && (
-          <span className="rounded-full border-2 border-ink bg-white px-2.5 py-1 text-xs font-bold text-ink/70">
+          <span className="rounded-full border border-ink/15 bg-white px-2.5 py-1 text-xs font-bold text-ink/70">
             🗣 {trip.language}
           </span>
         )}
         {budgetLabel && (
-          <span className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-white px-2.5 py-1 text-xs font-bold text-ink/70">
+          <span className="inline-flex items-center gap-1 rounded-full border border-ink/15 bg-white px-2.5 py-1 text-xs font-bold text-ink/70">
             <Wallet size={12} /> {budgetLabel}
           </span>
         )}
         {(trip.trip_type ?? []).map((t: string) => (
-          <span key={t} className="rounded-full border-2 border-ink bg-cream px-2.5 py-1 text-xs font-bold text-ink/70">
+          <span key={t} className="rounded-full border border-ink/15 bg-cream px-2.5 py-1 text-xs font-bold text-ink/70">
             {t}
           </span>
         ))}
@@ -192,7 +192,7 @@ export default async function FlockDetailPage({
 
       {/* Full description */}
       {trip.description && (
-        <div className="mt-5 rounded-2xl border-2 border-ink bg-white p-4 shadow-[0_4px_0_0_rgba(26,26,26,1)]">
+        <div className="mt-5 rounded-2xl border border-ink/15 bg-white p-4 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
           <p className="text-sm font-extrabold">{tr("detail.aboutHeading")}</p>
           <p className="mt-1.5 whitespace-pre-line text-sm font-medium leading-relaxed text-ink/80">
             {trip.description}
@@ -203,7 +203,7 @@ export default async function FlockDetailPage({
       {/* Host card */}
       <Link
         href={`/people/${trip.user_id}`}
-        className="mt-4 flex items-center gap-3 rounded-2xl border-2 border-ink bg-white p-4 shadow-[0_4px_0_0_rgba(26,26,26,1)] transition-transform active:translate-y-[2px]"
+        className="mt-4 flex items-center gap-3 rounded-2xl border border-ink/15 bg-white p-4 shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform active:translate-y-[2px]"
       >
         {host?.photos?.[0] ? (
           <Image
@@ -211,11 +211,11 @@ export default async function FlockDetailPage({
             alt=""
             width={52}
             height={52}
-            className="h-13 w-13 shrink-0 rounded-full border-2 border-ink object-cover"
+            className="h-13 w-13 shrink-0 rounded-full border border-ink/15 object-cover"
             style={{ height: 52, width: 52 }}
           />
         ) : (
-          <span className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full border-2 border-ink bg-flockie-blue text-lg font-bold text-white">
+          <span className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full border border-ink/15 bg-flockie-blue text-lg font-bold text-white">
             {hostName[0]}
           </span>
         )}
@@ -238,7 +238,7 @@ export default async function FlockDetailPage({
       {/* Action area */}
       <div className="mt-6">
         {isHost ? (
-          <div className="rounded-2xl border-2 border-ink bg-cream p-4">
+          <div className="rounded-2xl border border-ink/15 bg-cream p-4">
             <p className="text-sm font-extrabold">
               {tr("detail.hostingTitle")}
               {trip.status !== "active" && <span className="text-muted"> {tr("detail.noLongerActive")}</span>}
@@ -250,24 +250,24 @@ export default async function FlockDetailPage({
             </p>
             <Link
               href="/my-trips"
-              className="mt-3 inline-block rounded-full border-2 border-ink bg-flockie-blue px-5 py-2.5 text-sm font-bold text-white"
+              className="mt-3 inline-block rounded-full border border-ink/15 bg-flockie-blue px-5 py-2.5 text-sm font-bold text-white"
             >
               {tr("detail.manageInMyTrips")}
             </Link>
           </div>
         ) : myReq?.status === "accepted" ? (
-          <div className="rounded-2xl border-2 border-ink bg-[#06D6A0]/10 p-4 text-center">
+          <div className="rounded-2xl border border-ink/15 bg-[#06D6A0]/10 p-4 text-center">
             <p className="font-extrabold text-ink">{tr("detail.inFlock")}</p>
             <Link href="/chats" className="mt-2 inline-block text-sm font-bold text-flockie-blue underline">
               {tr("detail.openChats")}
             </Link>
           </div>
         ) : ended ? (
-          <div className="rounded-2xl border-2 border-ink bg-cream p-4 text-center font-bold text-muted">
+          <div className="rounded-2xl border border-ink/15 bg-cream p-4 text-center font-bold text-muted">
             {tr("detail.datesPassed")}
           </div>
         ) : isFull && !myReq ? (
-          <div className="rounded-2xl border-2 border-ink bg-cream p-4 text-center font-bold text-muted">
+          <div className="rounded-2xl border border-ink/15 bg-cream p-4 text-center font-bold text-muted">
             {tr("detail.flockFull")}
           </div>
         ) : (

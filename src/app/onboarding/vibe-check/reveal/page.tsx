@@ -56,7 +56,7 @@ export default async function VibeRevealPage({
 
   return (
     <main className="mx-auto min-h-dvh w-full max-w-md bg-cream font-nunito md:max-w-5xl md:px-6 md:py-8">
-      <div className="overflow-hidden bg-cream md:rounded-3xl md:border-2 md:border-ink/10 md:shadow-[0_6px_0_0_rgba(26,26,26,0.05)]">
+      <div className="overflow-hidden bg-cream md:rounded-3xl md:border-2 md:border-ink/10 md:shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
         <div
           style={{ background: `linear-gradient(160deg, ${archetype.gradientFrom}, ${archetype.gradientTo})` }}
           className="flex flex-col items-center px-6 pb-6 pt-7 text-center md:pb-12 md:pt-12"
@@ -145,7 +145,7 @@ export default async function VibeRevealPage({
 
           <Link
             href={returnTo || "/vibes"}
-            className="mt-5 block w-full rounded-2xl border-2 border-ink border-b-[5px] bg-flockie-coral py-3.5 text-center text-[15px] font-extrabold text-white md:mx-auto md:mt-7 md:max-w-md"
+            className="mt-5 block w-full rounded-2xl border border-ink/15 border-b-[5px] bg-flockie-coral py-3.5 text-center text-[15px] font-extrabold text-white md:mx-auto md:mt-7 md:max-w-md"
           >
             {ctaLabel}
           </Link>

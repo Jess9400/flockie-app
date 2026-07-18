@@ -213,7 +213,7 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
               <textarea
                 rows={4}
                 maxLength={300}
-                className="w-full rounded-2xl border-2 border-navy bg-cream px-4 py-3 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue"
+                className="w-full rounded-2xl border border-navy/15 bg-cream px-4 py-3 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue"
                 value={basics.bio}
                 onChange={(e) => setBasics({ ...basics, bio: e.target.value })}
                 placeholder={t("form.bioPlaceholder")}
@@ -266,7 +266,7 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
       <button
         type="submit"
         disabled={saving || uploading}
-        className="mt-8 w-full rounded-full border-2 border-navy bg-flockie-coral py-3.5 font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] disabled:opacity-50"
+        className="mt-8 w-full rounded-full border border-navy/15 bg-flockie-coral py-3.5 font-fredoka text-base font-semibold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
       >
         {saving ? t("form.saving") : t("form.save")}
       </button>
@@ -302,7 +302,7 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
 }
 
 const inputCls =
-  "h-14 w-full rounded-2xl border-2 border-navy bg-cream px-4 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue";
+  "h-14 w-full rounded-2xl border border-navy/15 bg-cream px-4 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (

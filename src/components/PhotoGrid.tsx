@@ -42,7 +42,7 @@ export default function PhotoGrid({
           setDrag(null);
         }}
         className={`group relative aspect-square overflow-hidden rounded-xl ${
-          url ? "cursor-grab border-2 border-navy" : ""
+          url ? "cursor-grab border border-navy/15" : ""
         }`}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -82,7 +82,7 @@ export default function PhotoGrid({
 
         {/* Video slot */}
         {videoUrl ? (
-          <div className="relative aspect-square overflow-hidden rounded-xl border-2 border-navy">
+          <div className="relative aspect-square overflow-hidden rounded-xl border border-navy/15">
             <video src={videoUrl} className="h-full w-full object-cover" />
             <span className="absolute left-1.5 top-1.5 rounded-full bg-flockie-blue px-2 py-0.5 font-nunito text-[10px] font-bold uppercase tracking-wide text-white">
               {t("photoGrid.video")}

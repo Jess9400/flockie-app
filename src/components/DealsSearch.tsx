@@ -78,7 +78,7 @@ export default function DealsSearch({
           {plans.map((p) => (
             <div
               key={p.id}
-              className="rounded-3xl border-2 border-ink bg-white p-4 shadow-[0_4px_0_0_rgba(26,26,26,1)]"
+              className="rounded-3xl border border-ink/15 bg-white p-4 shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
             >
               <p className="flex items-center gap-1.5 font-extrabold">
                 <MapPin size={15} className="shrink-0 text-flockie-orange" /> {p.label}
@@ -91,7 +91,7 @@ export default function DealsSearch({
               <div className="mt-3 grid grid-cols-3 gap-2">
                 <button
                   onClick={() => open(hotelsUrl(p.city, p.checkIn, p.checkOut, p.guests))}
-                  className="flex flex-col items-center gap-1 rounded-2xl border-2 border-ink bg-flockie-orange py-2.5 text-xs font-bold text-white shadow-[0_3px_0_0_#E0512C]"
+                  className="flex flex-col items-center gap-1 rounded-2xl border border-ink/15 bg-flockie-orange py-2.5 text-xs font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
                 >
                   <Hotel size={16} /> {t("stays")}
                 </button>
@@ -99,13 +99,13 @@ export default function DealsSearch({
                   href={klookUrl(p.city)}
                   target="_blank"
                   rel="noopener"
-                  className="flex flex-col items-center gap-1 rounded-2xl border-2 border-ink bg-white py-2.5 text-xs font-bold text-ink"
+                  className="flex flex-col items-center gap-1 rounded-2xl border border-ink/15 bg-white py-2.5 text-xs font-bold text-ink"
                 >
                   <Ticket size={16} /> {t("activities")}
                 </a>
                 <button
                   onClick={() => open(`https://www.aviasales.com/?marker=${MARKER}&locale=en`)}
-                  className="flex flex-col items-center gap-1 rounded-2xl border-2 border-ink bg-white py-2.5 text-xs font-bold text-ink"
+                  className="flex flex-col items-center gap-1 rounded-2xl border border-ink/15 bg-white py-2.5 text-xs font-bold text-ink"
                 >
                   <Plane size={16} /> {t("flights")}
                 </button>
@@ -119,7 +119,7 @@ export default function DealsSearch({
       )}
 
       {/* ── Search anywhere ─────────────────────────────────────────────── */}
-      <div className="rounded-3xl border-2 border-ink bg-white p-5 shadow-[0_5px_0_0_rgba(26,26,26,1)]">
+      <div className="rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
         <div className="flex items-center gap-2">
           <Hotel size={20} className="text-flockie-orange" />
           <h2 className="text-lg font-extrabold">{plans.length > 0 ? t("searchAnywhere") : t("staysHeading")}</h2>
@@ -134,7 +134,7 @@ export default function DealsSearch({
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder={t("cityPlaceholder")}
-            className="w-full rounded-2xl border-2 border-ink bg-white px-4 py-2.5 font-medium outline-none"
+            className="w-full rounded-2xl border border-ink/15 bg-white px-4 py-2.5 font-medium outline-none"
           />
         </label>
 
@@ -145,7 +145,7 @@ export default function DealsSearch({
                 key={t}
                 type="button"
                 onClick={() => setCity(t)}
-                className="rounded-full border-2 border-ink bg-cream px-3 py-1 text-xs font-bold text-ink"
+                className="rounded-full border border-ink/15 bg-cream px-3 py-1 text-xs font-bold text-ink"
               >
                 {t}
               </button>
@@ -160,7 +160,7 @@ export default function DealsSearch({
               type="date"
               value={checkIn}
               onChange={(e) => setCheckIn(e.target.value)}
-              className="block w-full min-w-0 appearance-none rounded-2xl border-2 border-ink bg-white px-3 py-2.5 font-medium outline-none"
+              className="block w-full min-w-0 appearance-none rounded-2xl border border-ink/15 bg-white px-3 py-2.5 font-medium outline-none"
             />
           </label>
           <label className="block">
@@ -169,7 +169,7 @@ export default function DealsSearch({
               type="date"
               value={checkOut}
               onChange={(e) => setCheckOut(e.target.value)}
-              className="block w-full min-w-0 appearance-none rounded-2xl border-2 border-ink bg-white px-3 py-2.5 font-medium outline-none"
+              className="block w-full min-w-0 appearance-none rounded-2xl border border-ink/15 bg-white px-3 py-2.5 font-medium outline-none"
             />
           </label>
         </div>
@@ -189,7 +189,7 @@ export default function DealsSearch({
         <button
           onClick={() => open(hotelsUrl(city.trim(), checkIn, checkOut, guests))}
           disabled={!city.trim()}
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3.5 font-bold text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-flockie-orange py-3.5 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
         >
           <Search size={18} /> {city.trim() ? t("searchStaysIn", { city: city.trim() }) : t("searchStays")}
         </button>
@@ -204,7 +204,7 @@ export default function DealsSearch({
       </div>
 
       {/* ── Activities ──────────────────────────────────────────────────── */}
-      <div className="rounded-3xl border-2 border-ink bg-white p-5 shadow-[0_5px_0_0_rgba(26,26,26,1)]">
+      <div className="rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
         <div className="flex items-center gap-2">
           <Ticket size={20} className="text-flockie-orange" />
           <h2 className="text-lg font-extrabold">{t("activitiesHeading")}</h2>
@@ -216,7 +216,7 @@ export default function DealsSearch({
           href={klookUrl(city)}
           target="_blank"
           rel="noopener"
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-flockie-orange py-3 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
         >
           <Search size={18} /> {city.trim() ? t("browseActivitiesIn", { city: city.trim() }) : t("browseActivities")}
         </a>
@@ -224,20 +224,20 @@ export default function DealsSearch({
           href={KKDAY}
           target="_blank"
           rel="noopener"
-          className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-3 font-bold text-ink"
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-white py-3 font-bold text-ink"
         >
           <Ticket size={18} /> {t("toursKKday")}
         </a>
         <Link
           href={`/vibes/new?city=${encodeURIComponent(city.trim())}`}
-          className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-3 font-bold text-ink"
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-white py-3 font-bold text-ink"
         >
           <Users size={18} /> {t("findBuddyActivity")}
         </Link>
       </div>
 
       {/* ── Flights ─────────────────────────────────────────────────────── */}
-      <div className="rounded-3xl border-2 border-ink bg-flockie-blue p-5 text-white shadow-[0_5px_0_0_rgba(26,26,26,1)]">
+      <div className="rounded-3xl border border-ink/15 bg-flockie-blue p-5 text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
         <div className="flex items-center gap-2">
           <Plane size={20} />
           <h2 className="text-lg font-extrabold">{t("flightsHeading")}</h2>
@@ -247,7 +247,7 @@ export default function DealsSearch({
         </p>
         <button
           onClick={() => open(`https://www.aviasales.com/?marker=${MARKER}&locale=en`)}
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white py-2.5 font-bold text-ink"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-white py-2.5 font-bold text-ink"
         >
           <Search size={16} /> {t("searchFlights")}
         </button>
@@ -255,7 +255,7 @@ export default function DealsSearch({
           href={AIRHELP}
           target="_blank"
           rel="noopener"
-          className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-white px-4 py-2.5 text-center font-bold text-ink"
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-white px-4 py-2.5 text-center font-bold text-ink"
         >
           <LifeBuoy size={16} className="shrink-0" />
           <span>{t("checkCompensation")}</span>
@@ -266,7 +266,7 @@ export default function DealsSearch({
       </div>
 
       {/* ── Car rentals ─────────────────────────────────────────────────── */}
-      <div className="rounded-3xl border-2 border-ink bg-white p-5 shadow-[0_5px_0_0_rgba(26,26,26,1)]">
+      <div className="rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
         <div className="flex items-center gap-2">
           <Car size={20} className="text-flockie-orange" />
           <h2 className="text-lg font-extrabold">{t("carRentals")}</h2>
@@ -278,7 +278,7 @@ export default function DealsSearch({
           href={ECONOMYBOOKINGS}
           target="_blank"
           rel="noopener"
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-flockie-orange py-3 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
         >
           <Car size={18} /> {t("findRental")}
         </a>

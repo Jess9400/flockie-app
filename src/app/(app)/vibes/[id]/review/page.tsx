@@ -63,7 +63,7 @@ export default async function VibeReviewPage({
           />
         </div>
       ) : (
-        <div className="mt-6 rounded-2xl border-2 border-navy bg-[#FCF9F4] p-6 text-center font-nunito text-sm font-medium text-navy/70">
+        <div className="mt-6 rounded-2xl border border-navy/15 bg-[#FCF9F4] p-6 text-center font-nunito text-sm font-medium text-navy/70">
           {started ? t("onlyConfirmed") : t("notStarted")}
         </div>
       )}

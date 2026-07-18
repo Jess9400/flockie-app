@@ -114,7 +114,7 @@ export default async function TripPage({
             : t("subTrip")}
       </p>
       {showReviewGate ? (
-        <div className="mt-6 rounded-3xl border-2 border-ink bg-white p-5 shadow-[0_5px_0_0_rgba(26,26,26,1)]">
+        <div className="mt-6 rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
           <p className="flex items-center gap-2 text-lg font-extrabold">
             <Star size={18} className="text-flockie-orange" /> {t("reviewFirstTitle")}
           </p>
@@ -126,7 +126,7 @@ export default async function TripPage({
               <li key={b.buddy_id}>
                 <Link
                   href={`/review/${b.buddy_id}`}
-                  className="flex items-center gap-3 rounded-2xl border-2 border-ink bg-cream p-3 transition-transform hover:-translate-y-0.5"
+                  className="flex items-center gap-3 rounded-2xl border border-ink/15 bg-cream p-3 transition-transform hover:-translate-y-0.5"
                 >
                   {b.photo ? (
                     <Image src={b.photo} alt="" width={40} height={40} className="h-10 w-10 rounded-full object-cover" />
@@ -150,7 +150,7 @@ export default async function TripPage({
           </ul>
         </div>
       ) : showCapGate ? (
-        <div className="mt-6 rounded-3xl border-2 border-ink bg-white p-8 text-center shadow-[0_5px_0_0_rgba(26,26,26,1)]">
+        <div className="mt-6 rounded-3xl border border-ink/15 bg-white p-8 text-center shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
           <p className="text-3xl">🧳</p>
           <p className="mt-3 text-lg font-extrabold">{t("capTitle")}</p>
           <p className="mt-2 font-medium text-ink/70">
@@ -158,7 +158,7 @@ export default async function TripPage({
           </p>
           <Link
             href="/my-trips"
-            className="mt-5 inline-block rounded-full border-2 border-ink bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
+            className="mt-5 inline-block rounded-full border border-ink/15 bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
           >
             {t("manageTrips")}
           </Link>

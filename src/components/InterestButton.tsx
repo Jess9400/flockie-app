@@ -285,7 +285,7 @@ export default function InterestButton({
   }
 
   const base =
-    "w-full rounded-full border-2 border-ink py-3.5 text-center font-bold disabled:opacity-50";
+    "w-full rounded-full border border-ink/15 py-3.5 text-center font-bold disabled:opacity-50";
   const matchingTime = matchingRunAt
     ? new Intl.DateTimeFormat(locale, {
         weekday: "long",
@@ -333,7 +333,7 @@ export default function InterestButton({
             ? `${t("interest.invitedBody")} ${t("interest.toConfirm", { time: timeLeft() })}`
             : t("interest.invitedBody")
         )}
-        <button onClick={confirm} disabled={busy} className={`${base} bg-flockie-orange text-white shadow-[0_4px_0_0_#E0512C]`}>
+        <button onClick={confirm} disabled={busy} className={`${base} bg-flockie-orange text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]`}>
           {t("interest.confirmSpot")}
         </button>
         <button onClick={decline} disabled={busy} className={`${base} bg-white`}>
@@ -410,14 +410,14 @@ export default function InterestButton({
           <button
             onClick={express}
             disabled={busy}
-            className="rounded-2xl border-2 border-ink bg-flockie-orange py-2.5 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C] disabled:opacity-50"
+            className="rounded-2xl border border-ink/15 bg-flockie-orange py-2.5 text-sm font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
           >
             {directConfirm ? t("interest.joinNow") : t("interest.imInterested")}
           </button>
           <button
             onClick={markNotForMe}
             disabled={busy}
-            className="rounded-2xl border-2 border-ink bg-white py-2.5 text-sm font-bold text-muted disabled:opacity-50"
+            className="rounded-2xl border border-ink/15 bg-white py-2.5 text-sm font-bold text-muted disabled:opacity-50"
           >
             {t("interest.notForMe")}
           </button>
@@ -436,13 +436,13 @@ export default function InterestButton({
               value={codeInput}
               onChange={(e) => setCodeInput(e.target.value)}
               placeholder={t("interest.hostCodePlaceholder")}
-              className="h-11 w-full rounded-full border-2 border-ink px-4 text-sm font-bold uppercase tracking-[0.2em] outline-none"
+              className="h-11 w-full rounded-full border border-ink/15 px-4 text-sm font-bold uppercase tracking-[0.2em] outline-none"
             />
             <button
               type="button"
               onClick={() => redeemCode(codeInput)}
               disabled={busy}
-              className="shrink-0 rounded-full border-2 border-ink bg-flockie-blue px-6 text-sm font-bold text-white disabled:opacity-50"
+              className="shrink-0 rounded-full border border-ink/15 bg-flockie-blue px-6 text-sm font-bold text-white disabled:opacity-50"
             >
               {t("interest.join")}
             </button>
@@ -479,7 +479,7 @@ export default function InterestButton({
               role="dialog"
               aria-modal="true"
               aria-label={t("interest.cityGate.title")}
-              className="w-full max-w-sm rounded-3xl border-2 border-ink bg-white p-6 shadow-[0_6px_0_0_rgba(10,37,69,1)]"
+              className="w-full max-w-sm rounded-3xl border border-ink/15 bg-white p-6 shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
             >
               <h2 className="font-fredoka text-xl font-bold text-ink">{t("interest.cityGate.title")}</h2>
               <p className="mt-1 font-nunito text-sm font-medium text-muted">{t("interest.cityGate.body")}</p>
@@ -497,7 +497,7 @@ export default function InterestButton({
                     setCityGate(false);
                     pendingRef.current = null;
                   }}
-                  className="flex-1 rounded-full border-2 border-ink py-2.5 text-sm font-bold"
+                  className="flex-1 rounded-full border border-ink/15 py-2.5 text-sm font-bold"
                 >
                   {t("interest.cityGate.cancel")}
                 </button>
@@ -505,7 +505,7 @@ export default function InterestButton({
                   type="button"
                   disabled={busy || !cityInput.trim()}
                   onClick={saveCity}
-                  className="flex-1 rounded-full border-2 border-ink bg-flockie-orange py-2.5 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C] disabled:opacity-50"
+                  className="flex-1 rounded-full border border-ink/15 bg-flockie-orange py-2.5 text-sm font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
                 >
                   {t("interest.cityGate.save")}
                 </button>

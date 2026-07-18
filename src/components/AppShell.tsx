@@ -73,12 +73,13 @@ const PRIMARY_NAV: NavItem[] = [
 
 // Mobile bottom tab bar: the 5 core surfaces, thumb-reachable. Tabs claim the
 // sections of their children so e.g. /my-vibes lights up Vibes.
+// Profile lives on the top-right avatar, so the 5th mobile tab is My Plans.
 const TABS: NavItem[] = [
   { href: "/home", labelKey: "home", icon: Home, sections: ["home"] },
   { href: "/vibes", labelKey: "vibes", icon: Sparkles, sections: ["vibes", "my-vibes"] },
   { href: "/match", labelKey: "match", icon: Compass, sections: ["match"] },
   { href: "/chats", labelKey: "chats", icon: MessageCircle, sections: ["chats"] },
-  { href: "/profile", labelKey: "profile", icon: User, sections: ["profile", "settings"] },
+  { href: "/my-activities", labelKey: "myTrips", icon: Map, sections: ["trips", "deals"] },
 ];
 
 export default function AppShell({
@@ -214,10 +215,10 @@ export default function AppShell({
     <FeedbackProvider>
     <div className="min-h-screen">
       {/* Top bar */}
-      <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b-2 border-ink bg-cream px-4 sm:px-6">
+      <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-ink/12 bg-cream px-4 sm:px-6">
         <div className="flex items-center gap-2">
           <button type="button" onClick={() => setOpen((v) => !v)} aria-label={tc("appShell.menu")}
-            className={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-ink ${
+            className={`flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 ${
               inChatSurface ? "" : "lg:hidden"
             }`}>
             {open ? <X size={18} /> : <Menu size={18} />}
@@ -235,7 +236,7 @@ export default function AppShell({
           <Link
             href="/inbox"
             aria-label={tc("appShell.notifications")}
-            className="relative flex h-9 w-9 items-center justify-center rounded-full border-2 border-ink bg-white"
+            className="relative flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 bg-white"
           >
             <Bell size={18} />
             {unread > 0 && (
@@ -245,7 +246,7 @@ export default function AppShell({
             )}
           </Link>
           <div className="relative">
-            <button onClick={() => setMenu((v) => !v)} className="flex items-center gap-2 rounded-full border-2 border-ink bg-white py-1 pl-1 pr-3">
+            <button onClick={() => setMenu((v) => !v)} className="flex items-center gap-2 rounded-full border border-ink/15 bg-white py-1 pl-1 pr-3">
               {photo ? (
                 <Image src={photo} alt="" width={32} height={32} className="h-8 w-8 rounded-full object-cover" />
               ) : (
@@ -258,7 +259,7 @@ export default function AppShell({
             {menu && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setMenu(false)} />
-                <div className="absolute right-0 z-50 mt-2 w-44 rounded-2xl border-2 border-ink bg-white p-2 shadow-[0_4px_0_rgba(10,37,69,0.15)]">
+                <div className="absolute right-0 z-50 mt-2 w-44 rounded-2xl border border-ink/15 bg-white p-2 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
                   <Link href="/profile" onClick={() => setMenu(false)} className="block rounded-xl px-3 py-2 text-sm font-bold hover:bg-navy/5">
                     {tc("appShell.profile")}
                   </Link>
@@ -275,7 +276,7 @@ export default function AppShell({
       {/* Sidebar (desktop). Hidden on chat surfaces, where the nav collapses to
           the ☰ button to give the two chat panes room. */}
       <aside
-        className={`fixed left-0 top-16 z-30 hidden h-[calc(100vh-4rem)] w-[200px] border-r-2 border-ink bg-cream p-3 ${
+        className={`fixed left-0 top-16 z-30 hidden h-[calc(100vh-4rem)] w-[200px] border-r border-ink/12 bg-cream p-3 ${
           inChatSurface ? "" : "lg:block"
         }`}
       >
@@ -290,7 +291,7 @@ export default function AppShell({
             onClick={() => setOpen(false)}
           />
           <aside
-            className={`fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] w-64 border-r-2 border-ink bg-cream p-3 ${
+            className={`fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] w-64 border-r border-ink/12 bg-cream p-3 ${
               inChatSurface ? "" : "lg:hidden"
             }`}
           >
@@ -312,7 +313,7 @@ export default function AppShell({
               : "min-h-screen pb-[calc(4.5rem+env(safe-area-inset-bottom))] sm:pb-0 lg:h-[100dvh] lg:overflow-hidden lg:pb-0"
           }`}
         >
-          <aside className="hidden w-[320px] shrink-0 flex-col border-r-2 border-ink bg-cream lg:flex">
+          <aside className="hidden w-[320px] shrink-0 flex-col border-r border-ink/12 bg-cream lg:flex">
             <ChatList variant="rail" />
           </aside>
           <div className="min-h-0 min-w-0 flex-1">{children}</div>
@@ -330,7 +331,7 @@ export default function AppShell({
       {!isChatRoom && (
         <nav
           aria-label={tc("appShell.primaryNav")}
-          className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-ink bg-white pb-[env(safe-area-inset-bottom)] sm:hidden"
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-ink/12 bg-white pb-[env(safe-area-inset-bottom)] sm:hidden"
         >
           <div className="grid grid-cols-5">
             {TABS.map((tab) => {

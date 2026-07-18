@@ -67,8 +67,8 @@ export default async function JoinPage({ params }: { params: { inviterId: string
           />
         </Link>
 
-        <section className="mt-6 rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_6px_0_0_#FF6B4A]">
-          <div className="mx-auto h-24 w-24 overflow-hidden rounded-full border-2 border-ink bg-flockie-blue">
+        <section className="mt-6 rounded-3xl border border-ink/15 bg-white p-6 text-center shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
+          <div className="mx-auto h-24 w-24 overflow-hidden rounded-full border border-ink/15 bg-flockie-blue">
             {target.photo ? (
               <Image
                 src={target.photo}
@@ -112,7 +112,7 @@ export default async function JoinPage({ params }: { params: { inviterId: string
 
           <Link
             href={`/join/${target.id}/accept`}
-            className="mt-6 block rounded-full border-2 border-ink bg-flockie-coral py-3.5 font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_#0A2545]"
+            className="mt-6 block rounded-full border border-ink/15 bg-flockie-coral py-3.5 font-fredoka text-base font-semibold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
           >
             {t("join.cta", { name: firstName })}
           </Link>

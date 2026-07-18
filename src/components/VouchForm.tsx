@@ -101,7 +101,7 @@ export default function VouchForm({ token }: { token: string }) {
         <input
           value={friendName}
           onChange={(e) => setFriendName(e.target.value)}
-          className="w-full rounded-2xl border-2 border-ink bg-white px-4 py-2.5 font-medium outline-none"
+          className="w-full rounded-2xl border border-ink/15 bg-white px-4 py-2.5 font-medium outline-none"
           placeholder={t("vouchForm.namePlaceholder")}
         />
       </label>
@@ -120,7 +120,7 @@ export default function VouchForm({ token }: { token: string }) {
           value={extra}
           maxLength={ONE_LINER_MAX * 3}
           onChange={(e) => setExtra(e.target.value)}
-          className="h-24 w-full resize-none rounded-2xl border-2 border-ink bg-white px-4 py-2.5 font-medium outline-none"
+          className="h-24 w-full resize-none rounded-2xl border border-ink/15 bg-white px-4 py-2.5 font-medium outline-none"
           placeholder={t("vouchForm.extraPlaceholder")}
         />
       </label>
@@ -130,7 +130,7 @@ export default function VouchForm({ token }: { token: string }) {
       <button
         type="submit"
         disabled={saving}
-        className="w-full rounded-full border-2 border-ink bg-flockie-orange py-3.5 font-bold text-white shadow-[0_4px_0_0_#E0712C] disabled:opacity-50"
+        className="w-full rounded-full border border-ink/15 bg-flockie-orange py-3.5 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
       >
         {saving ? t("vouchForm.sending") : t("vouchForm.vouchFor", { who })}
       </button>

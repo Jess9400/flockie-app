@@ -47,7 +47,7 @@ export default function InviteFriendsButton({
     <button
       type="button"
       onClick={invite}
-      className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_4px_0_0_#E0512C]"
+      className="inline-flex items-center justify-center gap-2 rounded-full border border-ink/15 bg-flockie-orange px-5 py-2.5 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
     >
       <Share2 size={16} /> {copied ? t("copied") : label ?? t("defaultLabel")}
     </button>

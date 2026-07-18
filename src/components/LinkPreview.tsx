@@ -30,7 +30,7 @@ export default function LinkPreview({ url }: { url: string }) {
       href={og.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="mt-1 block max-w-[280px] overflow-hidden rounded-2xl border-2 border-navy bg-white"
+      className="mt-1 block max-w-[280px] overflow-hidden rounded-2xl border border-navy/15 bg-white"
     >
       {og.image && (
         // eslint-disable-next-line @next/next/no-img-element

@@ -75,7 +75,7 @@ export default function FilterSheet({
       <button
         type="button"
         onClick={openSheet}
-        className="inline-flex items-center gap-2 rounded-full border-2 border-ink bg-white px-4 py-2 text-sm font-bold text-ink"
+        className="inline-flex items-center gap-2 rounded-full border border-ink/15 bg-white px-4 py-2 text-sm font-bold text-ink"
       >
         <SlidersHorizontal size={16} /> {t("filterSheet.filters")}
         {activeCount > 0 && (
@@ -91,7 +91,7 @@ export default function FilterSheet({
           onClick={() => setOpen(false)}
         >
           <div
-            className="flex max-h-[85vh] w-full flex-col rounded-t-3xl border-2 border-ink bg-white sm:max-w-md sm:rounded-3xl"
+            className="flex max-h-[85vh] w-full flex-col rounded-t-3xl border border-ink/15 bg-white sm:max-w-md sm:rounded-3xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b-2 border-ink/10 px-5 py-4">
@@ -140,7 +140,7 @@ export default function FilterSheet({
               <button
                 type="button"
                 onClick={apply}
-                className="rounded-full border-2 border-ink bg-flockie-coral px-6 py-2.5 font-fredoka text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
+                className="rounded-full border border-ink/15 bg-flockie-coral px-6 py-2.5 font-fredoka text-sm font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
               >
                 {t("filterSheet.showResults")}
               </button>

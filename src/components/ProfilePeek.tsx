@@ -37,7 +37,7 @@ export default function ProfilePeek({
         role="dialog"
         aria-modal="true"
         aria-label={t("peek.profileAria", { name: data.name })}
-        className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-3xl border-t-2 border-navy bg-cream p-5 font-nunito"
+        className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-3xl border-t border-navy/12 bg-cream p-5 font-nunito"
       >
         <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-navy/20" />
 
@@ -95,14 +95,14 @@ export default function ProfilePeek({
         <div className="mt-5 flex gap-2">
           <Link
             href={`/people/${data.id}`}
-            className="flex-1 rounded-full border-2 border-navy bg-flockie-blue py-2.5 text-center font-fredoka text-sm font-semibold text-white"
+            className="flex-1 rounded-full border border-navy/15 bg-flockie-blue py-2.5 text-center font-fredoka text-sm font-semibold text-white"
           >
             {t("peek.viewFullProfile")}
           </Link>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border-2 border-navy bg-white px-5 font-fredoka text-sm font-semibold text-navy"
+            className="rounded-full border border-navy/15 bg-white px-5 font-fredoka text-sm font-semibold text-navy"
           >
             {t("peek.close")}
           </button>

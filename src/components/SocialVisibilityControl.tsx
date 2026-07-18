@@ -39,7 +39,7 @@ export default function SocialVisibilityControl({
   }
 
   return (
-    <section className="rounded-2xl border-2 border-ink bg-white p-4">
+    <section className="rounded-2xl border border-ink/15 bg-white p-4">
       <h2 className="font-fredoka text-lg font-semibold text-navy">
         {t("socialVisibility.title")}
       </h2>

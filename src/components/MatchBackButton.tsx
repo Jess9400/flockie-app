@@ -40,7 +40,7 @@ export default function MatchBackButton({ personId, name }: { personId: string; 
   }
 
   return (
-    <div className="mt-4 rounded-2xl border-2 border-ink bg-flockie-orange/10 p-4">
+    <div className="mt-4 rounded-2xl border border-ink/15 bg-flockie-orange/10 p-4">
       <p className="text-sm font-bold text-ink">{t("matchBack.prompt", { name })}</p>
       <p className="mt-0.5 text-xs font-medium text-ink/70">
         {t("matchBack.subprompt")}
@@ -48,7 +48,7 @@ export default function MatchBackButton({ personId, name }: { personId: string; 
       <button
         onClick={matchBack}
         disabled={busy}
-        className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-flockie-orange py-3 font-bold text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50"
+        className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-flockie-orange py-3 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
       >
         <Heart size={16} fill="currentColor" /> {busy ? "…" : t("matchBack.button")}
       </button>

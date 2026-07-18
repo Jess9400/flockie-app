@@ -68,7 +68,7 @@ export default function GenerateCoverButton({
         type="button"
         onClick={generate}
         disabled={disabled || loading}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-ink bg-white py-2.5 text-sm font-bold text-ink disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-ink/15 bg-white py-2.5 text-sm font-bold text-ink disabled:opacity-50"
       >
         <Sparkles size={16} className="text-flockie-orange" />
         {loading ? t("generateCover.busy") : t("generateCover.button")}

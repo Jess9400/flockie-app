@@ -179,7 +179,7 @@ export default function VibeShareCard({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy/60 p-5 font-nunito">
-      <div className="w-full max-w-sm rounded-3xl border-2 border-navy bg-cream p-5 text-center">
+      <div className="w-full max-w-sm rounded-3xl border border-navy/15 bg-cream p-5 text-center">
         <p className="font-fredoka text-xl font-bold text-navy">{t("vibeShareCard.heading")}</p>
         <p className="mt-1 font-nunito text-sm font-medium text-navy/60">
           {t("vibeShareCard.subtext")}
@@ -188,12 +188,12 @@ export default function VibeShareCard({
           ref={canvasRef}
           width={W}
           height={H}
-          className="mx-auto mt-4 w-full max-w-[260px] rounded-2xl border-2 border-navy"
+          className="mx-auto mt-4 w-full max-w-[260px] rounded-2xl border border-navy/15"
         />
         <button
           type="button"
           onClick={share}
-          className="mt-4 w-full rounded-full border-2 border-navy bg-flockie-coral py-3 font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)]"
+          className="mt-4 w-full rounded-full border border-navy/15 bg-flockie-coral py-3 font-fredoka text-base font-semibold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
         >
           {t("vibeShareCard.shareMyVibe")}
         </button>

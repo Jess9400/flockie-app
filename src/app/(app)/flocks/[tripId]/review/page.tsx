@@ -36,7 +36,7 @@ export default async function FlockReviewPage({ params }: { params: { tripId: st
       </p>
 
       {targets.length === 0 ? (
-        <div className="mt-6 rounded-2xl border-2 border-navy bg-[#FCF9F4] p-6 text-center font-nunito text-sm font-medium text-navy/70">
+        <div className="mt-6 rounded-2xl border border-navy/15 bg-[#FCF9F4] p-6 text-center font-nunito text-sm font-medium text-navy/70">
           {t("flockReview.empty")}
         </div>
       ) : (
@@ -45,7 +45,7 @@ export default async function FlockReviewPage({ params }: { params: { tripId: st
             <Link
               key={target.user_id}
               href={`/review/${target.user_id}`}
-              className="flex items-center gap-3 rounded-2xl border-2 border-ink bg-white p-3"
+              className="flex items-center gap-3 rounded-2xl border border-ink/15 bg-white p-3"
             >
               <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-flockie-blue">
                 {target.photo ? (
@@ -64,7 +64,7 @@ export default async function FlockReviewPage({ params }: { params: { tripId: st
                   <Check size={14} /> {t("flockReview.badgeReviewed")}
                 </span>
               ) : (
-                <span className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-flockie-coral px-3 py-1.5 text-xs font-bold text-white">
+                <span className="flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-flockie-coral px-3 py-1.5 text-xs font-bold text-white">
                   <Star size={14} /> {t("flockReview.badgeReview")}
                 </span>
               )}

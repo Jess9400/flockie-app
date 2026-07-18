@@ -395,7 +395,7 @@ export default function CreateVibeForm({
 
   if (createdId) {
     return (
-      <div className="rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_6px_0_0_rgba(10,37,69,1)]">
+      <div className="rounded-3xl border border-ink/15 bg-white p-6 text-center shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
         <p className="text-4xl">🎉</p>
         <h2 className="mt-2 font-fredoka text-2xl font-bold text-ink">{t("create.successTitle")}</h2>
         <p className="mt-1 font-nunito text-sm font-medium text-muted">
@@ -404,16 +404,16 @@ export default function CreateVibeForm({
         <div className="mt-5 flex justify-center">
           <ShareVibeButton vibeId={createdId} />
         </div>
-        <div className="mt-4 flex flex-col gap-2">
+        <div className="mt-4 grid grid-cols-2 gap-2">
           <Link
             href={`/vibes/${createdId}`}
-            className="rounded-full border-2 border-ink bg-flockie-blue py-2.5 font-fredoka text-sm font-semibold text-white"
+            className="rounded-2xl border border-ink/15 bg-flockie-blue py-2.5 text-center font-fredoka text-sm font-semibold text-white"
           >
             {t("create.viewYourVibe")}
           </Link>
           <Link
             href="/vibes"
-            className="rounded-full border-2 border-ink bg-white py-2.5 font-fredoka text-sm font-semibold text-ink"
+            className="rounded-2xl border border-ink/15 bg-white py-2.5 text-center font-fredoka text-sm font-semibold text-ink"
           >
             {t("create.backToVibes")}
           </Link>
@@ -442,7 +442,7 @@ export default function CreateVibeForm({
             {photos.map((url, i) => (
               <div
                 key={url}
-                className="relative h-28 w-28 overflow-hidden rounded-2xl border-2 border-ink"
+                className="relative h-28 w-28 overflow-hidden rounded-2xl border border-ink/15"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={url} alt="" className="h-full w-full object-cover" />
@@ -505,7 +505,7 @@ export default function CreateVibeForm({
                 key={c}
                 type="button"
                 onClick={() => seedActivity(c)}
-                className={`rounded-2xl border-2 border-ink px-3 py-2 text-left text-sm font-bold ${
+                className={`rounded-2xl border border-ink/15 px-3 py-2 text-left text-sm font-bold ${
                   categories.includes(c) ? "bg-flockie-blue text-white" : "bg-white"
                 }`}
               >
@@ -530,7 +530,7 @@ export default function CreateVibeForm({
             <button
               type="button"
               onClick={useCustomActivity}
-              className="rounded-2xl border-2 border-ink bg-white px-4 text-sm font-bold"
+              className="rounded-2xl border border-ink/15 bg-white px-4 text-sm font-bold"
             >
               {t("create.use")}
             </button>
@@ -542,7 +542,7 @@ export default function CreateVibeForm({
                   key={c}
                   type="button"
                   onClick={() => seedActivity(c)}
-                  className="flex items-center gap-1 rounded-full border-2 border-ink bg-flockie-blue px-2.5 py-1 text-xs font-bold text-white"
+                  className="flex items-center gap-1 rounded-full border border-ink/15 bg-flockie-blue px-2.5 py-1 text-xs font-bold text-white"
                 >
                   {catLabel(c)} <span aria-hidden>×</span>
                 </button>
@@ -594,7 +594,7 @@ export default function CreateVibeForm({
                 key={o.value}
                 type="button"
                 onClick={() => pickDuration(o.value)}
-                className={`rounded-full border-2 border-ink px-4 py-2 text-sm font-bold ${
+                className={`rounded-full border border-ink/15 px-4 py-2 text-sm font-bold ${
                   durationOption === o.value ? "bg-flockie-blue text-white" : "bg-white"
                 }`}
               >
@@ -604,7 +604,7 @@ export default function CreateVibeForm({
             <button
               type="button"
               onClick={() => pickDuration("custom")}
-              className={`rounded-full border-2 border-ink px-4 py-2 text-sm font-bold ${
+              className={`rounded-full border border-ink/15 px-4 py-2 text-sm font-bold ${
                 durationOption === "custom" ? "bg-flockie-blue text-white" : "bg-white"
               }`}
             >
@@ -626,7 +626,7 @@ export default function CreateVibeForm({
               <p className="mt-1 text-xs font-medium text-muted">{t("create.customDurationHelp")}</p>
             </div>
           )}
-          <div className="mt-3 rounded-2xl border-2 border-ink bg-cream p-3 text-sm font-bold">
+          <div className="mt-3 rounded-2xl border border-ink/15 bg-cream p-3 text-sm font-bold">
             <p className="text-xs font-extrabold uppercase tracking-wide text-muted">
               {t("create.preview")}
             </p>
@@ -649,7 +649,7 @@ export default function CreateVibeForm({
                 key={h}
                 type="button"
                 onClick={() => setWindow(h)}
-                className={`rounded-full border-2 border-ink px-4 py-2 text-sm font-bold ${
+                className={`rounded-full border border-ink/15 px-4 py-2 text-sm font-bold ${
                   interestWindow === h ? "bg-flockie-blue text-white" : "bg-white"
                 }`}
               >
@@ -725,19 +725,19 @@ export default function CreateVibeForm({
               type="button"
               onClick={findExactLocation}
               disabled={resolvingLocation || locationName.trim().length < 3}
-              className="mt-2 rounded-full border-2 border-ink bg-white px-4 py-2 text-sm font-bold disabled:opacity-50"
+              className="mt-2 rounded-full border border-ink/15 bg-white px-4 py-2 text-sm font-bold disabled:opacity-50"
             >
               {resolvingLocation ? t("create.findingPin") : t("create.findExactPin")}
             </button>
           )}
           {resolvedLocation && locationLat == null && (
-            <div className="mt-2 rounded-2xl border-2 border-ink bg-cream p-3">
+            <div className="mt-2 rounded-2xl border border-ink/15 bg-cream p-3">
               <p className="text-xs font-extrabold text-muted">{t("create.suggestedAddress")}</p>
               <p className="mt-1 text-sm font-bold text-ink">{resolvedLocation.label}</p>
               <button
                 type="button"
                 onClick={useResolvedLocation}
-                className="mt-2 rounded-full border-2 border-ink bg-flockie-blue px-4 py-2 text-xs font-bold text-white"
+                className="mt-2 rounded-full border border-ink/15 bg-flockie-blue px-4 py-2 text-xs font-bold text-white"
               >
                 {t("create.useThisAddress")}
               </button>
@@ -752,7 +752,7 @@ export default function CreateVibeForm({
                   : `${locationName}${city ? ", " + city : ""}`
               )}&z=15&output=embed`}
               loading="lazy"
-              className="mt-2 h-44 w-full rounded-2xl border-2 border-ink"
+              className="mt-2 h-44 w-full rounded-2xl border border-ink/15"
               referrerPolicy="no-referrer-when-downgrade"
             />
           )}
@@ -785,7 +785,7 @@ export default function CreateVibeForm({
                 key={v}
                 type="button"
                 onClick={() => setGenderPref(v)}
-                className={`rounded-full border-2 border-ink py-2 text-sm font-bold ${
+                className={`rounded-full border border-ink/15 py-2 text-sm font-bold ${
                   genderPref === v ? "bg-flockie-blue text-white" : "bg-white"
                 }`}
               >
@@ -802,7 +802,7 @@ export default function CreateVibeForm({
                 key={p}
                 type="button"
                 onClick={() => setAlgoShare(p)}
-                className={`rounded-full border-2 border-ink py-2 text-sm font-bold ${
+                className={`rounded-full border border-ink/15 py-2 text-sm font-bold ${
                   algoShare === p ? "bg-flockie-blue text-white" : "bg-white"
                 }`}
               >
@@ -906,7 +906,7 @@ export default function CreateVibeForm({
                   key={r.key}
                   type="button"
                   onClick={() => setRules({ ...rules, [r.key]: !on })}
-                  className={`rounded-full border-2 border-ink px-3 py-1 text-xs font-bold ${
+                  className={`rounded-full border border-ink/15 px-3 py-1 text-xs font-bold ${
                     on ? "bg-ink text-white" : "bg-white"
                   }`}
                 >
@@ -918,7 +918,7 @@ export default function CreateVibeForm({
         </Field>
 
         {/* Advanced */}
-        <div className="rounded-2xl border-2 border-ink bg-white p-3">
+        <div className="rounded-2xl border border-ink/15 bg-white p-3">
           <button
             type="button"
             onClick={() => setShowAdvanced((v) => !v)}
@@ -951,7 +951,7 @@ export default function CreateVibeForm({
       <button
         type="submit"
         disabled={saving || uploading}
-        className="w-full rounded-full border-2 border-ink bg-flockie-orange py-3.5 font-bold text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50"
+        className="w-full rounded-full border border-ink/15 bg-flockie-orange py-3.5 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
       >
         {saving ? t("create.creating") : t("create.createVibe")}
       </button>
@@ -960,7 +960,7 @@ export default function CreateVibeForm({
 }
 
 const inputCls =
-  "w-full rounded-2xl border-2 border-ink bg-white px-4 py-2.5 font-medium outline-none";
+  "w-full rounded-2xl border border-ink/15 bg-white px-4 py-2.5 font-medium outline-none";
 
 function pad(value: number) {
   return String(value).padStart(2, "0");

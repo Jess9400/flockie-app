@@ -144,18 +144,18 @@ export default async function MyTripsPage({
     return (
       <div
         id={`trip-${t.id}`}
-        className={`scroll-mt-20 rounded-2xl border-2 border-ink bg-white p-4 shadow-[0_3px_0_0_rgba(26,26,26,1)] ${faded ? "opacity-60" : ""}`}
+        className={`scroll-mt-20 rounded-2xl border border-ink/15 bg-white p-4 shadow-[0_2px_10px_rgba(10,37,69,0.08)] ${faded ? "opacity-60" : ""}`}
       >
         <div className="flex items-start justify-between gap-3">
           {t.cover_photo && (
-            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 border-ink bg-cream">
+            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-ink/15 bg-cream">
               <Image src={t.cover_photo} alt="" fill sizes="64px" className="object-cover" />
             </div>
           )}
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <span
-                className={`rounded-full border-2 border-ink px-2 py-0.5 text-[10px] font-extrabold uppercase ${
+                className={`rounded-full border border-ink/15 px-2 py-0.5 text-[10px] font-extrabold uppercase ${
                   t.visibility === "public" ? "bg-flockie-orange text-white" : "bg-navy text-white"
                 }`}
               >
@@ -196,7 +196,7 @@ export default async function MyTripsPage({
             {!faded && (
               <Link
                 href={chatByTrip[t.id] ? `/buddies/${chatByTrip[t.id]}` : "/chats?tab=travel"}
-                className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-flockie-blue px-3 py-1.5 text-sm font-bold text-white"
+                className="flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-flockie-blue px-3 py-1.5 text-sm font-bold text-white"
               >
                 <MessageCircle size={14} /> {t.visibility === "public" ? tr("list.flockChat") : tr("list.chat")}
               </Link>
@@ -204,7 +204,7 @@ export default async function MyTripsPage({
             {!faded && (
               <Link
                 href={`/match/trip?id=${t.id}`}
-                className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-sm font-bold"
+                className="flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-white px-3 py-1.5 text-sm font-bold"
               >
                 <Pencil size={14} /> {tr("list.edit")}
               </Link>
@@ -226,7 +226,7 @@ export default async function MyTripsPage({
         <h1 className="text-2xl font-black">{tr("list.heading")}</h1>
         <Link
           href="/match/trip"
-          className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
+          className="inline-flex items-center gap-1 rounded-full border border-ink/15 bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
         >
           <Plus size={16} /> {tr("list.new")}
         </Link>

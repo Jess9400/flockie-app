@@ -204,7 +204,7 @@ export default function InboxList({
       <div
         className={`relative rounded-2xl border-2 bg-white p-3 ${
           inviteAccent ? "border-flockie-coral" : "border-ink/12"
-        } ${!n.read_at && !faded ? "shadow-[0_3px_0_0_rgba(26,26,26,1)]" : ""} ${faded ? "opacity-60" : ""}`}
+        } ${!n.read_at && !faded ? "shadow-[0_2px_10px_rgba(10,37,69,0.08)]" : ""} ${faded ? "opacity-60" : ""}`}
       >
         {href && (
           <Link href={href} aria-label={title} className="absolute inset-0 z-0 rounded-2xl" />
@@ -325,7 +325,7 @@ export default function InboxList({
       {/* Undo toast */}
       {undo && (
         <div className="fixed inset-x-0 bottom-24 z-50 flex justify-center px-4 sm:bottom-8">
-          <div className="flex items-center gap-4 rounded-full border-2 border-ink bg-ink px-4 py-2 text-sm font-bold text-white shadow-[0_4px_0_rgba(10,37,69,0.35)]">
+          <div className="flex items-center gap-4 rounded-full border border-ink/15 bg-ink px-4 py-2 text-sm font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
             {t("dismissedToast")}
             <button
               type="button"

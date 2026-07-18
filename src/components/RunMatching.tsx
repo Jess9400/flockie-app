@@ -32,19 +32,19 @@ export default function RunMatching({
 
   return (
     <div className="space-y-2">
-      <div className="rounded-full border-2 border-ink bg-white py-2.5 text-center text-sm font-bold">
+      <div className="rounded-full border border-ink/15 bg-white py-2.5 text-center text-sm font-bold">
         {t("runMatching.host")}
       </div>
       <button
         onClick={run}
         disabled={busy}
-        className="w-full rounded-full border-2 border-ink bg-flockie-orange py-3.5 font-bold text-white shadow-[0_4px_0_0_#E0512C] disabled:opacity-50"
+        className="w-full rounded-full border border-ink/15 bg-flockie-orange py-3.5 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
       >
         {busy ? t("runMatching.running") : status === "open" ? t("runMatching.runNow") : t("runMatching.reRun")}
       </button>
       <Link
         href={`/vibes/${vibeId}/chat`}
-        className="block w-full rounded-full border-2 border-ink bg-flockie-blue py-3 text-center font-bold text-white"
+        className="block w-full rounded-full border border-ink/15 bg-flockie-blue py-3 text-center font-bold text-white"
       >
         {t("runMatching.openChat")}
       </Link>

@@ -52,7 +52,7 @@ export default function VibeInlineFilters({
           {whenLabel} <ChevronDown size={13} />
         </button>
         {open === "when" && (
-          <div className="absolute right-0 z-30 mt-2 w-44 rounded-2xl border-2 border-ink bg-white p-1.5 shadow-[0_4px_0_rgba(10,37,69,0.15)]">
+          <div className="absolute right-0 z-30 mt-2 w-44 rounded-2xl border border-ink/15 bg-white p-1.5 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
             {whenOptions.map((o) => (
               <button
                 key={o.value || "any"}
@@ -83,7 +83,7 @@ export default function VibeInlineFilters({
           {catLabel} <ChevronDown size={13} />
         </button>
         {open === "category" && (
-          <div className="absolute right-0 z-30 mt-2 max-h-72 w-52 overflow-y-auto rounded-2xl border-2 border-ink bg-white p-1.5 shadow-[0_4px_0_rgba(10,37,69,0.15)]">
+          <div className="absolute right-0 z-30 mt-2 max-h-72 w-52 overflow-y-auto rounded-2xl border border-ink/15 bg-white p-1.5 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
             {categoryOptions.map((o) => {
               const on = cats.includes(o.value);
               return (

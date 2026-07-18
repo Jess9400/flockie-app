@@ -92,7 +92,7 @@ export default function ChatList({ variant = "page" }: { variant?: "page" | "rai
     <div className="flex h-full min-h-0 flex-col">
       <div className={variant === "rail" ? "px-3 pt-4" : "px-1"}>
         {searching ? (
-          <div className="flex items-center gap-2 rounded-full border-2 border-navy bg-white px-3 py-1.5">
+          <div className="flex items-center gap-2 rounded-full border border-navy/15 bg-white px-3 py-1.5">
             <Search size={16} className="shrink-0 text-navy/50" />
             {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
             <input

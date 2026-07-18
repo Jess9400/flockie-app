@@ -118,7 +118,7 @@ export default async function FlocksPage({
         <h1 className="text-2xl font-black">{tr("browse.heading")}</h1>
         <Link
           href="/match/trip?kind=flock"
-          className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
+          className="inline-flex items-center gap-1 rounded-full border border-ink/15 bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
         >
           <Plus size={16} /> {tr("browse.create")}
         </Link>
@@ -127,7 +127,7 @@ export default async function FlocksPage({
         {tr.rich("browse.subtitle", { b: (chunks) => <span className="font-bold">{chunks}</span> })}
       </p>
 
-      <div className="mt-4 grid grid-cols-2 gap-2 rounded-full border-2 border-ink bg-white p-1 text-sm font-bold">
+      <div className="mt-4 grid grid-cols-2 gap-2 rounded-full border border-ink/15 bg-white p-1 text-sm font-bold">
         <Link href="/match" className="rounded-full py-2 text-center text-ink">{tr("browse.tabFindBuddy")}</Link>
         <span className="rounded-full bg-flockie-blue py-2 text-center text-white">{tr("browse.tabFindFlock")}</span>
       </div>
@@ -155,10 +155,10 @@ export default async function FlocksPage({
               return (
                 <div
                   key={t.id}
-                  className="flex flex-col overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-[0_4px_0_0_rgba(26,26,26,1)]"
+                  className="flex flex-col overflow-hidden rounded-2xl border border-ink/15 bg-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
                 >
                   {/* Artwork — square so the whole cover shows, never cropped */}
-                  <Link href={`/flocks/${t.id}`} className="relative block aspect-square w-full border-b-2 border-ink bg-cream">
+                  <Link href={`/flocks/${t.id}`} className="relative block aspect-square w-full border-b border-ink/12 bg-cream">
                     {t.cover_photo ? (
                       <Image
                         src={t.cover_photo}
@@ -171,7 +171,7 @@ export default async function FlocksPage({
                       <div className="flex h-full items-center justify-center text-3xl">🧳</div>
                     )}
                     {typeof pct === "number" && (
-                      <span className="absolute right-1.5 top-1.5 rounded-full border-2 border-ink bg-flockie-blue px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-white">
+                      <span className="absolute right-1.5 top-1.5 rounded-full border border-ink/15 bg-flockie-blue px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-white">
                         ✨ {pct}%
                       </span>
                     )}

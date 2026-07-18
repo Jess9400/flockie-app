@@ -142,7 +142,7 @@ export default function BuddyChatHeader({
   if (isGroup) {
     const shown = groupMembers.slice(0, 6);
     return (
-      <div className="z-20 -mx-5 shrink-0 border-b-2 border-navy bg-white px-5">
+      <div className="z-20 -mx-5 shrink-0 border-b border-navy/12 bg-white px-5">
         <div className="flex items-center justify-between pt-3 lg:justify-end">
           <Link href="/chats" className="flex items-center gap-1 font-nunito text-sm font-bold text-navy/60 lg:hidden">
             <ChevronLeft size={16} /> {t("shared.chats")}
@@ -163,7 +163,7 @@ export default function BuddyChatHeader({
               {menu && (
                 <>
                   <div className="fixed inset-0 z-30" onClick={() => setMenu(false)} />
-                  <div className="absolute right-0 z-40 mt-1 w-52 rounded-2xl border-2 border-navy bg-white p-1.5 font-nunito text-sm font-semibold text-navy shadow-[0_4px_0_rgba(10,37,69,0.15)]">
+                  <div className="absolute right-0 z-40 mt-1 w-52 rounded-2xl border border-navy/15 bg-white p-1.5 font-nunito text-sm font-semibold text-navy shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
                     <button
                       type="button"
                       onClick={() => { setMenu(false); setExpanded(true); }}
@@ -238,7 +238,7 @@ export default function BuddyChatHeader({
                 <Link
                   key={m.id}
                   href={`/people/${m.id}`}
-                  className="flex items-center gap-1.5 rounded-full border-2 border-navy bg-white px-2 py-1 font-nunito text-xs font-bold text-navy"
+                  className="flex items-center gap-1.5 rounded-full border border-navy/15 bg-white px-2 py-1 font-nunito text-xs font-bold text-navy"
                 >
                   {m.photo ? (
                     <Image src={m.photo} alt="" width={20} height={20} className="h-5 w-5 rounded-full object-cover" />
@@ -259,7 +259,7 @@ export default function BuddyChatHeader({
   }
 
   return (
-    <div className="sticky top-16 z-20 -mx-5 border-b-2 border-navy bg-white px-5">
+    <div className="sticky top-16 z-20 -mx-5 border-b border-navy/12 bg-white px-5">
       {/* top row */}
       <div className="flex items-center justify-between pt-3 lg:justify-end">
         <Link href="/chats" className="flex items-center gap-1 font-nunito text-sm font-bold text-navy/60 lg:hidden">
@@ -277,7 +277,7 @@ export default function BuddyChatHeader({
           {menu && (
             <>
               <div className="fixed inset-0 z-30" onClick={() => setMenu(false)} />
-              <div className="absolute right-0 z-40 mt-1 w-52 rounded-2xl border-2 border-navy bg-white p-1.5 font-nunito text-sm font-semibold text-navy shadow-[0_4px_0_rgba(10,37,69,0.15)]">
+              <div className="absolute right-0 z-40 mt-1 w-52 rounded-2xl border border-navy/15 bg-white p-1.5 font-nunito text-sm font-semibold text-navy shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
                 <Link href={`/people/${peek.id}`} className="block rounded-xl px-3 py-2 hover:bg-navy/5">
                   {t("header.viewProfileNamed", { name })}
                 </Link>
@@ -370,7 +370,7 @@ export default function BuddyChatHeader({
           <div className="flex gap-2">
             <Link
               href={`/people/${peek.id}`}
-              className="rounded-full border-2 border-navy bg-flockie-blue px-4 py-1.5 font-fredoka text-sm font-semibold text-white"
+              className="rounded-full border border-navy/15 bg-flockie-blue px-4 py-1.5 font-fredoka text-sm font-semibold text-white"
             >
               {t("header.viewFullProfileNamed", { name })}
             </Link>
@@ -378,7 +378,7 @@ export default function BuddyChatHeader({
               type="button"
               onClick={leave}
               disabled={leaving}
-              className="rounded-full border-2 border-navy bg-white px-4 py-1.5 font-fredoka text-sm font-semibold text-navy disabled:opacity-50"
+              className="rounded-full border border-navy/15 bg-white px-4 py-1.5 font-fredoka text-sm font-semibold text-navy disabled:opacity-50"
             >
               {leaving ? t("shared.leaving") : t("header.leaveMatchBtn")}
             </button>

@@ -96,7 +96,7 @@ export default function VibeReviewForm({
         onChange={(e) => setComment(e.target.value)}
         maxLength={500}
         placeholder={t("vibeCommentPlaceholder")}
-        className="mt-6 h-28 w-full resize-none rounded-2xl border-2 border-navy bg-cream px-4 py-3 font-nunito text-[15px] font-medium text-navy outline-none focus:border-flockie-blue"
+        className="mt-6 h-28 w-full resize-none rounded-2xl border border-navy/15 bg-cream px-4 py-3 font-nunito text-[15px] font-medium text-navy outline-none focus:border-flockie-blue"
       />
 
       {err && <p className="mt-2 text-center font-nunito text-sm font-bold text-flockie-coral">{err}</p>}
@@ -104,7 +104,7 @@ export default function VibeReviewForm({
       <button
         type="submit"
         disabled={saving}
-        className="mt-4 w-full rounded-full border-2 border-navy bg-flockie-coral py-3.5 font-fredoka text-base font-semibold text-white shadow-[0_4px_0_0_rgba(10,37,69,1)] disabled:opacity-50"
+        className="mt-4 w-full rounded-full border border-navy/15 bg-flockie-coral py-3.5 font-fredoka text-base font-semibold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
       >
         {saving ? t("saving") : t("submit")}
       </button>

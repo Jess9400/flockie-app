@@ -212,7 +212,7 @@ function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-[26px] border-2 border-ink bg-white p-4 shadow-[0_4px_0_0_#10233d]">
+    <section className="rounded-[26px] border border-ink/15 bg-white p-4 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
       <div className="mb-3">
         <div className="flex items-center justify-between gap-3">
           <h2 className="font-fredoka text-xl font-bold text-navy">{title}</h2>
@@ -291,7 +291,7 @@ function buildHistory(events?: EventsData, locale = "en"): HistoryItem[] {
 function HistoryRow({ item, roleLabel }: { item: HistoryItem; roleLabel: string }) {
   const content = (
     <>
-      <span className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-2 border-ink bg-cream text-xl">
+      <span className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-ink/15 bg-cream text-xl">
         {item.photo ? (
           <Image src={item.photo} alt="" fill sizes="48px" className="object-cover" />
         ) : (

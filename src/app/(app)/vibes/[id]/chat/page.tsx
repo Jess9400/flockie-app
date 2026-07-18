@@ -129,7 +129,7 @@ export default async function VibeChatPage({
         />
 
         {vibe?.status === "cancelled" && (
-          <div className="mt-3 shrink-0 rounded-2xl border-2 border-navy bg-cream p-3 text-sm font-bold text-navy/70">
+          <div className="mt-3 shrink-0 rounded-2xl border border-navy/15 bg-cream p-3 text-sm font-bold text-navy/70">
             {t("vibeChatPage.cancelledNotice")}
           </div>
         )}

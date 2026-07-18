@@ -85,7 +85,7 @@ export default function ProfileView({
       {/* Archetype / persona */}
       {archetype && (
         <div
-          className="mt-4 flex items-start gap-3 rounded-2xl border-2 border-navy p-4"
+          className="mt-4 flex items-start gap-3 rounded-2xl border border-navy/15 p-4"
           style={{ background: `linear-gradient(135deg, ${archetype.gradientFrom}1a, ${archetype.gradientTo}1a)` }}
         >
           <ArchetypeBadge archetypeKey={p.archetype!} size={44} />

@@ -51,7 +51,7 @@ export default function HomeHero({
       <p className="mt-2 text-lg font-bold text-ink/70">{subline}</p>
 
       {liveCount > 0 && (
-        <p className="mt-4 inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-white px-3 py-1 text-xs font-extrabold text-ink">
+        <p className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-ink/15 bg-white px-3 py-1 text-xs font-extrabold text-ink">
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-flockie-coral opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-flockie-coral" />

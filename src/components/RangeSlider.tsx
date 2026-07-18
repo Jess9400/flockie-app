@@ -49,7 +49,7 @@ export default function RangeSlider({
         ))}
         {/* thumb */}
         <span
-          className={`pointer-events-none absolute top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-navy bg-white shadow-[0_2px_8px_rgba(10,37,69,0.15)] transition-transform ${
+          className={`pointer-events-none absolute top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-navy/15 bg-white shadow-[0_2px_8px_rgba(10,37,69,0.15)] transition-transform ${
             value == null ? "opacity-60" : ""
           }`}
           style={{ left: `${pct}%` }}

@@ -31,11 +31,11 @@ export default function QuickAction({ firstName }: { firstName: string }) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={t("quickAction.placeholder")}
-          className="h-14 w-full rounded-2xl border-[3px] border-ink bg-cream px-5 font-medium outline-none transition-colors focus:border-flockie-blue sm:h-16"
+          className="h-14 w-full rounded-2xl border-2 border-ink/15 bg-cream px-5 font-medium outline-none transition-colors focus:border-flockie-blue sm:h-16"
         />
         <button
           type="submit"
-          className="h-14 shrink-0 rounded-full border-[3px] border-ink bg-flockie-coral px-7 font-bold text-white transition-transform hover:scale-[1.02] sm:h-16"
+          className="h-14 shrink-0 rounded-full border-2 border-ink/15 bg-flockie-coral px-7 font-bold text-white transition-transform hover:scale-[1.02] sm:h-16"
         >
           {t("quickAction.createButton")}
         </button>
@@ -47,7 +47,7 @@ export default function QuickAction({ firstName }: { firstName: string }) {
             key={c}
             type="button"
             onClick={() => setText(c)}
-            className="rounded-full border-2 border-ink bg-white px-3 py-1 text-sm font-bold hover:bg-cream"
+            className="rounded-full border border-ink/15 bg-white px-3 py-1 text-sm font-bold hover:bg-cream"
           >
             {t(`quickAction.chip.${c}`)}
           </button>
