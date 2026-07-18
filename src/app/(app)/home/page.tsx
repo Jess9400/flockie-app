@@ -445,7 +445,7 @@ export default async function HomePage({
               return (
                 <div
                   key={p.id}
-                  className="flex w-40 shrink-0 snap-start flex-col items-center rounded-2xl border-[3px] border-ink bg-white p-4 text-center shadow-[0_5px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-1"
+                  className="flex w-40 shrink-0 snap-start flex-col items-center rounded-2xl border border-ink/12 bg-white p-4 text-center shadow-[0_2px_12px_rgba(10,37,69,0.07)] transition-transform hover:-translate-y-1"
                 >
                   <Link href={`/people/${p.id}`} className="flex w-full flex-col items-center">
                     <div
@@ -458,7 +458,7 @@ export default async function HomePage({
                           : undefined
                       }
                     >
-                      <div className="relative h-full w-full overflow-hidden rounded-full border-2 border-ink bg-cream">
+                      <div className="relative h-full w-full overflow-hidden rounded-full border border-ink/10 bg-cream">
                         {photo ? (
                           <Image src={photo} alt="" fill sizes="88px" className="object-cover" />
                         ) : (
@@ -497,7 +497,7 @@ export default async function HomePage({
       </section>
 
       {/* ── Happening near you (same city + filters) ────────────────────── */}
-      <section className="mx-4 mt-4 rounded-3xl border-[3px] border-ink bg-flockie-blue p-5 text-white sm:p-6">
+      <section className="mx-4 mt-4 rounded-3xl bg-flockie-blue p-5 text-white shadow-[0_2px_14px_rgba(10,37,69,0.1)] sm:p-6">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2 className="text-[22px] font-extrabold sm:text-[28px]">{th("nearYou.heading")}</h2>
@@ -533,7 +533,7 @@ export default async function HomePage({
       </section>
 
       {/* ── Didn't find what you're looking for? ────────────────────────── */}
-      <section className="mx-4 mt-8 rounded-3xl border-[3px] border-ink bg-cream p-5 sm:p-6">
+      <section className="mx-4 mt-8 rounded-3xl border border-ink/10 bg-cream p-5 sm:p-6">
         <h2 className="text-[22px] font-extrabold sm:text-[26px]">
           {th("notFound.heading")}
         </h2>
