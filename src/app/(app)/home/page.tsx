@@ -7,6 +7,7 @@ import { getSessionUser } from "@/lib/supabase/user";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
 import SayHiButton from "@/components/SayHiButton";
 import HomeHero from "@/components/HomeHero";
+import HomePlans from "@/components/HomePlans";
 import Squiggle from "@/components/Squiggle";
 import MatchKeyTip from "@/components/MatchKeyTip";
 import InviteFriendsButton from "@/components/InviteFriendsButton";
@@ -209,7 +210,10 @@ export default async function HomePage({
     city: string;
     timezone: string | null;
     status: string;
+    directionsUrl?: string;
   };
+  const mapsUrl = (q: string) =>
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
   let confirmedPlans: PlanVibe[] = [];
   let invitedPlans: PlanVibe[] = [];
   if (planIds.length) {
@@ -223,9 +227,22 @@ export default async function HomePage({
     const rows = ((pv ?? []) as PlanVibe[]).map((v) => ({ ...v, status: planStatus[v.id] }));
     confirmedPlans = rows.filter((v) => v.status === "confirmed");
     invitedPlans = rows.filter((v) => v.status === "invited");
+    // Confirmed attendees get the exact pin (lat/lng) for Directions, not a
+    // city text search. Falls back to the venue name, then area/city.
+    await Promise.all(
+      confirmedPlans.map(async (p) => {
+        const { data: logRows } = await supabase.rpc("vibe_private_logistics", { p_vibe: p.id });
+        const l = (logRows as
+          | { location_name: string | null; location_lat: number | null; location_lng: number | null }[]
+          | null)?.[0];
+        const q =
+          l?.location_lat != null && l?.location_lng != null
+            ? `${l.location_lat},${l.location_lng}`
+            : l?.location_name || [p.area, p.city].filter(Boolean).join(", ");
+        p.directionsUrl = mapsUrl(q);
+      })
+    );
   }
-  const mapsUrl = (q: string) =>
-    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
   const flocks = (flockRows ?? []) as HomeFlock[];
   const people = (peopleRows ?? []) as CityPerson[];
   // "Explore around the world" = vibes outside the user's home city.
@@ -324,68 +341,30 @@ export default async function HomePage({
       )}
 
       {/* ── Your plans: confirm invites + your next confirmed Vibe ───────── */}
-      {(invitedPlans.length > 0 || confirmedPlans.length > 0) && (
-        <section className="mx-4 mt-6 space-y-3">
-          <h2 className="px-1 text-[22px] font-extrabold sm:text-[28px]">{th("plans.heading")}</h2>
-          {invitedPlans.map((p) => (
-            <div key={p.id} className="rounded-2xl border-2 border-flockie-coral bg-white p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-flockie-coral/10 text-lg">
-                  ✉️
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-extrabold">
-                    {th("plans.invited")} · {p.title}
-                  </p>
-                  <p className="truncate text-xs font-medium text-muted">
-                    {formatVibeWhen(p.starts_at, locale, p.timezone)} · {p.area || p.city}
-                  </p>
-                </div>
-                <Link
-                  href={`/vibes/${p.id}`}
-                  className="shrink-0 rounded-full border border-ink/15 bg-flockie-coral px-4 py-2 text-xs font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
-                >
-                  {th("plans.confirm")}
-                </Link>
-              </div>
-            </div>
-          ))}
-          {confirmedPlans.map((p) => (
-            <div key={p.id} className="rounded-2xl border-2 border-onboarding-green bg-[#E9F6F1] p-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-onboarding-green/15 text-lg">
-                  🎉
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-extrabold">{p.title}</p>
-                  <p className="truncate text-xs font-medium text-muted">
-                    {formatVibeWhen(p.starts_at, locale, p.timezone)} · {p.area || p.city}
-                  </p>
-                </div>
-                <span className="shrink-0 rounded-full bg-onboarding-green px-2.5 py-1 text-[11px] font-extrabold text-white">
-                  {th("plans.youreIn")}
-                </span>
-              </div>
-              <div className="mt-2.5 flex gap-2">
-                <Link
-                  href={`/vibes/${p.id}/chat`}
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-ink/15 bg-white py-2 text-xs font-bold text-ink"
-                >
-                  <MessageCircle size={14} /> {th("plans.openChat")}
-                </Link>
-                <a
-                  href={mapsUrl([p.area, p.city].filter(Boolean).join(", "))}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-ink/15 bg-white py-2 text-xs font-bold text-ink"
-                >
-                  <MapPin size={14} /> {th("plans.directions")}
-                </a>
-              </div>
-            </div>
-          ))}
-        </section>
-      )}
+      <HomePlans
+        invited={invitedPlans.map((p) => ({
+          id: p.id,
+          title: p.title,
+          meta: `${formatVibeWhen(p.starts_at, locale, p.timezone)} · ${p.area || p.city}`,
+          href: `/vibes/${p.id}`,
+        }))}
+        confirmed={confirmedPlans.map((p) => ({
+          id: p.id,
+          title: p.title,
+          meta: `${formatVibeWhen(p.starts_at, locale, p.timezone)} · ${p.area || p.city}`,
+          chatUrl: `/vibes/${p.id}/chat`,
+          directionsUrl: p.directionsUrl ?? mapsUrl([p.area, p.city].filter(Boolean).join(", ")),
+        }))}
+        labels={{
+          heading: th("plans.heading"),
+          invited: th("plans.invited"),
+          confirm: th("plans.confirm"),
+          youreIn: th("plans.youreIn"),
+          openChat: th("plans.openChat"),
+          directions: th("plans.directions"),
+          dismiss: th("plans.dismiss"),
+        }}
+      />
 
       {/* ── Early-city state: lead here when the local pool is empty ─────── */}
       {localPoolEmpty && homeCity && (

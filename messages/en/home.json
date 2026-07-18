@@ -86,6 +86,7 @@
     "confirm": "Confirm your spot",
     "interested": "I'm interested",
     "manage": "Manage",
-    "view": "View details"
+    "view": "View details",
+    "dismiss": "Dismiss"
   }
 }
