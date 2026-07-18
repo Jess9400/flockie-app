@@ -71,11 +71,11 @@ const PRIMARY_NAV: NavItem[] = [
   { href: "/chats", labelKey: "chats", icon: MessageCircle, sections: ["chats"] },
 ];
 
-// Mobile bottom tab bar: the 5 core surfaces, thumb-reachable. Tabs claim the
-// sections of their children so e.g. /my-vibes lights up Vibes.
-// Profile lives on the top-right avatar, so the 5th mobile tab is My Plans.
+// Mobile bottom tab bar. The 1st slot is the ☰ menu (opens the drawer with
+// Home + everything); Profile lives on the top-right avatar, so the last tab
+// is My Plans. Tabs claim their children's sections so e.g. /my-vibes lights
+// up Vibes.
 const TABS: NavItem[] = [
-  { href: "/home", labelKey: "home", icon: Home, sections: ["home"] },
   { href: "/vibes", labelKey: "vibes", icon: Sparkles, sections: ["vibes", "my-vibes"] },
   { href: "/match", labelKey: "match", icon: Compass, sections: ["match"] },
   { href: "/chats", labelKey: "chats", icon: MessageCircle, sections: ["chats"] },
@@ -217,10 +217,13 @@ export default function AppShell({
       {/* Top bar */}
       <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-ink/12 bg-cream px-4 sm:px-6">
         <div className="flex items-center gap-2">
+          {/* Top-left menu: mobile only in chat rooms (where the bottom bar is
+              hidden); on desktop only on chat surfaces. Elsewhere the bottom
+              tab bar's ☰ opens the drawer. */}
           <button type="button" onClick={() => setOpen((v) => !v)} aria-label={tc("appShell.menu")}
-            className={`flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 ${
-              inChatSurface ? "" : "lg:hidden"
-            }`}>
+            className={`h-9 w-9 items-center justify-center rounded-full border border-ink/15 ${
+              isChatRoom ? "flex" : "hidden"
+            } ${inChatSurface ? "lg:flex" : "lg:hidden"}`}>
             {open ? <X size={18} /> : <Menu size={18} />}
           </button>
           <Link href="/home" aria-label={tc("appShell.home")}>
@@ -334,6 +337,17 @@ export default function AppShell({
           className="fixed inset-x-0 bottom-0 z-40 border-t border-ink/12 bg-white pb-[env(safe-area-inset-bottom)] sm:hidden"
         >
           <div className="grid grid-cols-5">
+            <button
+              type="button"
+              onClick={() => setOpen((v) => !v)}
+              aria-label={tc("appShell.menu")}
+              className={`flex flex-col items-center gap-0.5 pb-1.5 pt-2 text-[10px] font-extrabold ${
+                open ? "text-flockie-coral" : "text-ink/60"
+              }`}
+            >
+              {open ? <X size={22} /> : <Menu size={22} />}
+              {tc("appShell.menu")}
+            </button>
             {TABS.map((tab) => {
               const Icon = tab.icon;
               const active = tab.sections.includes(section);
