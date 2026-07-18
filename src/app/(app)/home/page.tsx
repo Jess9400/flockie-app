@@ -498,7 +498,12 @@ export default async function HomePage({
       </section>
 
       {/* ── Happening near you (same city + filters) ────────────────────── */}
-      <section className="mx-4 mt-4 rounded-3xl bg-flockie-blue p-5 text-white shadow-[0_2px_14px_rgba(10,37,69,0.1)] sm:p-6">
+      <section className="relative mx-4 mt-4 overflow-hidden rounded-3xl bg-gradient-to-br from-flockie-blue to-[#2f83bb] p-5 text-white shadow-[0_6px_22px_rgba(77,168,218,0.28)] sm:p-6">
+        {/* Soft decorative glows — add depth and fill the wide desktop panel
+            without adding any competing content. */}
+        <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-white/15 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 right-28 h-56 w-56 rounded-full bg-flockie-coral/25 blur-3xl" />
+        <div className="relative">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2 className="text-[22px] font-extrabold sm:text-[28px]">{th("nearYou.heading")}</h2>
@@ -531,6 +536,7 @@ export default async function HomePage({
             {near.map(vibeCell)}
           </div>
         )}
+        </div>
       </section>
 
       {/* ── Didn't find what you're looking for? ────────────────────────── */}
