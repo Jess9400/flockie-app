@@ -172,7 +172,9 @@ export default function BuddyChatRoom({
   }
   if (tripEndIso) {
     const daysAfter = -hoursUntil(tripEndIso) / 24;
-    if (daysAfter >= 2) {
+    // Only ask for a review once there's been actual contact — never on a
+    // brand-new match whose activity happens to be past-dated.
+    if (daysAfter >= 2 && messages.length > 0) {
       prompts.push({
         key: "review",
         text: t("room.promptReview", { name: otherName }),
