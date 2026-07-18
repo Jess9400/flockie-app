@@ -18,6 +18,7 @@ export default async function MatchPage({
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("match.find");
+  const tc = await getTranslations("common");
 
   // Trip buddy matching is parked "Soon" — default to Activity.
   const mode = searchParams.mode === "trip" ? "trip" : "activity";
@@ -43,16 +44,23 @@ export default async function MatchPage({
     ? !!profile?.onboarding_complete && (profile?.activities ?? []).length > 0
     : tripPrefsDone;
 
-  // Trips & Flocks are both parked "Soon" — instead of two rows of mostly
-  // disabled toggles, the page is Activity-only with a single hint chip.
+  const subToggle = (
+    <div className="mt-3 inline-flex items-center gap-1 rounded-full border border-ink/15 p-1 text-xs font-bold">
+      <Link href="/match?mode=activity" className={`rounded-full px-4 py-1 ${isActivity ? "bg-flockie-orange text-white" : "text-ink/55 hover:text-ink"}`}>
+        {t("toggleActivity")}
+      </Link>
+      <span aria-disabled="true" className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-full px-4 py-1 text-ink/35">
+        {t("toggleTrip")}
+        <span className="rounded-full bg-white px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-ink/50">
+          {tc("soon")}
+        </span>
+      </span>
+    </div>
+  );
+
   const header = (
     <>
-      <div className="flex flex-wrap items-center gap-2">
-        <h1 className="text-2xl font-black">{t("heading")}</h1>
-        <span className="-rotate-2 rounded-full bg-cream px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-ink/50">
-          ✨ {t("soonHint")}
-        </span>
-      </div>
+      <h1 className="text-2xl font-black">{t("heading")}</h1>
       <p className="mt-1 text-sm font-medium text-muted">
         {isActivity
           ? t.rich("introActivity", {
@@ -70,6 +78,19 @@ export default async function MatchPage({
               ),
             })}
       </p>
+      <div className="mt-4 grid grid-cols-2 gap-2 rounded-full border border-ink/15 p-1 text-sm font-bold">
+        <span className="rounded-full bg-flockie-orange py-2 text-center text-white">{t("tabBuddy")}</span>
+        <span
+          aria-disabled="true"
+          className="inline-flex cursor-not-allowed items-center justify-center gap-1.5 rounded-full py-2 text-center text-ink/35"
+        >
+          {t("tabFlock")}
+          <span className="rounded-full bg-cream px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-ink/50">
+            {tc("soon")}
+          </span>
+        </span>
+      </div>
+      {subToggle}
     </>
   );
 
