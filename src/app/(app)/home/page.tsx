@@ -394,13 +394,10 @@ export default async function HomePage({
       <section className="mx-4 mt-6">
         <div className="flex items-end justify-between gap-3 px-1">
           <div>
-            <h2 className="text-[22px] font-extrabold sm:text-[28px]">
-              {t("findBuddyHeading")}{" "}
-              <span className="ml-1 inline-block max-w-[3.25rem] -rotate-6 whitespace-normal rounded-2xl bg-flockie-coral px-2 py-1 align-middle text-center text-[9px] font-extrabold uppercase leading-[1.15] tracking-wide text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:max-w-none sm:whitespace-nowrap">
-                <span className="hidden sm:inline">✨ </span>
-                {th("buddies.topPicks")}
-              </span>
-            </h2>
+            <span className="mb-1.5 inline-block -rotate-2 rounded-full bg-flockie-coral px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
+              ✨ {th("buddies.topPicks")}
+            </span>
+            <h2 className="text-[22px] font-extrabold sm:text-[28px]">{t("findBuddyHeading")}</h2>
             <p className="mt-0.5 font-bold text-navy/60">
               {th("buddies.subtitle", { city: homeCity ?? th("buddies.yourCity") })}
             </p>
@@ -498,12 +495,7 @@ export default async function HomePage({
       </section>
 
       {/* ── Happening near you (same city + filters) ────────────────────── */}
-      <section className="relative mx-4 mt-4 overflow-hidden rounded-3xl bg-gradient-to-br from-flockie-blue to-[#2f83bb] p-5 text-white shadow-[0_6px_22px_rgba(77,168,218,0.28)] sm:p-6">
-        {/* Soft decorative glows — add depth and fill the wide desktop panel
-            without adding any competing content. */}
-        <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-white/15 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 right-28 h-56 w-56 rounded-full bg-flockie-coral/25 blur-3xl" />
-        <div className="relative">
+      <section className="mx-4 mt-4 rounded-3xl bg-flockie-blue p-5 text-white shadow-[0_16px_32px_-10px_rgba(77,168,218,0.55)] sm:p-6">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2 className="text-[22px] font-extrabold sm:text-[28px]">{th("nearYou.heading")}</h2>
@@ -536,7 +528,6 @@ export default async function HomePage({
             {near.map(vibeCell)}
           </div>
         )}
-        </div>
       </section>
 
       {/* ── Didn't find what you're looking for? ────────────────────────── */}
