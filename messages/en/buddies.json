@@ -169,6 +169,9 @@
       "bar": "Bar",
       "park": "Park",
       "activity": "Activity"
-    }
+    },
+    "inviteSent": "Invite sent",
+    "inviteEyebrow": "{name} invited you to",
+    "noDetailsYet": "No spot or time yet — sort it out below"
   }
 }

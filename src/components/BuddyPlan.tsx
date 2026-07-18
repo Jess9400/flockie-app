@@ -185,38 +185,38 @@ export default function BuddyPlan({
   // ── Proposed plan — waiting (proposer) or accept/decline (recipient) ──
   if (plan?.status === "proposed" && !composing) {
     const mine = plan.proposed_by === currentUserId;
+    const details = [plan.place_name, plan.when_at ? fmtWhen(plan.when_at) : null]
+      .filter(Boolean)
+      .join(" · ");
     return (
-      <div className={`mt-2 ${box}`}>
-        <div className="flex items-center gap-3">
-          <span className="text-xl">{catMeta(plan.category)?.emoji}</span>
+      <div className={`mt-2 ${box} border-flockie-coral/40`}>
+        <p className="text-[11px] font-extrabold uppercase tracking-wide text-flockie-coral">
+          {mine ? t("plan.inviteSent") : t("plan.inviteEyebrow", { name: otherName })}
+        </p>
+        <div className="mt-1.5 flex items-center gap-2.5">
+          <span className="text-2xl">{catMeta(plan.category)?.emoji}</span>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-extrabold text-ink">
-              {mine
-                ? t("plan.youProposed", { category: catLabel(plan.category) })
-                : t("plan.theyProposed", { name: otherName, category: catLabel(plan.category) })}
+            <p className="truncate text-base font-extrabold text-ink">{catLabel(plan.category)}</p>
+            <p className="truncate text-xs font-medium text-ink/70">
+              {details || t("plan.noDetailsYet")}
             </p>
-            {(plan.place_name || plan.when_at) && (
-              <p className="truncate text-xs font-medium text-ink/70">
-                {[plan.place_name, plan.when_at ? fmtWhen(plan.when_at) : null].filter(Boolean).join(" · ")}
-              </p>
-            )}
           </div>
         </div>
         {mine ? (
-          <p className="mt-1.5 text-xs font-medium text-muted">{t("plan.waiting", { name: otherName })}</p>
+          <p className="mt-2 text-xs font-medium text-muted">{t("plan.waiting", { name: otherName })}</p>
         ) : (
-          <div className="mt-2 flex gap-2">
+          <div className="mt-2.5 flex gap-2">
             <button
               onClick={() => respond(true)}
               disabled={busy}
-              className="flex-1 rounded-xl border-2 border-ink bg-flockie-orange py-2 text-sm font-bold text-white shadow-[0_2px_0_0_#E0512C] disabled:opacity-50"
+              className="flex-1 rounded-xl border-2 border-ink bg-flockie-orange py-2.5 text-sm font-bold text-white shadow-[0_2px_0_0_#E0512C] disabled:opacity-50"
             >
               {t("plan.accept")}
             </button>
             <button
               onClick={() => respond(false)}
               disabled={busy}
-              className="rounded-xl border border-ink/15 bg-white px-4 py-2 text-sm font-bold text-ink disabled:opacity-50"
+              className="rounded-xl border border-ink/15 bg-white px-4 py-2.5 text-sm font-bold text-ink disabled:opacity-50"
             >
               {t("plan.decline")}
             </button>

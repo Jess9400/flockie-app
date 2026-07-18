@@ -169,6 +169,9 @@
       "bar": "Bar",
       "park": "Parque",
       "activity": "Atividade"
-    }
+    },
+    "inviteSent": "Convite enviado",
+    "inviteEyebrow": "{name} convidou você para",
+    "noDetailsYet": "Sem lugar ou horário ainda — combinem abaixo"
   }
 }

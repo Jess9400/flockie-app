@@ -169,6 +169,9 @@
       "bar": "Bar",
       "park": "Parque",
       "activity": "Actividad"
-    }
+    },
+    "inviteSent": "Invitación enviada",
+    "inviteEyebrow": "{name} te invitó a",
+    "noDetailsYet": "Aún sin lugar ni hora — acordadlo abajo"
   }
 }
