@@ -145,5 +145,30 @@
     "profileAria": "Perfil de {name}",
     "viewFullProfile": "Ver perfil completo",
     "close": "Cerrar"
+  },
+  "plan": {
+    "cta": "Hagan un plan juntos",
+    "proposeTitle": "Propón un plan",
+    "browse": "Ver {category} cerca →",
+    "placePlaceholder": "Lugar (opcional)",
+    "send": "Enviar plan",
+    "youProposed": "Propusiste {category}",
+    "theyProposed": "{name} propuso {category}",
+    "waiting": "Esperando que {name} acepte",
+    "accept": "Aceptar",
+    "decline": "Rechazar",
+    "onTitle": "Van por {category}",
+    "tapToChat": "Acuerden los detalles en el chat",
+    "change": "Cambiar",
+    "metTitle": "¿Se vieron con {name}?",
+    "metYes": "Sí — deja una reseña",
+    "metNo": "Todavía no",
+    "cat": {
+      "coffee": "Café",
+      "restaurant": "Restaurante",
+      "bar": "Bar",
+      "park": "Parque",
+      "activity": "Actividad"
+    }
   }
 }

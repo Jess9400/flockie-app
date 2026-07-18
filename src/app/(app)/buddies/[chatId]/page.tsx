@@ -7,6 +7,7 @@ import { getSessionUser } from "@/lib/supabase/user";
 import BuddyChatRoom from "@/components/BuddyChatRoom";
 import BuddyChatHeader from "@/components/BuddyChatHeader";
 import FlockJoinRequests, { type JoinReq } from "@/components/FlockJoinRequests";
+import BuddyPlan, { type BuddyPlanData } from "@/components/BuddyPlan";
 import { type PeekData } from "@/components/ProfilePeek";
 
 export default async function BuddyChatPage({
@@ -262,6 +263,23 @@ export default async function BuddyChatPage({
   const headerDestination = isFlock ? flockTitle : destination;
   const headerDateRange = isFlock ? flockDateRange : dateRange;
   const finalIcebreaker = isFlock ? flockIcebreaker : icebreaker;
+
+  // "Make a plan" is only for 1:1 buddy matches (not flocks). Gate on the query
+  // succeeding so the feature stays hidden until buddy-plans.sql is on prod.
+  let currentPlan: BuddyPlanData | null = null;
+  let plansEnabled = false;
+  if (!isFlock) {
+    const planRes = await supabase
+      .from("buddy_plans")
+      .select("id, proposed_by, category, place_name, place_url, when_at, status, met, created_at")
+      .eq("chat_id", params.chatId)
+      .neq("status", "declined")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    plansEnabled = !planRes.error;
+    currentPlan = (planRes.data as BuddyPlanData | null) ?? null;
+  }
   const finalTripStart = isFlock ? flockStart : trip?.start_date ?? null;
   const finalTripEnd = isFlock ? flockEnd : trip?.end_date ?? null;
 
@@ -294,6 +312,17 @@ export default async function BuddyChatPage({
           <div className="shrink-0">
             <FlockJoinRequests tripId={flockTripId} requests={flockReqs} dualApproval={!!flockCoHost} canRemove={isHostOfFlock} />
           </div>
+        )}
+
+        {plansEnabled && !isFlock && (
+          <BuddyPlan
+            chatId={params.chatId}
+            otherId={otherId}
+            otherName={otherName}
+            city={other?.home_city ?? null}
+            currentUserId={user!.id}
+            initialPlan={currentPlan}
+          />
         )}
 
         <BuddyChatRoom

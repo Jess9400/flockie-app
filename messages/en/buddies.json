@@ -145,5 +145,30 @@
     "profileAria": "{name}'s profile",
     "viewFullProfile": "View full profile",
     "close": "Close"
+  },
+  "plan": {
+    "cta": "Make a plan together",
+    "proposeTitle": "Propose a plan",
+    "browse": "Browse {category} near you →",
+    "placePlaceholder": "Place (optional)",
+    "send": "Send plan",
+    "youProposed": "You proposed {category}",
+    "theyProposed": "{name} proposed {category}",
+    "waiting": "Waiting for {name} to accept",
+    "accept": "Accept",
+    "decline": "Decline",
+    "onTitle": "You’re on for {category}",
+    "tapToChat": "Sort the details in the chat",
+    "change": "Change",
+    "metTitle": "Did you meet {name}?",
+    "metYes": "Yes — leave a review",
+    "metNo": "Not yet",
+    "cat": {
+      "coffee": "Coffee",
+      "restaurant": "Restaurant",
+      "bar": "Bar",
+      "park": "Park",
+      "activity": "Activity"
+    }
   }
 }
