@@ -9,9 +9,16 @@ export async function loadVibeMatch(
   const out: Record<string, number> = {};
   const ids = Array.from(new Set(vibeIds)).filter(Boolean);
   if (ids.length === 0) return out;
-  const { data } = await supabase.rpc("vibe_match_scores", { p_ids: ids });
+  const { data, error } = await supabase.rpc("vibe_match_scores", { p_ids: ids });
+  // The match % silently disappears from every card when this RPC isn't on the
+  // database (it's migration-gated). Log it so a prod/SQL drift is visible
+  // instead of just showing blank cards.
+  if (error) {
+    console.error("[loadVibeMatch] vibe_match_scores RPC failed:", error.message);
+    return out;
+  }
   (data ?? []).forEach((r: { vibe_id: string; score: number }) => {
-    out[r.vibe_id] = r.score;
+    if (typeof r.score === "number") out[r.vibe_id] = r.score;
   });
   return out;
 }

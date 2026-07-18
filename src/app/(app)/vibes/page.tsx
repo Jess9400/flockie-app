@@ -156,6 +156,9 @@ export default async function VibesPage({
           <Plus size={16} /> {t("list.create")}
         </Link>
       </div>
+      <p className="mt-3 max-w-xl text-sm font-medium text-muted">
+        {t.rich("list.intro", { b: (chunks) => <span className="font-bold">{chunks}</span> })}
+      </p>
       {/* One search bar — matches vibes, categories and cities — with the
           filter controls tucked inside it. */}
       <VibeSearch q={q}>
