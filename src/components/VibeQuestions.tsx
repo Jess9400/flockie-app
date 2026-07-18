@@ -166,4 +166,4 @@ function TagGroup({
 }
 
 const inputCls =
-  "h-14 w-full rounded-2xl border border-navy/15 bg-cream px-4 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue";
+  "h-14 w-full rounded-2xl border border-navy/25 bg-cream px-4 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue";

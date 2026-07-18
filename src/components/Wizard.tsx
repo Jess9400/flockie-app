@@ -319,7 +319,7 @@ function Field({
             value={(value as string) ?? ""}
             onChange={(e) => onChange(e.target.value)}
             placeholder={field.placeholder}
-            className="mt-3 h-14 w-full rounded-2xl border border-navy/15 bg-white px-4 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue"
+            className="mt-3 h-14 w-full rounded-2xl border border-navy/25 bg-white px-4 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue"
           />
           <p className="mt-1 text-right font-nunito text-xs font-semibold text-navy/50">
             {((value as string) ?? "").length}/{field.max ?? 100}

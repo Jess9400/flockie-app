@@ -960,7 +960,7 @@ export default function CreateVibeForm({
 }
 
 const inputCls =
-  "w-full rounded-2xl border border-ink/15 bg-white px-4 py-2.5 font-medium outline-none";
+  "w-full rounded-2xl border border-ink/25 bg-white px-4 py-2.5 font-medium outline-none";
 
 function pad(value: number) {
   return String(value).padStart(2, "0");

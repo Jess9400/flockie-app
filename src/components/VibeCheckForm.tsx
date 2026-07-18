@@ -213,7 +213,7 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
               <textarea
                 rows={4}
                 maxLength={300}
-                className="w-full rounded-2xl border border-navy/15 bg-cream px-4 py-3 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue"
+                className="w-full rounded-2xl border border-navy/25 bg-cream px-4 py-3 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue"
                 value={basics.bio}
                 onChange={(e) => setBasics({ ...basics, bio: e.target.value })}
                 placeholder={t("form.bioPlaceholder")}
@@ -302,7 +302,7 @@ export default function VibeCheckForm({ userId, initial, onSaved, redirectAfter 
 }
 
 const inputCls =
-  "h-14 w-full rounded-2xl border border-navy/15 bg-cream px-4 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue";
+  "h-14 w-full rounded-2xl border border-navy/25 bg-cream px-4 font-nunito text-base font-medium text-navy outline-none focus:border-flockie-blue";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (

@@ -128,7 +128,7 @@ export default function ActivityVibePopup({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t("activityVibePopup.firstNamePlaceholder")}
-              className="h-12 w-full rounded-2xl border border-navy/15 bg-white px-4 font-nunito font-medium text-navy outline-none focus:border-flockie-blue"
+              className="h-12 w-full rounded-2xl border border-navy/25 bg-white px-4 font-nunito font-medium text-navy outline-none focus:border-flockie-blue"
             />
           </label>
 

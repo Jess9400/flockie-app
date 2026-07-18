@@ -38,7 +38,7 @@ export default function CreateFab() {
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-label={open ? t("createFab.closeAriaLabel") : t("createFab.openAriaLabel")}
-        className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-ink/15 bg-flockie-coral text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-all active:translate-y-[3px] active:shadow-[0_2px_0_0_rgba(10,37,69,1)]"
+        className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-ink/15 bg-flockie-coral text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-all active:translate-y-[3px]"
       >
         <span className={`transition-transform duration-200 ${open ? "rotate-90" : ""}`}>
           {open ? <X size={26} /> : <Plus size={28} />}

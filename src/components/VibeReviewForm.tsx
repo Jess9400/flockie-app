@@ -96,7 +96,7 @@ export default function VibeReviewForm({
         onChange={(e) => setComment(e.target.value)}
         maxLength={500}
         placeholder={t("vibeCommentPlaceholder")}
-        className="mt-6 h-28 w-full resize-none rounded-2xl border border-navy/15 bg-cream px-4 py-3 font-nunito text-[15px] font-medium text-navy outline-none focus:border-flockie-blue"
+        className="mt-6 h-28 w-full resize-none rounded-2xl border border-navy/25 bg-cream px-4 py-3 font-nunito text-[15px] font-medium text-navy outline-none focus:border-flockie-blue"
       />
 
       {err && <p className="mt-2 text-center font-nunito text-sm font-bold text-flockie-coral">{err}</p>}

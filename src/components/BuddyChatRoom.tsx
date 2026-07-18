@@ -325,7 +325,7 @@ export default function BuddyChatRoom({
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={uploading ? t("shared.sendingPhoto") : t("room.messagePerson", { name: otherName })}
-          className="h-12 w-full rounded-full border border-navy/15 bg-cream px-5 font-nunito text-[15px] font-medium text-navy outline-none focus:border-flockie-blue"
+          className="h-12 w-full rounded-full border border-navy/25 bg-cream px-5 font-nunito text-[15px] font-medium text-navy outline-none focus:border-flockie-blue"
         />
         <button
           type="submit"

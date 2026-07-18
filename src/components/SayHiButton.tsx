@@ -131,7 +131,7 @@ export default function SayHiButton({
                     onChange={(e) => setCustom(e.target.value)}
                     placeholder={t("somethingElse")}
                     maxLength={60}
-                    className="h-11 w-full rounded-full border border-ink/15 px-4 text-sm font-medium outline-none"
+                    className="h-11 w-full rounded-full border border-ink/25 px-4 text-sm font-medium outline-none"
                   />
                   <button
                     type="button"

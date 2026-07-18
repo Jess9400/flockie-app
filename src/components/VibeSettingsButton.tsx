@@ -85,7 +85,7 @@ export default function VibeSettingsButton({
     router.refresh();
   }
 
-  const fieldCls = "mt-1 w-full rounded-xl border border-ink/15 px-3 py-2 font-medium outline-none";
+  const fieldCls = "mt-1 w-full rounded-xl border border-ink/25 px-3 py-2 font-medium outline-none";
 
   return (
     <>

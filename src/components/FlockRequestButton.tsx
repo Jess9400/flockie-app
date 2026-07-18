@@ -61,7 +61,7 @@ export default function FlockRequestButton({
       onClick={request}
       disabled={busy}
       title={err ? t("flockRequest.errTip") : undefined}
-      className={`rounded-full border border-ink/15 bg-flockie-orange font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform active:translate-y-[2px] active:shadow-[0_1px_0_0_#E0512C] disabled:opacity-50 ${sizing}`}
+      className={`rounded-full border border-ink/15 bg-flockie-orange font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform active:translate-y-[2px] disabled:opacity-50 ${sizing}`}
     >
       {err ? t("flockRequest.tryAgain") : t("flockRequest.requestToJoin")}
     </button>

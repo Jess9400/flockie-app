@@ -134,7 +134,7 @@ export default function DealsSearch({
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder={t("cityPlaceholder")}
-            className="w-full rounded-2xl border border-ink/15 bg-white px-4 py-2.5 font-medium outline-none"
+            className="w-full rounded-2xl border border-ink/25 bg-white px-4 py-2.5 font-medium outline-none"
           />
         </label>
 
@@ -160,7 +160,7 @@ export default function DealsSearch({
               type="date"
               value={checkIn}
               onChange={(e) => setCheckIn(e.target.value)}
-              className="block w-full min-w-0 appearance-none rounded-2xl border border-ink/15 bg-white px-3 py-2.5 font-medium outline-none"
+              className="block w-full min-w-0 appearance-none rounded-2xl border border-ink/25 bg-white px-3 py-2.5 font-medium outline-none"
             />
           </label>
           <label className="block">
@@ -169,7 +169,7 @@ export default function DealsSearch({
               type="date"
               value={checkOut}
               onChange={(e) => setCheckOut(e.target.value)}
-              className="block w-full min-w-0 appearance-none rounded-2xl border border-ink/15 bg-white px-3 py-2.5 font-medium outline-none"
+              className="block w-full min-w-0 appearance-none rounded-2xl border border-ink/25 bg-white px-3 py-2.5 font-medium outline-none"
             />
           </label>
         </div>

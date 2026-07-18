@@ -436,7 +436,7 @@ export default function InterestButton({
               value={codeInput}
               onChange={(e) => setCodeInput(e.target.value)}
               placeholder={t("interest.hostCodePlaceholder")}
-              className="h-11 w-full rounded-full border border-ink/15 px-4 text-sm font-bold uppercase tracking-[0.2em] outline-none"
+              className="h-11 w-full rounded-full border border-ink/25 px-4 text-sm font-bold uppercase tracking-[0.2em] outline-none"
             />
             <button
               type="button"

@@ -145,7 +145,7 @@ export default function TripForm({
     router.refresh();
   }
 
-  const inputCls = "w-full rounded-2xl border border-ink/15 bg-white px-4 py-2.5 font-medium outline-none";
+  const inputCls = "w-full rounded-2xl border border-ink/25 bg-white px-4 py-2.5 font-medium outline-none";
 
   return (
     <form onSubmit={save} className="space-y-5 pb-8">
