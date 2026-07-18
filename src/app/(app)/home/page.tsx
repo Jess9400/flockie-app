@@ -7,7 +7,6 @@ import { getSessionUser } from "@/lib/supabase/user";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
 import SayHiButton from "@/components/SayHiButton";
 import HomeHero from "@/components/HomeHero";
-import CreateFab from "@/components/CreateFab";
 import MatchKeyTip from "@/components/MatchKeyTip";
 import InviteFriendsButton from "@/components/InviteFriendsButton";
 import ReviewsToDoBanner from "@/components/ReviewsToDoBanner";
@@ -588,8 +587,6 @@ export default async function HomePage({
           </Link>
         </div>
       </section>
-
-      <CreateFab />
     </div>
   );
 }
