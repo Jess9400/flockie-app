@@ -311,17 +311,6 @@ export default async function BuddyChatPage({
           </div>
         )}
 
-        {plansEnabled && !isFlock && (
-          <BuddyPlan
-            chatId={params.chatId}
-            otherId={otherId}
-            otherName={otherName}
-            city={other?.home_city ?? null}
-            currentUserId={user!.id}
-            initialPlan={currentPlan}
-          />
-        )}
-
         <BuddyChatRoom
           chatId={params.chatId}
           currentUserId={user!.id}
@@ -333,6 +322,18 @@ export default async function BuddyChatPage({
           tripEndIso={finalTripEnd}
           members={chatMembers}
           isGroup={!!flockTripId}
+          pinnedTop={
+            plansEnabled && !isFlock ? (
+              <BuddyPlan
+                chatId={params.chatId}
+                otherId={otherId}
+                otherName={otherName}
+                city={other?.home_city ?? null}
+                currentUserId={user!.id}
+                initialPlan={currentPlan}
+              />
+            ) : null
+          }
         />
       </div>
     </main>

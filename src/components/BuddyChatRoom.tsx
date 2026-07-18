@@ -29,6 +29,7 @@ export default function BuddyChatRoom({
   tripEndIso,
   members,
   isGroup,
+  pinnedTop,
 }: {
   chatId: string;
   currentUserId: string;
@@ -40,6 +41,7 @@ export default function BuddyChatRoom({
   tripEndIso: string | null;
   members?: Record<string, { name: string; photo: string | null }>;
   isGroup?: boolean;
+  pinnedTop?: React.ReactNode;
 }) {
   const supabase = createClient();
   const router = useRouter();
@@ -203,6 +205,10 @@ export default function BuddyChatRoom({
       )}
 
       <div className="min-h-0 flex-1 space-y-1 overflow-y-auto py-4">
+        {/* Pinned plan invite — lives inside the scroll so the sticky header
+            can never cover it */}
+        {pinnedTop && <div className="mx-auto max-w-[92%]">{pinnedTop}</div>}
+
         {/* Algo icebreaker */}
         <div className="mx-auto my-3 max-w-[92%] rounded-2xl border-2 border-flockie-blue bg-cream p-4">
           <p className="flex items-center gap-1.5 font-fredoka text-sm font-semibold text-flockie-blue">
