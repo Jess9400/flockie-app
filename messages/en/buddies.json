@@ -52,7 +52,8 @@
       "activity_buddy": "Activity Buddy",
       "flock": "Flock",
       "vibe": "Vibes Buddy"
-    }
+    },
+    "activityMatch": "Activity match"
   },
   "chatPage": {
     "yourMatch": "your match",

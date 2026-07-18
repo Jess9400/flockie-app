@@ -19,6 +19,7 @@ export async function GET() {
   const payload = await getChatList(supabase, user.id, locale, {
     you: (message: string) => t("list.youPrefix", { message }),
     tripMatch: t("list.tripMatch"),
+    activityMatch: t("list.activityMatch"),
   });
 
   return NextResponse.json(payload, {

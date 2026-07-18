@@ -7,7 +7,16 @@ import { formatChatTime, formatVibeShort } from "@/lib/chat";
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
 
-type BuddySummary = { chat_id: string; name: string | null; photo: string | null; unread: number; kind?: string };
+type BuddySummary = {
+  chat_id: string;
+  name: string | null;
+  photo: string | null;
+  unread: number;
+  kind?: string;
+  // From buddy_chat_summaries: last message time, or the chat's creation time
+  // when there are no messages yet (so brand-new matches sort correctly).
+  last_at?: string | null;
+};
 type VibeSummary = {
   vibe_id: string;
   chat_id: string;
@@ -79,7 +88,7 @@ export async function getChatList(
   supabase: Supabase,
   meId: string,
   locale: string,
-  labels: { you: (message: string) => string; tripMatch: string }
+  labels: { you: (message: string) => string; tripMatch: string; activityMatch: string }
 ): Promise<ChatListPayload> {
   const [{ data: buddies }, { data: vibes }, { data: flockChats }] = await Promise.all([
     supabase.rpc("buddy_chat_summaries"),
@@ -115,17 +124,27 @@ export async function getChatList(
     const last = buddyLast[b.chat_id];
     const name = b.name || "Flockie";
     const kind = b.kind ?? "travel_buddy";
+    // No-message fallback text depends on the buddy kind (an activity match
+    // must not read as a "Trip match").
+    const noMsgFallback = kind === "activity_buddy" ? labels.activityMatch : labels.tripMatch;
+    // Sort by last message, else the chat's creation time (last_at from the
+    // RPC) so a brand-new match lands at the top, not the bottom.
+    const activityAt = last
+      ? new Date(last.created_at).getTime()
+      : b.last_at
+        ? new Date(b.last_at).getTime()
+        : 0;
     return {
       id: b.chat_id,
       href: `/buddies/${b.chat_id}`,
       photo: b.photo,
       title: name,
-      subtitle: preview(last, meId, labels.tripMatch, labels.you),
+      subtitle: preview(last, meId, noMsgFallback, labels.you),
       time: last ? formatChatTime(last.created_at, locale) : "",
       unread: b.unread,
       fallback: name[0]?.toUpperCase() ?? "F",
       fallbackTone: "blue",
-      sortKey: last ? new Date(last.created_at).getTime() : 0,
+      sortKey: activityAt,
       kind,
       group: groupFor(kind),
     };
