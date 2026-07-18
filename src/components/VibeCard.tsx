@@ -38,6 +38,7 @@ export default function VibeCard({
   rating,
   canDismiss,
   variant = "browse",
+  homeCta,
 }: {
   vibe: VibeCardData;
   confirmedCount: number;
@@ -47,6 +48,7 @@ export default function VibeCard({
   rating?: number | null;
   canDismiss?: boolean;
   variant?: "browse" | "home";
+  homeCta?: { label: string; href: string; tone: "coral" | "green" | "muted" };
 }) {
   const supabase = createClient();
   const t = useTranslations("vibes");
@@ -120,7 +122,7 @@ export default function VibeCard({
           ? `relative rounded-3xl border border-ink/10 bg-white p-2 shadow-[0_2px_12px_rgba(10,37,69,0.07)] sm:p-2.5 ${
               faded ? "opacity-70" : "transition-transform hover:-translate-y-0.5"
             }`
-          : `relative overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-[0_4px_0_0_rgba(26,26,26,1)] ${
+          : `relative flex flex-col overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-[0_4px_0_0_rgba(26,26,26,1)] ${
               faded ? "opacity-70" : "transition-transform hover:-translate-y-1"
             }`
       }
@@ -146,7 +148,7 @@ export default function VibeCard({
       <Link
         href={`/vibes/${vibe.id}`}
         className={
-          isBrowse ? "flex min-w-0 flex-1 items-stretch sm:flex-col" : "flex h-full flex-col"
+          isBrowse ? "flex min-w-0 flex-1 items-stretch sm:flex-col" : "flex flex-1 flex-col"
         }
       >
         <div
@@ -288,6 +290,20 @@ export default function VibeCard({
           )}
         </div>
       </Link>
+      {!isBrowse && homeCta && (
+        <Link
+          href={homeCta.href}
+          className={`mx-2.5 mb-2.5 flex items-center justify-center rounded-xl border-2 border-ink py-2 text-xs font-extrabold ${
+            homeCta.tone === "green"
+              ? "bg-onboarding-green text-white"
+              : homeCta.tone === "muted"
+                ? "bg-white text-ink"
+                : "bg-flockie-coral text-white shadow-[0_2px_0_0_#E0512C]"
+          }`}
+        >
+          {homeCta.label}
+        </Link>
+      )}
     </div>
   );
 }

@@ -1,11 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
-import { ArrowRight, MapPin, Plus, Users } from "lucide-react";
+import { getTranslations, getLocale } from "next-intl/server";
+import { ArrowRight, MapPin, MessageCircle, Plus, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
-import FlockRequestButton from "@/components/FlockRequestButton";
 import SayHiButton from "@/components/SayHiButton";
 import HomeHero from "@/components/HomeHero";
 import CreateFab from "@/components/CreateFab";
@@ -14,7 +13,7 @@ import InviteFriendsButton from "@/components/InviteFriendsButton";
 import ReviewsToDoBanner from "@/components/ReviewsToDoBanner";
 import EarlyCityState from "@/components/EarlyCityState";
 import { loadVibeMatch } from "@/lib/vibe-stats";
-import { type InterestStatus } from "@/lib/vibes";
+import { formatVibeWhen, type InterestStatus } from "@/lib/vibes";
 
 type CityPerson = {
   id: string;
@@ -84,6 +83,7 @@ export default async function HomePage({
   // internationalized home header — see messages/*.json `common` namespace.
   const t = await getTranslations("common");
   const th = await getTranslations("home");
+  const locale = await getLocale();
 
   const [
     { data: profile },
@@ -190,6 +190,42 @@ export default async function HomePage({
   cardInterests?.forEach((r) => {
     cardStatuses[r.vibe_id] = r.status as InterestStatus;
   });
+
+  // ── "Your plans": upcoming Vibes I'm confirmed for (next plan, green) or
+  // invited to (confirm your spot). Pinned at the top of Home.
+  const { data: myPlanRows } = await supabase
+    .from("vibe_interests")
+    .select("vibe_id, status")
+    .eq("user_id", user!.id)
+    .in("status", ["confirmed", "invited"]);
+  const planStatus: Record<string, string> = {};
+  (myPlanRows ?? []).forEach((r) => (planStatus[r.vibe_id] = r.status));
+  const planIds = Object.keys(planStatus);
+  type PlanVibe = {
+    id: string;
+    title: string;
+    starts_at: string;
+    area: string | null;
+    city: string;
+    timezone: string | null;
+    status: string;
+  };
+  let confirmedPlans: PlanVibe[] = [];
+  let invitedPlans: PlanVibe[] = [];
+  if (planIds.length) {
+    const { data: pv } = await supabase
+      .from("vibe_directory")
+      .select("id, title, starts_at, area, city, timezone, status")
+      .in("id", planIds)
+      .gt("starts_at", nowIso)
+      .neq("status", "cancelled")
+      .order("starts_at", { ascending: true });
+    const rows = ((pv ?? []) as PlanVibe[]).map((v) => ({ ...v, status: planStatus[v.id] }));
+    confirmedPlans = rows.filter((v) => v.status === "confirmed");
+    invitedPlans = rows.filter((v) => v.status === "invited");
+  }
+  const mapsUrl = (q: string) =>
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
   const flocks = (flockRows ?? []) as HomeFlock[];
   const people = (peopleRows ?? []) as CityPerson[];
   // "Explore around the world" = vibes outside the user's home city.
@@ -230,18 +266,32 @@ export default async function HomePage({
   const localPoolEmpty =
     !!homeCity && people.length === 0 && near.length === 0 && (liveCount ?? 0) === 0;
 
-  const vibeCell = (v: VibeRow) => (
-    <div key={v.id} className="w-72 shrink-0 snap-start">
-      <VibeCard
-        vibe={{ ...v, host: vibeMeta.hosts[v.host_id] ?? null } as VibeCardData}
-        confirmedCount={vibeMeta.counts[v.id] ?? 0}
-        myStatus={cardStatuses[v.id] ?? null}
-        matchPct={v.host_id === user!.id ? undefined : vibeMatch[v.id]}
-        canDismiss={v.host_id !== user!.id && !cardStatuses[v.id]}
-        variant="home"
-      />
-    </div>
-  );
+  const vibeCell = (v: VibeRow) => {
+    const st = cardStatuses[v.id] ?? null;
+    const isHostVibe = v.host_id === user!.id;
+    // One-tap CTA on the card: express interest when I have no status, or jump
+    // into the chat once I'm confirmed. Pending states keep just the status chip.
+    const homeCta = isHostVibe
+      ? undefined
+      : st === "confirmed"
+        ? { label: th("plans.openChat"), href: `/vibes/${v.id}/chat`, tone: "green" as const }
+        : st == null
+          ? { label: th("plans.interested"), href: `/vibes/${v.id}?interested=1`, tone: "coral" as const }
+          : undefined;
+    return (
+      <div key={v.id} className="w-72 shrink-0 snap-start">
+        <VibeCard
+          vibe={{ ...v, host: vibeMeta.hosts[v.host_id] ?? null } as VibeCardData}
+          confirmedCount={vibeMeta.counts[v.id] ?? 0}
+          myStatus={st}
+          matchPct={isHostVibe ? undefined : vibeMatch[v.id]}
+          canDismiss={!isHostVibe && !st}
+          variant="home"
+          homeCta={homeCta}
+        />
+      </div>
+    );
+  };
 
   return (
     <div className="home-stagger pb-24">
@@ -264,6 +314,70 @@ export default async function HomePage({
       {/* Reviews to leave (consolidated, session-dismissible) */}
       {firstReviewHref && (
         <ReviewsToDoBanner count={reviewCount} href={firstReviewHref} />
+      )}
+
+      {/* ── Your plans: confirm invites + your next confirmed Vibe ───────── */}
+      {(invitedPlans.length > 0 || confirmedPlans.length > 0) && (
+        <section className="mx-4 mt-6 space-y-3">
+          <h2 className="px-1 text-[22px] font-extrabold sm:text-[28px]">{th("plans.heading")}</h2>
+          {invitedPlans.map((p) => (
+            <div key={p.id} className="rounded-2xl border-2 border-flockie-coral bg-white p-3">
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-flockie-coral/10 text-lg">
+                  ✉️
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-extrabold">
+                    {th("plans.invited")} · {p.title}
+                  </p>
+                  <p className="truncate text-xs font-medium text-muted">
+                    {formatVibeWhen(p.starts_at, locale, p.timezone)} · {p.area || p.city}
+                  </p>
+                </div>
+                <Link
+                  href={`/vibes/${p.id}`}
+                  className="shrink-0 rounded-full border-2 border-ink bg-flockie-coral px-4 py-2 text-xs font-bold text-white shadow-[0_2px_0_0_#E0512C]"
+                >
+                  {th("plans.confirm")}
+                </Link>
+              </div>
+            </div>
+          ))}
+          {confirmedPlans.map((p) => (
+            <div key={p.id} className="rounded-2xl border-2 border-onboarding-green bg-[#E9F6F1] p-3">
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-onboarding-green/15 text-lg">
+                  🎉
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-extrabold">{p.title}</p>
+                  <p className="truncate text-xs font-medium text-muted">
+                    {formatVibeWhen(p.starts_at, locale, p.timezone)} · {p.area || p.city}
+                  </p>
+                </div>
+                <span className="shrink-0 rounded-full bg-onboarding-green px-2.5 py-1 text-[11px] font-extrabold text-white">
+                  {th("plans.youreIn")}
+                </span>
+              </div>
+              <div className="mt-2.5 flex gap-2">
+                <Link
+                  href={`/vibes/${p.id}/chat`}
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full border-2 border-ink bg-white py-2 text-xs font-bold text-ink"
+                >
+                  <MessageCircle size={14} /> {th("plans.openChat")}
+                </Link>
+                <a
+                  href={mapsUrl([p.area, p.city].filter(Boolean).join(", "))}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full border-2 border-ink bg-white py-2 text-xs font-bold text-ink"
+                >
+                  <MapPin size={14} /> {th("plans.directions")}
+                </a>
+              </div>
+            </div>
+          ))}
+        </section>
       )}
 
       {/* ── Early-city state: lead here when the local pool is empty ─────── */}
@@ -438,94 +552,6 @@ export default async function HomePage({
         ) : (
           <div className="carousel-fade mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {near.map(vibeCell)}
-          </div>
-        )}
-      </section>
-
-      {/* ── Explore vibes around the world (other cities) ───────────────── */}
-      {exploreVibes.length > 0 && (
-        <section id="explore-world" className="mx-4 mt-8 scroll-mt-4">
-          <div className="flex items-end justify-between gap-3 px-1">
-            <div>
-              <h2 className="text-[22px] font-extrabold sm:text-[28px]">{th("explore.heading")}</h2>
-              <p className="mt-0.5 font-bold text-navy/60">
-                {th("explore.subtitle")}
-              </p>
-            </div>
-            <Link
-              href="/vibes"
-              className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
-            >
-              {th("seeAll")} <ArrowRight size={15} />
-            </Link>
-          </div>
-          <div className="carousel-fade mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {exploreVibes.map(vibeCell)}
-          </div>
-        </section>
-      )}
-
-      {/* ── Find a flock (newest open group trips) ──────────────────────── */}
-      <section className="mx-4 mt-8">
-        <div className="flex items-end justify-between gap-3 px-1">
-          <div>
-            <h2 className="text-[22px] font-extrabold sm:text-[28px]">{th("flocks.heading")}</h2>
-            <p className="mt-0.5 font-bold text-navy/60">{th("flocks.subtitle")}</p>
-          </div>
-          <Link
-            href="/flocks"
-            className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
-          >
-            {th("seeAll")} <ArrowRight size={15} />
-          </Link>
-        </div>
-
-        {flocks.length === 0 ? (
-          <div className="mt-4 rounded-3xl border-2 border-dashed border-ink/25 bg-white p-6 text-center">
-            <p className="font-bold">{th("flocks.emptyTitle")}</p>
-            <p className="mt-1 text-sm font-medium text-muted">{th("flocks.emptyBody")}</p>
-            <Link
-              href="/match/trip?kind=flock"
-              className="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-flockie-blue px-5 py-2 text-sm font-bold text-white"
-            >
-              {th("flocks.createFlock")} <ArrowRight size={15} />
-            </Link>
-          </div>
-        ) : (
-          <div className="carousel-fade mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {flocks.map((f) => {
-              const dest = (f.destinations ?? [f.destination]).filter(Boolean).join(" · ") || th("flocks.tripFallback");
-              const hostName = f.host_name || th("flocks.hostFallback");
-              return (
-                <div
-                  key={f.id}
-                  className="flex w-56 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border-[3px] border-ink bg-white shadow-[0_5px_0_0_rgba(10,37,69,1)] transition-transform hover:-translate-y-1"
-                >
-                  <div className="relative aspect-[4/3] w-full border-b-2 border-ink bg-cream">
-                    {f.cover_photo ? (
-                      <Image src={f.cover_photo} alt="" fill sizes="224px" className="object-cover" />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-4xl">🧳</div>
-                    )}
-                  </div>
-                  <div className="flex flex-1 flex-col p-3">
-                    <p className="flex items-start gap-1 text-sm font-extrabold leading-tight">
-                      <MapPin size={13} className="mt-0.5 shrink-0 text-flockie-coral" />
-                      <span className="line-clamp-2">{dest}</span>
-                    </p>
-                    <p className="mt-1 text-xs font-medium text-muted">
-                      {f.start_date} → {f.end_date}
-                    </p>
-                    <p className="mt-1 flex items-center gap-1 text-xs font-bold text-navy/70">
-                      <Users size={11} /> {f.going}/{f.group_size} · {hostName}
-                    </p>
-                    <div className="mt-2.5">
-                      <FlockRequestButton tripId={f.id} requested={f.requested} compact tripPrefsDone={tripPrefsDone} />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
           </div>
         )}
       </section>

@@ -28,15 +28,20 @@
     "filter48": "48h",
     "createVibe": "Create a Vibe",
     "subtitle": {
-      "all": { "withCity": "Upcoming in {city}", "noCity": "Upcoming Vibes" },
-      "24": { "withCity": "In the next 24 hours in {city}", "noCity": "Vibes in the next 24 hours" },
-      "48": { "withCity": "In the next 48 hours in {city}", "noCity": "Vibes in the next 48 hours" }
+      "24": {
+        "withCity": "In the next 24 hours in {city}",
+        "noCity": "Vibes in the next 24 hours"
+      },
+      "48": {
+        "withCity": "In the next 48 hours in {city}",
+        "noCity": "Vibes in the next 48 hours"
+      },
+      "all": {
+        "withCity": "Upcoming in {city}",
+        "noCity": "Upcoming Vibes"
+      }
     },
     "empty": {
-      "all": {
-        "withCity": "No upcoming Vibes in {city} yet. Make the first move 👇",
-        "noCity": "No upcoming Vibes yet. Make the first move 👇"
-      },
       "24": {
         "withCity": "No Vibes in the next 24 hours in {city} yet. Make the first move 👇",
         "noCity": "No Vibes in the next 24 hours yet. Make the first move 👇"
@@ -44,6 +49,10 @@
       "48": {
         "withCity": "No Vibes in the next 48 hours in {city} yet. Make the first move 👇",
         "noCity": "No Vibes in the next 48 hours yet. Make the first move 👇"
+      },
+      "all": {
+        "withCity": "No upcoming Vibes in {city} yet. Make the first move 👇",
+        "noCity": "No upcoming Vibes yet. Make the first move 👇"
       }
     }
   },
@@ -67,5 +76,14 @@
     "completeVibeCheck": "✨ Complete your vibe check",
     "createVibe": "Create a vibe",
     "createActivity": "Create an activity"
+  },
+  "plans": {
+    "heading": "Your plans",
+    "youreIn": "You're in",
+    "openChat": "Open chat",
+    "directions": "Directions",
+    "invited": "You're invited",
+    "confirm": "Confirm your spot",
+    "interested": "I'm interested"
   }
 }

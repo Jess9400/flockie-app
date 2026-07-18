@@ -28,15 +28,20 @@
     "filter48": "48h",
     "createVibe": "Criar uma Vibe",
     "subtitle": {
-      "all": { "withCity": "Em breve em {city}", "noCity": "Próximos Vibes" },
-      "24": { "withCity": "Nas próximas 24 horas em {city}", "noCity": "Vibes nas próximas 24 horas" },
-      "48": { "withCity": "Nas próximas 48 horas em {city}", "noCity": "Vibes nas próximas 48 horas" }
+      "24": {
+        "withCity": "Nas próximas 24 horas em {city}",
+        "noCity": "Vibes nas próximas 24 horas"
+      },
+      "48": {
+        "withCity": "Nas próximas 48 horas em {city}",
+        "noCity": "Vibes nas próximas 48 horas"
+      },
+      "all": {
+        "withCity": "Em breve em {city}",
+        "noCity": "Próximos Vibes"
+      }
     },
     "empty": {
-      "all": {
-        "withCity": "Ainda não há Vibes em breve em {city}. Dê o primeiro passo 👇",
-        "noCity": "Ainda não há Vibes em breve. Dê o primeiro passo 👇"
-      },
       "24": {
         "withCity": "Ainda não há Vibes nas próximas 24 horas em {city}. Dê o primeiro passo 👇",
         "noCity": "Ainda não há Vibes nas próximas 24 horas. Dê o primeiro passo 👇"
@@ -44,6 +49,10 @@
       "48": {
         "withCity": "Ainda não há Vibes nas próximas 48 horas em {city}. Dê o primeiro passo 👇",
         "noCity": "Ainda não há Vibes nas próximas 48 horas. Dê o primeiro passo 👇"
+      },
+      "all": {
+        "withCity": "Ainda não há Vibes em breve em {city}. Dê o primeiro passo 👇",
+        "noCity": "Ainda não há Vibes em breve. Dê o primeiro passo 👇"
       }
     }
   },
@@ -67,5 +76,14 @@
     "completeVibeCheck": "✨ Complete seu vibe check",
     "createVibe": "Criar uma Vibe",
     "createActivity": "Criar uma atividade"
+  },
+  "plans": {
+    "heading": "Seus planos",
+    "youreIn": "Você está dentro",
+    "openChat": "Abrir chat",
+    "directions": "Como chegar",
+    "invited": "Você foi convidado",
+    "confirm": "Confirme sua vaga",
+    "interested": "Tenho interesse"
   }
 }
