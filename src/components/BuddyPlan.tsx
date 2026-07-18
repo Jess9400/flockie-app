@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CalendarClock, MapPin, X } from "lucide-react";
+import { CalendarClock, X } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import PlaceField from "@/components/PlaceField";
 
 export type BuddyPlanData = {
   id: string;
@@ -58,6 +59,7 @@ export default function BuddyPlan({
   const [composing, setComposing] = useState(false);
   const [cat, setCat] = useState<(typeof CATS)[number]["key"] | null>(null);
   const [placeName, setPlaceName] = useState("");
+  const [placeUrl, setPlaceUrl] = useState<string | null>(null);
   const [when, setWhen] = useState("");
   const [busy, setBusy] = useState(false);
   const [now, setNow] = useState<number | null>(null);
@@ -79,11 +81,13 @@ export default function BuddyPlan({
   async function propose() {
     if (!cat || busy) return;
     setBusy(true);
+    const trimmed = placeName.trim();
+    const url = trimmed ? placeUrl ?? mapsSearch(trimmed, city) : null;
     const { data, error } = await supabase.rpc("propose_buddy_plan", {
       p_chat: chatId,
       p_category: cat,
-      p_place_name: placeName.trim() || null,
-      p_place_url: null,
+      p_place_name: trimmed || null,
+      p_place_url: url,
       p_when: when ? new Date(when).toISOString() : null,
     });
     setBusy(false);
@@ -92,8 +96,8 @@ export default function BuddyPlan({
         id: data as string,
         proposed_by: currentUserId,
         category: cat,
-        place_name: placeName.trim() || null,
-        place_url: null,
+        place_name: trimmed || null,
+        place_url: url,
         when_at: when ? new Date(when).toISOString() : null,
         status: "proposed",
         met: null,
@@ -102,6 +106,7 @@ export default function BuddyPlan({
       setComposing(false);
       setCat(null);
       setPlaceName("");
+      setPlaceUrl(null);
       setWhen("");
       router.refresh();
     }
@@ -251,21 +256,21 @@ export default function BuddyPlan({
           ))}
         </div>
         {cat && (
-          <a
-            href={mapsSearch(catMeta(cat)!.q, city)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-flockie-blue"
-          >
-            <MapPin size={13} /> {t("plan.browse", { category: catLabel(cat) })}
-          </a>
+          <div className="mt-2">
+            <PlaceField
+              category={cat}
+              city={city ?? null}
+              value={placeName}
+              onChange={({ name, url }) => {
+                setPlaceName(name);
+                setPlaceUrl(url);
+              }}
+              browseHref={mapsSearch(catMeta(cat)!.q, city)}
+              browseLabel={t("plan.browse", { category: catLabel(cat) })}
+              placeholder={t("plan.placePlaceholder")}
+            />
+          </div>
         )}
-        <input
-          value={placeName}
-          onChange={(e) => setPlaceName(e.target.value)}
-          placeholder={t("plan.placePlaceholder")}
-          className="mt-2 w-full rounded-xl border border-ink/25 bg-white px-3 py-2 text-sm font-medium outline-none"
-        />
         <label className="mt-2 flex items-center gap-2 rounded-xl border border-ink/25 bg-white px-3 py-2 text-sm font-medium text-ink/70">
           <CalendarClock size={15} className="shrink-0" />
           <input

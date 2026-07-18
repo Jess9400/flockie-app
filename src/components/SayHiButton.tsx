@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
-import { MapPin } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useEsc } from "@/lib/use-esc";
+import PlaceField from "@/components/PlaceField";
 
 // Categories mirror buddy_plans' allow-list so the invite seeds a plan cleanly.
 const CATS = [
@@ -42,6 +42,7 @@ export default function SayHiButton({
   const [busy, setBusy] = useState(false);
   const [cat, setCat] = useState<CatKey | null>(null);
   const [place, setPlace] = useState("");
+  const [placeUrl, setPlaceUrl] = useState<string | null>(null);
   const [when, setWhen] = useState("");
   const [city, setCity] = useState<string | null>(null);
   const [sent, setSent] = useState<string | null>(null);
@@ -79,8 +80,9 @@ export default function SayHiButton({
       p_activity_title: label,
       p_category: cat,
       p_place_name: trimmedPlace || null,
-      p_place_url:
-        trimmedPlace && catMeta ? mapsSearch(trimmedPlace, city || null) : null,
+      p_place_url: trimmedPlace
+        ? placeUrl ?? mapsSearch(trimmedPlace, city || null)
+        : null,
       p_when: whenIso,
     });
     setBusy(false);
@@ -111,6 +113,7 @@ export default function SayHiButton({
     setSent(null);
     setCat(null);
     setPlace("");
+    setPlaceUrl(null);
     setWhen("");
     setError(null);
   }
@@ -192,21 +195,17 @@ export default function SayHiButton({
                   {/* Step 2 — place + when (only once a category is picked) */}
                   {cat && catMeta && (
                     <div className="mt-4 space-y-3">
-                      <a
-                        href={mapsSearch(catMeta.search, city || null)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-1.5 rounded-full border border-flockie-blue/40 bg-flockie-blue/5 py-2 text-xs font-bold text-flockie-blue"
-                      >
-                        <MapPin size={14} />{" "}
-                        {t("browseNear", { cat: t(`cat.${cat}`).toLowerCase() })}
-                      </a>
-                      <input
+                      <PlaceField
+                        category={cat}
+                        city={city || null}
                         value={place}
-                        onChange={(e) => setPlace(e.target.value)}
+                        onChange={({ name, url }) => {
+                          setPlace(name);
+                          setPlaceUrl(url);
+                        }}
+                        browseHref={mapsSearch(catMeta.search, city || null)}
+                        browseLabel={t("browseNear", { cat: t(`cat.${cat}`).toLowerCase() })}
                         placeholder={t("placePlaceholder")}
-                        maxLength={80}
-                        className="h-11 w-full rounded-xl border border-ink/25 px-4 text-sm font-medium outline-none focus:border-flockie-blue"
                       />
                       <input
                         type="datetime-local"
