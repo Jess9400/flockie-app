@@ -18,7 +18,6 @@ export default async function MatchPage({
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("match.find");
-  const tc = await getTranslations("common");
 
   // Trip buddy matching is parked "Soon" — default to Activity.
   const mode = searchParams.mode === "trip" ? "trip" : "activity";
@@ -44,23 +43,16 @@ export default async function MatchPage({
     ? !!profile?.onboarding_complete && (profile?.activities ?? []).length > 0
     : tripPrefsDone;
 
-  const subToggle = (
-    <div className="mt-3 inline-flex items-center gap-1 rounded-full border border-ink/15 p-1 text-xs font-bold">
-      <Link href="/match?mode=activity" className={`rounded-full px-4 py-1 ${isActivity ? "bg-flockie-orange text-white" : "text-ink/55 hover:text-ink"}`}>
-        {t("toggleActivity")}
-      </Link>
-      <span aria-disabled="true" className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-full px-4 py-1 text-ink/35">
-        {t("toggleTrip")}
-        <span className="rounded-full bg-white px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-ink/50">
-          {tc("soon")}
-        </span>
-      </span>
-    </div>
-  );
-
+  // Trips & Flocks are both parked "Soon" — instead of two rows of mostly
+  // disabled toggles, the page is Activity-only with a single hint chip.
   const header = (
     <>
-      <h1 className="text-2xl font-black">{t("heading")}</h1>
+      <div className="flex flex-wrap items-center gap-2">
+        <h1 className="text-2xl font-black">{t("heading")}</h1>
+        <span className="-rotate-2 rounded-full bg-cream px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-ink/50">
+          ✨ {t("soonHint")}
+        </span>
+      </div>
       <p className="mt-1 text-sm font-medium text-muted">
         {isActivity
           ? t.rich("introActivity", {
@@ -78,19 +70,6 @@ export default async function MatchPage({
               ),
             })}
       </p>
-      <div className="mt-4 grid grid-cols-2 gap-2 rounded-full border border-ink/15 p-1 text-sm font-bold">
-        <span className="rounded-full bg-flockie-orange py-2 text-center text-white">{t("tabBuddy")}</span>
-        <span
-          aria-disabled="true"
-          className="inline-flex cursor-not-allowed items-center justify-center gap-1.5 rounded-full py-2 text-center text-ink/35"
-        >
-          {t("tabFlock")}
-          <span className="rounded-full bg-cream px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-ink/50">
-            {tc("soon")}
-          </span>
-        </span>
-      </div>
-      {subToggle}
     </>
   );
 
@@ -167,11 +146,13 @@ export default async function MatchPage({
     const { data: cands } = await supabase.rpc("activity_candidates", { p_trip: selectedId, p_limit: 30 });
     body =
       (cands ?? []).length > 0 ? (
-        <SwipeDeck
-          candidates={await enrich(cands ?? [])}
-          activityId={selectedId}
-          activityTitle={post.title || label}
-        />
+        <DeckFrame>
+          <SwipeDeck
+            candidates={await enrich(cands ?? [])}
+            activityId={selectedId}
+            activityTitle={post.title || label}
+          />
+        </DeckFrame>
       ) : (
         <ActivityEmptyState
           userId={user!.id}
@@ -208,7 +189,11 @@ export default async function MatchPage({
     } else {
       let { data: candidates, error: candErr } = await supabase.rpc("buddy_candidates_trip", { p_limit: 30, p_kind: mode, p_trip: selectedId });
       if (candErr) ({ data: candidates } = await supabase.rpc("buddy_candidates_trip", { p_limit: 30, p_kind: mode }));
-      body = <SwipeDeck candidates={await enrich(candidates ?? [])} />;
+      body = (
+        <DeckFrame>
+          <SwipeDeck candidates={await enrich(candidates ?? [])} />
+        </DeckFrame>
+      );
     }
   }
 
@@ -232,6 +217,22 @@ export default async function MatchPage({
 
       {body}
     </main>
+  );
+}
+
+// Crisp confetti accents around the swipe deck — same language as the home
+// page's blue panel: small sharp shapes, no blur, clear of the cards.
+function DeckFrame({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative">
+      <div className="pointer-events-none absolute -inset-x-1 -inset-y-3 z-0" aria-hidden="true">
+        <span className="absolute left-1 top-0 text-sm text-flockie-coral/50">✦</span>
+        <span className="absolute right-3 top-2 h-2 w-2 rounded-full bg-flockie-blue/40" />
+        <span className="absolute bottom-6 left-2 h-1.5 w-1.5 rounded-full bg-flockie-coral/50" />
+        <span className="absolute bottom-1 right-6 text-xs text-flockie-blue/50">✦</span>
+      </div>
+      <div className="relative z-10">{children}</div>
+    </div>
   );
 }
 

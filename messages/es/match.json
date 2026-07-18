@@ -25,7 +25,8 @@
     "emptyActivityBody": "Ahora mismo no hay gente compatible nueva en {city}. Publicar guarda lo que quieres hacer, pero no puede crear un match hasta que haya alguien compatible disponible.",
     "cityFallback": "tu ciudad",
     "inviteFriend": "Invitar a un amigo",
-    "exploreVibes": "Explorar Vibes"
+    "exploreVibes": "Explorar Vibes",
+    "soonHint": "Viajes y Flocks — pronto"
   },
   "create": {
     "back": "Atrás",

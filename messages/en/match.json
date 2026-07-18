@@ -25,7 +25,8 @@
     "emptyActivityBody": "There are no new compatible people in {city} right now. Posting saves what you want to do, but it cannot create a match until someone compatible is available.",
     "cityFallback": "your city",
     "inviteFriend": "Invite a friend",
-    "exploreVibes": "Explore Vibes"
+    "exploreVibes": "Explore Vibes",
+    "soonHint": "Trips & Flocks — soon"
   },
   "create": {
     "back": "Back",
