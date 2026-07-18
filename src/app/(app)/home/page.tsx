@@ -496,38 +496,53 @@ export default async function HomePage({
 
       {/* ── Happening near you (same city + filters) ────────────────────── */}
       <section className="mx-4 mt-4 rounded-3xl bg-flockie-blue p-5 text-white shadow-[0_16px_32px_-10px_rgba(77,168,218,0.55)] sm:p-6">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h2 className="text-[22px] font-extrabold sm:text-[28px]">{th("nearYou.heading")}</h2>
-            <p className="mt-0.5 font-bold text-white/80">
-              {th(`nearYou.subtitle.${timingKey}.${cityVariant}`, { city: homeCity ?? "" })}
-            </p>
-          </div>
-          <Link
-            href="/vibes"
-            className="flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-white px-3 py-1.5 text-sm font-bold text-ink"
-          >
-            {th("seeAll")} <ArrowRight size={15} />
-          </Link>
-        </div>
-
-        {near.length === 0 ? (
-          <div className="mt-3 flex flex-col items-center gap-2 rounded-2xl border-2 border-white/40 bg-white/10 p-4 text-center sm:flex-row sm:justify-between sm:text-left">
-            <p className="text-sm font-bold">
-              {th(`nearYou.empty.${timingKey}.${cityVariant}`, { city: homeCity ?? "" })}
-            </p>
+        <div className="lg:flex lg:items-start lg:gap-6">
+          {/* Header column — anchors the left on desktop; stacked on mobile. */}
+          <div className="lg:w-56 lg:shrink-0">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-[22px] font-extrabold sm:text-[28px]">{th("nearYou.heading")}</h2>
+                <p className="mt-0.5 font-bold text-white/80">
+                  {th(`nearYou.subtitle.${timingKey}.${cityVariant}`, { city: homeCity ?? "" })}
+                </p>
+              </div>
+              {/* See all: top-right on mobile, in the left column on desktop */}
+              <Link
+                href="/vibes"
+                className="flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-white px-3 py-1.5 text-sm font-bold text-ink lg:hidden"
+              >
+                {th("seeAll")} <ArrowRight size={15} />
+              </Link>
+            </div>
             <Link
-              href="/vibes/new"
-              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-ink/15 bg-flockie-coral px-4 py-1.5 text-sm font-bold text-white"
+              href="/vibes"
+              className="mt-4 hidden w-fit items-center gap-1 rounded-full border border-ink/15 bg-white px-3 py-1.5 text-sm font-bold text-ink lg:inline-flex"
             >
-              <Plus size={14} /> {th("nearYou.createVibe")}
+              {th("seeAll")} <ArrowRight size={15} />
             </Link>
           </div>
-        ) : (
-          <div className="carousel-fade mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {near.map(vibeCell)}
+
+          {/* Cards column — fills the right side on desktop. */}
+          <div className="mt-4 lg:mt-0 lg:min-w-0 lg:flex-1">
+            {near.length === 0 ? (
+              <div className="flex flex-col items-center gap-2 rounded-2xl border border-white/30 bg-white/10 p-4 text-center sm:flex-row sm:justify-between sm:text-left">
+                <p className="text-sm font-bold">
+                  {th(`nearYou.empty.${timingKey}.${cityVariant}`, { city: homeCity ?? "" })}
+                </p>
+                <Link
+                  href="/vibes/new"
+                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-ink/15 bg-flockie-coral px-4 py-1.5 text-sm font-bold text-white"
+                >
+                  <Plus size={14} /> {th("nearYou.createVibe")}
+                </Link>
+              </div>
+            ) : (
+              <div className="carousel-fade flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {near.map(vibeCell)}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </section>
 
       {/* ── Didn't find what you're looking for? ────────────────────────── */}
