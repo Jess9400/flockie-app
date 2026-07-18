@@ -180,15 +180,7 @@ export default async function VibesPage({
   return (
     <main className="px-5 pt-6">
       <PageTabs tabs={VIBE_TABS} />
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-black">{t("list.heading")}</h1>
-        <Link
-          href="/vibes/new"
-          className="inline-flex items-center gap-1 rounded-full border-2 border-ink bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
-        >
-          <Plus size={16} /> {t("list.create")}
-        </Link>
-      </div>
+      <h1 className="text-2xl font-black">{t("list.heading")}</h1>
       <p className="mt-3 max-w-xl text-sm font-medium text-muted">
         {t.rich("list.intro", { b: (chunks) => <span className="font-bold">{chunks}</span> })}
       </p>
@@ -224,19 +216,27 @@ export default async function VibesPage({
         )}
       </VibeSearch>
 
-      {/* Upcoming / Past — below the bar. */}
-      <div className="mt-4 inline-flex shrink-0 gap-1 rounded-full border border-ink/15 p-1 text-sm font-bold">
+      {/* Upcoming / Past + Create — below the bar, grouped as the page controls. */}
+      <div className="mt-4 flex items-center justify-between gap-2">
+        <div className="inline-flex shrink-0 gap-1 rounded-full border border-ink/15 p-1 text-sm font-bold">
+          <Link
+            href="/vibes"
+            className={`rounded-full px-4 py-1.5 ${!isPast ? "bg-flockie-coral text-white" : "text-ink/55 hover:text-ink"}`}
+          >
+            {t("list.upcoming")}
+          </Link>
+          <Link
+            href="/vibes?view=past"
+            className={`rounded-full px-4 py-1.5 ${isPast ? "bg-flockie-coral text-white" : "text-ink/55 hover:text-ink"}`}
+          >
+            {t("list.past")}
+          </Link>
+        </div>
         <Link
-          href="/vibes"
-          className={`rounded-full px-4 py-1.5 ${!isPast ? "bg-flockie-coral text-white" : "text-ink/55 hover:text-ink"}`}
+          href="/vibes/new"
+          className="inline-flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C]"
         >
-          {t("list.upcoming")}
-        </Link>
-        <Link
-          href="/vibes?view=past"
-          className={`rounded-full px-4 py-1.5 ${isPast ? "bg-flockie-coral text-white" : "text-ink/55 hover:text-ink"}`}
-        >
-          {t("list.past")}
+          <Plus size={16} /> {t("list.create")}
         </Link>
       </div>
 
