@@ -205,9 +205,14 @@ export default function BuddyChatRoom({
       )}
 
       <div className="min-h-0 flex-1 space-y-1 overflow-y-auto py-4">
-        {/* Pinned plan invite — lives inside the scroll so the sticky header
-            can never cover it */}
-        {pinnedTop && <div className="mx-auto max-w-[92%]">{pinnedTop}</div>}
+        {/* Pinned plan invite — sticky at the top of the message viewport so
+            neither the chat header above nor auto-scroll-to-newest can ever
+            clip it. Opaque background lets messages scroll under cleanly. */}
+        {pinnedTop && (
+          <div className="sticky top-0 z-10 -mt-4 bg-cream pb-2 pt-3">
+            <div className="mx-auto max-w-[92%]">{pinnedTop}</div>
+          </div>
+        )}
 
         {/* Algo icebreaker */}
         <div className="mx-auto my-3 max-w-[92%] rounded-2xl border-2 border-flockie-blue bg-cream p-4">
