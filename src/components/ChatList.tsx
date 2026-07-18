@@ -181,11 +181,11 @@ function ConversationRow({
   return (
     <Link
       href={row.href}
-      className={`flex items-center gap-3 rounded-2xl border-2 px-2.5 py-2.5 transition-all ${
+      className={`flex items-center gap-3 rounded-2xl border px-2.5 py-2.5 transition-all ${
         active
           ? "border-flockie-blue bg-flockie-blue/10"
-          : "border-navy bg-[#FCF9F4] hover:shadow-[0_3px_10px_rgba(10,37,69,0.1)]"
-      } ${row.unread === 0 ? "" : ""}`}
+          : "border-ink/10 bg-[#FCF9F4] hover:shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
+      }`}
     >
       {/* Thumb: square-ish for groups, round for people. */}
       <div
@@ -237,7 +237,7 @@ function ListSkeleton() {
   return (
     <div className="space-y-2">
       {[0, 1, 2, 3].map((i) => (
-        <div key={i} className="flex items-center gap-3 rounded-2xl border-2 border-navy/10 px-2.5 py-2.5">
+        <div key={i} className="flex items-center gap-3 rounded-2xl border border-ink/10 px-2.5 py-2.5">
           <div className="h-12 w-12 shrink-0 animate-pulse rounded-xl bg-navy/10" />
           <div className="flex-1 space-y-2">
             <div className="h-3 w-2/3 animate-pulse rounded-full bg-navy/10" />
