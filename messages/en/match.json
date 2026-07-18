@@ -73,18 +73,24 @@
     "button": "Say hi",
     "inviteAria": "Invite {name} to an activity",
     "sentTitle": "Invite sent to {name}!",
-    "sentBody": "We let them know you'd like to do <b>{activity}</b>. When they say yes back, your chat opens automatically.",
+    "sentBody": "We sent {name} your invite for <b>{activity}</b>. When they accept, your chat and plan open automatically.",
     "done": "Done",
     "inviteToTitle": "Invite {name} to…",
-    "pickSomething": "Pick something to do together.",
-    "somethingElse": "Something else…",
-    "send": "Send",
+    "pickSomething": "Pick something to do — add a spot and time, or settle those in chat.",
     "cancel": "Cancel",
     "errBlocked": "You two have conflicting match preferences.",
-    "coffee": "Coffee",
-    "lunch": "Lunch",
-    "walk": "A walk",
-    "drinks": "Drinks"
+    "browseNear": "Browse {cat} near you on Maps",
+    "placePlaceholder": "Add a place (optional)",
+    "optionalNote": "Place and time are optional.",
+    "sending": "Sending…",
+    "sendInvite": "Send invite",
+    "cat": {
+      "coffee": "Coffee",
+      "restaurant": "A meal",
+      "bar": "Drinks",
+      "park": "A park",
+      "activity": "An activity"
+    }
   },
   "invite": {
     "shareTitle": "Join me on Flockie",

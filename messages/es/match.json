@@ -73,18 +73,24 @@
     "button": "Saludar",
     "inviteAria": "Invitar a {name} a una actividad",
     "sentTitle": "¡Invitación enviada a {name}!",
-    "sentBody": "Le avisamos que te gustaría hacer <b>{activity}</b>. Cuando te diga que sí, tu chat se abre automáticamente.",
+    "sentBody": "Le enviamos a {name} tu invitación para <b>{activity}</b>. Cuando acepte, tu chat y tu plan se abren automáticamente.",
     "done": "Listo",
     "inviteToTitle": "Invitar a {name} a…",
-    "pickSomething": "Elige algo para hacer juntos.",
-    "somethingElse": "Otra cosa…",
-    "send": "Enviar",
+    "pickSomething": "Elige algo para hacer — añade un lugar y una hora, o acordadlos en el chat.",
     "cancel": "Cancelar",
     "errBlocked": "Ustedes dos tienen preferencias de match incompatibles.",
-    "coffee": "Café",
-    "lunch": "Almuerzo",
-    "walk": "Un paseo",
-    "drinks": "Unas copas"
+    "browseNear": "Busca {cat} cerca en Maps",
+    "placePlaceholder": "Añade un lugar (opcional)",
+    "optionalNote": "El lugar y la hora son opcionales.",
+    "sending": "Enviando…",
+    "sendInvite": "Enviar invitación",
+    "cat": {
+      "coffee": "Un café",
+      "restaurant": "Una comida",
+      "bar": "Unas copas",
+      "park": "Un parque",
+      "activity": "Una actividad"
+    }
   },
   "invite": {
     "shareTitle": "Únete a mí en Flockie",
