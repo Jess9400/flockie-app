@@ -5,6 +5,10 @@ import { createClient } from "@/lib/supabase/server";
 // Places (New) Text Search when a key is present (the founder's chosen source),
 // and falls back to free OpenStreetMap (Nominatim) so tap-to-fill still works
 // before the paid NEXT_PUBLIC_GMAPS_KEY is funded. Returns {name, address, url}.
+//
+// Crucially we GEOCODE the city to coordinates first and bound the venue search
+// to that area — a plain "coffee in Thane" text search on the free tier happily
+// returns cafés in York, England. Coordinates + a bounding box keep it local.
 
 type Place = { name: string; address: string | null; url: string };
 
@@ -14,11 +18,45 @@ const CATEGORY_HINT: Record<string, string> = {
   restaurant: "restaurant",
   bar: "bar",
   park: "park",
-  activity: "",
+  activity: "things to do",
 };
 
+const NOMINATIM_HEADERS = { "User-Agent": "Flockie/1.0 (hello@findflockie.com)" };
 const mapsSearch = (q: string) =>
   `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+
+// ~13 km half-box around the city centre for the OSM bounded search.
+const BOX = 0.12;
+
+async function geocodeCity(
+  city: string,
+  key: string | undefined
+): Promise<{ lat: number; lng: number } | null> {
+  try {
+    if (key) {
+      const res = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+          city
+        )}&key=${key}`
+      );
+      const data = await res.json();
+      const loc = data.results?.[0]?.geometry?.location;
+      if (loc && typeof loc.lat === "number") return { lat: loc.lat, lng: loc.lng };
+    }
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(
+        city
+      )}`,
+      { headers: NOMINATIM_HEADERS }
+    );
+    const data = await res.json();
+    const first = data?.[0];
+    if (first?.lat && first?.lon) return { lat: Number(first.lat), lng: Number(first.lon) };
+  } catch {
+    /* fall through */
+  }
+  return null;
+}
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -27,7 +65,7 @@ export async function GET(req: Request) {
   const city = searchParams.get("city")?.trim() ?? "";
   if (!q || q.length < 2) return NextResponse.json({ results: [] });
 
-  // Auth-gate + rate limit (can hit the paid Google Places API).
+  // Auth-gate + rate limit (can hit the paid Google Places/Geocoding APIs).
   const supabase = await createClient();
   const {
     data: { user },
@@ -42,13 +80,24 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Too many requests — slow down." }, { status: 429 });
 
   const hint = CATEGORY_HINT[category] ?? "";
-  const textQuery = [q, hint, city ? `in ${city}` : ""].filter(Boolean).join(" ");
   const key = process.env.GEOCODING_KEY || process.env.NEXT_PUBLIC_GMAPS_KEY;
+  const center = city ? await geocodeCity(city, key) : null;
 
   try {
     let results: Place[] = [];
 
     if (key) {
+      // Google Places (New): bias to the city centre when we have it, else fall
+      // back to including the city name in the query text.
+      const body: Record<string, unknown> = {
+        textQuery: [q, hint, center ? "" : city ? `in ${city}` : ""].filter(Boolean).join(" "),
+        maxResultCount: 5,
+      };
+      if (center) {
+        body.locationBias = {
+          circle: { center: { latitude: center.lat, longitude: center.lng }, radius: 15000 },
+        };
+      }
       const res = await fetch("https://places.googleapis.com/v1/places:searchText", {
         method: "POST",
         headers: {
@@ -57,7 +106,7 @@ export async function GET(req: Request) {
           "X-Goog-FieldMask":
             "places.displayName,places.formattedAddress,places.googleMapsUri",
         },
-        body: JSON.stringify({ textQuery, maxResultCount: 5 }),
+        body: JSON.stringify(body),
       });
       const data = await res.json();
       if (Array.isArray(data.places)) {
@@ -77,15 +126,29 @@ export async function GET(req: Request) {
       }
     }
 
-    // Free fallback: OSM Nominatim. Works with no key (or a referrer-restricted
-    // one that denies server calls), so the picker is never dead.
+    // Free fallback: OSM Nominatim, BOUNDED to the city's bounding box so results
+    // stay local instead of matching the venue name worldwide.
     if (results.length === 0) {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&addressdetails=1&namedetails=1&q=${encodeURIComponent(
-          textQuery
-        )}`,
-        { headers: { "User-Agent": "Flockie/1.0 (hello@findflockie.com)" } }
-      );
+      const params = new URLSearchParams({
+        format: "jsonv2",
+        limit: "5",
+        addressdetails: "1",
+        namedetails: "1",
+        q: [q, hint].filter(Boolean).join(" "),
+      });
+      if (center) {
+        // viewbox = left(minLon),top(maxLat),right(maxLon),bottom(minLat)
+        params.set(
+          "viewbox",
+          `${center.lng - BOX},${center.lat + BOX},${center.lng + BOX},${center.lat - BOX}`
+        );
+        params.set("bounded", "1");
+      } else if (city) {
+        params.set("q", `${q} ${hint} ${city}`.trim());
+      }
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
+        headers: NOMINATIM_HEADERS,
+      });
       const data = await res.json();
       if (Array.isArray(data)) {
         results = data
