@@ -1,4 +1,4 @@
-import { SkeletonCard, SkeletonLine } from "@/components/skeletons";
+import { SkeletonLine, SkeletonVibeListCard } from "@/components/skeletons";
 
 export default function VibesLoading() {
   return (
@@ -21,10 +21,10 @@ export default function VibesLoading() {
         <SkeletonLine className="h-9 w-44" />
       </div>
 
-      {/* Cards grid */}
-      <div className="mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+      {/* Browse-card list */}
+      <div className="mt-6 max-w-3xl space-y-3">
         {Array.from({ length: 6 }).map((_, i) => (
-          <SkeletonCard key={i} />
+          <SkeletonVibeListCard key={i} />
         ))}
       </div>
     </main>

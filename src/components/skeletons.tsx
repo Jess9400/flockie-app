@@ -34,6 +34,20 @@ export function SkeletonListRow() {
   );
 }
 
+// Horizontal browse-card row — mirrors the Vibes list without changing other list loaders.
+export function SkeletonVibeListCard() {
+  return (
+    <div className="flex min-h-28 overflow-hidden rounded-2xl border-2 border-ink/10 bg-white">
+      <div className="w-24 shrink-0 animate-pulse border-r-2 border-ink/10 bg-cream sm:w-28" />
+      <div className="flex flex-1 flex-col justify-center space-y-2 p-3 pr-16 sm:p-4 sm:pr-20">
+        <SkeletonLine className="h-4 w-3/5" />
+        <SkeletonLine className="h-3 w-2/5" />
+        <SkeletonLine className="h-3 w-1/2" />
+      </div>
+    </div>
+  );
+}
+
 // Horizontal snap carousel — mirrors the Home page card rails.
 export function SkeletonCarousel({ count = 3 }: { count?: number }) {
   return (

@@ -216,7 +216,7 @@ export default async function VibesPage({
         </div>
       ) : (
         <>
-          <div className="mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+          <div className="mt-6 max-w-3xl space-y-3">
             {list.map((v) => (
               <VibeCard
                 key={v.id}
