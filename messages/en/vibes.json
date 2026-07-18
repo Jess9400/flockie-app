@@ -232,8 +232,8 @@
   "host": {
     "youCancelled": "You cancelled this Vibe.",
     "shortlistReady": "Shortlist ready — {shortlisted} to review, {standby} on standby.",
-    "running": "Running…",
-    "runMatching": "Run Matching",
+    "running": "Building the group…",
+    "runMatching": "Build the group now",
     "openChat": "Open Chat",
     "autoInviteNote": "If you don’t run matching, invitations are sent automatically at your deadline.",
     "reviewMatched": "Review your matched list",

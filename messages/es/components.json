@@ -260,9 +260,9 @@
     "host": "Eres el host",
     "matched": "¡Match hecho! Invitados: {invited}, en espera: {standby}.",
     "openChat": "Abrir Vibing Chat",
-    "reRun": "Volver a ejecutar matching",
-    "runNow": "Ejecutar matching ahora",
-    "running": "Ejecutando…"
+    "reRun": "Volver a formar el grupo",
+    "runNow": "Formar el grupo ahora",
+    "running": "Formando el grupo…"
   },
   "tripPicker": {
     "findingMatchesFor": "Buscando matches para"
@@ -283,7 +283,8 @@
     "clearAriaLabel": "Limpiar",
     "placeholderActivity": "Actividad (surf, cena, yoga…)",
     "placeholderCity": "Ubicación (ciudad)",
-    "searchButton": "Buscar"
+    "searchButton": "Buscar",
+    "placeholderCombined": "Buscar vibes o ciudades…"
   },
   "vibeShareCard": {
     "compatLabel": "¿Tu BFF hará match con tu vibe? ¡Invítalo/a y descúbrelo!",

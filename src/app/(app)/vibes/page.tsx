@@ -60,7 +60,8 @@ export default async function VibesPage({
   }
 
   if (city) query = query.ilike("city", `%${city}%`);
-  if (q) query = query.or(`title.ilike.%${q}%,category.ilike.%${q}%`);
+  // Single search field matches vibe title, category, or city.
+  if (q) query = query.or(`title.ilike.%${q}%,category.ilike.%${q}%,city.ilike.%${q}%`);
   if (!isPast && hiddenVibeIds.length) query = query.not("id", "in", `(${hiddenVibeIds.join(",")})`);
 
   // Time window (upcoming only): Today / Next 48h / Anytime.
@@ -155,17 +156,13 @@ export default async function VibesPage({
           <Plus size={16} /> {t("list.create")}
         </Link>
       </div>
-      <p className="mt-3 max-w-xl text-sm font-medium text-muted">
-        {t.rich("list.intro", { b: (chunks) => <span className="font-bold">{chunks}</span> })}
-      </p>
-
-      <VibeSearch q={q} city={city} />
-
-      <div className="mt-6 flex items-center justify-between gap-2">
-        {!isPast ? (
+      {/* One search bar — matches vibes, categories and cities — with the
+          filter controls tucked inside it. */}
+      <VibeSearch q={q}>
+        {!isPast && (
           <FilterSheet
             basePath="/vibes"
-            preserveKeys={["q", "city"]}
+            preserveKeys={["q"]}
             sections={[
               {
                 key: "when",
@@ -178,23 +175,23 @@ export default async function VibesPage({
               },
             ]}
           />
-        ) : (
-          <span />
         )}
-        <div className="inline-flex shrink-0 gap-0.5 rounded-full border-2 border-ink bg-white p-0.5 text-sm font-bold">
-          <Link
-            href="/vibes"
-            className={`rounded-full px-4 py-1.5 ${!isPast ? "bg-ink text-white" : "text-ink hover:bg-navy/5"}`}
-          >
-            {t("list.upcoming")}
-          </Link>
-          <Link
-            href="/vibes?view=past"
-            className={`rounded-full px-4 py-1.5 ${isPast ? "bg-ink text-white" : "text-ink hover:bg-navy/5"}`}
-          >
-            {t("list.past")}
-          </Link>
-        </div>
+      </VibeSearch>
+
+      {/* Upcoming / Past — below the bar. */}
+      <div className="mt-4 inline-flex shrink-0 gap-0.5 rounded-full border-2 border-ink bg-white p-0.5 text-sm font-bold">
+        <Link
+          href="/vibes"
+          className={`rounded-full px-4 py-1.5 ${!isPast ? "bg-ink text-white" : "text-ink hover:bg-navy/5"}`}
+        >
+          {t("list.upcoming")}
+        </Link>
+        <Link
+          href="/vibes?view=past"
+          className={`rounded-full px-4 py-1.5 ${isPast ? "bg-ink text-white" : "text-ink hover:bg-navy/5"}`}
+        >
+          {t("list.past")}
+        </Link>
       </div>
 
       {!isPast && !activityCheckDone && (
@@ -216,7 +213,7 @@ export default async function VibesPage({
         </div>
       ) : (
         <>
-          <div className="mt-6 max-w-3xl space-y-3">
+          <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             {list.map((v) => (
               <VibeCard
                 key={v.id}

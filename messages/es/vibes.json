@@ -232,8 +232,8 @@
   "host": {
     "youCancelled": "Cancelaste este Vibe.",
     "shortlistReady": "Lista lista — {shortlisted} para revisar, {standby} en espera.",
-    "running": "Ejecutando…",
-    "runMatching": "Ejecutar match",
+    "running": "Formando el grupo…",
+    "runMatching": "Formar el grupo ahora",
     "openChat": "Abrir chat",
     "autoInviteNote": "Si no ejecutas el match, las invitaciones se envían automáticamente en tu fecha límite.",
     "reviewMatched": "Revisa tu lista emparejada",

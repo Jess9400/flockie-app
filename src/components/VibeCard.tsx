@@ -136,26 +136,21 @@ export default function VibeCard({
           ×
         </button>
       )}
-      {isBrowse &&
-        (faded ? (
-          typeof rating === "number" && rating > 0 && (
-            <span className="absolute right-3 top-3 z-10 flex items-center gap-0.5 rounded-full border-2 border-ink bg-white px-2 py-1 text-[10px] font-extrabold leading-none text-ink">
-              <Star size={10} className="fill-flockie-coral text-flockie-coral" /> {rating.toFixed(1)}
-            </span>
-          )
-        ) : myStatus && STATUS_CHIP.includes(myStatus) ? (
-          <span className="absolute right-3 top-3 z-10 rounded-full border-2 border-ink bg-flockie-orange px-2 py-1 text-[10px] font-extrabold leading-none text-white">
-            {t(`status.${myStatus}`)}
-          </span>
-        ) : null)}
+      {isBrowse && !faded && myStatus && STATUS_CHIP.includes(myStatus) && (
+        <span className="absolute right-3 top-3 z-10 rounded-full border-2 border-ink bg-flockie-orange px-2 py-1 text-[10px] font-extrabold leading-none text-white">
+          {t(`status.${myStatus}`)}
+        </span>
+      )}
       <Link
         href={`/vibes/${vibe.id}`}
-        className={isBrowse ? "flex min-w-0 flex-1 items-stretch" : "flex h-full flex-col"}
+        className={
+          isBrowse ? "flex min-w-0 flex-1 items-stretch sm:flex-col" : "flex h-full flex-col"
+        }
       >
         <div
           className={
             isBrowse
-              ? "relative w-24 shrink-0 border-r-2 border-ink bg-cream sm:w-28"
+              ? "relative w-24 shrink-0 border-r-2 border-ink bg-cream sm:aspect-[16/10] sm:w-full sm:border-b-2 sm:border-r-0"
               : "relative aspect-square w-full border-b-2 border-ink bg-cream"
           }
         >
@@ -193,7 +188,7 @@ export default function VibeCard({
         <div
           className={
             isBrowse
-              ? "flex min-w-0 flex-1 flex-col justify-center p-3 pr-16 sm:p-4 sm:pr-20"
+              ? "flex min-w-0 flex-1 flex-col justify-center p-3 pr-11 sm:p-3.5 sm:pr-3.5"
               : "flex flex-1 flex-col p-2.5"
           }
         >
@@ -225,6 +220,36 @@ export default function VibeCard({
             <MapPin size={isBrowse ? 14 : 11} className="shrink-0" />
             <span className="truncate">{approximateLocation}</span>
           </p>
+
+          {isBrowse && (
+            <div className="mt-2 flex items-center justify-between gap-2">
+              <span className="flex min-w-0 items-center gap-1.5 text-xs font-medium text-ink">
+                {hostAvatar ? (
+                  <Image
+                    src={hostAvatar}
+                    alt=""
+                    width={18}
+                    height={18}
+                    className="h-[18px] w-[18px] shrink-0 rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-flockie-blue text-[9px] font-bold text-white">
+                    {hostName[0]}
+                  </span>
+                )}
+                <span className="truncate">{hostName}</span>
+              </span>
+              {!faded && typeof matchPct === "number" ? (
+                <span className="shrink-0 rounded-full border-2 border-ink bg-flockie-coral px-2 py-0.5 text-[10px] font-extrabold leading-none text-white">
+                  {t("card.match", { pct: matchPct })}
+                </span>
+              ) : faded && typeof rating === "number" && rating > 0 ? (
+                <span className="flex shrink-0 items-center gap-0.5 rounded-full border-2 border-ink bg-white px-2 py-0.5 text-[10px] font-extrabold leading-none text-ink">
+                  <Star size={10} className="fill-flockie-coral text-flockie-coral" /> {rating.toFixed(1)}
+                </span>
+              ) : null}
+            </div>
+          )}
 
           {!isBrowse && shownCategories.length > 0 && (
             <div className="mt-1.5 flex flex-wrap items-center gap-1">
@@ -276,11 +301,6 @@ export default function VibeCard({
           )}
         </div>
       </Link>
-      {isBrowse && !faded && typeof matchPct === "number" && (
-        <span className="pointer-events-none absolute bottom-3 right-3 rounded-full border-2 border-ink bg-flockie-coral px-2 py-1 text-[10px] font-extrabold leading-none text-white">
-          {t("card.match", { pct: matchPct })}
-        </span>
-      )}
     </div>
   );
 }

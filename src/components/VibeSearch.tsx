@@ -5,60 +5,55 @@ import { useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-export default function VibeSearch({ q, city }: { q: string; city: string }) {
+// Single search bar for the Vibes browse page: one field that matches vibe
+// titles, categories, and cities. Filter controls are passed in as `children`
+// and rendered inside the same bar, so the whole surface reads as one control.
+export default function VibeSearch({
+  q,
+  children,
+}: {
+  q: string;
+  children?: React.ReactNode;
+}) {
   const t = useTranslations("components");
   const router = useRouter();
   const [query, setQuery] = useState(q);
-  const [loc, setLoc] = useState(city);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     const p = new URLSearchParams();
     if (query.trim()) p.set("q", query.trim());
-    if (loc.trim()) p.set("city", loc.trim());
     router.push(`/vibes${p.toString() ? `?${p.toString()}` : ""}`);
   }
 
   function clear() {
     setQuery("");
-    setLoc("");
     router.push("/vibes");
   }
 
-  const active = q || city;
-
   return (
-    <form onSubmit={submit} className="mt-7 flex flex-col gap-2 sm:flex-row">
+    <form
+      onSubmit={submit}
+      className="mt-6 flex items-center gap-2 rounded-full border-2 border-ink bg-white py-1.5 pl-4 pr-1.5 shadow-[0_3px_0_0_rgba(26,26,26,1)]"
+    >
+      <Search size={18} className="shrink-0 text-muted" />
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder={t("vibeSearch.placeholderActivity")}
-        className="w-full rounded-2xl border-2 border-ink bg-white px-4 py-2.5 font-medium outline-none"
+        placeholder={t("vibeSearch.placeholderCombined")}
+        className="min-w-0 flex-1 bg-transparent py-1 font-medium text-ink outline-none placeholder:text-muted"
       />
-      <input
-        value={loc}
-        onChange={(e) => setLoc(e.target.value)}
-        placeholder={t("vibeSearch.placeholderCity")}
-        className="w-full rounded-2xl border-2 border-ink bg-white px-4 py-2.5 font-medium outline-none sm:max-w-[40%]"
-      />
-      <div className="flex gap-2">
+      {query && (
         <button
-          type="submit"
-          className="flex flex-1 items-center justify-center gap-1 rounded-2xl border-2 border-ink bg-flockie-orange px-4 py-2.5 font-bold text-white shadow-[0_3px_0_0_#E0512C] sm:flex-none"
+          type="button"
+          onClick={clear}
+          aria-label={t("vibeSearch.clearAriaLabel")}
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-muted hover:bg-cream hover:text-ink"
         >
-          <Search size={16} /> {t("vibeSearch.searchButton")}
+          <X size={16} />
         </button>
-        {active && (
-          <button
-            type="button"
-            onClick={clear}
-            aria-label={t("vibeSearch.clearAriaLabel")}
-            className="flex items-center justify-center rounded-2xl border-2 border-ink bg-white px-3"
-          >
-            <X size={16} />
-          </button>
-        )}
-      </div>
+      )}
+      {children && <div className="flex shrink-0 items-center gap-1.5">{children}</div>}
     </form>
   );
 }
