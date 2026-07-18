@@ -126,26 +126,23 @@ export async function GET(req: Request) {
       }
     }
 
-    // Free fallback: OSM Nominatim, BOUNDED to the city's bounding box so results
-    // stay local instead of matching the venue name worldwide.
-    if (results.length === 0) {
+    // Free fallback: OSM Nominatim, STRICTLY bounded to the city's box. We only
+    // run it when we have the city centre, and we never widen to a global search
+    // — a name-only match happily returns a café in York for "coffee in Thane",
+    // which is worse than showing nothing. If OSM has no local POIs (common for
+    // many Indian cities), we return empty and lean on the typed search + the
+    // "Browse on Maps" link. Real coverage here comes from the Google key.
+    if (results.length === 0 && center) {
       const params = new URLSearchParams({
         format: "jsonv2",
         limit: "5",
         addressdetails: "1",
         namedetails: "1",
+        bounded: "1",
+        // viewbox = left(minLon),top(maxLat),right(maxLon),bottom(minLat)
+        viewbox: `${center.lng - BOX},${center.lat + BOX},${center.lng + BOX},${center.lat - BOX}`,
         q: [q, hint].filter(Boolean).join(" "),
       });
-      if (center) {
-        // viewbox = left(minLon),top(maxLat),right(maxLon),bottom(minLat)
-        params.set(
-          "viewbox",
-          `${center.lng - BOX},${center.lat + BOX},${center.lng + BOX},${center.lat - BOX}`
-        );
-        params.set("bounded", "1");
-      } else if (city) {
-        params.set("q", `${q} ${hint} ${city}`.trim());
-      }
       const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
         headers: NOMINATIM_HEADERS,
       });
