@@ -206,16 +206,13 @@ export default async function BuddyChatPage({
     : t("chatPage.similarOverall");
 
   const isActivityMatch = (trip?.kind ?? "trip") === "activity";
-  const activityTitle =
-    isActivityMatch && typeof trip?.title === "string" ? trip.title.trim() || null : null;
 
+  // Activity matches (incl. Home "Say hi") stay generic — no travel wording and
+  // NO specific activity title: the match just borrows each person's latest
+  // active post, so naming it ("play chess") is misleading. The real plan is set
+  // via "Propose a plan" in the chat.
   const icebreaker = isActivityMatch
-    ? // Activity match (e.g. from Home recommendations) — no travel wording.
-      activityTitle
-      ? t("chatPage.activityIcebreakerTitled", { activity: activityTitle })
-      : common.length
-        ? t("chatPage.activityIcebreakerWith", { tags: common.slice(0, 3).join(", ").toLowerCase() })
-        : t("chatPage.activityIcebreaker")
+    ? t("chatPage.activityIcebreaker")
     : destination && dateRange
       ? `${t("chatPage.icebreakerMatched", { destination, dateRange })}\n${
           common.length
