@@ -7,6 +7,7 @@ import { getSessionUser } from "@/lib/supabase/user";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
 import SayHiButton from "@/components/SayHiButton";
 import HomeHero from "@/components/HomeHero";
+import Squiggle from "@/components/Squiggle";
 import MatchKeyTip from "@/components/MatchKeyTip";
 import InviteFriendsButton from "@/components/InviteFriendsButton";
 import ReviewsToDoBanner from "@/components/ReviewsToDoBanner";
@@ -265,7 +266,8 @@ export default async function HomePage({
   const localPoolEmpty =
     !!homeCity && people.length === 0 && near.length === 0 && (liveCount ?? 0) === 0;
 
-  const vibeCell = (v: VibeRow) => {
+  // Cards get a tiny alternating "polaroid" tilt that straightens on hover.
+  const vibeCell = (v: VibeRow, i = 0) => {
     const st = cardStatuses[v.id] ?? null;
     const isHostVibe = v.host_id === user!.id;
     // Every card gets a status-appropriate CTA.
@@ -279,7 +281,12 @@ export default async function HomePage({
             ? { label: th("plans.interested"), href: `/vibes/${v.id}?interested=1`, tone: "coral" as const }
             : { label: th("plans.view"), href: `/vibes/${v.id}`, tone: "muted" as const };
     return (
-      <div key={v.id} className="w-72 shrink-0 snap-start">
+      <div
+        key={v.id}
+        className={`w-72 shrink-0 snap-start transition-transform duration-200 hover:rotate-0 ${
+          i % 2 ? "-rotate-[1.2deg]" : "rotate-[1.2deg]"
+        }`}
+      >
         <VibeCard
           vibe={{ ...v, host: vibeMeta.hosts[v.host_id] ?? null } as VibeCardData}
           confirmedCount={vibeMeta.counts[v.id] ?? 0}
@@ -398,6 +405,7 @@ export default async function HomePage({
               ✨ {th("buddies.topPicks")}
             </span>
             <h2 className="text-[22px] font-extrabold sm:text-[28px]">{t("findBuddyHeading")}</h2>
+            <Squiggle />
             <p className="mt-0.5 font-bold text-navy/60">
               {th("buddies.subtitle", { city: homeCity ?? th("buddies.yourCity") })}
             </p>
@@ -436,14 +444,16 @@ export default async function HomePage({
             </div>
           </div>
         ) : (
-          <div className="carousel-fade mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {people.map((p) => {
+          <div className="carousel-fade mt-4 flex snap-x gap-4 overflow-x-auto pb-3 pt-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {people.map((p, i) => {
               const name = (p.display_name ?? th("buddies.someone")).split(" ")[0];
               const photo = p.photos?.[0] ?? null;
               return (
                 <div
                   key={p.id}
-                  className="flex w-40 shrink-0 snap-start flex-col items-center rounded-2xl border border-ink/12 bg-white p-4 text-center shadow-[0_2px_12px_rgba(10,37,69,0.07)] transition-transform hover:-translate-y-1"
+                  className={`flex w-40 shrink-0 snap-start flex-col items-center rounded-2xl border border-ink/12 bg-white p-4 text-center shadow-[0_2px_12px_rgba(10,37,69,0.07)] transition-transform duration-200 hover:-translate-y-1 hover:rotate-0 ${
+                    i % 2 ? "-rotate-[1.2deg]" : "rotate-[1.2deg]"
+                  }`}
                 >
                   <Link href={`/people/${p.id}`} className="flex w-full flex-col items-center">
                     <div
@@ -491,14 +501,25 @@ export default async function HomePage({
       {/* ── Join a vibe (all cities) ────────────────────────────────────── */}
       <section className="mx-4 mt-8 px-1">
         <h2 className="text-[22px] font-extrabold sm:text-[28px]">{th("joinVibe.heading")}</h2>
+        <Squiggle />
         <p className="mt-0.5 font-bold text-navy/60">{th("joinVibe.subtitle")}</p>
       </section>
 
       {/* ── Happening near you (same city + filters) ────────────────────── */}
-      <section className="mx-4 mt-4 rounded-3xl bg-flockie-blue p-5 text-white shadow-[0_16px_32px_-10px_rgba(77,168,218,0.55)] sm:p-6">
-        <div className="flex items-start justify-between gap-3">
+      <section className="relative mx-4 mt-4 overflow-hidden rounded-3xl bg-flockie-blue p-5 text-white shadow-[0_16px_32px_-10px_rgba(77,168,218,0.55)] sm:p-6">
+        {/* Crisp confetti — small sharp dots/sparkles in the corners, kept away
+            from the text and cards. */}
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <span className="absolute right-8 top-5 h-2 w-2 rounded-full bg-white/40" />
+          <span className="absolute right-16 top-10 h-1.5 w-1.5 rounded-full bg-flockie-coral/70" />
+          <span className="absolute right-28 top-4 text-sm text-white/50">✦</span>
+          <span className="absolute bottom-4 left-6 h-1.5 w-1.5 rounded-full bg-white/35" />
+          <span className="absolute bottom-8 right-6 text-xs text-flockie-coral/60">✦</span>
+        </div>
+        <div className="relative flex items-start justify-between gap-3">
           <div>
             <h2 className="text-[22px] font-extrabold sm:text-[28px]">{th("nearYou.heading")}</h2>
+            <Squiggle color="rgba(255,255,255,0.75)" />
             <p className="mt-0.5 font-bold text-white/80">
               {th(`nearYou.subtitle.${timingKey}.${cityVariant}`, { city: homeCity ?? "" })}
             </p>
@@ -524,7 +545,7 @@ export default async function HomePage({
             </Link>
           </div>
         ) : (
-          <div className="carousel-fade mt-4 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="carousel-fade mt-4 flex snap-x gap-4 overflow-x-auto pb-3 pt-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {near.map(vibeCell)}
           </div>
         )}
