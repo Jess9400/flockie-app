@@ -406,12 +406,22 @@ export default function InterestButton({
           : matchingTime
             ? statusPanel(t("interest.matchingScheduled", { time: matchingTime }))
             : null}
-        <button onClick={express} disabled={busy} className={`${base} bg-flockie-orange text-white shadow-[0_4px_0_0_#E0512C]`}>
-          {directConfirm ? t("interest.joinNow") : t("interest.imInterested")}
-        </button>
-        <button onClick={markNotForMe} disabled={busy} className={`${base} bg-white text-muted`}>
-          {t("interest.notForMe")}
-        </button>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={express}
+            disabled={busy}
+            className="rounded-full border-2 border-ink bg-flockie-orange py-2.5 text-sm font-bold text-white shadow-[0_3px_0_0_#E0512C] disabled:opacity-50"
+          >
+            {directConfirm ? t("interest.joinNow") : t("interest.imInterested")}
+          </button>
+          <button
+            onClick={markNotForMe}
+            disabled={busy}
+            className="rounded-full border-2 border-ink bg-white py-2.5 text-sm font-bold text-muted disabled:opacity-50"
+          >
+            {t("interest.notForMe")}
+          </button>
+        </div>
         {!showCode ? (
           <button
             type="button"
