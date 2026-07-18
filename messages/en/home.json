@@ -84,6 +84,8 @@
     "directions": "Directions",
     "invited": "You're invited",
     "confirm": "Confirm your spot",
-    "interested": "I'm interested"
+    "interested": "I'm interested",
+    "manage": "Manage",
+    "view": "View details"
   }
 }

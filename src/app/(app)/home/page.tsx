@@ -269,15 +269,16 @@ export default async function HomePage({
   const vibeCell = (v: VibeRow) => {
     const st = cardStatuses[v.id] ?? null;
     const isHostVibe = v.host_id === user!.id;
-    // One-tap CTA on the card: express interest when I have no status, or jump
-    // into the chat once I'm confirmed. Pending states keep just the status chip.
+    // Every card gets a status-appropriate CTA.
     const homeCta = isHostVibe
-      ? undefined
+      ? { label: th("plans.manage"), href: `/vibes/${v.id}`, tone: "muted" as const }
       : st === "confirmed"
         ? { label: th("plans.openChat"), href: `/vibes/${v.id}/chat`, tone: "green" as const }
-        : st == null
-          ? { label: th("plans.interested"), href: `/vibes/${v.id}?interested=1`, tone: "coral" as const }
-          : undefined;
+        : st === "invited"
+          ? { label: th("plans.confirm"), href: `/vibes/${v.id}`, tone: "coral" as const }
+          : st == null
+            ? { label: th("plans.interested"), href: `/vibes/${v.id}?interested=1`, tone: "coral" as const }
+            : { label: th("plans.view"), href: `/vibes/${v.id}`, tone: "muted" as const };
     return (
       <div key={v.id} className="w-72 shrink-0 snap-start">
         <VibeCard

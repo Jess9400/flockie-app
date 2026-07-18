@@ -84,6 +84,8 @@
     "directions": "Cómo llegar",
     "invited": "Estás invitado",
     "confirm": "Confirma tu lugar",
-    "interested": "Me interesa"
+    "interested": "Me interesa",
+    "manage": "Gestionar",
+    "view": "Ver detalles"
   }
 }

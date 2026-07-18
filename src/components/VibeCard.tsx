@@ -122,7 +122,7 @@ export default function VibeCard({
           ? `relative rounded-3xl border border-ink/10 bg-white p-2 shadow-[0_2px_12px_rgba(10,37,69,0.07)] sm:p-2.5 ${
               faded ? "opacity-70" : "transition-transform hover:-translate-y-0.5"
             }`
-          : `relative flex flex-col overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-[0_4px_0_0_rgba(26,26,26,1)] ${
+          : `relative flex flex-col rounded-3xl border border-ink/10 bg-white p-2 shadow-[0_2px_12px_rgba(10,37,69,0.07)] ${
               faded ? "opacity-70" : "transition-transform hover:-translate-y-1"
             }`
       }
@@ -133,9 +133,7 @@ export default function VibeCard({
           onClick={markNotForMe}
           disabled={busy}
           aria-label={t("card.notForMe")}
-          className={`absolute z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-base font-black leading-none text-ink shadow-[0_1px_5px_rgba(10,37,69,0.2)] backdrop-blur hover:bg-white disabled:opacity-50 ${
-            isBrowse ? "right-3.5 top-3.5" : "right-1.5 top-1.5"
-          }`}
+          className="absolute right-3.5 top-3.5 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-base font-black leading-none text-ink shadow-[0_1px_5px_rgba(10,37,69,0.2)] backdrop-blur hover:bg-white disabled:opacity-50"
         >
           ×
         </button>
@@ -155,7 +153,7 @@ export default function VibeCard({
           className={
             isBrowse
               ? "relative w-24 shrink-0 overflow-hidden rounded-2xl bg-cream sm:aspect-[16/10] sm:w-full"
-              : "relative aspect-square w-full border-b-2 border-ink bg-cream"
+              : "relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-cream"
           }
         >
           {cover ? (
@@ -163,29 +161,16 @@ export default function VibeCard({
               src={cover}
               alt=""
               fill
-              sizes={isBrowse ? "(max-width:640px) 96px, 112px" : "(max-width:640px) 33vw, 240px"}
-              className={isBrowse ? "object-cover" : "object-contain"}
+              sizes={isBrowse ? "(max-width:640px) 96px, 112px" : "(max-width:640px) 33vw, 288px"}
+              className="object-cover"
             />
           ) : (
             <div className="flex h-full items-center justify-center text-3xl">🎟️</div>
           )}
-          {!isBrowse && (
-            <>
-              <span className="absolute left-1.5 top-1.5 rounded-full border-2 border-ink bg-white px-1.5 py-0.5 text-[9px] font-extrabold lowercase leading-none text-ink">
-                {catLabel(vibe.category)}
-              </span>
-              {faded ? (
-                typeof rating === "number" && rating > 0 && (
-                  <span className="absolute right-1.5 top-1.5 flex items-center gap-0.5 rounded-full border-2 border-ink bg-white px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-ink">
-                    <Star size={9} className="fill-flockie-coral text-flockie-coral" /> {rating.toFixed(1)}
-                  </span>
-                )
-              ) : myStatus && STATUS_CHIP.includes(myStatus) ? (
-                <span className="absolute right-1.5 top-1.5 rounded-full border-2 border-ink bg-flockie-orange px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-white">
-                  {t(`status.${myStatus}`)}
-                </span>
-              ) : null}
-            </>
+          {!isBrowse && !faded && myStatus && STATUS_CHIP.includes(myStatus) && (
+            <span className="absolute right-2 top-2 rounded-full bg-onboarding-green px-2 py-0.5 text-[10px] font-extrabold leading-none text-white shadow-[0_1px_5px_rgba(10,37,69,0.2)]">
+              {t(`status.${myStatus}`)}
+            </span>
           )}
         </div>
 
@@ -193,7 +178,7 @@ export default function VibeCard({
           className={
             isBrowse
               ? "flex min-w-0 flex-1 flex-col justify-center px-2 py-2 pr-10 sm:px-1.5 sm:pb-1 sm:pr-1.5 sm:pt-2.5"
-              : "flex flex-1 flex-col p-2.5"
+              : "flex flex-1 flex-col px-1.5 pt-2.5 pb-1"
           }
         >
           <p
@@ -240,50 +225,16 @@ export default function VibeCard({
             </div>
           )}
 
-          {!isBrowse && shownCategories.length > 0 && (
-            <div className="mt-1.5 flex flex-wrap items-center gap-1">
-              {shownCategories.map((c) => (
-                <span
-                  key={c}
-                  className="rounded-full border-2 border-ink bg-cream px-1.5 py-0.5 text-[9px] font-extrabold lowercase leading-none text-ink"
-                >
-                  {catLabel(c)}
-                </span>
-              ))}
-              {extraCategories > 0 && (
-                <span className="text-[9px] font-extrabold leading-none text-muted">
-                  +{extraCategories}
+          {!isBrowse && (
+            <div className="mt-2 flex items-center gap-2.5">
+              {!faded && typeof matchPct === "number" && (
+                <span className="shrink-0 rounded-full bg-flockie-blue/15 px-2.5 py-1 text-[11px] font-extrabold leading-none text-flockie-blue">
+                  {t("card.match", { pct: matchPct })}
                 </span>
               )}
-            </div>
-          )}
-
-          {!isBrowse && (
-            <div className="mt-auto pt-2">
-              <div className="flex items-center justify-between gap-1 pt-0.5">
-                <span className="flex min-w-0 items-center gap-1 text-[11px] font-medium text-ink">
-                  {hostAvatar ? (
-                    <Image
-                      src={hostAvatar}
-                      alt=""
-                      width={18}
-                      height={18}
-                      className="h-[18px] w-[18px] shrink-0 rounded-full object-cover"
-                    />
-                  ) : (
-                    <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-flockie-blue text-[9px] font-bold text-white">
-                      {hostName[0]}
-                    </span>
-                  )}
-                  <span className="truncate">{hostName}</span>
-                </span>
-                <span className="flex shrink-0 items-center gap-0.5 text-[11px] font-bold text-muted">
-                  <Users size={11} /> {faded ? t("card.went", { count: confirmedCount }) : `${confirmedCount}/${vibe.capacity}`}
-                </span>
-              </div>
-              {!faded && typeof matchPct === "number" && (
-                <span className="mt-2 block w-fit rounded-full border-2 border-ink bg-flockie-coral px-2 py-0.5 text-[10px] font-extrabold leading-none text-white">
-                  {t("card.match", { pct: matchPct })}
+              {faded && typeof rating === "number" && rating > 0 && (
+                <span className="flex shrink-0 items-center gap-0.5 rounded-full bg-cream px-2.5 py-1 text-[11px] font-extrabold leading-none text-ink">
+                  <Star size={11} className="fill-flockie-coral text-flockie-coral" /> {rating.toFixed(1)}
                 </span>
               )}
             </div>
@@ -293,12 +244,12 @@ export default function VibeCard({
       {!isBrowse && homeCta && (
         <Link
           href={homeCta.href}
-          className={`mx-2.5 mb-2.5 flex items-center justify-center rounded-xl border-2 border-ink py-2 text-xs font-extrabold ${
+          className={`mt-2 flex items-center justify-center rounded-xl py-2 text-xs font-extrabold ${
             homeCta.tone === "green"
               ? "bg-onboarding-green text-white"
               : homeCta.tone === "muted"
-                ? "bg-white text-ink"
-                : "bg-flockie-coral text-white shadow-[0_2px_0_0_#E0512C]"
+                ? "border border-ink/15 bg-white text-ink"
+                : "bg-flockie-coral text-white"
           }`}
         >
           {homeCta.label}
