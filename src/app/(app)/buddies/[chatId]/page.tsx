@@ -81,7 +81,7 @@ export default async function BuddyChatPage({
     supabase.from("profiles").select("id, trip_vibe").eq("id", user!.id).maybeSingle(),
     supabase
       .from("trips")
-      .select("id, kind, destination, destinations, start_date, end_date")
+      .select("id, kind, title, destination, destinations, start_date, end_date")
       .eq("user_id", otherId)
       .eq("status", "active")
       .order("start_date", { ascending: true }),
@@ -162,6 +162,7 @@ export default async function BuddyChatPage({
   type TripRow = {
     id?: string;
     kind?: string | null;
+    title?: string | null;
     destination?: string | null;
     destinations?: string[] | null;
     start_date?: string | null;
@@ -173,7 +174,7 @@ export default async function BuddyChatPage({
     if (!trip) {
       const { data } = await supabase
         .from("trips")
-        .select("id, kind, destination, destinations, start_date, end_date")
+        .select("id, kind, title, destination, destinations, start_date, end_date")
         .eq("id", otherTripId)
         .maybeSingle();
       trip = data;
@@ -203,8 +204,18 @@ export default async function BuddyChatPage({
     ? t("chatPage.alignOn", { tags: common.slice(0, 3).join(", ").toLowerCase() })
     : t("chatPage.similarOverall");
 
-  const icebreaker =
-    destination && dateRange
+  const isActivityMatch = (trip?.kind ?? "trip") === "activity";
+  const activityTitle =
+    isActivityMatch && typeof trip?.title === "string" ? trip.title.trim() || null : null;
+
+  const icebreaker = isActivityMatch
+    ? // Activity match (e.g. from Home recommendations) — no travel wording.
+      activityTitle
+      ? t("chatPage.activityIcebreakerTitled", { activity: activityTitle })
+      : common.length
+        ? t("chatPage.activityIcebreakerWith", { tags: common.slice(0, 3).join(", ").toLowerCase() })
+        : t("chatPage.activityIcebreaker")
+    : destination && dateRange
       ? `${t("chatPage.icebreakerMatched", { destination, dateRange })}\n${
           common.length
             ? `${t("chatPage.compatibleVibes", { tags: common.slice(0, 4).join(", ").toLowerCase() })}\n\n`

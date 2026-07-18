@@ -65,7 +65,10 @@
     "similarVibe": "Los dos tienen un vibe de viaje parecido. Elijan un destino juntos y empiecen a planear. Sin presión.",
     "similarVibeWith": "Los dos tienen un vibe de viaje parecido — {tags}. Elijan un destino juntos y empiecen a planear. Sin presión.",
     "flockIcebreaker": "Todos van a {title}{dateRangeSuffix}. 🎒\nDigan hola y empiecen a organizarlo juntos — fijen las fechas que funcionen, dónde se quedarán y los imprescindibles que todos quieren incluir.",
-    "dateRange": "{start} → {end} · {days, plural, one {# día} other {# días}}"
+    "dateRange": "{start} → {end} · {days, plural, one {# día} other {# días}}",
+    "activityIcebreaker": "¡Hicieron match! 🎉\nDi hola y pónganse de acuerdo en qué hacer — y cuándo.",
+    "activityIcebreakerWith": "¡Hicieron match! 🎉 A los dos les gusta {tags}.\nDi hola y organicen algo para hacer juntos.",
+    "activityIcebreakerTitled": "¡Hicieron match para {activity}! 🎉\nDi hola y elijan una hora que les funcione a ambos."
   },
   "header": {
     "leaveMatchTitle": "¿Salir de este match?",
