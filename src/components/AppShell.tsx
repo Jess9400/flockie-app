@@ -225,17 +225,6 @@ export default function AppShell({
             }`}>
             {open ? <X size={18} /> : <Menu size={18} />}
           </button>
-          {/* Desktop chat surfaces hide the nav sidebar; a back arrow returns
-              to Home where the nav lives (clearer than a drawer). */}
-          {inChatSurface && (
-            <Link
-              href="/home"
-              aria-label={tc("appShell.home")}
-              className="hidden h-9 w-9 items-center justify-center rounded-full border border-ink/15 lg:flex"
-            >
-              <ArrowLeft size={18} />
-            </Link>
-          )}
           <Link href="/home" aria-label={tc("appShell.home")}>
             <Image src="/logo.svg" alt="Flockie" width={130} height={44} className="h-9 w-auto" priority />
           </Link>
@@ -327,6 +316,13 @@ export default function AppShell({
           }`}
         >
           <aside className="hidden w-[320px] shrink-0 flex-col border-r border-ink/12 bg-cream lg:flex">
+            {/* Back to Home (nav lives there) — sits above the chat list. */}
+            <Link
+              href="/home"
+              className="flex items-center gap-1.5 px-3 pt-3 text-sm font-bold text-ink/55 hover:text-ink"
+            >
+              <ArrowLeft size={16} /> {t("home")}
+            </Link>
             <ChatList variant="rail" />
           </aside>
           <div className="min-h-0 min-w-0 flex-1">{children}</div>
