@@ -401,16 +401,19 @@ export default async function HomePage({
       <section className="mx-4 mt-6">
         <div className="flex items-end justify-between gap-3 px-1">
           <div>
-            {/* Title stays on ONE line on small phones; the Top picks tag sits
-                at its end (wraps below only if a screen is too narrow). */}
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            {/* Mobile: one-line title with the Top picks tag on the next line,
+                right-aligned under the end of the title ("activity"). Desktop:
+                tag inline at the end of the title. */}
+            <div className="w-fit sm:flex sm:items-center sm:gap-2">
               <h2 className="whitespace-nowrap text-[19px] font-extrabold tracking-tight sm:text-[28px] sm:tracking-normal">
                 {t("findBuddyHeading")}
               </h2>
-              <span className="shrink-0 -rotate-2 rounded-full bg-flockie-coral px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:px-2.5 sm:text-[10px]">
-                <span className="hidden sm:inline">✨ </span>
-                {th("buddies.topPicks")}
-              </span>
+              <div className="mt-1 flex justify-end sm:mt-0 sm:block">
+                <span className="shrink-0 -rotate-2 rounded-full bg-flockie-coral px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:px-2.5 sm:text-[10px]">
+                  <span className="hidden sm:inline">✨ </span>
+                  {th("buddies.topPicks")}
+                </span>
+              </div>
             </div>
             <Squiggle />
             <p className="mt-0.5 font-bold text-navy/60">
