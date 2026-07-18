@@ -32,9 +32,9 @@ export default async function MyActivitiesPage({
   const t = await getTranslations("activities");
 
   const TRIP_TABS = [
-    { href: "/my-trips", label: t("tabTrips") },
     { href: "/my-activities", label: t("tabActivities") },
     { href: "/deals", label: t("tabDeals") },
+    { href: "/my-trips", label: t("tabTrips"), soon: true },
   ];
 
   const { data: activities } = await supabase

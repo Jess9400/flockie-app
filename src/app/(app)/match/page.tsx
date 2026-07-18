@@ -18,8 +18,10 @@ export default async function MatchPage({
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("match.find");
+  const tc = await getTranslations("common");
 
-  const mode = searchParams.mode === "activity" ? "activity" : "trip";
+  // Trip buddy matching is parked "Soon" — default to Activity.
+  const mode = searchParams.mode === "trip" ? "trip" : "activity";
   const isActivity = mode === "activity";
 
   // Trip matching only needs the Trip vibe (trip_prefs); activity matching
@@ -43,13 +45,16 @@ export default async function MatchPage({
     : tripPrefsDone;
 
   const subToggle = (
-    <div className="mt-3 inline-flex gap-1 rounded-full border-2 border-ink bg-cream p-1 text-xs font-bold">
-      <Link href="/match?mode=trip" className={`rounded-full px-4 py-1 ${!isActivity ? "bg-ink text-white" : "text-ink"}`}>
-        {t("toggleTrip")}
-      </Link>
+    <div className="mt-3 inline-flex items-center gap-1 rounded-full border-2 border-ink bg-cream p-1 text-xs font-bold">
       <Link href="/match?mode=activity" className={`rounded-full px-4 py-1 ${isActivity ? "bg-ink text-white" : "text-ink"}`}>
         {t("toggleActivity")}
       </Link>
+      <span aria-disabled="true" className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-full px-4 py-1 text-ink/35">
+        {t("toggleTrip")}
+        <span className="rounded-full bg-white px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-ink/50">
+          {tc("soon")}
+        </span>
+      </span>
     </div>
   );
 
@@ -75,7 +80,15 @@ export default async function MatchPage({
       </p>
       <div className="mt-4 grid grid-cols-2 gap-2 rounded-full border-2 border-ink bg-white p-1 text-sm font-bold">
         <span className="rounded-full bg-flockie-orange py-2 text-center text-white">{t("tabBuddy")}</span>
-        <Link href="/flocks" className="rounded-full py-2 text-center text-ink">{t("tabFlock")}</Link>
+        <span
+          aria-disabled="true"
+          className="inline-flex cursor-not-allowed items-center justify-center gap-1.5 rounded-full py-2 text-center text-ink/35"
+        >
+          {t("tabFlock")}
+          <span className="rounded-full bg-cream px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-ink/50">
+            {tc("soon")}
+          </span>
+        </span>
       </div>
       {subToggle}
     </>

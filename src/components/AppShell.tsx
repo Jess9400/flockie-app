@@ -66,7 +66,8 @@ const PRIMARY_NAV: NavItem[] = [
   { href: "/home", labelKey: "home", icon: Home, sections: ["home"] },
   { href: "/vibes", labelKey: "vibes", icon: Sparkles, sections: ["vibes", "my-vibes"] },
   { href: "/match", labelKey: "findABuddy", icon: Compass, sections: ["match"] },
-  { href: "/my-trips", labelKey: "myTrips", icon: Map, sections: ["trips", "deals"] },
+  // "My Plans" lands on Activities — Trips is parked "Soon", so it's not the entry.
+  { href: "/my-activities", labelKey: "myTrips", icon: Map, sections: ["trips", "deals"] },
   { href: "/chats", labelKey: "chats", icon: MessageCircle, sections: ["chats"] },
 ];
 

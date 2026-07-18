@@ -10,9 +10,9 @@ export default async function DealsPage() {
   const t = await getTranslations("deals");
 
   const TRIP_TABS = [
-    { href: "/my-trips", label: t("tabMyTrips") },
     { href: "/my-activities", label: t("tabMyActivities") },
     { href: "/deals", label: t("tabDeals") },
+    { href: "/my-trips", label: t("tabMyTrips"), soon: true },
   ];
 
   const [{ data: profile }, { data: trips }] = await Promise.all([
