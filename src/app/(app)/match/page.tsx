@@ -45,8 +45,8 @@ export default async function MatchPage({
     : tripPrefsDone;
 
   const subToggle = (
-    <div className="mt-3 inline-flex items-center gap-1 rounded-full border-2 border-ink bg-cream p-1 text-xs font-bold">
-      <Link href="/match?mode=activity" className={`rounded-full px-4 py-1 ${isActivity ? "bg-ink text-white" : "text-ink"}`}>
+    <div className="mt-3 inline-flex items-center gap-1 rounded-full border border-ink/15 p-1 text-xs font-bold">
+      <Link href="/match?mode=activity" className={`rounded-full px-4 py-1 ${isActivity ? "bg-flockie-orange text-white" : "text-ink/55 hover:text-ink"}`}>
         {t("toggleActivity")}
       </Link>
       <span aria-disabled="true" className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-full px-4 py-1 text-ink/35">
@@ -78,7 +78,7 @@ export default async function MatchPage({
               ),
             })}
       </p>
-      <div className="mt-4 grid grid-cols-2 gap-2 rounded-full border-2 border-ink bg-white p-1 text-sm font-bold">
+      <div className="mt-4 grid grid-cols-2 gap-2 rounded-full border border-ink/15 p-1 text-sm font-bold">
         <span className="rounded-full bg-flockie-orange py-2 text-center text-white">{t("tabBuddy")}</span>
         <span
           aria-disabled="true"

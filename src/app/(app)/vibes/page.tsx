@@ -10,14 +10,21 @@ import PageTabs from "@/components/PageTabs";
 import Pagination from "@/components/Pagination";
 import FilterSheet from "@/components/FilterSheet";
 import { loadVibeMatch } from "@/lib/vibe-stats";
-import type { InterestStatus } from "@/lib/vibes";
+import { VIBE_CATEGORIES, type InterestStatus } from "@/lib/vibes";
 
 const PAGE_SIZE = 6;
 
 export default async function VibesPage({
   searchParams,
 }: {
-  searchParams: { q?: string; city?: string; page?: string; when?: string; view?: string };
+  searchParams: {
+    q?: string;
+    city?: string;
+    page?: string;
+    when?: string;
+    view?: string;
+    category?: string | string[];
+  };
 }) {
   const supabase = await createClient();
   const t = await getTranslations("vibes");
@@ -27,7 +34,17 @@ export default async function VibesPage({
   ];
   const q = searchParams.q?.trim() ?? "";
   const city = searchParams.city?.trim() ?? "";
-  const when = searchParams.when === "today" || searchParams.when === "48" ? searchParams.when : "all";
+  const when =
+    searchParams.when === "today" || searchParams.when === "48" || searchParams.when === "weekend"
+      ? searchParams.when
+      : "all";
+  const categories = (
+    Array.isArray(searchParams.category)
+      ? searchParams.category
+      : searchParams.category
+        ? [searchParams.category]
+        : []
+  ).filter((c) => VIBE_CATEGORIES.includes(c as (typeof VIBE_CATEGORIES)[number]));
   const view = searchParams.view === "past" ? "past" : "upcoming";
   const isPast = view === "past";
   const page = Math.max(1, Number(searchParams.page) || 1);
@@ -62,15 +79,31 @@ export default async function VibesPage({
   if (city) query = query.ilike("city", `%${city}%`);
   // Single search field matches vibe title, category, or city.
   if (q) query = query.or(`title.ilike.%${q}%,category.ilike.%${q}%,city.ilike.%${q}%`);
+  // Category filter (multi): match the primary category OR the multi-select array.
+  if (categories.length) {
+    query = query.or(
+      categories.flatMap((c) => [`category.eq.${c}`, `categories.cs.{${c}}`]).join(",")
+    );
+  }
   if (!isPast && hiddenVibeIds.length) query = query.not("id", "in", `(${hiddenVibeIds.join(",")})`);
 
-  // Time window (upcoming only): Today / Next 48h / Anytime.
+  // Time window (upcoming only): Today / Next 48h / This weekend / Anytime.
   if (!isPast && when === "today") {
     const endOfToday = new Date();
     endOfToday.setHours(23, 59, 59, 999);
     query = query.lte("starts_at", endOfToday.toISOString());
   } else if (!isPast && when === "48") {
     query = query.lte("starts_at", new Date(Date.now() + 48 * 3600 * 1000).toISOString());
+  } else if (!isPast && when === "weekend") {
+    // Upcoming Sat 00:00 → Sun 23:59 (this weekend if it's still ahead).
+    const now = new Date();
+    const satStart = new Date(now);
+    satStart.setDate(now.getDate() + ((6 - now.getDay() + 7) % 7));
+    satStart.setHours(0, 0, 0, 0);
+    const sunEnd = new Date(satStart);
+    sunEnd.setDate(satStart.getDate() + 1);
+    sunEnd.setHours(23, 59, 59, 999);
+    query = query.gte("starts_at", satStart.toISOString()).lte("starts_at", sunEnd.toISOString());
   }
 
   const from = (page - 1) * PAGE_SIZE;
@@ -174,7 +207,17 @@ export default async function VibesPage({
                   { value: "", label: t("list.whenAnytime") },
                   { value: "today", label: t("list.whenToday") },
                   { value: "48", label: t("list.when48") },
+                  { value: "weekend", label: t("list.whenWeekend") },
                 ],
+              },
+              {
+                key: "category",
+                title: t("list.filterCategory"),
+                multi: true,
+                options: VIBE_CATEGORIES.filter((c) => c !== "other").map((c) => ({
+                  value: c,
+                  label: t(`categories.${c}`),
+                })),
               },
             ]}
           />
@@ -182,7 +225,7 @@ export default async function VibesPage({
       </VibeSearch>
 
       {/* Upcoming / Past — below the bar. */}
-      <div className="mt-4 inline-flex shrink-0 gap-1 rounded-full bg-cream p-1 text-sm font-bold">
+      <div className="mt-4 inline-flex shrink-0 gap-1 rounded-full border border-ink/15 p-1 text-sm font-bold">
         <Link
           href="/vibes"
           className={`rounded-full px-4 py-1.5 ${!isPast ? "bg-flockie-coral text-white" : "text-ink/55 hover:text-ink"}`}

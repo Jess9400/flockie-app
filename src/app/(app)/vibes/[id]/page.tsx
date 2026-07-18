@@ -377,9 +377,7 @@ export default async function VibeDetailPage({
             )}
             <p className="flex items-center gap-2">
               <Users size={15} className="shrink-0 text-flockie-orange" />
-              {showAttendeeDetails
-                ? t("detail.going", { count: confirmedCount, capacity: vibe.capacity })
-                : t("detail.groupSize", { capacity: vibe.capacity })}
+              {t("detail.going", { count: confirmedCount, capacity: vibe.capacity })}
             </p>
           </div>
           {host?.id && (

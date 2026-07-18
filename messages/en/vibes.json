@@ -14,7 +14,9 @@
     "completeCheck": "Complete your activity vibe check to unlock smart matching →",
     "emptyPast": "No past Vibes in the last 45 days yet.",
     "emptySearch": "No Vibes match your search. Try a different activity or city.",
-    "emptyNone": "No Vibes yet. Be the first to create one."
+    "emptyNone": "No Vibes yet. Be the first to create one.",
+    "whenWeekend": "This weekend",
+    "filterCategory": "Category"
   },
   "card": {
     "hostFallback": "A flockie",

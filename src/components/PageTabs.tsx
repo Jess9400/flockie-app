@@ -15,7 +15,7 @@ export default function PageTabs({
   const pathname = usePathname();
   const t = useTranslations("common");
   return (
-    <div className="mb-4 inline-flex gap-1 rounded-full bg-cream p-1 text-sm font-bold">
+    <div className="mb-4 inline-flex gap-1 rounded-full border border-ink/15 p-1 text-sm font-bold">
       {tabs.map((tab) => {
         if (tab.soon) {
           return (
