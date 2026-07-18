@@ -8,7 +8,7 @@ import VibeSearch from "@/components/VibeSearch";
 import LocationPrompt from "@/components/LocationPrompt";
 import PageTabs from "@/components/PageTabs";
 import Pagination from "@/components/Pagination";
-import FilterSheet from "@/components/FilterSheet";
+import VibeInlineFilters from "@/components/VibeInlineFilters";
 import { loadVibeMatch } from "@/lib/vibe-stats";
 import { VIBE_CATEGORIES, type InterestStatus } from "@/lib/vibes";
 
@@ -188,30 +188,18 @@ export default async function VibesPage({
           filter controls tucked inside it. */}
       <VibeSearch q={q}>
         {!isPast && (
-          <FilterSheet
-            basePath="/vibes"
-            preserveKeys={["q"]}
-            sections={[
-              {
-                key: "when",
-                title: t("list.filterWhen"),
-                options: [
-                  { value: "", label: t("list.whenAnytime") },
-                  { value: "today", label: t("list.whenToday") },
-                  { value: "48", label: t("list.when48") },
-                  { value: "weekend", label: t("list.whenWeekend") },
-                ],
-              },
-              {
-                key: "category",
-                title: t("list.filterCategory"),
-                multi: true,
-                options: VIBE_CATEGORIES.filter((c) => c !== "other").map((c) => ({
-                  value: c,
-                  label: t(`categories.${c}`),
-                })),
-              },
+          <VibeInlineFilters
+            whenOptions={[
+              { value: "", label: t("list.whenAnytime") },
+              { value: "today", label: t("list.whenToday") },
+              { value: "48", label: t("list.when48") },
+              { value: "weekend", label: t("list.whenWeekend") },
             ]}
+            categoryOptions={VIBE_CATEGORIES.filter((c) => c !== "other").map((c) => ({
+              value: c,
+              label: t(`categories.${c}`),
+            }))}
+            labels={{ anyTime: t("list.whenAnytime"), category: t("list.filterCategory") }}
           />
         )}
       </VibeSearch>
