@@ -54,6 +54,18 @@ export function formatVibeWhen(iso: string, locale = "en", timeZone?: string | n
   return `${format(d, "EEE MMM d", { locale: df })}, ${t}`;
 }
 
+// Keep the UI aligned with public._vibe_run_at in vibe-auto-matching.sql.
+// Matching is scheduled for the earlier of the signup deadline and two hours
+// before the Vibe; legacy Vibes without a deadline use 24 hours before start.
+export function getVibeMatchingRunAt(startsAt: string, signupDeadline?: string | null): string {
+  const start = new Date(startsAt).getTime();
+  const deadline = signupDeadline
+    ? new Date(signupDeadline).getTime()
+    : start - 24 * 60 * 60 * 1000;
+
+  return new Date(Math.min(deadline, start - 2 * 60 * 60 * 1000)).toISOString();
+}
+
 
 export const VIBE_CATEGORIES = [
   "surf",

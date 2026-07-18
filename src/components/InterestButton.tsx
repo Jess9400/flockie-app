@@ -4,9 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { useEsc } from "@/lib/use-esc";
 import ActivityVibeForm from "@/components/ActivityVibeForm";
 import CityAutocomplete from "@/components/CityAutocomplete";
 import { captureAndStoreLocation } from "@/lib/location";
@@ -26,9 +25,10 @@ type Props = {
   requestMode?: boolean;
   hostCode?: string | null;
   initialNotForMe?: boolean;
-  vibeFormDone?: boolean;
   hasCity?: boolean;
   directConfirm?: boolean;
+  matchingRunAt?: string | null;
+  matchingTimeZone?: string | null;
 };
 
 export default function InterestButton({
@@ -43,14 +43,16 @@ export default function InterestButton({
   requestMode,
   hostCode,
   initialNotForMe = false,
-  vibeFormDone,
   hasCity = true,
   directConfirm = false,
+  matchingRunAt,
+  matchingTimeZone,
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
   const askConfirm = useConfirm();
   const t = useTranslations("vibes");
+  const locale = useLocale();
   const INELIGIBLE_MESSAGE = t("interest.ineligible");
   const [status, setStatus] = useState<InterestStatus | null>(initialStatus);
   const [hasActivities, setHasActivities] = useState(activitiesDone);
@@ -59,7 +61,6 @@ export default function InterestButton({
   const [gateFor, setGateFor] = useState<"interest" | "request">("interest");
   const [showCode, setShowCode] = useState(false);
   const [codeInput, setCodeInput] = useState("");
-  const [popup, setPopup] = useState<null | "interested" | "confirmed">(null);
   const [now, setNow] = useState(() => Date.now());
   const [message, setMessage] = useState<string | null>(null);
   const [notForMe, setNotForMe] = useState(initialNotForMe);
@@ -101,7 +102,6 @@ export default function InterestButton({
   }
 
   useEffect(() => setMounted(true), []);
-  useEsc(() => setPopup(null), !!popup);
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 30000);
@@ -145,7 +145,6 @@ export default function InterestButton({
     setNotForMe(false);
     const newStatus = ((data as { status?: string })?.status as InterestStatus) ?? "interested";
     setStatus(newStatus);
-    setPopup(newStatus === "confirmed" ? "confirmed" : "interested");
     router.refresh();
   }
 
@@ -195,7 +194,6 @@ export default function InterestButton({
     await supabase.rpc("undo_vibe_not_for_me", { p_vibe: vibeId });
     setNotForMe(false);
     setStatus("confirmed");
-    setPopup("confirmed");
     router.refresh();
   }
 
@@ -230,7 +228,6 @@ export default function InterestButton({
     setBusy(false);
     if (!error) {
       setStatus("confirmed");
-      setPopup("confirmed");
       router.refresh();
     } else {
       setMessage(error.message);
@@ -289,6 +286,20 @@ export default function InterestButton({
 
   const base =
     "w-full rounded-full border-2 border-ink py-3.5 text-center font-bold disabled:opacity-50";
+  const matchingTime = matchingRunAt
+    ? new Intl.DateTimeFormat(locale, {
+        weekday: "long",
+        hour: "numeric",
+        minute: "2-digit",
+        timeZone: matchingTimeZone ?? undefined,
+      }).format(new Date(matchingRunAt))
+    : null;
+  const statusPanel = (title: string, body?: string) => (
+    <div className="rounded-2xl border-2 border-dashed border-ink/20 bg-cream px-4 py-3 text-left">
+      <p className="text-sm font-extrabold text-ink">{title}</p>
+      {body && <p className="mt-0.5 text-xs font-semibold leading-relaxed text-muted">{body}</p>}
+    </div>
+  );
 
   let control: React.ReactNode;
 
@@ -307,7 +318,7 @@ export default function InterestButton({
   } else if (status === "confirmed") {
     control = (
       <div className="space-y-2">
-        <div className={`${base} bg-[#06D6A0] text-white`}>{t("interest.youreIn")}</div>
+        {statusPanel(t("interest.youreIn"), t("interest.confirmedBody"))}
         <Link href={`/vibes/${vibeId}/chat`} className={`${base} block bg-flockie-blue text-white`}>
           {t("interest.openVibingChat")}
         </Link>
@@ -316,16 +327,17 @@ export default function InterestButton({
   } else if (status === "invited") {
     control = (
       <div className="space-y-2">
-        {invitationExpiresAt && (
-          <p className="text-center text-sm font-bold text-flockie-orange">
-            {t("interest.toConfirm", { time: timeLeft() })}
-          </p>
+        {statusPanel(
+          t("interest.invitedTitle"),
+          invitationExpiresAt
+            ? `${t("interest.invitedBody")} ${t("interest.toConfirm", { time: timeLeft() })}`
+            : t("interest.invitedBody")
         )}
         <button onClick={confirm} disabled={busy} className={`${base} bg-flockie-orange text-white shadow-[0_4px_0_0_#E0512C]`}>
           {t("interest.confirmSpot")}
         </button>
         <button onClick={decline} disabled={busy} className={`${base} bg-white`}>
-          {t("interest.decline")}
+          {t("interest.pass")}
         </button>
       </div>
     );
@@ -354,9 +366,7 @@ export default function InterestButton({
     );
   } else if (status === "standby") {
     control = (
-      <div className={`${base} bg-cream`}>
-        {t("interest.standbyMsg")}
-      </div>
+      statusPanel(t("interest.standbyTitle"), t("interest.standbyBody"))
     );
   } else if (status === "requested") {
     control = (
@@ -366,15 +376,16 @@ export default function InterestButton({
     );
   } else if (status === "shortlisted") {
     control = (
-      <div className={`${base} bg-cream`}>
-        {t("interest.shortlistedMsg")}
-      </div>
+      statusPanel(t("interest.runningTitle"), t("interest.runningBody"))
     );
   } else if (status === "interested") {
     control = (
-      <button onClick={untap} disabled={busy} className={`${base} bg-cream`}>
-        {t("interest.inRunningTap")}
-      </button>
+      <div className="space-y-2">
+        {statusPanel(t("interest.runningTitle"), t("interest.runningBody"))}
+        <button onClick={untap} disabled={busy} className={`${base} bg-white text-muted`}>
+          {t("interest.withdrawInterest")}
+        </button>
+      </div>
     );
   } else if (notForMe) {
     control = (
@@ -390,12 +401,14 @@ export default function InterestButton({
   } else {
     control = (
       <div className="space-y-2">
+        {directConfirm
+          ? statusPanel(t("interest.fastFillTitle"), t("interest.fastFillBody"))
+          : matchingTime
+            ? statusPanel(t("interest.matchingScheduled", { time: matchingTime }))
+            : null}
         <button onClick={express} disabled={busy} className={`${base} bg-flockie-orange text-white shadow-[0_4px_0_0_#E0512C]`}>
           {directConfirm ? t("interest.joinNow") : t("interest.imInterested")}
         </button>
-        {directConfirm && (
-          <p className="text-center text-xs font-bold text-flockie-orange">{t("interest.joinNowHint")}</p>
-        )}
         <button onClick={markNotForMe} disabled={busy} className={`${base} bg-white text-muted`}>
           {t("interest.notForMe")}
         </button>
@@ -492,61 +505,6 @@ export default function InterestButton({
           document.body
         )}
 
-      {popup && mounted &&
-        createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={popup === "confirmed" ? t("interest.popupConfirmedAria") : t("interest.popupRunningAria")}
-            className="w-full max-w-sm rounded-3xl border-2 border-ink bg-white p-6 text-center shadow-[0_6px_0_0_rgba(10,37,69,1)]"
-          >
-            <p className="text-4xl">{popup === "confirmed" ? "🎉" : "✨"}</p>
-            <h2 className="mt-2 font-fredoka text-2xl font-bold text-ink">
-              {popup === "confirmed" ? t("interest.popupConfirmedTitle") : t("interest.popupRunningTitle")}
-            </h2>
-            <p className="mt-1 font-nunito text-sm font-medium text-muted">
-              {popup === "confirmed"
-                ? t("interest.popupConfirmedBody")
-                : t("interest.popupRunningBody")}
-            </p>
-
-            {!vibeFormDone && (
-              <div className="mt-4 rounded-2xl border-2 border-ink bg-cream p-3">
-                <p className="text-sm font-bold text-ink">{t("interest.betterMatches")}</p>
-                <p className="mt-0.5 text-xs font-medium text-muted">
-                  {t("interest.takeVibeForm")}
-                </p>
-                <Link
-                  href="/onboarding/vibe-check"
-                  className="mt-3 block rounded-full border-2 border-ink bg-flockie-blue py-2.5 font-fredoka text-sm font-semibold text-white"
-                >
-                  {t("interest.completeVibeForm")}
-                </Link>
-              </div>
-            )}
-
-            <div className="mt-4 flex flex-col gap-2">
-              {popup === "confirmed" && (
-                <Link
-                  href={`/vibes/${vibeId}/chat`}
-                  className="block rounded-full border-2 border-ink bg-flockie-coral py-2.5 font-fredoka text-sm font-semibold text-white shadow-[0_3px_0_0_#E0512C]"
-                >
-                  {t("interest.openVibingChat")}
-                </Link>
-              )}
-              <button
-                type="button"
-                onClick={() => setPopup(null)}
-                className="rounded-full border-2 border-ink bg-white py-2.5 font-fredoka text-sm font-semibold text-ink"
-              >
-                {t("interest.done")}
-              </button>
-            </div>
-          </div>
-        </div>,
-          document.body
-        )}
     </>
   );
 }

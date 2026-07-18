@@ -41,6 +41,12 @@
     "cancelledBanner": "This Vibe was cancelled by the host. The chat is now inactive.",
     "approxArea": "Approximate area · exact location unlocks after confirmation",
     "going": "{count}/{capacity} going",
+    "groupSize": "Small group · up to {capacity} people",
+    "howJoiningWorks": "How joining works",
+    "joiningStep1": "Tap I’m interested — no commitment yet.",
+    "joiningStep2": "Flockie builds a compatible group. The host can make a few changes.",
+    "joiningStep3": "If matched, you’ll get an invite to confirm your spot. If the group is full, we may notify you when a spot opens.",
+    "detailsAndRequirements": "Details & requirements",
     "viewActivity": "🎟️ View activity ↗",
     "whatToBring": "What to bring / cost",
     "hostedBy": "Hosted by {name}",
@@ -209,7 +215,19 @@
       "cancel": "Cancel"
     },
     "joinNow": "Join now",
-    "joinNowHint": "A spot is open — you’ll be confirmed instantly."
+    "joinNowHint": "A spot is open — you’ll be confirmed instantly.",
+    "matchingScheduled": "Matching is scheduled for {time}.",
+    "runningTitle": "You’re in the running",
+    "runningBody": "We’re building the group. You’ll get an update after matching.",
+    "invitedTitle": "You’re invited 🎉",
+    "invitedBody": "This spot is reserved for you.",
+    "confirmedBody": "Vibing Chat is open and the exact location is unlocked.",
+    "standbyTitle": "You’re on standby",
+    "standbyBody": "We’ll move you in automatically if a spot opens.",
+    "fastFillTitle": "A few spots are open",
+    "fastFillBody": "Matching is complete. Join now and you’re immediately confirmed.",
+    "withdrawInterest": "Withdraw interest",
+    "pass": "Pass"
   },
   "host": {
     "youCancelled": "You cancelled this Vibe.",
