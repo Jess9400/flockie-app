@@ -394,9 +394,10 @@ export default async function HomePage({
       <section className="mx-4 mt-6">
         <div className="flex items-end justify-between gap-3 px-1">
           <div>
-            <div className="flex items-start gap-2">
+            <div className="flex items-center gap-2">
               <h2 className="text-[22px] font-extrabold sm:text-[28px]">{t("findBuddyHeading")}</h2>
-              <span className="mt-1 max-w-[3.5rem] shrink-0 -rotate-6 rounded-2xl bg-flockie-coral px-2 py-1 text-center text-[9px] font-extrabold uppercase leading-[1.15] tracking-wide text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
+              <span className="max-w-[3.25rem] shrink-0 -rotate-6 whitespace-normal rounded-2xl bg-flockie-coral px-2 py-1 text-center text-[9px] font-extrabold uppercase leading-[1.15] tracking-wide text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:max-w-none sm:whitespace-nowrap">
+                <span className="hidden sm:inline">✨ </span>
                 {th("buddies.topPicks")}
               </span>
             </div>

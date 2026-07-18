@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home, Compass, Map, Sparkles, MessageCircle, User, Bell, Menu, X,
+  Home, Compass, Map, Sparkles, MessageCircle, User, Bell, Menu, X, ArrowLeft,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Footer from "@/components/Footer";
@@ -217,15 +217,25 @@ export default function AppShell({
       {/* Top bar */}
       <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-ink/12 bg-cream px-4 sm:px-6">
         <div className="flex items-center gap-2">
-          {/* Top-left menu: mobile only in chat rooms (where the bottom bar is
-              hidden); on desktop only on chat surfaces. Elsewhere the bottom
-              tab bar's ☰ opens the drawer. */}
+          {/* Mobile chat rooms have no bottom bar, so keep a ☰ here to reach
+              the drawer. */}
           <button type="button" onClick={() => setOpen((v) => !v)} aria-label={tc("appShell.menu")}
-            className={`h-9 w-9 items-center justify-center rounded-full border border-ink/15 ${
+            className={`h-9 w-9 items-center justify-center rounded-full border border-ink/15 lg:hidden ${
               isChatRoom ? "flex" : "hidden"
-            } ${inChatSurface ? "lg:flex" : "lg:hidden"}`}>
+            }`}>
             {open ? <X size={18} /> : <Menu size={18} />}
           </button>
+          {/* Desktop chat surfaces hide the nav sidebar; a back arrow returns
+              to Home where the nav lives (clearer than a drawer). */}
+          {inChatSurface && (
+            <Link
+              href="/home"
+              aria-label={tc("appShell.home")}
+              className="hidden h-9 w-9 items-center justify-center rounded-full border border-ink/15 lg:flex"
+            >
+              <ArrowLeft size={18} />
+            </Link>
+          )}
           <Link href="/home" aria-label={tc("appShell.home")}>
             <Image src="/logo.svg" alt="Flockie" width={130} height={44} className="h-9 w-auto" priority />
           </Link>
