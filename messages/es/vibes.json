@@ -24,7 +24,8 @@
     "undo": "Deshacer",
     "notForMe": "No es para mí",
     "went": "{count} asistieron",
-    "match": "{pct}% de match"
+    "match": "{pct}% de match",
+    "going": "{count} de {capacity} van"
   },
   "status": {
     "interested": "Interesado",
@@ -300,7 +301,7 @@
     "copiedTile": "¡Copiado!",
     "share": "Compartir",
     "linkCopied": "¡Enlace copiado!",
-    "fill": "Compartir para llenar 🚀"
+    "fill": "Compartir para llenar"
   },
   "leave": {
     "leaveTitle": "¿Salir de este Vibe?",

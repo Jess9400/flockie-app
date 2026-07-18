@@ -182,16 +182,16 @@ export default async function VibesPage({
       </VibeSearch>
 
       {/* Upcoming / Past — below the bar. */}
-      <div className="mt-4 inline-flex shrink-0 gap-0.5 rounded-full border-2 border-ink bg-white p-0.5 text-sm font-bold">
+      <div className="mt-4 inline-flex shrink-0 gap-1 rounded-full bg-cream p-1 text-sm font-bold">
         <Link
           href="/vibes"
-          className={`rounded-full px-4 py-1.5 ${!isPast ? "bg-ink text-white" : "text-ink hover:bg-navy/5"}`}
+          className={`rounded-full px-4 py-1.5 ${!isPast ? "bg-flockie-coral text-white" : "text-ink/55 hover:text-ink"}`}
         >
           {t("list.upcoming")}
         </Link>
         <Link
           href="/vibes?view=past"
-          className={`rounded-full px-4 py-1.5 ${isPast ? "bg-ink text-white" : "text-ink hover:bg-navy/5"}`}
+          className={`rounded-full px-4 py-1.5 ${isPast ? "bg-flockie-coral text-white" : "text-ink/55 hover:text-ink"}`}
         >
           {t("list.past")}
         </Link>

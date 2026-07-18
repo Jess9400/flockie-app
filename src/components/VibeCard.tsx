@@ -117,7 +117,7 @@ export default function VibeCard({
     <div
       className={
         isBrowse
-          ? `relative flex min-h-28 overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-[0_4px_0_0_rgba(26,26,26,1)] ${
+          ? `relative rounded-3xl border border-ink/10 bg-white p-2 shadow-[0_2px_12px_rgba(10,37,69,0.07)] sm:p-2.5 ${
               faded ? "opacity-70" : "transition-transform hover:-translate-y-0.5"
             }`
           : `relative overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-[0_4px_0_0_rgba(26,26,26,1)] ${
@@ -131,13 +131,15 @@ export default function VibeCard({
           onClick={markNotForMe}
           disabled={busy}
           aria-label={t("card.notForMe")}
-          className="absolute right-1.5 top-1.5 z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-ink bg-white text-lg font-black leading-none text-ink shadow-[0_2px_0_0_rgba(26,26,26,1)] hover:bg-cream disabled:opacity-50"
+          className={`absolute z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-base font-black leading-none text-ink shadow-[0_1px_5px_rgba(10,37,69,0.2)] backdrop-blur hover:bg-white disabled:opacity-50 ${
+            isBrowse ? "right-3.5 top-3.5" : "right-1.5 top-1.5"
+          }`}
         >
           ×
         </button>
       )}
       {isBrowse && !faded && myStatus && STATUS_CHIP.includes(myStatus) && (
-        <span className="absolute right-3 top-3 z-10 rounded-full border-2 border-ink bg-flockie-orange px-2 py-1 text-[10px] font-extrabold leading-none text-white">
+        <span className="absolute right-3.5 top-3.5 z-10 rounded-full bg-onboarding-green px-2.5 py-1 text-[10px] font-extrabold leading-none text-white shadow-[0_1px_5px_rgba(10,37,69,0.2)]">
           {t(`status.${myStatus}`)}
         </span>
       )}
@@ -150,7 +152,7 @@ export default function VibeCard({
         <div
           className={
             isBrowse
-              ? "relative w-24 shrink-0 border-r-2 border-ink bg-cream sm:aspect-[16/10] sm:w-full sm:border-b-2 sm:border-r-0"
+              ? "relative w-24 shrink-0 overflow-hidden rounded-2xl bg-cream sm:aspect-[16/10] sm:w-full"
               : "relative aspect-square w-full border-b-2 border-ink bg-cream"
           }
         >
@@ -160,7 +162,7 @@ export default function VibeCard({
               alt=""
               fill
               sizes={isBrowse ? "(max-width:640px) 96px, 112px" : "(max-width:640px) 33vw, 240px"}
-              className="object-contain"
+              className={isBrowse ? "object-cover" : "object-contain"}
             />
           ) : (
             <div className="flex h-full items-center justify-center text-3xl">🎟️</div>
@@ -188,7 +190,7 @@ export default function VibeCard({
         <div
           className={
             isBrowse
-              ? "flex min-w-0 flex-1 flex-col justify-center p-3 pr-11 sm:p-3.5 sm:pr-3.5"
+              ? "flex min-w-0 flex-1 flex-col justify-center px-2 py-2 pr-10 sm:px-1.5 sm:pb-1 sm:pr-1.5 sm:pt-2.5"
               : "flex flex-1 flex-col p-2.5"
           }
         >
@@ -222,32 +224,22 @@ export default function VibeCard({
           </p>
 
           {isBrowse && (
-            <div className="mt-2 flex items-center justify-between gap-2">
-              <span className="flex min-w-0 items-center gap-1.5 text-xs font-medium text-ink">
-                {hostAvatar ? (
-                  <Image
-                    src={hostAvatar}
-                    alt=""
-                    width={18}
-                    height={18}
-                    className="h-[18px] w-[18px] shrink-0 rounded-full object-cover"
-                  />
-                ) : (
-                  <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-flockie-blue text-[9px] font-bold text-white">
-                    {hostName[0]}
-                  </span>
-                )}
-                <span className="truncate">{hostName}</span>
-              </span>
-              {!faded && typeof matchPct === "number" ? (
-                <span className="shrink-0 rounded-full border-2 border-ink bg-flockie-coral px-2 py-0.5 text-[10px] font-extrabold leading-none text-white">
+            <div className="mt-2 flex items-center gap-2.5">
+              {!faded && typeof matchPct === "number" && (
+                <span className="shrink-0 rounded-full bg-flockie-blue/15 px-2.5 py-1 text-[11px] font-extrabold leading-none text-flockie-blue">
                   {t("card.match", { pct: matchPct })}
                 </span>
-              ) : faded && typeof rating === "number" && rating > 0 ? (
-                <span className="flex shrink-0 items-center gap-0.5 rounded-full border-2 border-ink bg-white px-2 py-0.5 text-[10px] font-extrabold leading-none text-ink">
-                  <Star size={10} className="fill-flockie-coral text-flockie-coral" /> {rating.toFixed(1)}
+              )}
+              {faded && typeof rating === "number" && rating > 0 && (
+                <span className="flex shrink-0 items-center gap-0.5 rounded-full bg-cream px-2.5 py-1 text-[11px] font-extrabold leading-none text-ink">
+                  <Star size={11} className="fill-flockie-coral text-flockie-coral" /> {rating.toFixed(1)}
                 </span>
-              ) : null}
+              )}
+              <span className="truncate text-xs font-bold text-muted">
+                {faded
+                  ? t("card.went", { count: confirmedCount })
+                  : t("card.going", { count: confirmedCount, capacity: vibe.capacity })}
+              </span>
             </div>
           )}
 

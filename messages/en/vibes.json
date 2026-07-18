@@ -24,7 +24,8 @@
     "undo": "Undo",
     "notForMe": "Not for me",
     "went": "{count} went",
-    "match": "{pct}% match"
+    "match": "{pct}% match",
+    "going": "{count} of {capacity} going"
   },
   "status": {
     "interested": "Interested",
@@ -300,7 +301,7 @@
     "copiedTile": "Copied!",
     "share": "Share",
     "linkCopied": "Link copied!",
-    "fill": "Share to fill 🚀"
+    "fill": "Share to fill"
   },
   "leave": {
     "leaveTitle": "Leave this Vibe?",

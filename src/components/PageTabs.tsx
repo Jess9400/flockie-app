@@ -15,7 +15,7 @@ export default function PageTabs({
   const pathname = usePathname();
   const t = useTranslations("common");
   return (
-    <div className="mb-4 inline-flex gap-1 rounded-full border-2 border-ink bg-white p-1 text-sm font-bold">
+    <div className="mb-4 inline-flex gap-1 rounded-full bg-cream p-1 text-sm font-bold">
       {tabs.map((tab) => {
         if (tab.soon) {
           return (
@@ -25,7 +25,7 @@ export default function PageTabs({
               className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-full px-4 py-1.5 text-ink/35"
             >
               {tab.label}
-              <span className="rounded-full bg-cream px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-ink/50">
+              <span className="rounded-full bg-white px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-ink/40">
                 {t("soon")}
               </span>
             </span>
@@ -36,7 +36,7 @@ export default function PageTabs({
           <Link
             key={tab.href}
             href={tab.href}
-            className={`rounded-full px-4 py-1.5 transition-colors ${active ? "bg-ink text-white" : "text-ink hover:bg-navy/5"}`}
+            className={`rounded-full px-4 py-1.5 transition-colors ${active ? "bg-flockie-coral text-white" : "text-ink/55 hover:text-ink"}`}
           >
             {tab.label}
           </Link>
