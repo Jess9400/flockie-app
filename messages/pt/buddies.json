@@ -171,7 +171,12 @@
       "activity": "Atividade"
     },
     "inviteSent": "Convite enviado",
-    "inviteEyebrow": "{name} convidou você para",
-    "noDetailsYet": "Sem lugar ou horário ainda — combinem abaixo"
+    "inviteEyebrow": "{name} está te convidando para",
+    "noDetailsYet": "Sem lugar ou horário ainda — vocês combinam abaixo",
+    "waitingTitle": "Convite enviado para {name}",
+    "confirmedTitle": "Deu match — e está confirmado! 🎉",
+    "confirmedFor": "Você e {name} vão para {category}",
+    "commonHeading": "Vocês dois curtem",
+    "sayHiHint": "Diga oi abaixo 👋"
   }
 }

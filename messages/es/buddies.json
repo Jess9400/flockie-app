@@ -171,7 +171,12 @@
       "activity": "Actividad"
     },
     "inviteSent": "Invitación enviada",
-    "inviteEyebrow": "{name} te invitó a",
-    "noDetailsYet": "Aún sin lugar ni hora — acordadlo abajo"
+    "inviteEyebrow": "{name} te está invitando a",
+    "noDetailsYet": "Aún sin lugar ni hora — lo acordáis abajo",
+    "waitingTitle": "Invitación enviada a {name}",
+    "confirmedTitle": "¡Es match y está confirmado! 🎉",
+    "confirmedFor": "Tú y {name} vais a {category}",
+    "commonHeading": "A ambos os gusta",
+    "sayHiHint": "Saluda abajo 👋"
   }
 }

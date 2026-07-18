@@ -257,10 +257,6 @@ export default async function BuddyChatPage({
     title: flockTitle,
     dateRangeSuffix: flockDateRange ? `, ${flockDateRange}` : "",
   });
-  const headerDestination = isFlock ? flockTitle : destination;
-  const headerDateRange = isFlock ? flockDateRange : dateRange;
-  const finalIcebreaker = isFlock ? flockIcebreaker : icebreaker;
-
   // "Make a plan" is only for 1:1 buddy matches (not flocks). Gate on the query
   // succeeding so the feature stays hidden until buddy-plans.sql is on prod.
   let currentPlan: BuddyPlanData | null = null;
@@ -277,6 +273,15 @@ export default async function BuddyChatPage({
     plansEnabled = !planRes.error;
     currentPlan = (planRes.data as BuddyPlanData | null) ?? null;
   }
+
+  // A plan-based (Home "Say hi") match has no real shared trip — any trip on the
+  // match was borrowed for context and reads as random junk ("Jul 25 · Party").
+  // When there's a plan, the plan card IS the context: strip the trip line and
+  // the generic "you matched" icebreaker so the two don't compete.
+  const hasPlan = !!currentPlan;
+  const headerDestination = isFlock ? flockTitle : hasPlan ? null : destination;
+  const headerDateRange = isFlock ? flockDateRange : hasPlan ? null : dateRange;
+  const finalIcebreaker = isFlock ? flockIcebreaker : hasPlan ? "" : icebreaker;
   const finalTripStart = isFlock ? flockStart : trip?.start_date ?? null;
   const finalTripEnd = isFlock ? flockEnd : trip?.end_date ?? null;
 
@@ -311,6 +316,19 @@ export default async function BuddyChatPage({
           </div>
         )}
 
+        {plansEnabled && !isFlock && (
+          <BuddyPlan
+            chatId={params.chatId}
+            otherId={otherId}
+            otherName={otherName}
+            otherPhoto={arr(other?.photos)[0] ?? null}
+            city={other?.home_city ?? null}
+            currentUserId={user!.id}
+            initialPlan={currentPlan}
+            common={sharedVibe}
+          />
+        )}
+
         <BuddyChatRoom
           chatId={params.chatId}
           currentUserId={user!.id}
@@ -322,18 +340,6 @@ export default async function BuddyChatPage({
           tripEndIso={finalTripEnd}
           members={chatMembers}
           isGroup={!!flockTripId}
-          pinnedTop={
-            plansEnabled && !isFlock ? (
-              <BuddyPlan
-                chatId={params.chatId}
-                otherId={otherId}
-                otherName={otherName}
-                city={other?.home_city ?? null}
-                currentUserId={user!.id}
-                initialPlan={currentPlan}
-              />
-            ) : null
-          }
         />
       </div>
     </main>

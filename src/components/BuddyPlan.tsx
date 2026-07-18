@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { CalendarClock, X } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
@@ -39,16 +39,20 @@ export default function BuddyPlan({
   chatId,
   otherId,
   otherName,
+  otherPhoto,
   city,
   currentUserId,
   initialPlan,
+  common = [],
 }: {
   chatId: string;
   otherId: string;
   otherName: string;
+  otherPhoto?: string | null;
   city?: string | null;
   currentUserId: string;
   initialPlan: BuddyPlanData | null;
+  common?: string[];
 }) {
   const t = useTranslations("buddies");
   const locale = useLocale();
@@ -166,43 +170,86 @@ export default function BuddyPlan({
     );
   }
 
-  // ── Accepted plan — pinned summary ──
+  const emoji = (c: string) => catMeta(c)?.emoji;
+  const Avatar = () =>
+    otherPhoto ? (
+      <Image
+        src={otherPhoto}
+        alt=""
+        width={44}
+        height={44}
+        className="h-11 w-11 shrink-0 rounded-full object-cover"
+      />
+    ) : (
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-flockie-blue text-base font-bold text-white">
+        {otherName[0]?.toUpperCase()}
+      </span>
+    );
+
+  // ── Accepted plan — the single "it's a match + you're on" confirmation ──
   if (plan?.status === "accepted") {
+    const details = [plan.place_name, plan.when_at ? fmtWhen(plan.when_at) : null]
+      .filter(Boolean)
+      .join(" · ");
     return (
-      <div className={`mt-2 flex items-center gap-3 ${box} border-onboarding-green/40 bg-[#E9F6F1]`}>
-        <span className="text-xl">{catMeta(plan.category)?.emoji}</span>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-extrabold text-ink">
-            {t("plan.onTitle", { category: catLabel(plan.category) })}
-          </p>
-          <p className="truncate text-xs font-medium text-ink/70">
-            {[plan.place_name, plan.when_at ? fmtWhen(plan.when_at) : null].filter(Boolean).join(" · ") ||
-              t("plan.tapToChat")}
-          </p>
+      <div className={`mt-3 ${box} border-onboarding-green/40 bg-[#E9F6F1]`}>
+        <div className="flex items-start gap-3">
+          <Avatar />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-extrabold text-ink">{t("plan.confirmedTitle")}</p>
+            <p className="mt-0.5 text-sm font-bold text-ink">
+              {emoji(plan.category)}{" "}
+              {t("plan.confirmedFor", { name: otherName, category: catLabel(plan.category).toLowerCase() })}
+            </p>
+            {details && <p className="mt-0.5 text-xs font-medium text-ink/70">{details}</p>}
+          </div>
+          <button
+            onClick={() => setComposing(true)}
+            className="shrink-0 text-xs font-bold text-flockie-blue"
+          >
+            {t("plan.change")}
+          </button>
         </div>
-        <button onClick={() => setComposing(true)} className="shrink-0 text-xs font-bold text-flockie-blue">
-          {t("plan.change")}
-        </button>
+        {common.length > 0 && (
+          <div className="mt-2.5">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-ink/45">
+              {t("plan.commonHeading")}
+            </p>
+            <div className="mt-1 flex flex-wrap gap-1.5">
+              {common.slice(0, 4).map((c) => (
+                <span
+                  key={c}
+                  className="rounded-full bg-white px-2.5 py-1 text-xs font-bold text-ink"
+                >
+                  {c}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+        <p className="mt-2.5 text-xs font-semibold text-onboarding-green">{t("plan.sayHiHint")}</p>
       </div>
     );
   }
 
-  // ── Proposed plan — waiting (proposer) or accept/decline (recipient) ──
+  // ── Proposed plan — the invite. Recipient sees Accept/Decline; sender waits ──
   if (plan?.status === "proposed" && !composing) {
     const mine = plan.proposed_by === currentUserId;
     const details = [plan.place_name, plan.when_at ? fmtWhen(plan.when_at) : null]
       .filter(Boolean)
       .join(" · ");
     return (
-      <div className={`mt-2 ${box} border-flockie-coral/40`}>
-        <p className="text-[11px] font-extrabold uppercase tracking-wide text-flockie-coral">
-          {mine ? t("plan.inviteSent") : t("plan.inviteEyebrow", { name: otherName })}
-        </p>
-        <div className="mt-1.5 flex items-center gap-2.5">
-          <span className="text-2xl">{catMeta(plan.category)?.emoji}</span>
+      <div className={`mt-3 ${box} border-flockie-coral/40`}>
+        <div className="flex items-start gap-3">
+          <Avatar />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-base font-extrabold text-ink">{catLabel(plan.category)}</p>
-            <p className="truncate text-xs font-medium text-ink/70">
+            <p className="text-[11px] font-extrabold uppercase tracking-wide text-flockie-coral">
+              {mine ? t("plan.waitingTitle", { name: otherName }) : t("plan.inviteEyebrow", { name: otherName })}
+            </p>
+            <p className="mt-0.5 text-base font-extrabold text-ink">
+              {emoji(plan.category)} {catLabel(plan.category)}
+            </p>
+            <p className="mt-0.5 text-xs font-medium text-ink/70">
               {details || t("plan.noDetailsYet")}
             </p>
           </div>
@@ -210,7 +257,7 @@ export default function BuddyPlan({
         {mine ? (
           <p className="mt-2 text-xs font-medium text-muted">{t("plan.waiting", { name: otherName })}</p>
         ) : (
-          <div className="mt-2.5 flex gap-2">
+          <div className="mt-3 flex gap-2">
             <button
               onClick={() => respond(true)}
               disabled={busy}

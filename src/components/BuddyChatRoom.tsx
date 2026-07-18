@@ -29,7 +29,6 @@ export default function BuddyChatRoom({
   tripEndIso,
   members,
   isGroup,
-  pinnedTop,
 }: {
   chatId: string;
   currentUserId: string;
@@ -41,7 +40,6 @@ export default function BuddyChatRoom({
   tripEndIso: string | null;
   members?: Record<string, { name: string; photo: string | null }>;
   isGroup?: boolean;
-  pinnedTop?: React.ReactNode;
 }) {
   const supabase = createClient();
   const router = useRouter();
@@ -185,10 +183,18 @@ export default function BuddyChatRoom({
     }
   }
 
+  // Hide the system plan-status lines ("📅 proposed a plan", "✅ accepted the
+  // plan", "↩️ passed on the plan") — the plan card already conveys all of this,
+  // so echoing them as chat messages just reads as clutter.
+  const PLAN_SYSTEM = ["📅 proposed a plan", "✅ accepted the plan", "↩️ passed on the plan"];
+  const visibleMessages = messages.filter(
+    (m) => !(m.sender_id === null && PLAN_SYSTEM.includes(m.content.trim()))
+  );
+
   // sequence/divider flags
   let prevTime: string | null = null;
   let prevSender: string | null = null;
-  const rows = messages.map((m) => {
+  const rows = visibleMessages.map((m) => {
     const divider = needsDivider(prevTime, m.created_at);
     const firstInSeq = divider || prevSender !== m.sender_id;
     prevTime = m.created_at;
@@ -205,16 +211,9 @@ export default function BuddyChatRoom({
       )}
 
       <div className="min-h-0 flex-1 space-y-1 overflow-y-auto py-4">
-        {/* Pinned plan invite — sticky at the top of the message viewport so
-            neither the chat header above nor auto-scroll-to-newest can ever
-            clip it. Opaque background lets messages scroll under cleanly. */}
-        {pinnedTop && (
-          <div className="sticky top-0 z-10 -mt-4 bg-cream pb-2 pt-3">
-            <div className="mx-auto max-w-[92%]">{pinnedTop}</div>
-          </div>
-        )}
-
-        {/* Algo icebreaker */}
+        {/* Algo icebreaker — suppressed when a plan card is carrying the intro
+            so we never show two "here's your match" blocks at once. */}
+        {icebreaker && (
         <div className="mx-auto my-3 max-w-[92%] rounded-2xl border-2 border-flockie-blue bg-cream p-4">
           <p className="flex items-center gap-1.5 font-fredoka text-sm font-semibold text-flockie-blue">
             <Sparkles size={15} /> {isGroup ? t("room.tripPlan") : t("room.algoSays")}
@@ -223,6 +222,7 @@ export default function BuddyChatRoom({
             {icebreaker}
           </p>
         </div>
+        )}
 
         {rows.map(({ m, divider, firstInSeq }) => {
           const mine = m.sender_id === currentUserId;

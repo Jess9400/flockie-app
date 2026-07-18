@@ -259,7 +259,7 @@ export default function BuddyChatHeader({
   }
 
   return (
-    <div className="sticky top-16 z-20 -mx-5 border-b border-navy/12 bg-white px-5">
+    <div className="z-20 -mx-5 shrink-0 border-b border-navy/12 bg-white px-5">
       {/* top row */}
       <div className="flex items-center justify-between pt-3 lg:justify-end">
         <Link href="/chats" className="flex items-center gap-1 font-nunito text-sm font-bold text-navy/60 lg:hidden">

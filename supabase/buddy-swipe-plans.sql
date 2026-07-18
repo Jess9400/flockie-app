@@ -72,15 +72,26 @@ begin
   );
 
   if v_mutual then
-    -- Borrow each user's latest PERSONAL active trip for match context. Never a
-    -- public (flock) trip: that would make this 1:1 activity match render as a
-    -- Flock group chat and hide the plan/accept UI.
-    select id into v_trip_a from public.trips
-      where user_id = v_a and status = 'active' and coalesce(visibility, 'private') <> 'public'
-      order by created_at desc limit 1;
-    select id into v_trip_b from public.trips
-      where user_id = v_b and status = 'active' and coalesce(visibility, 'private') <> 'public'
-      order by created_at desc limit 1;
+    -- Read the other person's stashed plan (they liked first, so their swipe
+    -- row carries any invite they attached).
+    select plan_category, plan_place_name, plan_place_url, plan_when
+      into o_category, o_place_name, o_place_url, o_when
+    from public.buddy_swipes
+    where swiper_id = p_target and target_id = auth.uid();
+
+    -- A plan-based (Home "Say hi") match has NO shared trip. Only borrow a
+    -- personal trip for context when NEITHER side attached a plan — and never a
+    -- public (flock) trip, which would render this 1:1 as a Flock group chat.
+    -- This keeps the random "Jul 25 · Party" trip line out of plan matches and
+    -- stops the review gate from firing on a borrowed trip.
+    if o_category is null and v_cat is null then
+      select id into v_trip_a from public.trips
+        where user_id = v_a and status = 'active' and coalesce(visibility, 'private') <> 'public'
+        order by created_at desc limit 1;
+      select id into v_trip_b from public.trips
+        where user_id = v_b and status = 'active' and coalesce(visibility, 'private') <> 'public'
+        order by created_at desc limit 1;
+    end if;
     v_score := public.buddy_pair_score(v_a, v_b);
     insert into public.buddy_matches (user_a, user_b, trip_a, trip_b, score)
     values (v_a, v_b, v_trip_a, v_trip_b, v_score)
@@ -95,13 +106,8 @@ begin
     select id into v_chat from public.buddy_chats where match_id = v_match;
 
     if v_new_chat is not null then
-      -- Seed a plan from whoever proposed one first. The other person's swipe
-      -- row is the earlier one (they liked before this call), so prefer it.
-      select plan_category, plan_place_name, plan_place_url, plan_when
-        into o_category, o_place_name, o_place_url, o_when
-      from public.buddy_swipes
-      where swiper_id = p_target and target_id = auth.uid();
-
+      -- Seed a plan from whoever proposed one first (o_* was read above; the
+      -- other person's swipe row is the earlier one, so prefer it).
       if o_category is not null then
         s_by := p_target; s_category := o_category;
         s_place_name := o_place_name; s_place_url := o_place_url; s_when := o_when;

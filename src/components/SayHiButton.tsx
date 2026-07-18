@@ -152,6 +152,7 @@ export default function SayHiButton({
                   </h2>
                   <p className="mt-1 text-sm font-medium text-muted">
                     {t.rich("sentBody", {
+                      name: personName,
                       activity: sent,
                       b: (chunks) => <span className="font-bold">{chunks}</span>,
                     })}

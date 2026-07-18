@@ -171,7 +171,12 @@
       "activity": "Activity"
     },
     "inviteSent": "Invite sent",
-    "inviteEyebrow": "{name} invited you to",
-    "noDetailsYet": "No spot or time yet — sort it out below"
+    "inviteEyebrow": "{name} is inviting you for",
+    "noDetailsYet": "No spot or time yet — you'll sort it out below",
+    "waitingTitle": "Invite sent to {name}",
+    "confirmedTitle": "It's a match — and you're on! 🎉",
+    "confirmedFor": "You and {name} are meeting for {category}",
+    "commonHeading": "You both like",
+    "sayHiHint": "Say hi below 👋"
   }
 }
