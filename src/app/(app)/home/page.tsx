@@ -505,15 +505,8 @@ export default async function HomePage({
       </section>
       )}
 
-      {/* ── Join a vibe (all cities) ────────────────────────────────────── */}
-      <section className="mx-4 mt-8 px-1">
-        <h2 className="text-[22px] font-extrabold sm:text-[28px]">{th("joinVibe.heading")}</h2>
-        <Squiggle />
-        <p className="mt-0.5 font-bold text-navy/60">{th("joinVibe.subtitle")}</p>
-      </section>
-
       {/* ── Happening near you (same city + filters) ────────────────────── */}
-      <section className="relative mx-4 mt-4 overflow-hidden rounded-3xl bg-flockie-blue p-5 text-white shadow-[0_16px_32px_-10px_rgba(77,168,218,0.55)] sm:p-6">
+      <section className="relative mx-4 mt-8 overflow-hidden rounded-3xl bg-flockie-blue p-5 text-white shadow-[0_16px_32px_-10px_rgba(77,168,218,0.55)] sm:p-6">
         {/* Crisp confetti — small sharp dots/sparkles in the corners, kept away
             from the text and cards. */}
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">

@@ -66,7 +66,8 @@
     "itsAMatch": "É um match! 🎉",
     "matchBody": "Você e {name} querem ir. Diga oi e combinem.",
     "sayHiPlan": "Diga oi 👋",
-    "keepSwiping": "Continuar o swipe"
+    "keepSwiping": "Continuar o swipe",
+    "verifiedReviews": "✓ {count} verificadas"
   },
   "sayHi": {
     "button": "Diga oi",

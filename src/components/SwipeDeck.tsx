@@ -6,7 +6,6 @@ import Link from "next/link";
 import { X, Heart, MapPin, CalendarClock, ChevronLeft, ChevronRight, ChevronsUpDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import Stars from "@/components/Stars";
 
 type Candidate = {
   id: string;
@@ -222,9 +221,9 @@ export default function SwipeDeck({
                 ✨ {t("scoreMatch", { pct: Math.round(c.score) })}
               </span>
             )}
-            {typeof c.rating === "number" && (c.review_count ?? 0) > 0 && (
+            {(c.review_count ?? 0) > 0 && (
               <span className="flex items-center gap-1 rounded-full bg-white/25 px-2.5 py-0.5 text-xs font-bold backdrop-blur-sm">
-                <Stars value={c.rating} size={12} /> {c.rating.toFixed(1)} ({c.review_count})
+                {t("verifiedReviews", { count: c.review_count ?? 0 })}
               </span>
             )}
           </div>
