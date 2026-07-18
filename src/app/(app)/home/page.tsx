@@ -498,43 +498,19 @@ export default async function HomePage({
 
       {/* ── Happening near you (same city + filters) ────────────────────── */}
       <section className="mx-4 mt-4 rounded-3xl border-[3px] border-ink bg-flockie-blue p-5 text-white sm:p-6">
-        <div className="flex items-center justify-between gap-3">
-          <span className="inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-white px-2.5 py-1 text-xs font-extrabold text-ink">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-flockie-coral opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-flockie-coral" />
-            </span>
-            {homeCity ?? th("nearYou.nearYouFallback")} · {th("nearYou.liveNow")}
-          </span>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="text-[22px] font-extrabold sm:text-[28px]">{th("nearYou.heading")}</h2>
+            <p className="mt-0.5 font-bold text-white/80">
+              {th(`nearYou.subtitle.${timingKey}.${cityVariant}`, { city: homeCity ?? "" })}
+            </p>
+          </div>
           <Link
             href="/vibes"
             className="flex shrink-0 items-center gap-1 rounded-full border-2 border-ink bg-white px-3 py-1.5 text-sm font-bold text-ink"
           >
             {th("seeAll")} <ArrowRight size={15} />
           </Link>
-        </div>
-
-        <h2 className="mt-3 text-[22px] font-extrabold sm:text-[28px]">{th("nearYou.heading")}</h2>
-        <p className="mt-0.5 font-bold text-white/80">
-          {th(`nearYou.subtitle.${timingKey}.${cityVariant}`, { city: homeCity ?? "" })}
-        </p>
-
-        <div className="mt-3 inline-flex gap-1 rounded-full border-2 border-ink bg-white/15 p-0.5 text-xs font-bold">
-          {[
-            { value: "all", label: th("nearYou.filterAny"), href: "/home" },
-            { value: "24", label: th("nearYou.filter24"), href: "/home?when=24" },
-            { value: "48", label: th("nearYou.filter48"), href: "/home?when=48" },
-          ].map((option) => (
-            <Link
-              key={option.value}
-              href={option.href}
-              className={`rounded-full px-3 py-1 transition-colors ${
-                timing === option.value ? "bg-white text-ink" : "text-white hover:bg-white/10"
-              }`}
-            >
-              {option.label}
-            </Link>
-          ))}
         </div>
 
         {near.length === 0 ? (
