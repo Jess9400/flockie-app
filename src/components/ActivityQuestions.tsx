@@ -43,13 +43,23 @@ export default function ActivityQuestions({ answers, onChange }: Props) {
     }
   }
 
+  // Mutually-exclusive dealbreaker pairs: picking one clears its opposite so a
+  // profile can't hold contradictory options (e.g. sober-only + drinking-fine).
+  const EXCLUSIVE: Record<string, string> = {
+    "Sober events only": "Drinking is fine",
+    "Drinking is fine": "Sober events only",
+  };
+
   function toggleDealbreaker(value: string) {
     const list = answers.activity_dealbreakers;
-    onChange({
-      activity_dealbreakers: list.includes(value)
-        ? list.filter((v) => v !== value)
-        : [...list, value],
-    });
+    if (list.includes(value)) {
+      onChange({ activity_dealbreakers: list.filter((v) => v !== value) });
+    } else {
+      const opposite = EXCLUSIVE[value];
+      onChange({
+        activity_dealbreakers: [...list.filter((v) => v !== opposite), value],
+      });
+    }
   }
 
   const vibeFull = answers.activity_vibe.length >= ACTIVITY_VIBE_MAX;
