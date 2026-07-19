@@ -24,8 +24,8 @@
       "nonBinary": "Non-binary",
       "preferNotToSay": "Prefer not to say"
     },
-    "nextUp": "<b>Up next: your vibe check.</b> Five quick questions so we can start finding your people.",
-    "continue": "Continue to your vibe check →",
+    "nextUp": "<b>Up next: your Vibes.</b> A few quick picks so we can start finding your people.",
+    "continue": "Find my Vibes →",
     "errors": {
       "signIn": "Please sign in again",
       "photoUpload": "Photo upload failed.",
