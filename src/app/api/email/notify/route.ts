@@ -85,17 +85,19 @@ export async function POST(req: Request) {
         : "";
       // Confirmed guests get the exact venue, so include a Google Maps link.
       // ALWAYS pin by coordinates when we have them — `?query=lat,lng` drops an
-      // exact pin. Never pass the raw written address: a messy formatted address
-      // (Plus Codes, repeated parts) doesn't resolve to one point and sends
-      // Google into hotel-search mode with no pin. Without coords, fall back to
-      // the city only (centers the map cleanly; the venue name is still in the
-      // body text) rather than that broken address search.
+      // exact pin. Without coords, search the VENUE NAME + city (same fallback
+      // the vibe page and chat use — resolves to the venue, unlike a raw messy
+      // address). City-only is the last resort so the link is never dead.
       const mapUrl =
         v.location_lat != null && v.location_lng != null
           ? `https://www.google.com/maps/search/?api=1&query=${v.location_lat},${v.location_lng}`
-          : v.city
-            ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.city)}`
-            : undefined;
+          : v.location_name
+            ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                [v.location_name, v.city].filter(Boolean).join(", ")
+              )}`
+            : v.city
+              ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.city)}`
+              : undefined;
       record.data = {
         ...record.data,
         title: v.title ?? "the Vibe",

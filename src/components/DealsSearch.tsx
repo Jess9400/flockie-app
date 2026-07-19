@@ -35,6 +35,29 @@ export type VibePlan = {
   title: string;
   city: string;
   when: string; // pre-formatted, vibe-local time
+  category?: string | null; // vibe category slug
+  categoryLabel?: string | null; // pre-translated display label
+};
+
+// Vibe category → Klook search hint, so the deal link lands on relevant
+// experiences ("yoga class in Thane") instead of a generic city search.
+// Slugs with no marketplace equivalent (coworking, other) fall back to city.
+const KLOOK_QUERY: Record<string, string> = {
+  surf: "surf lesson",
+  yoga: "yoga class",
+  hiking: "hiking tour",
+  running: "outdoor activities",
+  cycling: "bike tour",
+  climbing: "climbing",
+  dance: "dance class",
+  painting: "art workshop",
+  photography: "photography tour",
+  music: "live music",
+  cooking: "cooking class",
+  dinner: "dining",
+  coffee: "cafe",
+  nightlife: "nightlife",
+  wellness: "spa massage",
 };
 
 function hotelsUrl(city: string, checkIn: string, checkOut: string, guests: number) {
@@ -88,7 +111,9 @@ export default function DealsSearch({
           <h2 className="text-sm font-extrabold uppercase tracking-wide text-muted">
             {t("forYourPlans")}
           </h2>
-          {vibePlans.map((v) => (
+          {vibePlans.map((v) => {
+            const hint = v.category ? KLOOK_QUERY[v.category] : undefined;
+            return (
             <div
               key={v.id}
               className="rounded-3xl border border-onboarding-green/40 bg-[#E9F6F1] p-4 shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
@@ -101,12 +126,15 @@ export default function DealsSearch({
               </p>
               <div className="mt-3 flex gap-2">
                 <a
-                  href={klookUrl(v.city)}
+                  href={klookUrl(v.city, hint)}
                   target="_blank"
                   rel="noopener"
                   className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-ink/15 bg-white py-2 text-xs font-bold text-ink"
                 >
-                  <Ticket size={14} /> {t("vibeDealCta", { city: v.city })}
+                  <Ticket size={14} />{" "}
+                  {hint && v.categoryLabel
+                    ? t("vibeDealCtaCat", { category: v.categoryLabel, city: v.city })
+                    : t("vibeDealCta", { city: v.city })}
                 </a>
                 <Link
                   href={`/vibes/${v.id}`}
@@ -116,7 +144,8 @@ export default function DealsSearch({
                 </Link>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

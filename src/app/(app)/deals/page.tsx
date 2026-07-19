@@ -44,20 +44,24 @@ export default async function DealsPage() {
   let vibePlans: VibePlan[] = [];
   const confirmedIds = (myConfirmed ?? []).map((r) => r.vibe_id as string);
   if (confirmedIds.length) {
+    const tv = await getTranslations("vibes");
     const { data: pv } = await supabase
       .from("vibe_directory")
-      .select("id, title, starts_at, city, timezone, status")
+      .select("id, title, starts_at, city, timezone, status, category")
       .in("id", confirmedIds)
       .gt("starts_at", nowIso)
       .neq("status", "cancelled")
       .order("starts_at", { ascending: true })
       .limit(3);
-    vibePlans = ((pv ?? []) as { id: string; title: string; starts_at: string; city: string; timezone: string | null }[]).map(
+    vibePlans = ((pv ?? []) as { id: string; title: string; starts_at: string; city: string; timezone: string | null; category: string | null }[]).map(
       (v) => ({
         id: v.id,
         title: v.title,
         city: v.city,
         when: formatVibeWhen(v.starts_at, locale, v.timezone),
+        category: v.category,
+        // Translated display label for the deal CTA ("Yoga deals in Thane").
+        categoryLabel: v.category ? tv(`categories.${v.category}`) : null,
       })
     );
   }

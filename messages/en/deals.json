@@ -41,5 +41,6 @@
  "vibeDealCta": "Experiences in {city}",
  "viewVibe": "View Vibe",
  "yourCity": "Your city",
- "travelSection": "Traveling soon?"
+ "travelSection": "Traveling soon?",
+ "vibeDealCtaCat": "{category} deals in {city}"
 }
