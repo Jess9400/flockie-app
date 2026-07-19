@@ -34,6 +34,7 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | `public_profiles`, `public_profile_events/stats` | `profile-privacy-prepare.sql` |
 | `trip_join_requests` SELECT policy (`can_see_trip_requests`) | `trip-requests-rls-enforce.sql` |
 | host RPCs (`notify`, `cancel_vibe`, `update_vibe_when`, commit/remove/appeal) | `host-controls.sql` |
+| Vibes-only onboarding profile fields | `onboarding-v3-vibes-only.sql` |
 
 ## Tombstoned blocks (`/* SUPERSEDED */`, do not un-wrap)
 
