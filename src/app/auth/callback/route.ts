@@ -36,16 +36,13 @@ export async function GET(request: Request) {
           await supabase.rpc("accept_terms");
         }
 
-        // Lower friction for Vibe invites: a user who's done the activity form
-        // (Tier 1) is let straight in; brand-new users heading to a Vibe get the
-        // short path (profile basics → activity form → the Vibe), skipping the
-        // personality vibe-check (they're nudged to finish it after they're in).
+        // A returning user with the legacy activity form may continue straight
+        // in. Everyone else follows one Vibes-only onboarding path: profile
+        // basics → four quick Vibe questions → their original destination.
         const quickDone = !!profile?.activity_prefs_complete;
-        const isVibeInvite = next.startsWith("/vibes/") || next.startsWith("/invite/");
 
         if (!profile?.vibe_completed_at && !quickDone) {
-          const dest = isVibeInvite ? "/onboarding/profile?quick=1" : "/onboarding/profile";
-          return NextResponse.redirect(`${origin}${withReturnTo(dest, next)}`);
+          return NextResponse.redirect(`${origin}${withReturnTo("/onboarding/profile", next)}`);
         }
         if (!profile.onboarding_complete && !quickDone) {
           return NextResponse.redirect(`${origin}${withReturnTo("/profile", next)}`);

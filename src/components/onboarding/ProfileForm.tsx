@@ -28,10 +28,9 @@ interface ProfileFormProps {
     city: string;
   };
   returnTo?: string | null;
-  quick?: boolean;
 }
 
-export function ProfileForm({ defaults, returnTo, quick }: ProfileFormProps) {
+export function ProfileForm({ defaults, returnTo }: ProfileFormProps) {
   const router = useRouter();
   const supabase = createClient();
   const t = useTranslations("onboarding.profile");
@@ -93,9 +92,7 @@ export function ProfileForm({ defaults, returnTo, quick }: ProfileFormProps) {
         gender,
         city: city.trim(),
       });
-      router.push(
-        withReturnTo(quick ? "/onboarding/activity-vibe?quick=1" : "/onboarding/vibe-check", returnTo)
-      );
+      router.push(withReturnTo("/onboarding/vibe-check", returnTo));
     } catch (caught) {
       setError(
         caught instanceof Error ? caught.message : t("errors.generic")

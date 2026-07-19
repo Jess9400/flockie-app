@@ -230,7 +230,7 @@ export default async function VibesPage({
 
       {!isPast && !activityCheckDone && (
         <Link
-          href="/profile"
+          href="/onboarding/vibe-check?returnTo=%2Fvibes"
           className="mt-4 block rounded-2xl border border-ink/15 bg-flockie-blue p-3 text-sm font-bold text-white"
         >
           {t("list.completeCheck")}

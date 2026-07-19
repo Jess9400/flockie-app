@@ -1,10 +1,7 @@
 import { redirect } from "next/navigation";
-import { VibeQuiz } from "@/components/onboarding/VibeQuiz";
-import {
-  completeVibeCheck,
-  getVibeProgress,
-} from "@/lib/onboarding/vibe-actions";
+import { VibeOnboardingForm } from "@/components/onboarding/VibeOnboardingForm";
 import { safeRedirectPath, withReturnTo } from "@/lib/redirects";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function VibeCheckPage({
   searchParams,
@@ -12,24 +9,25 @@ export default async function VibeCheckPage({
   searchParams: { returnTo?: string };
 }) {
   const returnTo = safeRedirectPath(searchParams.returnTo, "");
-  const progress = await getVibeProgress();
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
 
-  if (progress.isComplete) {
-    redirect(withReturnTo("/onboarding/vibe-check/reveal", returnTo));
-  }
-  if (progress.nextQuestionIndex === -1) {
-    await completeVibeCheck();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("vibe_persona, vibe_completed_at")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profile?.vibe_persona && profile.vibe_completed_at) {
     redirect(withReturnTo("/onboarding/vibe-check/reveal", returnTo));
   }
 
   return (
     <main className="mx-auto min-h-dvh max-w-md overflow-hidden">
-      <VibeQuiz
-        initialAnswers={progress.answers}
-        initialQuestionIndex={progress.nextQuestionIndex}
-        returnTo={returnTo}
-        lockExit={progress.isRetake}
-      />
+      <VibeOnboardingForm returnTo={returnTo} />
     </main>
   );
 }

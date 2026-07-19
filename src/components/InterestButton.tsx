@@ -6,10 +6,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import ActivityVibeForm from "@/components/ActivityVibeForm";
 import CityAutocomplete from "@/components/CityAutocomplete";
 import { captureAndStoreLocation } from "@/lib/location";
 import { normalizeCity } from "@/lib/cities";
+import { withReturnTo } from "@/lib/redirects";
 import { useConfirm } from "@/components/ui/feedback";
 import type { InterestStatus } from "@/lib/vibes";
 
@@ -55,10 +55,8 @@ export default function InterestButton({
   const locale = useLocale();
   const INELIGIBLE_MESSAGE = t("interest.ineligible");
   const [status, setStatus] = useState<InterestStatus | null>(initialStatus);
-  const [hasActivities, setHasActivities] = useState(activitiesDone);
+  const hasActivities = activitiesDone;
   const [busy, setBusy] = useState(false);
-  const [gate, setGate] = useState(false);
-  const [gateFor, setGateFor] = useState<"interest" | "request">("interest");
   const [showCode, setShowCode] = useState(false);
   const [codeInput, setCodeInput] = useState("");
   const [now, setNow] = useState(() => Date.now());
@@ -149,9 +147,10 @@ export default function InterestButton({
   }
 
   async function express() {
-    setGateFor("interest");
     if (!hasActivities) {
-      setGate(true);
+      router.push(
+        withReturnTo("/onboarding/vibe-check", `/vibes/${vibeId}?interested=1`)
+      );
       return;
     }
     await doInsert();
@@ -174,9 +173,10 @@ export default function InterestButton({
   }
 
   async function requestPrivate() {
-    setGateFor("request");
     if (!hasActivities) {
-      setGate(true);
+      router.push(
+        withReturnTo("/onboarding/vibe-check", `/vibes/${vibeId}?request=1`)
+      );
       return;
     }
     await doRequest();
@@ -457,19 +457,6 @@ export default function InterestButton({
       {control}
       {message && (
         <p className="mt-2 text-center text-sm font-bold text-red-700">{message}</p>
-      )}
-
-      {gate && (
-        <ActivityVibeForm
-          userId={userId}
-          onClose={() => setGate(false)}
-          onDone={() => {
-            setGate(false);
-            setHasActivities(true);
-            if (gateFor === "request") doRequest();
-            else doInsert();
-          }}
-        />
       )}
 
       {cityGate && mounted &&
