@@ -4,13 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { intlLocale } from "@/lib/date-locale";
-import { Hotel, Plane, Ticket, Search, Users, MapPin, Car, LifeBuoy } from "lucide-react";
+import { Hotel, Plane, Ticket, Search, Users, MapPin, Car, LifeBuoy, CalendarCheck } from "lucide-react";
 
 // Travelpayouts affiliate marker (tracks commission on Hotellook / Aviasales).
 const MARKER = "544482";
-function klookUrl(city: string) {
-  const c = city.trim();
-  return c ? `https://www.klook.com/search/?query=${encodeURIComponent(c)}` : "https://www.klook.com/";
+function klookUrl(city: string, query?: string) {
+  const q = [query, city.trim()].filter(Boolean).join(" ");
+  return q ? `https://www.klook.com/search/?query=${encodeURIComponent(q)}` : "https://www.klook.com/";
 }
 
 // Live Travelpayouts programs (project 544482) — tracked smartlinks.
@@ -27,6 +27,14 @@ export type Plan = {
   checkIn: string;
   checkOut: string;
   guests: number;
+};
+
+// An upcoming Vibe the user is confirmed for — deals context for real plans.
+export type VibePlan = {
+  id: string;
+  title: string;
+  city: string;
+  when: string; // pre-formatted, vibe-local time
 };
 
 function hotelsUrl(city: string, checkIn: string, checkOut: string, guests: number) {
@@ -49,13 +57,18 @@ function open(url: string) {
 export default function DealsSearch({
   defaultCity,
   plans = [],
+  vibePlans = [],
 }: {
   defaultCity: string;
   plans?: Plan[];
+  vibePlans?: VibePlan[];
 }) {
   const t = useTranslations("deals");
   const locale = useLocale();
-  const [city, setCity] = useState(defaultCity ?? "");
+  // Activities are local-first: default to the user's own city.
+  const [actCity, setActCity] = useState(defaultCity ?? "");
+  // Stays are travel: start empty, expand the form once a destination is set.
+  const [city, setCity] = useState("");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(2);
@@ -69,6 +82,88 @@ export default function DealsSearch({
 
   return (
     <div className="space-y-6">
+      {/* ── For your plans: upcoming confirmed Vibes ─────────────────────── */}
+      {vibePlans.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-sm font-extrabold uppercase tracking-wide text-muted">
+            {t("forYourPlans")}
+          </h2>
+          {vibePlans.map((v) => (
+            <div
+              key={v.id}
+              className="rounded-3xl border border-onboarding-green/40 bg-[#E9F6F1] p-4 shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
+            >
+              <p className="flex items-center gap-1.5 font-extrabold">
+                <CalendarCheck size={15} className="shrink-0 text-onboarding-green" /> {v.title}
+              </p>
+              <p className="mt-0.5 text-xs font-medium text-muted">
+                {[v.when, v.city].filter(Boolean).join(" · ")}
+              </p>
+              <div className="mt-3 flex gap-2">
+                <a
+                  href={klookUrl(v.city)}
+                  target="_blank"
+                  rel="noopener"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-ink/15 bg-white py-2 text-xs font-bold text-ink"
+                >
+                  <Ticket size={14} /> {t("vibeDealCta", { city: v.city })}
+                </a>
+                <Link
+                  href={`/vibes/${v.id}`}
+                  className="flex items-center justify-center rounded-full border border-ink/15 bg-white px-4 py-2 text-xs font-bold text-ink"
+                >
+                  {t("viewVibe")}
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── Things to do near you (hero) ─────────────────────────────────── */}
+      <div className="rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
+        <div className="flex items-center gap-2">
+          <Ticket size={20} className="text-flockie-orange" />
+          <h2 className="text-lg font-extrabold">{t("activitiesHeading")}</h2>
+        </div>
+        <p className="mt-1 text-sm font-medium text-muted">
+          {t("activitiesSubtitle")}
+        </p>
+
+        <label className="mt-4 block">
+          <span className="mb-1 block text-sm font-bold">{t("yourCity")}</span>
+          <input
+            value={actCity}
+            onChange={(e) => setActCity(e.target.value)}
+            placeholder={t("cityPlaceholder")}
+            className="w-full rounded-2xl border border-ink/25 bg-white px-4 py-2.5 font-medium outline-none"
+          />
+        </label>
+
+        <a
+          href={klookUrl(actCity)}
+          target="_blank"
+          rel="noopener"
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-flockie-orange py-3 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
+        >
+          <Search size={18} /> {actCity.trim() ? t("browseActivitiesIn", { city: actCity.trim() }) : t("browseActivities")}
+        </a>
+        <a
+          href={KKDAY}
+          target="_blank"
+          rel="noopener"
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-white py-3 font-bold text-ink"
+        >
+          <Ticket size={18} /> {t("toursKKday")}
+        </a>
+        <Link
+          href={`/vibes/new?city=${encodeURIComponent(actCity.trim())}`}
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-white py-3 font-bold text-ink"
+        >
+          <Users size={18} /> {t("findBuddyActivity")}
+        </Link>
+      </div>
+
       {/* ── Deals for your upcoming trips (context-aware) ───────────────── */}
       {plans.length > 0 && (
         <div className="space-y-3">
@@ -118,11 +213,16 @@ export default function DealsSearch({
         </div>
       )}
 
-      {/* ── Search anywhere ─────────────────────────────────────────────── */}
+      {/* ── Traveling soon? ──────────────────────────────────────────────── */}
+      <h2 className="text-sm font-extrabold uppercase tracking-wide text-muted">
+        {t("travelSection")}
+      </h2>
+
+      {/* Stays — the form stays light until a destination is set */}
       <div className="rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
         <div className="flex items-center gap-2">
           <Hotel size={20} className="text-flockie-orange" />
-          <h2 className="text-lg font-extrabold">{plans.length > 0 ? t("searchAnywhere") : t("staysHeading")}</h2>
+          <h2 className="text-lg font-extrabold">{t("staysHeading")}</h2>
         </div>
         <p className="mt-1 text-sm font-medium text-muted">
           {t("staysSubtitle")}
@@ -153,46 +253,49 @@ export default function DealsSearch({
           </div>
         )}
 
-        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="block">
-            <span className="mb-1 block text-sm font-bold">{t("checkIn")}</span>
-            <input
-              type="date"
-              value={checkIn}
-              onChange={(e) => setCheckIn(e.target.value)}
-              className="block w-full min-w-0 appearance-none rounded-2xl border border-ink/25 bg-white px-3 py-2.5 font-medium outline-none"
-            />
-          </label>
-          <label className="block">
-            <span className="mb-1 block text-sm font-bold">{t("checkOut")}</span>
-            <input
-              type="date"
-              value={checkOut}
-              onChange={(e) => setCheckOut(e.target.value)}
-              className="block w-full min-w-0 appearance-none rounded-2xl border border-ink/25 bg-white px-3 py-2.5 font-medium outline-none"
-            />
-          </label>
-        </div>
+        {city.trim() && (
+          <>
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <label className="block">
+                <span className="mb-1 block text-sm font-bold">{t("checkIn")}</span>
+                <input
+                  type="date"
+                  value={checkIn}
+                  onChange={(e) => setCheckIn(e.target.value)}
+                  className="block w-full min-w-0 appearance-none rounded-2xl border border-ink/25 bg-white px-3 py-2.5 font-medium outline-none"
+                />
+              </label>
+              <label className="block">
+                <span className="mb-1 block text-sm font-bold">{t("checkOut")}</span>
+                <input
+                  type="date"
+                  value={checkOut}
+                  onChange={(e) => setCheckOut(e.target.value)}
+                  className="block w-full min-w-0 appearance-none rounded-2xl border border-ink/25 bg-white px-3 py-2.5 font-medium outline-none"
+                />
+              </label>
+            </div>
 
-        <label className="mt-3 block">
-          <span className="mb-1 block text-sm font-bold">{t("guests", { count: guests })}</span>
-          <input
-            type="range"
-            min={1}
-            max={8}
-            value={guests}
-            onChange={(e) => setGuests(Number(e.target.value))}
-            className="w-full accent-flockie-orange"
-          />
-        </label>
+            <label className="mt-3 block">
+              <span className="mb-1 block text-sm font-bold">{t("guests", { count: guests })}</span>
+              <input
+                type="range"
+                min={1}
+                max={8}
+                value={guests}
+                onChange={(e) => setGuests(Number(e.target.value))}
+                className="w-full accent-flockie-orange"
+              />
+            </label>
 
-        <button
-          onClick={() => open(hotelsUrl(city.trim(), checkIn, checkOut, guests))}
-          disabled={!city.trim()}
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-flockie-orange py-3.5 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
-        >
-          <Search size={18} /> {city.trim() ? t("searchStaysIn", { city: city.trim() }) : t("searchStays")}
-        </button>
+            <button
+              onClick={() => open(hotelsUrl(city.trim(), checkIn, checkOut, guests))}
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-flockie-orange py-3.5 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
+            >
+              <Search size={18} /> {t("searchStaysIn", { city: city.trim() })}
+            </button>
+          </>
+        )}
         <a
           href={KKDAY}
           target="_blank"
@@ -201,39 +304,6 @@ export default function DealsSearch({
         >
           {t("browseKKday")}
         </a>
-      </div>
-
-      {/* ── Activities ──────────────────────────────────────────────────── */}
-      <div className="rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
-        <div className="flex items-center gap-2">
-          <Ticket size={20} className="text-flockie-orange" />
-          <h2 className="text-lg font-extrabold">{t("activitiesHeading")}</h2>
-        </div>
-        <p className="mt-1 text-sm font-medium text-muted">
-          {t("activitiesSubtitle")}
-        </p>
-        <a
-          href={klookUrl(city)}
-          target="_blank"
-          rel="noopener"
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-flockie-orange py-3 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
-        >
-          <Search size={18} /> {city.trim() ? t("browseActivitiesIn", { city: city.trim() }) : t("browseActivities")}
-        </a>
-        <a
-          href={KKDAY}
-          target="_blank"
-          rel="noopener"
-          className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-white py-3 font-bold text-ink"
-        >
-          <Ticket size={18} /> {t("toursKKday")}
-        </a>
-        <Link
-          href={`/vibes/new?city=${encodeURIComponent(city.trim())}`}
-          className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-white py-3 font-bold text-ink"
-        >
-          <Users size={18} /> {t("findBuddyActivity")}
-        </Link>
       </div>
 
       {/* ── Flights ─────────────────────────────────────────────────────── */}
