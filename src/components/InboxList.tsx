@@ -209,7 +209,7 @@ export default function InboxList({
         {href && (
           <Link href={href} aria-label={title} className="absolute inset-0 z-0 rounded-2xl" />
         )}
-        <div className="relative z-10 flex items-start gap-3">
+        <div className="pointer-events-none relative z-10 flex items-start gap-3">
           <div
             className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-lg ${
               THUMB_TINT[n.type] ?? "bg-cream"
