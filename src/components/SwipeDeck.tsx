@@ -163,7 +163,8 @@ export default function SwipeDeck({
         {cur?.type === "video" ? (
           <video src={cur.url} controls playsInline className="h-full w-full object-cover" />
         ) : cur?.type === "img" ? (
-          <Image src={cur.url} alt="" fill sizes="500px" className="object-cover" />
+          // object-top: portrait photos crop from the bottom, never the face.
+          <Image src={cur.url} alt="" fill sizes="500px" className="object-cover object-top" />
         ) : (
           <div className="flex h-full items-center justify-center text-6xl">🕊️</div>
         )}

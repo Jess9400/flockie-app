@@ -141,7 +141,17 @@ export default function TripForm({
     const tripId = res.data?.id ?? initial.id;
     // Flocks land on their own detail page (the browse list excludes your own
     // trips, so /flocks would show a page that doesn't contain what you made).
-    router.push(isFlock ? (tripId ? `/flocks/${tripId}` : "/flocks") : `/match?mode=${kind}`);
+    // Activities land straight in the create/invite view with THIS activity
+    // selected, so the swipe deck shows immediately — no extra navigation.
+    router.push(
+      isFlock
+        ? tripId
+          ? `/flocks/${tripId}`
+          : "/flocks"
+        : isActivity
+          ? `/match?view=create${tripId ? `&trip=${tripId}` : ""}`
+          : `/match?mode=${kind}`
+    );
     router.refresh();
   }
 
