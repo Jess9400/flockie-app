@@ -30,7 +30,8 @@
     "viewBrowse": "Browse activities",
     "viewBrowseSub": "Join something already posted in your city",
     "viewCreate": "Create an activity",
-    "viewCreateSub": "Post yours & swipe people to invite"
+    "viewCreateSub": "Post yours & swipe people to invite",
+    "tabTrips": "Trips"
   },
   "create": {
     "back": "Back",

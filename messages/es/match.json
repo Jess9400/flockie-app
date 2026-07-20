@@ -30,7 +30,8 @@
     "viewBrowse": "Explorar actividades",
     "viewBrowseSub": "Únete a algo ya publicado en tu ciudad",
     "viewCreate": "Crear una actividad",
-    "viewCreateSub": "Publica la tuya e invita gente"
+    "viewCreateSub": "Publica la tuya e invita gente",
+    "tabTrips": "Viajes"
   },
   "create": {
     "back": "Atrás",
