@@ -19,7 +19,12 @@
     "deleteFlock": "this Flock",
     "deleteTrip": "this trip",
     "emptyActive": "No upcoming trips. Post one to start finding buddies.",
-    "pastHeading": "Past trips & Flocks"
+    "pastHeading": "Past trips & Flocks",
+    "flocksJoinedHeading": "Flocks you joined",
+    "flocksRequestedHeading": "Flocks requested",
+    "flockHostedBy": "Hosted by {name}",
+    "flockGoing": "Going",
+    "flockRequested": "Requested"
   },
   "form": {
     "labelActivity": "Activity",

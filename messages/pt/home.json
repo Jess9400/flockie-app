@@ -90,7 +90,8 @@
     "dismiss": "Dispensar"
   },
   "activityCard": {
-    "badge": "Atividade 1:1"
+    "badge": "Atividade 1:1",
+    "requested": "Solicitado ✓"
   },
   "actions": {
     "heading": "Precisa da sua ação",

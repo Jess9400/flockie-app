@@ -90,7 +90,8 @@
     "dismiss": "Dismiss"
   },
   "activityCard": {
-    "badge": "1:1 Activity"
+    "badge": "1:1 Activity",
+    "requested": "Requested ✓"
   },
   "actions": {
     "heading": "Needs your action",

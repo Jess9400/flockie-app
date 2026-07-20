@@ -55,6 +55,45 @@ export default async function MyTripsPage({
   const activeTrips = all.filter((t) => !isPast(t));
   const pastTrips = all.filter(isPast);
 
+  // Flocks I asked to join (outgoing) — pending = requested, accepted = joined.
+  const { data: myFlockReqRows } = await supabase
+    .from("trip_join_requests")
+    .select("trip_id, status")
+    .eq("user_id", user!.id)
+    .in("status", ["pending", "accepted"]);
+  const myReqStatus: Record<string, string> = {};
+  (myFlockReqRows ?? []).forEach((r) => (myReqStatus[r.trip_id] = r.status));
+  const myReqIds = Object.keys(myReqStatus);
+  type FlockLite = {
+    id: string; user_id: string; destination: string | null; destinations: string[] | null;
+    start_date: string | null; end_date: string | null; cover_photo: string | null;
+  };
+  let flocksJoined: FlockLite[] = [];
+  let flocksRequested: FlockLite[] = [];
+  const flockHosts: Record<string, string> = {};
+  if (myReqIds.length) {
+    const [{ data: fl }, hostsRes] = await Promise.all([
+      supabase
+        .from("trips")
+        .select("id, user_id, destination, destinations, start_date, end_date, cover_photo")
+        .in("id", myReqIds)
+        .eq("visibility", "public"),
+      Promise.resolve(null),
+    ]);
+    void hostsRes;
+    const flRows = (fl ?? []) as FlockLite[];
+    const hostIds2 = Array.from(new Set(flRows.map((f) => f.user_id)));
+    if (hostIds2.length) {
+      const { data: hp } = await supabase
+        .from("public_profiles")
+        .select("id, display_name")
+        .in("id", hostIds2);
+      hp?.forEach((h) => (flockHosts[h.id] = h.display_name ?? "Flockie"));
+    }
+    flocksJoined = flRows.filter((f) => myReqStatus[f.id] === "accepted");
+    flocksRequested = flRows.filter((f) => myReqStatus[f.id] === "pending");
+  }
+
   const page = Math.max(1, Number(searchParams.page) || 1);
   const totalPages = Math.max(1, Math.ceil(activeTrips.length / PAGE_SIZE));
   const pageTrips = activeTrips.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -246,6 +285,62 @@ export default async function MyTripsPage({
         )}
       </div>
       <Pagination page={page} totalPages={totalPages} hrefFor={(p) => (p > 1 ? `/my-trips?page=${p}` : "/my-trips")} />
+
+      {flocksJoined.length > 0 && (
+        <>
+          <h2 className="mt-8 text-lg font-extrabold">{tr("list.flocksJoinedHeading")}</h2>
+          <div className="mt-3 space-y-3">
+            {flocksJoined.map((f) => (
+              <Link
+                key={f.id}
+                href={`/flocks/${f.id}`}
+                className="flex items-center gap-3 rounded-2xl border border-onboarding-green/40 bg-[#E9F6F1] p-4 shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5"
+              >
+                <span className="text-xl">🐦</span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-extrabold">
+                    {(f.destinations ?? [f.destination]).filter(Boolean).join(" · ")}
+                  </p>
+                  <p className="truncate text-xs font-medium text-muted">
+                    {tr("list.flockHostedBy", { name: flockHosts[f.user_id] ?? "Flockie" })} · {f.start_date} → {f.end_date}
+                  </p>
+                </div>
+                <span className="shrink-0 rounded-full bg-onboarding-green px-3 py-1.5 text-xs font-bold text-white">
+                  {tr("list.flockGoing")}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </>
+      )}
+
+      {flocksRequested.length > 0 && (
+        <>
+          <h2 className="mt-8 text-lg font-extrabold">{tr("list.flocksRequestedHeading")}</h2>
+          <div className="mt-3 space-y-3">
+            {flocksRequested.map((f) => (
+              <Link
+                key={f.id}
+                href={`/flocks/${f.id}`}
+                className="flex items-center gap-3 rounded-2xl border border-ink/15 bg-white p-4 shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5"
+              >
+                <span className="text-xl">🐦</span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-extrabold">
+                    {(f.destinations ?? [f.destination]).filter(Boolean).join(" · ")}
+                  </p>
+                  <p className="truncate text-xs font-medium text-muted">
+                    {tr("list.flockHostedBy", { name: flockHosts[f.user_id] ?? "Flockie" })} · {f.start_date} → {f.end_date}
+                  </p>
+                </div>
+                <span className="shrink-0 rounded-full bg-cream px-3 py-1.5 text-xs font-bold text-ink/60">
+                  {tr("list.flockRequested")}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </>
+      )}
 
       {pastTrips.length > 0 && (
         <>

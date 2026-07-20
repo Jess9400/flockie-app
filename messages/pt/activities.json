@@ -19,6 +19,14 @@
     "waiting": "Esperando {name} aceitar",
     "openChat": "Abrir chat",
     "pending": "Solicitado",
-    "planSent": "Plano enviado — esperando {name} aceitar"
+    "planSent": "Plano enviado — esperando {name} aceitar",
+    "requestedHeading": "Atividades solicitadas"
+  },
+  "requests": {
+    "heading": "Solicitações ({count})",
+    "accept": "Aceitar",
+    "decline": "Passar",
+    "level": "Nível: {level}",
+    "openChat": "Abrir chat"
   }
 }

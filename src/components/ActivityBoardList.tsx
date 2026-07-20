@@ -19,6 +19,7 @@ export type ActivityFeedRow = {
   photo: string | null;
   one_liner: string | null;
   score: number | null;
+  my_request_status?: string | null;
 };
 
 // The browse side of Find a Buddy: activities other people posted in your
@@ -108,12 +109,18 @@ export default async function ActivityBoardList({
                 </span>
               )}
             </Link>
-            <JoinActivityButton
-              activityId={r.activity_id}
-              title={r.title || t("untitled")}
-              creatorName={r.display_name ?? "?"}
-              compact
-            />
+            {r.my_request_status === "pending" ? (
+              <span className="shrink-0 rounded-full bg-onboarding-green px-4 py-1.5 text-xs font-bold text-white">
+                {t("requested")}
+              </span>
+            ) : (
+              <JoinActivityButton
+                activityId={r.activity_id}
+                title={r.title || t("untitled")}
+                creatorName={r.display_name ?? "?"}
+                compact
+              />
+            )}
           </div>
         </div>
       ))}

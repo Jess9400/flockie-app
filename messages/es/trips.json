@@ -19,7 +19,12 @@
     "deleteFlock": "este Flock",
     "deleteTrip": "este viaje",
     "emptyActive": "No tienes viajes próximos. Publica uno para empezar a encontrar buddies.",
-    "pastHeading": "Viajes y Flocks pasados"
+    "pastHeading": "Viajes y Flocks pasados",
+    "flocksJoinedHeading": "Flocks a los que te uniste",
+    "flocksRequestedHeading": "Flocks solicitados",
+    "flockHostedBy": "Organizado por {name}",
+    "flockGoing": "Vas",
+    "flockRequested": "Solicitado"
   },
   "form": {
     "labelActivity": "Actividad",

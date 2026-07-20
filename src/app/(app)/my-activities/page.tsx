@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import DeleteTripButton from "@/components/DeleteTripButton";
+import ActivityRequests, { type ActivityRequest } from "@/components/ActivityRequests";
 import PageTabs from "@/components/PageTabs";
 import Pagination from "@/components/Pagination";
 
@@ -57,10 +58,22 @@ export default async function MyActivitiesPage({
     creator_name: string | null;
     creator_photo: string | null;
     chat_id: string | null;
-    plan_status: string | null;
+    request_status: string | null;
   };
-  const joinedRes = await supabase.rpc("my_joined_activities");
-  const joined: Joined[] = joinedRes.error ? [] : ((joinedRes.data ?? []) as Joined[]);
+  const [joinedRes, hostReqRes] = await Promise.all([
+    supabase.rpc("my_joined_activities"),
+    // Requests ON my activities (host view) — Accept/Pass per person.
+    supabase.rpc("activity_requests_for_mine"),
+  ]);
+  const joinedAll: Joined[] = joinedRes.error ? [] : ((joinedRes.data ?? []) as Joined[]);
+  const joinedAccepted = joinedAll.filter((j) => j.request_status === "accepted");
+  const joinedPending = joinedAll.filter((j) => j.request_status === "pending");
+  type HostReq = ActivityRequest & { activity_id: string };
+  const hostReqs: HostReq[] = hostReqRes.error ? [] : ((hostReqRes.data ?? []) as HostReq[]);
+  const reqsByActivity: Record<string, ActivityRequest[]> = {};
+  hostReqs.forEach((r) => {
+    (reqsByActivity[r.activity_id] ??= []).push(r);
+  });
 
   const todayStr = new Date().toISOString().slice(0, 10);
   const isPast = (a: ActivityRow) =>
@@ -135,6 +148,9 @@ export default async function MyActivitiesPage({
             <DeleteTripButton tripId={row.id} label={row.title ? `"${row.title}"` : t("deleteLabel")} />
           </div>
         </div>
+        {!faded && reqsByActivity[row.id]?.length ? (
+          <ActivityRequests activityId={row.id} requests={reqsByActivity[row.id]} />
+        ) : null}
       </div>
     );
   }
@@ -166,13 +182,49 @@ export default async function MyActivitiesPage({
       </div>
       <Pagination page={page} totalPages={totalPages} hrefFor={(p) => (p > 1 ? `/my-activities?page=${p}` : "/my-activities")} />
 
-      {joined.length > 0 && (
+      {joinedAccepted.length > 0 && (
         <>
           <h2 className="mt-8 text-lg font-extrabold">{t("joined.heading")}</h2>
           <div className="mt-3 space-y-3">
-            {joined.map((j) => {
+            {joinedAccepted.map((j) => {
               const name = j.creator_name ?? "Flockie";
-              const on = j.chat_id && (j.plan_status === "accepted" || j.plan_status == null);
+              return (
+                <div
+                  key={j.activity_id}
+                  className="flex items-center gap-3 rounded-2xl border border-onboarding-green/40 bg-[#E9F6F1] p-4 shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
+                >
+                  {j.creator_photo ? (
+                    <Image src={j.creator_photo} alt="" width={40} height={40} className="h-10 w-10 shrink-0 rounded-full object-cover" />
+                  ) : (
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-flockie-blue text-sm font-bold text-white">
+                      {name[0]?.toUpperCase()}
+                    </span>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-extrabold">{j.title || t("joined.fallbackTitle")}</p>
+                    <p className="truncate text-xs font-medium text-muted">{t("joined.with", { name })}</p>
+                  </div>
+                  {j.chat_id && (
+                    <Link
+                      href={`/buddies/${j.chat_id}`}
+                      className="flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-onboarding-green px-3 py-1.5 text-sm font-bold text-white"
+                    >
+                      <MessageCircle size={14} /> {t("joined.openChat")}
+                    </Link>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {joinedPending.length > 0 && (
+        <>
+          <h2 className="mt-8 text-lg font-extrabold">{t("joined.requestedHeading")}</h2>
+          <div className="mt-3 space-y-3">
+            {joinedPending.map((j) => {
+              const name = j.creator_name ?? "Flockie";
               return (
                 <div
                   key={j.activity_id}
@@ -187,28 +239,11 @@ export default async function MyActivitiesPage({
                   )}
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-extrabold">{j.title || t("joined.fallbackTitle")}</p>
-                    <p className="truncate text-xs font-medium text-muted">
-                      {!j.chat_id
-                        ? t("joined.waiting", { name })
-                        : on
-                          ? t("joined.with", { name })
-                          : t("joined.planSent", { name })}
-                    </p>
+                    <p className="truncate text-xs font-medium text-muted">{t("joined.waiting", { name })}</p>
                   </div>
-                  {j.chat_id ? (
-                    <Link
-                      href={`/buddies/${j.chat_id}`}
-                      className={`flex shrink-0 items-center gap-1 rounded-full border border-ink/15 px-3 py-1.5 text-sm font-bold text-white ${
-                        on ? "bg-onboarding-green" : "bg-flockie-blue"
-                      }`}
-                    >
-                      <MessageCircle size={14} /> {t("joined.openChat")}
-                    </Link>
-                  ) : (
-                    <span className="shrink-0 rounded-full bg-cream px-3 py-1.5 text-xs font-bold text-ink/60">
-                      {t("joined.pending")}
-                    </span>
-                  )}
+                  <span className="shrink-0 rounded-full bg-cream px-3 py-1.5 text-xs font-bold text-ink/60">
+                    {t("joined.pending")}
+                  </span>
                 </div>
               );
             })}

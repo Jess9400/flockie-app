@@ -212,6 +212,7 @@ export default async function HomePage({
     end_date: string | null;
     city: string | null;
     cover_photo?: string | null;
+    my_request_status?: string | null;
     creator_id: string;
     display_name: string | null;
     age: number | null;
@@ -421,11 +422,17 @@ export default async function HomePage({
         </div>
 
         <div className="mt-2">
-          <JoinActivityButton
-            activityId={a.activity_id}
-            title={a.title ?? ""}
-            creatorName={a.display_name ?? "?"}
-          />
+          {a.my_request_status === "pending" ? (
+            <span className="flex w-full items-center justify-center rounded-xl bg-onboarding-green py-2 text-xs font-extrabold text-white">
+              {th("activityCard.requested")}
+            </span>
+          ) : (
+            <JoinActivityButton
+              activityId={a.activity_id}
+              title={a.title ?? ""}
+              creatorName={a.display_name ?? "?"}
+            />
+          )}
         </div>
       </div>
     </div>
