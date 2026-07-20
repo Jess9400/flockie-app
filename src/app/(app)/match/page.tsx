@@ -150,22 +150,9 @@ export default async function MatchPage({
     );
   }
 
-  if (!complete) {
-    return (
-      <main className="px-5 pb-10 pt-6">
-        {header}
-        <Gate
-          text={isActivity ? t("gateVibeCheckText") : t("gateTravelPrefsText")}
-          cta={isActivity ? t("gateVibeCheckCta") : t("gateTravelPrefsCta")}
-          href={`/match/trip?kind=${mode}`}
-        />
-        {yourActivitiesLink}
-      </main>
-    );
-  }
-
-  // ── Browse view: activities other people posted in your city. No posting
-  // required — this is the default way in. Creating + the invite deck live
+  // ── Browse view: activities other people posted in your city. Open to
+  // EVERYONE — no vibe-check or posting gate; the create CTA only appears in
+  // the empty state when nothing is posted in the city. Creating + the invite deck live
   // under the "Create an activity" path.
   if (isActivity && view === "browse") {
     const [{ data: cityProf }, { data: feed, error: feedErr }] = await Promise.all([
@@ -189,6 +176,20 @@ export default async function MatchPage({
           <SearchBar basePath="/match" q={searchParams.q ?? ""} placeholder={t("boardSearchPlaceholder")} />
         </div>
         <ActivityBoardList rows={rows} city={cityProf?.home_city ?? ""} />
+        {yourActivitiesLink}
+      </main>
+    );
+  }
+
+  if (!complete) {
+    return (
+      <main className="px-5 pb-10 pt-6">
+        {header}
+        <Gate
+          text={isActivity ? t("gateVibeCheckText") : t("gateTravelPrefsText")}
+          cta={isActivity ? t("gateVibeCheckCta") : t("gateTravelPrefsCta")}
+          href={`/match/trip?kind=${mode}`}
+        />
         {yourActivitiesLink}
       </main>
     );
