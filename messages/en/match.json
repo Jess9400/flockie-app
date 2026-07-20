@@ -34,7 +34,8 @@
     "tabTrips": "Trips",
     "tripHeading": "Find a Trip Buddy",
     "yourActivities": "Your activities",
-    "backToTrips": "Trips"
+    "backToTrips": "Trips",
+    "backToBuddy": "Buddy"
   },
   "create": {
     "back": "Back",

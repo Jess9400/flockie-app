@@ -23,9 +23,16 @@ export default async function MatchPage({
   // Trip buddy matching is parked "Soon" — default to Activity.
   const mode = searchParams.mode === "trip" ? "trip" : "activity";
   const isActivity = mode === "activity";
-  // Activity mode has two paths: BROWSE what others posted (default — no setup
-  // needed) or CREATE your own and swipe people to invite.
-  const view = isActivity && searchParams.view === "create" ? "create" : "browse";
+  // Activity mode mirrors the Trips hub: a main page with two path boxes
+  // (browse what others posted / create your own), and each path opens as its
+  // own page with a back button.
+  const view = !isActivity
+    ? "trip"
+    : searchParams.view === "create"
+      ? "create"
+      : searchParams.view === "browse"
+        ? "browse"
+        : "hub";
 
   // Trip matching only needs the Trip vibe (trip_prefs); activity matching
   // needs the activity vibe check. Migration-safe: if the trip_prefs column
@@ -47,69 +54,78 @@ export default async function MatchPage({
     ? !!profile?.onboarding_complete && (profile?.activities ?? []).length > 0
     : tripPrefsDone;
 
-  // Two clear paths, big and tappable: browse what's posted (default) or
-  // create yours + swipe people to invite. Trips live on their own tab now,
-  // so trip mode (reached from the Trips hub) renders no toggle at all.
-  const header = (
-    <>
-      {!isActivity && (
+  // Header per surface (Trips-hub pattern): the hub shows the two path boxes;
+  // each path page shows a back button + its own title instead.
+  const backBuddy = (
+    <Link
+      href="/match"
+      className="mb-2 inline-flex items-center gap-1 text-sm font-bold text-ink/55 hover:text-ink"
+    >
+      <ArrowLeft size={15} /> {t("backToBuddy")}
+    </Link>
+  );
+  const header =
+    view === "trip" ? (
+      <>
         <Link
           href="/trips"
           className="mb-2 inline-flex items-center gap-1 text-sm font-bold text-ink/55 hover:text-ink"
         >
           <ArrowLeft size={15} /> {t("backToTrips")}
         </Link>
-      )}
-      <h1 className="text-2xl font-black">
-        {isActivity ? t("heading") : t("tripHeading")}
-      </h1>
-      <p className="mt-1 text-sm font-medium text-muted">
-        {isActivity
-          ? t.rich("introActivity", {
-              link: (chunks) => (
-                <Link href="/vibes/new" className="font-bold text-flockie-orange underline">
-                  {chunks}
-                </Link>
-              ),
-            })
-          : t.rich("introTrip", {
-              link: (chunks) => (
-                <Link href="/match/trip?kind=flock" className="font-bold text-flockie-orange underline">
-                  {chunks}
-                </Link>
-              ),
-            })}
-      </p>
-      {isActivity && (
-      <div className="mt-4 grid grid-cols-2 gap-2">
-        <Link
-          href="/match"
-          className={`rounded-2xl border-2 px-4 py-3 text-center transition-transform hover:-translate-y-0.5 ${
-            view === "browse"
-              ? "border-flockie-orange bg-flockie-orange/5"
-              : "border-ink/10 bg-white"
-          }`}
-        >
-          <span className="block text-lg">🔎</span>
-          <span className="block text-sm font-extrabold text-ink">{t("viewBrowse")}</span>
-          <span className="block text-[11px] font-medium text-muted">{t("viewBrowseSub")}</span>
-        </Link>
-        <Link
-          href="/match?view=create"
-          className={`rounded-2xl border-2 px-4 py-3 text-center transition-transform hover:-translate-y-0.5 ${
-            view === "create"
-              ? "border-flockie-orange bg-flockie-orange/5"
-              : "border-ink/10 bg-white"
-          }`}
-        >
-          <span className="block text-lg">➕</span>
-          <span className="block text-sm font-extrabold text-ink">{t("viewCreate")}</span>
-          <span className="block text-[11px] font-medium text-muted">{t("viewCreateSub")}</span>
-        </Link>
-      </div>
-      )}
-    </>
-  );
+        <h1 className="text-2xl font-black">{t("tripHeading")}</h1>
+        <p className="mt-1 text-sm font-medium text-muted">
+          {t.rich("introTrip", {
+            link: (chunks) => (
+              <Link href="/match/trip?kind=flock" className="font-bold text-flockie-orange underline">
+                {chunks}
+              </Link>
+            ),
+          })}
+        </p>
+      </>
+    ) : view === "hub" ? (
+      <>
+        <h1 className="text-2xl font-black">{t("heading")}</h1>
+        <p className="mt-1 text-sm font-medium text-muted">
+          {t.rich("introActivity", {
+            link: (chunks) => (
+              <Link href="/vibes/new" className="font-bold text-flockie-orange underline">
+                {chunks}
+              </Link>
+            ),
+          })}
+        </p>
+        <div className="mt-5 grid grid-cols-2 gap-2">
+          <Link
+            href="/match?view=browse"
+            className="rounded-2xl border-2 border-ink/10 bg-white px-4 py-5 text-center transition-transform hover:-translate-y-0.5"
+          >
+            <span className="block text-2xl">🔎</span>
+            <span className="mt-1 block text-sm font-extrabold text-ink">{t("viewBrowse")}</span>
+            <span className="block text-[11px] font-medium text-muted">{t("viewBrowseSub")}</span>
+          </Link>
+          <Link
+            href="/match?view=create"
+            className="rounded-2xl border-2 border-ink/10 bg-white px-4 py-5 text-center transition-transform hover:-translate-y-0.5"
+          >
+            <span className="block text-2xl">➕</span>
+            <span className="mt-1 block text-sm font-extrabold text-ink">{t("viewCreate")}</span>
+            <span className="block text-[11px] font-medium text-muted">{t("viewCreateSub")}</span>
+          </Link>
+        </div>
+      </>
+    ) : (
+      <>
+        {backBuddy}
+        <h1 className="text-2xl font-black">
+          {view === "browse" ? t("viewBrowse") : t("viewCreate")}
+        </h1>
+        <p className="mt-1 text-sm font-medium text-muted">
+          {view === "browse" ? t("viewBrowseSub") : t("viewCreateSub")}
+        </p>
+      </>
+    );
 
   // Quick link to manage what you've posted — rendered BELOW the main content
   // (board / deck / gate), mirroring the Trips hub's "your trips" row.
@@ -122,6 +138,16 @@ export default async function MatchPage({
       <ArrowRight size={16} className="text-ink/50" />
     </Link>
   ) : null;
+
+  // ── Hub: just the two path boxes + your-activities link ──
+  if (view === "hub") {
+    return (
+      <main className="px-5 pb-10 pt-6">
+        {header}
+        {yourActivitiesLink}
+      </main>
+    );
+  }
 
   if (!complete) {
     return (
