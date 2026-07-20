@@ -17,6 +17,9 @@
 -- ============================================================================
 
 -- ── Browse feed ─────────────────────────────────────────────────────────────
+-- (drop first: adding cover_photo changes the return type, which
+--  create-or-replace alone can't do)
+drop function if exists public.activity_feed(int);
 create or replace function public.activity_feed(p_limit int default 30)
 returns table (
   activity_id uuid,
@@ -24,6 +27,7 @@ returns table (
   start_date date,
   end_date date,
   city text,
+  cover_photo text,
   creator_id uuid,
   display_name text,
   age int,
@@ -39,6 +43,7 @@ language sql security definer set search_path = public stable as $$
     t.start_date,
     t.end_date,
     t.destination as city,
+    t.cover_photo,
     p.id as creator_id,
     p.display_name,
     p.age,

@@ -12,6 +12,7 @@ export type ActivityFeedRow = {
   start_date: string | null;
   end_date: string | null;
   city: string | null;
+  cover_photo?: string | null;
   creator_id: string;
   display_name: string | null;
   age: number | null;
@@ -63,15 +64,24 @@ export default async function ActivityBoardList({
           key={r.activity_id}
           className="flex flex-col rounded-3xl border border-ink/15 bg-white p-4 shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
         >
-          <p className="text-[11px] font-extrabold uppercase tracking-wide text-flockie-blue">
-            {[fmtDates(r.start_date, r.end_date), r.city].filter(Boolean).join(" · ")}
-          </p>
-          <h2 className="mt-1 text-base font-extrabold leading-snug text-ink">
-            {r.title || t("untitled")}
-          </h2>
-          {r.one_liner && (
-            <p className="mt-1 line-clamp-2 text-xs font-medium text-muted">{r.one_liner}</p>
-          )}
+          <div className="flex items-start gap-3">
+            {r.cover_photo && (
+              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-ink/10 bg-cream">
+                <Image src={r.cover_photo} alt="" fill sizes="56px" className="object-cover" />
+              </div>
+            )}
+            <div className="min-w-0 flex-1">
+              <p className="text-[11px] font-extrabold uppercase tracking-wide text-flockie-blue">
+                {[fmtDates(r.start_date, r.end_date), r.city].filter(Boolean).join(" · ")}
+              </p>
+              <h2 className="mt-1 text-base font-extrabold leading-snug text-ink">
+                {r.title || t("untitled")}
+              </h2>
+              {r.one_liner && (
+                <p className="mt-1 line-clamp-2 text-xs font-medium text-muted">{r.one_liner}</p>
+              )}
+            </div>
+          </div>
 
           <div className="mt-3 flex items-center gap-2 border-t border-ink/10 pt-3">
             <Link href={`/people/${r.creator_id}`} className="flex min-w-0 flex-1 items-center gap-2">

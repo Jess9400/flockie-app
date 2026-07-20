@@ -199,6 +199,7 @@ export default async function HomePage({
     start_date: string | null;
     end_date: string | null;
     city: string | null;
+    cover_photo?: string | null;
     creator_id: string;
     display_name: string | null;
     age: number | null;
@@ -364,6 +365,12 @@ export default async function HomePage({
             .filter(Boolean)
             .join(" · ")}
         </p>
+        {a.cover_photo && (
+          <div className="relative mt-3 h-28 w-full overflow-hidden rounded-2xl border border-ink/10 bg-cream">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={a.cover_photo} alt="" className="h-full w-full object-cover" />
+          </div>
+        )}
         <div className="mt-auto flex items-center gap-2 pt-3">
           <Link href={`/people/${a.creator_id}`} className="flex min-w-0 flex-1 items-center gap-2">
             {a.photo ? (
