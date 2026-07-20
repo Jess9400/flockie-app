@@ -62,9 +62,10 @@ export default function JoinActivityButton({
 
   useEsc(() => !busy && close(), open);
 
+  // Non-compact = full-width card CTA (matches the home VibeCard's homeCta).
   const btnCls = compact
     ? "rounded-full bg-flockie-coral px-4 py-1.5 text-xs font-bold text-white transition-transform active:scale-95"
-    : "rounded-full border border-ink/15 bg-flockie-coral px-5 py-2 text-sm font-bold text-white transition-transform active:scale-95";
+    : "flex w-full items-center justify-center rounded-xl bg-flockie-coral py-2 text-xs font-extrabold text-white transition-transform active:scale-[0.98]";
 
   if (sent && !open) {
     return (
@@ -72,7 +73,7 @@ export default function JoinActivityButton({
         className={
           compact
             ? "rounded-full bg-onboarding-green px-4 py-1.5 text-xs font-bold text-white"
-            : "rounded-full border border-onboarding-green/40 bg-onboarding-green px-5 py-2 text-sm font-bold text-white"
+            : "flex w-full items-center justify-center rounded-xl bg-onboarding-green py-2 text-xs font-extrabold text-white"
         }
       >
         {t("requested")}

@@ -341,8 +341,9 @@ export default async function HomePage({
     );
   };
 
-  // 1:1 activity cell — same footprint/tilt as the vibe cards, clearly badged
-  // so group Vibes and 1:1 activities read as different things in one rail.
+  // 1:1 activity cell — SAME anatomy as the home VibeCard (image on top with
+  // a badge overlay, title, coral date, location, match pill, full-width CTA)
+  // so the near-you rail reads as one consistent card family.
   const activityCell = (a: (typeof nearActivities)[number], i = 0) => (
     <div
       key={`act-${a.activity_id}`}
@@ -350,49 +351,53 @@ export default async function HomePage({
         i % 2 ? "-rotate-[1.2deg]" : "rotate-[1.2deg]"
       }`}
     >
-      <div className="flex h-full flex-col rounded-3xl border border-ink/12 bg-white p-4 text-ink shadow-[0_2px_12px_rgba(10,37,69,0.07)]">
-        <span className="self-start rounded-full bg-flockie-blue/10 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-flockie-blue">
-          🤝 {th("activityCard.badge")}
-        </span>
-        <p className="mt-2 text-base font-extrabold leading-snug">{a.title}</p>
-        <p className="mt-1 text-xs font-medium text-muted">
-          {[
-            a.start_date
-              ? format(new Date(a.start_date), "MMM d", { locale: dfLocale(locale) })
-              : null,
-            a.city,
-          ]
-            .filter(Boolean)
-            .join(" · ")}
-        </p>
-        {a.cover_photo && (
-          <div className="relative mt-3 h-28 w-full overflow-hidden rounded-2xl border border-ink/10 bg-cream">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+      <div className="relative flex h-full flex-col rounded-3xl border border-ink/10 bg-white p-2 shadow-[0_2px_12px_rgba(10,37,69,0.07)]">
+        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-cream">
+          {a.cover_photo ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img src={a.cover_photo} alt="" className="h-full w-full object-cover" />
-          </div>
-        )}
-        <div className="mt-auto flex items-center gap-2 pt-3">
-          <Link href={`/people/${a.creator_id}`} className="flex min-w-0 flex-1 items-center gap-2">
+          ) : (
+            <div className="flex h-full items-center justify-center text-4xl">🤝</div>
+          )}
+          <span className="absolute left-2 top-2 rounded-full bg-flockie-blue px-2 py-0.5 text-[10px] font-extrabold leading-none text-white shadow-[0_1px_5px_rgba(10,37,69,0.2)]">
+            {th("activityCard.badge")}
+          </span>
+        </div>
+
+        <div className="flex flex-1 flex-col px-1.5 pt-2.5 pb-1">
+          <p className="line-clamp-2 text-[13px] font-extrabold leading-tight text-ink">{a.title}</p>
+          {a.start_date && (
+            <p className="mt-1 text-[11px] font-bold leading-tight text-flockie-orange">
+              {format(new Date(a.start_date), "EEE, MMM d", { locale: dfLocale(locale) })}
+            </p>
+          )}
+          <p className="mt-0.5 flex items-center gap-1 text-[11px] font-medium text-muted">
+            <MapPin size={11} className="shrink-0" />
+            <span className="truncate">{a.city}</span>
+          </p>
+          <div className="mt-2 flex items-center gap-2">
             {a.photo ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={a.photo} alt="" className="h-6 w-6 shrink-0 rounded-full object-cover" />
+              <img src={a.photo} alt="" className="h-5 w-5 shrink-0 rounded-full object-cover" />
             ) : (
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-flockie-blue text-[10px] font-bold text-white">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-flockie-blue text-[9px] font-bold text-white">
                 {(a.display_name ?? "?")[0]?.toUpperCase()}
               </span>
             )}
-            <span className="truncate text-xs font-bold text-ink/70">{a.display_name}</span>
+            <span className="truncate text-[11px] font-bold text-ink/70">{a.display_name}</span>
             {a.score != null && (
-              <span className="shrink-0 rounded-full bg-flockie-blue/10 px-1.5 py-0.5 text-[9px] font-extrabold text-flockie-blue">
+              <span className="shrink-0 rounded-full bg-flockie-blue/15 px-2.5 py-1 text-[11px] font-extrabold leading-none text-flockie-blue">
                 {Math.round(a.score)}%
               </span>
             )}
-          </Link>
+          </div>
+        </div>
+
+        <div className="mt-2">
           <JoinActivityButton
             activityId={a.activity_id}
             title={a.title ?? ""}
             creatorName={a.display_name ?? "?"}
-            compact
           />
         </div>
       </div>
