@@ -34,7 +34,7 @@ export default async function MyActivitiesPage({
   const TRIP_TABS = [
     { href: "/my-activities", label: t("tabActivities") },
     { href: "/deals", label: t("tabDeals") },
-    { href: "/my-trips", label: t("tabTrips"), soon: true },
+    { href: "/my-trips", label: t("tabTrips") },
   ];
 
   const { data: activities } = await supabase

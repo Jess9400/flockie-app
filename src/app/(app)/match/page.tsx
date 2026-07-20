@@ -19,7 +19,6 @@ export default async function MatchPage({
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("match.find");
-  const tc = await getTranslations("common");
 
   // Trip buddy matching is parked "Soon" — default to Activity.
   const mode = searchParams.mode === "trip" ? "trip" : "activity";
@@ -48,10 +47,8 @@ export default async function MatchPage({
     ? !!profile?.onboarding_complete && (profile?.activities ?? []).length > 0
     : tripPrefsDone;
 
-  // One toggle, three destinations: browse what's posted (default), create
-  // yours (+ swipe people to invite), and Trips parked "Soon" as its own tab.
-  const pillOn = "rounded-full bg-flockie-coral px-4 py-1.5 text-white";
-  const pillOff = "rounded-full px-4 py-1.5 text-ink/55 hover:text-ink";
+  // Two clear paths, big and tappable: browse what's posted (default) or
+  // create yours + swipe people to invite. Trips live on their own tab now.
   const header = (
     <>
       <h1 className="text-2xl font-black">{t("heading")}</h1>
@@ -64,22 +61,31 @@ export default async function MatchPage({
           ),
         })}
       </p>
-      <div className="mt-4 inline-flex flex-wrap items-center gap-1 rounded-full border border-ink/15 p-1 text-sm font-bold">
-        <Link href="/match" className={view === "browse" ? pillOn : pillOff}>
-          {t("viewBrowse")}
-        </Link>
-        <Link href="/match?view=create" className={view === "create" ? pillOn : pillOff}>
-          {t("viewCreate")}
-        </Link>
-        <span
-          aria-disabled="true"
-          className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-full px-4 py-1.5 text-ink/35"
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        <Link
+          href="/match"
+          className={`rounded-2xl border-2 px-4 py-3 text-center transition-transform hover:-translate-y-0.5 ${
+            view === "browse"
+              ? "border-flockie-orange bg-flockie-orange/5"
+              : "border-ink/10 bg-white"
+          }`}
         >
-          {t("tabTrips")}
-          <span className="rounded-full bg-white px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-ink/50">
-            {tc("soon")}
-          </span>
-        </span>
+          <span className="block text-lg">🔎</span>
+          <span className="block text-sm font-extrabold text-ink">{t("viewBrowse")}</span>
+          <span className="block text-[11px] font-medium text-muted">{t("viewBrowseSub")}</span>
+        </Link>
+        <Link
+          href="/match?view=create"
+          className={`rounded-2xl border-2 px-4 py-3 text-center transition-transform hover:-translate-y-0.5 ${
+            view === "create"
+              ? "border-flockie-orange bg-flockie-orange/5"
+              : "border-ink/10 bg-white"
+          }`}
+        >
+          <span className="block text-lg">➕</span>
+          <span className="block text-sm font-extrabold text-ink">{t("viewCreate")}</span>
+          <span className="block text-[11px] font-medium text-muted">{t("viewCreateSub")}</span>
+        </Link>
       </div>
     </>
   );

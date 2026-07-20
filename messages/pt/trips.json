@@ -87,5 +87,11 @@
     "errTripType": "Escolha ao menos um tipo de viagem.",
     "errContinent": "Escolha o continente em que o seu Flock está.",
     "errLanguage": "Escolha o idioma principal do grupo."
+  },
+  "hub": {
+    "findTripBuddy": "Encontre um Trip Buddy",
+    "findTripBuddySub": "Dê match para uma viagem",
+    "findFlock": "Encontre um Flock",
+    "findFlockSub": "Participe de uma viagem em grupo"
   }
 }

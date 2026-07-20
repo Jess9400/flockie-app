@@ -34,11 +34,12 @@ export default async function MyTripsPage({
   const supabase = await createClient();
   const user = await getSessionUser();
   const tr = await getTranslations("trips");
+  const tc = await getTranslations("common");
 
   const TRIP_TABS = [
     { href: "/my-activities", label: tr("tabs.myActivities") },
     { href: "/deals", label: tr("tabs.deals") },
-    { href: "/my-trips", label: tr("tabs.myTrips"), soon: true },
+    { href: "/my-trips", label: tr("tabs.myTrips") },
   ];
 
   const { data: trips } = await supabase
@@ -232,6 +233,31 @@ export default async function MyTripsPage({
         </Link>
       </div>
       <p className="mt-1 text-sm font-medium text-muted">{tr("list.subtitle")}</p>
+
+      {/* Trip matching entries — trip buddies parked "Soon", Flocks live. */}
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        <div
+          aria-disabled="true"
+          className="cursor-not-allowed rounded-2xl border-2 border-ink/10 bg-white px-4 py-3 text-center opacity-60"
+        >
+          <span className="block text-lg">✈️</span>
+          <span className="inline-flex items-center gap-1.5 text-sm font-extrabold text-ink">
+            {tr("hub.findTripBuddy")}
+            <span className="rounded-full bg-cream px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-ink/50">
+              {tc("soon")}
+            </span>
+          </span>
+          <span className="block text-[11px] font-medium text-muted">{tr("hub.findTripBuddySub")}</span>
+        </div>
+        <Link
+          href="/flocks"
+          className="rounded-2xl border-2 border-ink/10 bg-white px-4 py-3 text-center transition-transform hover:-translate-y-0.5"
+        >
+          <span className="block text-lg">🐦</span>
+          <span className="block text-sm font-extrabold text-ink">{tr("hub.findFlock")}</span>
+          <span className="block text-[11px] font-medium text-muted">{tr("hub.findFlockSub")}</span>
+        </Link>
+      </div>
 
       <div className="mt-6 space-y-3">
         {activeTrips.length === 0 ? (

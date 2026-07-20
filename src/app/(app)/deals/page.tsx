@@ -14,7 +14,7 @@ export default async function DealsPage() {
   const TRIP_TABS = [
     { href: "/my-activities", label: t("tabMyActivities") },
     { href: "/deals", label: t("tabDeals") },
-    { href: "/my-trips", label: t("tabMyTrips"), soon: true },
+    { href: "/my-trips", label: t("tabMyTrips") },
   ];
 
   const nowIso = new Date().toISOString();
