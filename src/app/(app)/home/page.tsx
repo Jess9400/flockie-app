@@ -562,7 +562,7 @@ export default async function HomePage({
           </div>
           {people.length > 0 && (
             <Link
-              href="/match?mode=activity"
+              href="/match?view=create"
               className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
             >
               {th("buddies.swipeMore")} <ArrowRight size={15} />
