@@ -16,7 +16,8 @@
     "emptyNone": "No open trips yet. Post a trip and set it to Public to start a Flock.",
     "womenOnly": "Women only",
     "hostFallback": "Host",
-    "daysShort": "{count}d"
+    "daysShort": "{count}d",
+    "backToTrips": "Trips"
   },
   "budget": {
     "friendly": "Budget-friendly",

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, CalendarClock, Users, Plus } from "lucide-react";
+import { MapPin, CalendarClock, Users, Plus, ArrowLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
@@ -114,6 +114,12 @@ export default async function FlocksPage({
 
   return (
     <main className="px-5 pb-10 pt-6">
+      <Link
+        href="/trips"
+        className="mb-2 inline-flex items-center gap-1 text-sm font-bold text-ink/55 hover:text-ink"
+      >
+        <ArrowLeft size={15} /> {tr("browse.backToTrips")}
+      </Link>
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-black">{tr("browse.heading")}</h1>
         <Link

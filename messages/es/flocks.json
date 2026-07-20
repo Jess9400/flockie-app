@@ -16,7 +16,8 @@
     "emptyNone": "Aún no hay viajes abiertos. Publica un viaje y ponlo en Público para empezar un Flock.",
     "womenOnly": "Solo mujeres",
     "hostFallback": "Anfitrión",
-    "daysShort": "{count}d"
+    "daysShort": "{count}d",
+    "backToTrips": "Viajes"
   },
   "budget": {
     "friendly": "Económico",

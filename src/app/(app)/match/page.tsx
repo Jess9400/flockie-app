@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, ArrowRight } from "lucide-react";
+import { Plus, ArrowRight, ArrowLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
@@ -52,6 +52,14 @@ export default async function MatchPage({
   // so trip mode (reached from the Trips hub) renders no toggle at all.
   const header = (
     <>
+      {!isActivity && (
+        <Link
+          href="/trips"
+          className="mb-2 inline-flex items-center gap-1 text-sm font-bold text-ink/55 hover:text-ink"
+        >
+          <ArrowLeft size={15} /> {t("backToTrips")}
+        </Link>
+      )}
       <h1 className="text-2xl font-black">
         {isActivity ? t("heading") : t("tripHeading")}
       </h1>
@@ -100,17 +108,20 @@ export default async function MatchPage({
         </Link>
       </div>
       )}
-      {isActivity && (
-        <Link
-          href="/my-activities"
-          className="mt-2 flex items-center justify-between rounded-2xl border border-ink/15 bg-white px-4 py-3 text-sm font-bold text-ink shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5"
-        >
-          <span>🗂️ {t("yourActivities")}</span>
-          <ArrowRight size={16} className="text-ink/50" />
-        </Link>
-      )}
     </>
   );
+
+  // Quick link to manage what you've posted — rendered BELOW the main content
+  // (board / deck / gate), mirroring the Trips hub's "your trips" row.
+  const yourActivitiesLink = isActivity ? (
+    <Link
+      href="/my-activities"
+      className="mt-4 flex items-center justify-between rounded-2xl border border-ink/15 bg-white px-4 py-3 text-sm font-bold text-ink shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5"
+    >
+      <span>🗂️ {t("yourActivities")}</span>
+      <ArrowRight size={16} className="text-ink/50" />
+    </Link>
+  ) : null;
 
   if (!complete) {
     return (
@@ -121,6 +132,7 @@ export default async function MatchPage({
           cta={isActivity ? t("gateVibeCheckCta") : t("gateTravelPrefsCta")}
           href={`/match/trip?kind=${mode}`}
         />
+        {yourActivitiesLink}
       </main>
     );
   }
@@ -139,6 +151,7 @@ export default async function MatchPage({
       <main className="px-5 pb-10 pt-6">
         {header}
         <ActivityBoardList rows={rows} city={cityProf?.home_city ?? ""} />
+        {yourActivitiesLink}
       </main>
     );
   }
@@ -178,6 +191,7 @@ export default async function MatchPage({
           cta={isActivity ? t("gatePostActivityCta") : t("gatePostTripCta")}
           href={`/match/trip?kind=${mode}`}
         />
+        {yourActivitiesLink}
       </main>
     );
   }
@@ -278,6 +292,7 @@ export default async function MatchPage({
       </div>
 
       {body}
+      {yourActivitiesLink}
     </main>
   );
 }
