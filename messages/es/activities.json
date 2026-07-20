@@ -18,6 +18,7 @@
     "with": "Confirmado — con {name}",
     "waiting": "Esperando que {name} acepte",
     "openChat": "Abrir chat",
-    "pending": "Solicitado"
+    "pending": "Solicitado",
+    "planSent": "Plan enviado — esperando que {name} acepte"
   }
 }

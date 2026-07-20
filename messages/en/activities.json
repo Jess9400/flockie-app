@@ -18,6 +18,7 @@
     "with": "You're on — with {name}",
     "waiting": "Waiting for {name} to accept",
     "openChat": "Open chat",
-    "pending": "Requested"
+    "pending": "Requested",
+    "planSent": "Plan sent — waiting for {name} to accept"
   }
 }

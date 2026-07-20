@@ -150,3 +150,42 @@ begin
   return jsonb_build_object('matched', false, 'requested', true);
 end $$;
 grant execute on function public.request_join_activity(uuid, text, text) to authenticated;
+
+-- ── My joined activities (per-activity status for My Plans) ─────────────────
+create or replace function public.my_joined_activities()
+returns table (
+  activity_id uuid,
+  title text,
+  start_date date,
+  creator_id uuid,
+  creator_name text,
+  creator_photo text,
+  chat_id uuid,
+  plan_status text
+)
+language sql security definer set search_path = public stable as $$
+  select
+    t.id, t.title, t.start_date,
+    p.id, p.display_name, p.photos[1],
+    c.id,
+    pl.status
+  from public.activity_join_requests r
+  join public.trips t on t.id = r.activity_id
+  join public.profiles p on p.id = t.user_id
+  left join public.buddy_matches m
+    on m.user_a = least(r.user_id, t.user_id)
+   and m.user_b = greatest(r.user_id, t.user_id)
+  left join public.buddy_chats c on c.match_id = m.id
+  left join lateral (
+    select bp.status
+    from public.buddy_plans bp
+    where bp.chat_id = c.id
+      and lower(coalesce(bp.place_name, '')) = lower(coalesce(t.title, ''))
+    order by bp.created_at desc
+    limit 1
+  ) pl on true
+  where r.user_id = auth.uid()
+  order by r.created_at desc
+  limit 20;
+$$;
+grant execute on function public.my_joined_activities() to authenticated;
