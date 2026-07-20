@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home, Compass, Map, Sparkles, MessageCircle, User, Bell, Menu, X, ArrowLeft,
+  Home, Compass, Map, Sparkles, MessageCircle, User, Bell, Menu, X, ArrowLeft, Plane,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Footer from "@/components/Footer";
@@ -28,8 +28,10 @@ function sectionFor(pathname: string): string {
     case "/my-vibes":
       return "my-vibes";
     case "/match":
-    case "/flocks":
       return "match";
+    case "/trips":
+    case "/flocks":
+      return "trips-hub";
     case "/my-trips":
     case "/my-activities":
       return "trips";
@@ -66,7 +68,8 @@ const PRIMARY_NAV: NavItem[] = [
   { href: "/home", labelKey: "home", icon: Home, sections: ["home"] },
   { href: "/vibes", labelKey: "vibes", icon: Sparkles, sections: ["vibes", "my-vibes"] },
   { href: "/match", labelKey: "findABuddy", icon: Compass, sections: ["match"] },
-  // "My Plans" lands on Activities — Trips is parked "Soon", so it's not the entry.
+  // Trips hub: find a trip buddy (soon) + find a flock live here.
+  { href: "/trips", labelKey: "trips", icon: Plane, sections: ["trips-hub"] },
   { href: "/my-activities", labelKey: "myTrips", icon: Map, sections: ["trips", "deals"] },
   { href: "/chats", labelKey: "chats", icon: MessageCircle, sections: ["chats"] },
 ];

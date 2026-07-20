@@ -92,6 +92,9 @@
     "findTripBuddy": "Encontre um Trip Buddy",
     "findTripBuddySub": "Dê match para uma viagem",
     "findFlock": "Encontre um Flock",
-    "findFlockSub": "Participe de uma viagem em grupo"
+    "findFlockSub": "Participe de uma viagem em grupo",
+    "heading": "Viagens",
+    "subtitle": "Viaje em companhia — encontre com quem viajar ou entre em um grupo.",
+    "yourTrips": "Suas viagens e flocks"
   }
 }
