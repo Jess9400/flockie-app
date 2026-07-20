@@ -26,7 +26,9 @@
     "cityFallback": "tu ciudad",
     "inviteFriend": "Invitar a un amigo",
     "exploreVibes": "Explorar Vibes",
-    "soonHint": "Viajes y Flocks — pronto"
+    "soonHint": "Viajes y Flocks — pronto",
+    "browseBoardBanner": "Nuevo: explora actividades publicadas cerca de ti — únete sin crear la tuya.",
+    "browseBoardCta": "Explorar"
   },
   "create": {
     "back": "Atrás",
@@ -100,5 +102,33 @@
     "invitedGenericNoCity": "¡Estás invitado a Flockie — encuentra gente para viajar y hacer cosas!",
     "copied": "¡Copiado!",
     "defaultLabel": "Invita amigos para desbloquear"
+  },
+  "board": {
+    "backToFind": "Encuentra un Buddy",
+    "heading": "Actividades cerca de ti",
+    "subtitle": "Únete a algo que alguien ya publicó — sin necesidad de crear la tuya.",
+    "subtitleCity": "Únete a algo que alguien ya publicó en {city} — sin necesidad de crear la tuya.",
+    "postYours": "Publica la tuya",
+    "untitled": "Actividad",
+    "emptyTitle": "Aún no hay actividades abiertas",
+    "emptyBody": "Nadie ha publicado una actividad cerca de ti todavía. ¡Sé la primera persona!",
+    "emptyBodyCity": "Nadie ha publicado una actividad en {city} todavía. ¡Sé la primera persona!",
+    "emptyCta": "Publica la primera actividad",
+    "imIn": "¡Me apunto! ✋",
+    "requested": "Solicitado ✓",
+    "joinAria": "Unirte a {title}",
+    "joinTitle": "Únete a “{title}”",
+    "joinSubtitle": "{name} recibirá tu solicitud con un poco de contexto.",
+    "levelLabel": "Tu nivel (opcional)",
+    "notePlaceholder": "Añade una nota corta (opcional)",
+    "sendRequest": "Enviar solicitud",
+    "sending": "Enviando…",
+    "sentTitle": "¡Solicitud enviada a {name}!",
+    "sentBody": "{name} verá tu nivel, % de match y nota — cuando acepte, el chat se abre con el plan listo.",
+    "done": "Listo",
+    "cancel": "Cancelar",
+    "errBlocked": "Tenéis preferencias de match incompatibles.",
+    "browseBoardBanner": "Nuevo: explora actividades publicadas cerca de ti — únete sin crear la tuya.",
+    "browseBoardCta": "Explorar"
   }
 }

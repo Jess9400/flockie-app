@@ -26,7 +26,9 @@
     "cityFallback": "your city",
     "inviteFriend": "Invite a friend",
     "exploreVibes": "Explore Vibes",
-    "soonHint": "Trips & Flocks — soon"
+    "soonHint": "Trips & Flocks — soon",
+    "browseBoardBanner": "New: browse activities people posted near you — join one without creating your own.",
+    "browseBoardCta": "Browse"
   },
   "create": {
     "back": "Back",
@@ -100,5 +102,33 @@
     "invitedGenericNoCity": "You're invited to Flockie — find people to travel and do things with!",
     "copied": "Copied!",
     "defaultLabel": "Invite friends to unlock"
+  },
+  "board": {
+    "backToFind": "Find a Buddy",
+    "heading": "Activities near you",
+    "subtitle": "Join something someone already posted — no need to create your own.",
+    "subtitleCity": "Join something someone already posted in {city} — no need to create your own.",
+    "postYours": "Post yours",
+    "untitled": "Activity",
+    "emptyTitle": "No open activities yet",
+    "emptyBody": "Nobody has posted an activity near you yet. Be the first!",
+    "emptyBodyCity": "Nobody has posted an activity in {city} yet. Be the first!",
+    "emptyCta": "Post the first activity",
+    "imIn": "I'm in ✋",
+    "requested": "Requested ✓",
+    "joinAria": "Join {title}",
+    "joinTitle": "Join “{title}”",
+    "joinSubtitle": "{name} will get your request with a bit of context.",
+    "levelLabel": "Your level (optional)",
+    "notePlaceholder": "Add a short note (optional)",
+    "sendRequest": "Send request",
+    "sending": "Sending…",
+    "sentTitle": "Request sent to {name}!",
+    "sentBody": "{name} will see your level, match % and note — when they accept, your chat opens with the plan set.",
+    "done": "Done",
+    "cancel": "Cancel",
+    "errBlocked": "You two have conflicting match preferences.",
+    "browseBoardBanner": "New: browse activities people posted near you — join one without creating your own.",
+    "browseBoardCta": "Browse"
   }
 }

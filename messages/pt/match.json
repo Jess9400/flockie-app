@@ -26,7 +26,9 @@
     "cityFallback": "sua cidade",
     "inviteFriend": "Convidar um amigo",
     "exploreVibes": "Explorar Vibes",
-    "soonHint": "Viagens e Flocks — em breve"
+    "soonHint": "Viagens e Flocks — em breve",
+    "browseBoardBanner": "Novo: veja atividades publicadas perto de você — participe sem criar a sua.",
+    "browseBoardCta": "Ver"
   },
   "create": {
     "back": "Voltar",
@@ -100,5 +102,33 @@
     "invitedGenericNoCity": "Você foi convidado para o Flockie — encontre pessoas para viajar e fazer coisas!",
     "copied": "Copiado!",
     "defaultLabel": "Convide amigos para desbloquear"
+  },
+  "board": {
+    "backToFind": "Encontre um Buddy",
+    "heading": "Atividades perto de você",
+    "subtitle": "Participe de algo que alguém já publicou — sem precisar criar a sua.",
+    "subtitleCity": "Participe de algo que alguém já publicou em {city} — sem precisar criar a sua.",
+    "postYours": "Publique a sua",
+    "untitled": "Atividade",
+    "emptyTitle": "Ainda não há atividades abertas",
+    "emptyBody": "Ninguém publicou uma atividade perto de você ainda. Seja a primeira pessoa!",
+    "emptyBodyCity": "Ninguém publicou uma atividade em {city} ainda. Seja a primeira pessoa!",
+    "emptyCta": "Publique a primeira atividade",
+    "imIn": "Topo! ✋",
+    "requested": "Solicitado ✓",
+    "joinAria": "Participar de {title}",
+    "joinTitle": "Participe de “{title}”",
+    "joinSubtitle": "{name} vai receber a sua solicitação com um pouco de contexto.",
+    "levelLabel": "Seu nível (opcional)",
+    "notePlaceholder": "Adicione uma nota curta (opcional)",
+    "sendRequest": "Enviar solicitação",
+    "sending": "Enviando…",
+    "sentTitle": "Solicitação enviada para {name}!",
+    "sentBody": "{name} vai ver o seu nível, % de match e nota — quando aceitar, o chat abre com o plano definido.",
+    "done": "Pronto",
+    "cancel": "Cancelar",
+    "errBlocked": "Vocês têm preferências de match incompatíveis.",
+    "browseBoardBanner": "Novo: veja atividades publicadas perto de você — participe sem criar a sua.",
+    "browseBoardCta": "Ver"
   }
 }

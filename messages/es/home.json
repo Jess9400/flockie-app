@@ -88,5 +88,8 @@
     "manage": "Gestionar",
     "view": "Ver detalles",
     "dismiss": "Descartar"
+  },
+  "activityCard": {
+    "badge": "Actividad 1:1"
   }
 }

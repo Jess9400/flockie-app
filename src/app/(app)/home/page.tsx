@@ -4,8 +4,11 @@ import { getTranslations, getLocale } from "next-intl/server";
 import { ArrowRight, MapPin, MessageCircle, Plus, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
+import { format } from "date-fns";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
 import SayHiButton from "@/components/SayHiButton";
+import JoinActivityButton from "@/components/JoinActivityButton";
+import { dfLocale } from "@/lib/date-locale";
 import HomeHero from "@/components/HomeHero";
 import HomePlans from "@/components/HomePlans";
 import Squiggle from "@/components/Squiggle";
@@ -171,6 +174,7 @@ export default async function HomePage({
     { data: buddyPending },
     { data: myConfirmed },
     { data: myVibeReviews },
+    activityFeedRes,
   ] = await Promise.all([
     loadHostsAndCounts(supabase, vibeUnion),
     loadVibeMatch(supabase, unionIds),
@@ -185,7 +189,26 @@ export default async function HomePage({
     supabase.from("vibe_interests").select("vibe_id").eq("user_id", user!.id).eq("status", "confirmed"),
     // Vibe reviews I've already left, to exclude them.
     supabase.from("vibe_reviews").select("vibe_id").eq("reviewer_id", user!.id),
+    // 1:1 activities posted by others in the city — mixed into the near-you
+    // carousel. Migration-safe: errors (RPC not on prod yet) → empty.
+    supabase.rpc("activity_feed", { p_limit: 4 }),
   ]);
+  type ActivityFeedRow = {
+    activity_id: string;
+    title: string | null;
+    start_date: string | null;
+    end_date: string | null;
+    city: string | null;
+    creator_id: string;
+    display_name: string | null;
+    age: number | null;
+    photo: string | null;
+    one_liner: string | null;
+    score: number | null;
+  };
+  const nearActivities: ActivityFeedRow[] = activityFeedRes.error
+    ? []
+    : ((activityFeedRes.data ?? []) as ActivityFeedRow[]);
 
   const cardStatuses: Record<string, InterestStatus> = {};
   cardInterests?.forEach((r) => {
@@ -316,6 +339,75 @@ export default async function HomePage({
       </div>
     );
   };
+
+  // 1:1 activity cell — same footprint/tilt as the vibe cards, clearly badged
+  // so group Vibes and 1:1 activities read as different things in one rail.
+  const activityCell = (a: (typeof nearActivities)[number], i = 0) => (
+    <div
+      key={`act-${a.activity_id}`}
+      className={`w-72 shrink-0 snap-start transition-transform duration-200 hover:rotate-0 ${
+        i % 2 ? "-rotate-[1.2deg]" : "rotate-[1.2deg]"
+      }`}
+    >
+      <div className="flex h-full flex-col rounded-3xl border border-ink/12 bg-white p-4 text-ink shadow-[0_2px_12px_rgba(10,37,69,0.07)]">
+        <span className="self-start rounded-full bg-flockie-blue/10 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-flockie-blue">
+          🤝 {th("activityCard.badge")}
+        </span>
+        <p className="mt-2 text-base font-extrabold leading-snug">{a.title}</p>
+        <p className="mt-1 text-xs font-medium text-muted">
+          {[
+            a.start_date
+              ? format(new Date(a.start_date), "MMM d", { locale: dfLocale(locale) })
+              : null,
+            a.city,
+          ]
+            .filter(Boolean)
+            .join(" · ")}
+        </p>
+        <div className="mt-auto flex items-center gap-2 pt-3">
+          <Link href={`/people/${a.creator_id}`} className="flex min-w-0 flex-1 items-center gap-2">
+            {a.photo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={a.photo} alt="" className="h-6 w-6 shrink-0 rounded-full object-cover" />
+            ) : (
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-flockie-blue text-[10px] font-bold text-white">
+                {(a.display_name ?? "?")[0]?.toUpperCase()}
+              </span>
+            )}
+            <span className="truncate text-xs font-bold text-ink/70">{a.display_name}</span>
+            {a.score != null && (
+              <span className="shrink-0 rounded-full bg-flockie-blue/10 px-1.5 py-0.5 text-[9px] font-extrabold text-flockie-blue">
+                {Math.round(a.score)}%
+              </span>
+            )}
+          </Link>
+          <JoinActivityButton
+            activityId={a.activity_id}
+            title={a.title ?? ""}
+            creatorName={a.display_name ?? "?"}
+            compact
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  // Interleave: one 1:1 activity after every two Vibes, leftovers at the end.
+  const nearCells: React.ReactNode[] = [];
+  {
+    let ai = 0;
+    near.forEach((v, i) => {
+      nearCells.push(vibeCell(v, i));
+      if ((i + 1) % 2 === 0 && ai < nearActivities.length) {
+        nearCells.push(activityCell(nearActivities[ai], i + ai));
+        ai++;
+      }
+    });
+    while (ai < nearActivities.length) {
+      nearCells.push(activityCell(nearActivities[ai], ai));
+      ai++;
+    }
+  }
 
   return (
     <div className="home-stagger pb-24">
@@ -511,7 +603,7 @@ export default async function HomePage({
           </Link>
         </div>
 
-        {near.length === 0 ? (
+        {near.length === 0 && nearActivities.length === 0 ? (
           <div className="mt-3 flex flex-col items-center gap-2 rounded-2xl border-2 border-white/40 bg-white/10 p-4 text-center sm:flex-row sm:justify-between sm:text-left">
             <p className="text-sm font-bold">
               {th(`nearYou.empty.${timingKey}.${cityVariant}`, { city: homeCity ?? "" })}
@@ -525,7 +617,7 @@ export default async function HomePage({
           </div>
         ) : (
           <div className="carousel-fade mt-4 flex snap-x gap-4 overflow-x-auto pb-3 pt-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {near.map(vibeCell)}
+            {nearCells}
           </div>
         )}
       </section>

@@ -91,6 +91,17 @@ export default async function MatchPage({
         </span>
       </div>
       {subToggle}
+      {isActivity && (
+        <Link
+          href="/activities"
+          className="mt-4 flex items-center justify-between gap-3 rounded-2xl border-2 border-flockie-blue bg-flockie-blue/5 px-4 py-3 text-sm font-bold text-ink transition-transform hover:-translate-y-0.5"
+        >
+          <span>🔎 {t("browseBoardBanner")}</span>
+          <span className="shrink-0 rounded-full bg-flockie-blue px-3 py-1 text-xs font-bold text-white">
+            {t("browseBoardCta")}
+          </span>
+        </Link>
+      )}
     </>
   );
 
