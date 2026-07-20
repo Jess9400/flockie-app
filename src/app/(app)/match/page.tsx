@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import SwipeDeck from "@/components/SwipeDeck";
 import TripPicker from "@/components/TripPicker";
+import ActivityBoardList, { type ActivityFeedRow } from "@/components/ActivityBoardList";
 import InviteFriendsButton from "@/components/InviteFriendsButton";
 import { loadUserRatings } from "@/lib/vibe-stats";
 
@@ -13,7 +14,7 @@ const MIN_PROFILES = 10;
 export default async function MatchPage({
   searchParams,
 }: {
-  searchParams: { mode?: string; trip?: string };
+  searchParams: { mode?: string; trip?: string; view?: string };
 }) {
   const supabase = await createClient();
   const user = await getSessionUser();
@@ -23,6 +24,9 @@ export default async function MatchPage({
   // Trip buddy matching is parked "Soon" — default to Activity.
   const mode = searchParams.mode === "trip" ? "trip" : "activity";
   const isActivity = mode === "activity";
+  // Activity mode has two paths: BROWSE what others posted (default — no setup
+  // needed) or CREATE your own and swipe people to invite.
+  const view = isActivity && searchParams.view === "create" ? "create" : "browse";
 
   // Trip matching only needs the Trip vibe (trip_prefs); activity matching
   // needs the activity vibe check. Migration-safe: if the trip_prefs column
@@ -92,15 +96,32 @@ export default async function MatchPage({
       </div>
       {subToggle}
       {isActivity && (
-        <Link
-          href="/activities"
-          className="mt-4 flex items-center justify-between gap-3 rounded-2xl border-2 border-flockie-blue bg-flockie-blue/5 px-4 py-3 text-sm font-bold text-ink transition-transform hover:-translate-y-0.5"
-        >
-          <span>🔎 {t("browseBoardBanner")}</span>
-          <span className="shrink-0 rounded-full bg-flockie-blue px-3 py-1 text-xs font-bold text-white">
-            {t("browseBoardCta")}
-          </span>
-        </Link>
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          <Link
+            href="/match?mode=activity"
+            className={`rounded-2xl border-2 px-4 py-3 text-center transition-transform hover:-translate-y-0.5 ${
+              view === "browse"
+                ? "border-flockie-orange bg-flockie-orange/5"
+                : "border-ink/10 bg-white"
+            }`}
+          >
+            <span className="block text-lg">🔎</span>
+            <span className="block text-sm font-extrabold text-ink">{t("viewBrowse")}</span>
+            <span className="block text-[11px] font-medium text-muted">{t("viewBrowseSub")}</span>
+          </Link>
+          <Link
+            href="/match?mode=activity&view=create"
+            className={`rounded-2xl border-2 px-4 py-3 text-center transition-transform hover:-translate-y-0.5 ${
+              view === "create"
+                ? "border-flockie-orange bg-flockie-orange/5"
+                : "border-ink/10 bg-white"
+            }`}
+          >
+            <span className="block text-lg">➕</span>
+            <span className="block text-sm font-extrabold text-ink">{t("viewCreate")}</span>
+            <span className="block text-[11px] font-medium text-muted">{t("viewCreateSub")}</span>
+          </Link>
+        </div>
       )}
     </>
   );
@@ -114,6 +135,24 @@ export default async function MatchPage({
           cta={isActivity ? t("gateVibeCheckCta") : t("gateTravelPrefsCta")}
           href={`/match/trip?kind=${mode}`}
         />
+      </main>
+    );
+  }
+
+  // ── Browse view: activities other people posted in your city. No posting
+  // required — this is the default way in. Creating + the invite deck live
+  // under the "Create an activity" path.
+  if (isActivity && view === "browse") {
+    const [{ data: cityProf }, { data: feed, error: feedErr }] = await Promise.all([
+      supabase.from("profiles").select("home_city").eq("id", user!.id).maybeSingle(),
+      supabase.rpc("activity_feed", { p_limit: 30 }),
+    ]);
+    // Migration-safe: RPC missing on prod → empty state instead of a crash.
+    const rows: ActivityFeedRow[] = feedErr ? [] : ((feed ?? []) as ActivityFeedRow[]);
+    return (
+      <main className="px-5 pb-10 pt-6">
+        {header}
+        <ActivityBoardList rows={rows} city={cityProf?.home_city ?? ""} />
       </main>
     );
   }
@@ -236,7 +275,12 @@ export default async function MatchPage({
       <div className="mt-4 flex items-end gap-2">
         {selectedId && (
           <div className="flex-1">
-            <TripPicker options={pickerOptions} value={selectedId} mode={mode} />
+            <TripPicker
+              options={pickerOptions}
+              value={selectedId}
+              mode={mode}
+              view={isActivity ? "create" : undefined}
+            />
           </div>
         )}
         <Link

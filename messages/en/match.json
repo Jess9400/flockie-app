@@ -27,8 +27,10 @@
     "inviteFriend": "Invite a friend",
     "exploreVibes": "Explore Vibes",
     "soonHint": "Trips & Flocks — soon",
-    "browseBoardBanner": "New: browse activities people posted near you — join one without creating your own.",
-    "browseBoardCta": "Browse"
+    "viewBrowse": "Browse activities",
+    "viewBrowseSub": "Join something already posted in your city",
+    "viewCreate": "Create an activity",
+    "viewCreateSub": "Post yours & swipe people to invite"
   },
   "create": {
     "back": "Back",
@@ -113,7 +115,7 @@
     "emptyTitle": "No open activities yet",
     "emptyBody": "Nobody has posted an activity near you yet. Be the first!",
     "emptyBodyCity": "Nobody has posted an activity in {city} yet. Be the first!",
-    "emptyCta": "Post the first activity",
+    "emptyCta": "Create the first activity",
     "imIn": "I'm in ✋",
     "requested": "Requested ✓",
     "joinAria": "Join {title}",

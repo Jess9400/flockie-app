@@ -8,10 +8,12 @@ export default function TripPicker({
   options,
   value,
   mode,
+  view,
 }: {
   options: { id: string; label: string }[];
   value: string;
   mode: string;
+  view?: string;
 }) {
   const t = useTranslations("components");
   const router = useRouter();
@@ -24,7 +26,9 @@ export default function TripPicker({
       <div className="relative">
         <select
           value={value}
-          onChange={(e) => router.push(`/match?mode=${mode}&trip=${e.target.value}`)}
+          onChange={(e) =>
+            router.push(`/match?mode=${mode}${view ? `&view=${view}` : ""}&trip=${e.target.value}`)
+          }
           className="w-full appearance-none rounded-2xl border border-ink/25 bg-white px-4 py-2.5 pr-10 font-bold outline-none"
         >
           {options.map((o) => (

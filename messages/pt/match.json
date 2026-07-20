@@ -27,8 +27,10 @@
     "inviteFriend": "Convidar um amigo",
     "exploreVibes": "Explorar Vibes",
     "soonHint": "Viagens e Flocks — em breve",
-    "browseBoardBanner": "Novo: veja atividades publicadas perto de você — participe sem criar a sua.",
-    "browseBoardCta": "Ver"
+    "viewBrowse": "Ver atividades",
+    "viewBrowseSub": "Participe de algo já publicado na sua cidade",
+    "viewCreate": "Criar uma atividade",
+    "viewCreateSub": "Publique a sua e convide pessoas"
   },
   "create": {
     "back": "Voltar",
@@ -113,7 +115,7 @@
     "emptyTitle": "Ainda não há atividades abertas",
     "emptyBody": "Ninguém publicou uma atividade perto de você ainda. Seja a primeira pessoa!",
     "emptyBodyCity": "Ninguém publicou uma atividade em {city} ainda. Seja a primeira pessoa!",
-    "emptyCta": "Publique a primeira atividade",
+    "emptyCta": "Crie a primeira atividade",
     "imIn": "Topo! ✋",
     "requested": "Solicitado ✓",
     "joinAria": "Participar de {title}",
