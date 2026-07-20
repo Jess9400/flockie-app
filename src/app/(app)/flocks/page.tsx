@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import FlockRequestButton from "@/components/FlockRequestButton";
 import FilterSheet from "@/components/FilterSheet";
+import SearchBar from "@/components/SearchBar";
 import Pagination from "@/components/Pagination";
 import { loadFlockMatch } from "@/lib/vibe-stats";
 import { tripDays, GROUP_SIZE_BUCKETS, CONTINENTS, FLOCK_LANGUAGES, GROUP_GENDERS } from "@/lib/trips";
@@ -17,7 +18,7 @@ const toArray = (v?: string | string[]) => (Array.isArray(v) ? v : v ? [v] : [])
 export default async function FlocksPage({
   searchParams,
 }: {
-  searchParams: { page?: string; continent?: string | string[]; gender?: string; size?: string; language?: string | string[] };
+  searchParams: { page?: string; q?: string; continent?: string | string[]; gender?: string; size?: string; language?: string | string[] };
 }) {
   const supabase = await createClient();
   const user = await getSessionUser();
@@ -36,6 +37,7 @@ export default async function FlocksPage({
   const continents = toArray(searchParams.continent);
   const languages = toArray(searchParams.language);
   const gender = typeof searchParams.gender === "string" ? searchParams.gender : "";
+  const q = (searchParams.q ?? "").trim();
   const sizeBucket = GROUP_SIZE_BUCKETS.find((b) => b.value === searchParams.size);
 
   let query = supabase
@@ -50,6 +52,10 @@ export default async function FlocksPage({
     .neq("user_id", user!.id)
     .gte("end_date", new Date().toISOString().slice(0, 10));
 
+  if (q) {
+    const like = `%${q.replace(/[%_]/g, "")}%`;
+    query = query.or(`destination.ilike.${like},description.ilike.${like}`);
+  }
   if (continents.length) query = query.in("continent", continents);
   if (gender) query = query.eq("group_gender", gender);
   if (languages.length) query = query.in("language", languages);
@@ -69,6 +75,7 @@ export default async function FlocksPage({
   const totalPages = Math.max(1, Math.ceil((count ?? 0) / PAGE_SIZE));
   const hrefFor = (p: number) => {
     const sp = new URLSearchParams();
+    if (q) sp.set("q", q);
     continents.forEach((c) => sp.append("continent", c));
     if (gender) sp.set("gender", gender);
     if (searchParams.size) sp.set("size", searchParams.size);
@@ -134,12 +141,14 @@ export default async function FlocksPage({
       </p>
 
       <div className="mt-4">
-        <FilterSheet basePath="/flocks" sections={FLOCK_FILTER_SECTIONS} />
+        <SearchBar basePath="/flocks" q={q} placeholder={tr("browse.searchPlaceholder")}>
+          <FilterSheet basePath="/flocks" sections={FLOCK_FILTER_SECTIONS} preserveKeys={["q"]} />
+        </SearchBar>
       </div>
 
       {cards.length === 0 ? (
         <div className="mt-6 rounded-3xl border-2 border-dashed border-ink/30 py-16 text-center font-medium text-muted">
-          {continents.length || gender || languages.length || sizeBucket
+          {q || continents.length || gender || languages.length || sizeBucket
             ? tr("browse.emptyFiltered")
             : tr("browse.emptyNone")}
         </div>

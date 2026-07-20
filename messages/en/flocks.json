@@ -17,7 +17,8 @@
     "womenOnly": "Women only",
     "hostFallback": "Host",
     "daysShort": "{count}d",
-    "backToTrips": "Trips"
+    "backToTrips": "Trips",
+    "searchPlaceholder": "Search flocks by destination…"
   },
   "budget": {
     "friendly": "Budget-friendly",

@@ -35,7 +35,8 @@
     "tripHeading": "Find a Trip Buddy",
     "yourActivities": "Your activities",
     "backToTrips": "Trips",
-    "backToBuddy": "Buddy"
+    "backToBuddy": "Buddy",
+    "boardSearchPlaceholder": "Search activities…"
   },
   "create": {
     "back": "Back",

@@ -35,7 +35,8 @@
     "tripHeading": "Encontre um Trip Buddy",
     "yourActivities": "Suas atividades",
     "backToTrips": "Viagens",
-    "backToBuddy": "Buddy"
+    "backToBuddy": "Buddy",
+    "boardSearchPlaceholder": "Busque atividades…"
   },
   "create": {
     "back": "Voltar",

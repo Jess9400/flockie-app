@@ -6,6 +6,7 @@ import { getSessionUser } from "@/lib/supabase/user";
 import SwipeDeck from "@/components/SwipeDeck";
 import TripPicker from "@/components/TripPicker";
 import ActivityBoardList, { type ActivityFeedRow } from "@/components/ActivityBoardList";
+import SearchBar from "@/components/SearchBar";
 import InviteFriendsButton from "@/components/InviteFriendsButton";
 import { loadUserRatings } from "@/lib/vibe-stats";
 
@@ -14,7 +15,7 @@ const MIN_PROFILES = 10;
 export default async function MatchPage({
   searchParams,
 }: {
-  searchParams: { mode?: string; trip?: string; view?: string };
+  searchParams: { mode?: string; trip?: string; view?: string; q?: string };
 }) {
   const supabase = await createClient();
   const user = await getSessionUser();
@@ -172,10 +173,21 @@ export default async function MatchPage({
       supabase.rpc("activity_feed", { p_limit: 30 }),
     ]);
     // Migration-safe: RPC missing on prod → empty state instead of a crash.
-    const rows: ActivityFeedRow[] = feedErr ? [] : ((feed ?? []) as ActivityFeedRow[]);
+    let rows: ActivityFeedRow[] = feedErr ? [] : ((feed ?? []) as ActivityFeedRow[]);
+    const q = (searchParams.q ?? "").trim().toLowerCase();
+    if (q) {
+      rows = rows.filter((r) =>
+        [r.title, r.one_liner, r.display_name, r.city]
+          .filter(Boolean)
+          .some((v) => (v as string).toLowerCase().includes(q))
+      );
+    }
     return (
       <main className="px-5 pb-10 pt-6">
         {header}
+        <div className="mt-5">
+          <SearchBar basePath="/match" q={searchParams.q ?? ""} placeholder={t("boardSearchPlaceholder")} />
+        </div>
         <ActivityBoardList rows={rows} city={cityProf?.home_city ?? ""} />
         {yourActivitiesLink}
       </main>
