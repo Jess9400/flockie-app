@@ -175,6 +175,7 @@ export default async function HomePage({
     { data: myConfirmed },
     { data: myVibeReviews },
     activityFeedRes,
+    { data: actionNotifs },
   ] = await Promise.all([
     loadHostsAndCounts(supabase, vibeUnion),
     loadVibeMatch(supabase, unionIds),
@@ -192,6 +193,17 @@ export default async function HomePage({
     // 1:1 activities posted by others in the city — mixed into the near-you
     // carousel. Migration-safe: errors (RPC not on prod yet) → empty.
     supabase.rpc("activity_feed", { p_limit: 4 }),
+    // Actionable notifications (someone wants to join your activity / trip /
+    // flock) — surfaced on Home so requests aren't missed in the inbox.
+    supabase
+      .from("notifications")
+      .select("id, type, title, body, data")
+      .eq("user_id", user!.id)
+      .is("read_at", null)
+      .is("dismissed_at", null)
+      .in("type", ["activity_like", "trip_join_request"])
+      .order("created_at", { ascending: false })
+      .limit(4),
   ]);
   type ActivityFeedRow = {
     activity_id: string;
@@ -210,6 +222,21 @@ export default async function HomePage({
   const nearActivities: ActivityFeedRow[] = activityFeedRes.error
     ? []
     : ((activityFeedRes.data ?? []) as ActivityFeedRow[]);
+
+  // "Needs your action" cards: link each request to where it's handled.
+  type ActionNotif = { id: string; type: string; title: string; body: string | null; data: Record<string, string> | null };
+  const actionItems = ((actionNotifs ?? []) as ActionNotif[])
+    .map((n) => ({
+      id: n.id,
+      title: n.title,
+      body: n.body,
+      href:
+        n.type === "trip_join_request" && n.data?.trip_id
+          ? `/my-trips#trip-${n.data.trip_id}`
+          : n.data?.like_from
+            ? `/people/${n.data.like_from}`
+            : "/inbox",
+    }));
 
   const cardStatuses: Record<string, InterestStatus> = {};
   cardInterests?.forEach((r) => {
@@ -469,6 +496,32 @@ export default async function HomePage({
           dismiss: th("plans.dismiss"),
         }}
       />
+
+      {/* ── Needs your action: join requests on your activities/trips ────── */}
+      {actionItems.length > 0 && (
+        <section className="mx-4 mt-6 space-y-3">
+          <h2 className="px-1 text-[22px] font-extrabold sm:text-[28px]">{th("actions.heading")}</h2>
+          {actionItems.map((a) => (
+            <div key={a.id} className="relative rounded-2xl border-2 border-flockie-coral bg-white p-3">
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-flockie-coral/10 text-lg">
+                  🙋
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-extrabold">{a.title}</p>
+                  {a.body && <p className="truncate text-xs font-medium text-muted">{a.body}</p>}
+                </div>
+                <Link
+                  href={a.href}
+                  className="shrink-0 rounded-full border-2 border-ink bg-flockie-coral px-4 py-2 text-xs font-bold text-white shadow-[0_2px_0_0_#E0512C]"
+                >
+                  {th("actions.review")}
+                </Link>
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
 
       {/* ── Early-city state: lead here when the local pool is empty ─────── */}
       {localPoolEmpty && homeCity && (

@@ -91,5 +91,9 @@
   },
   "activityCard": {
     "badge": "Atividade 1:1"
+  },
+  "actions": {
+    "heading": "Precisa da sua ação",
+    "review": "Revisar"
   }
 }

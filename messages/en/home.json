@@ -91,5 +91,9 @@
   },
   "activityCard": {
     "badge": "1:1 Activity"
+  },
+  "actions": {
+    "heading": "Needs your action",
+    "review": "Review"
   }
 }
