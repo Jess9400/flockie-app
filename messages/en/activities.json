@@ -11,5 +11,13 @@
   "edit": "Edit",
   "deleteLabel": "this activity",
   "emptyActive": "No upcoming activities. Post one to find a buddy to do it with.",
-  "pastHeading": "Past activities"
+  "pastHeading": "Past activities",
+  "joined": {
+    "heading": "Activities you joined",
+    "fallbackTitle": "Activity",
+    "with": "You're on — with {name}",
+    "waiting": "Waiting for {name} to accept",
+    "openChat": "Open chat",
+    "pending": "Requested"
+  }
 }

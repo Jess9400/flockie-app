@@ -11,5 +11,13 @@
   "edit": "Editar",
   "deleteLabel": "esta actividad",
   "emptyActive": "No tienes actividades próximas. Publica una para encontrar un buddy con quien hacerla.",
-  "pastHeading": "Actividades pasadas"
+  "pastHeading": "Actividades pasadas",
+  "joined": {
+    "heading": "Actividades a las que te uniste",
+    "fallbackTitle": "Actividad",
+    "with": "Confirmado — con {name}",
+    "waiting": "Esperando que {name} acepte",
+    "openChat": "Abrir chat",
+    "pending": "Solicitado"
+  }
 }
