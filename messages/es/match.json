@@ -31,7 +31,9 @@
     "viewBrowseSub": "Únete a algo ya publicado en tu ciudad",
     "viewCreate": "Crear una actividad",
     "viewCreateSub": "Publica la tuya e invita gente",
-    "tabTrips": "Viajes"
+    "tabTrips": "Viajes",
+    "tripHeading": "Encuentra un Trip Buddy",
+    "yourActivities": "Tus actividades"
   },
   "create": {
     "back": "Atrás",

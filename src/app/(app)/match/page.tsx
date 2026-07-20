@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, ArrowRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
@@ -48,19 +48,31 @@ export default async function MatchPage({
     : tripPrefsDone;
 
   // Two clear paths, big and tappable: browse what's posted (default) or
-  // create yours + swipe people to invite. Trips live on their own tab now.
+  // create yours + swipe people to invite. Trips live on their own tab now,
+  // so trip mode (reached from the Trips hub) renders no toggle at all.
   const header = (
     <>
-      <h1 className="text-2xl font-black">{t("heading")}</h1>
+      <h1 className="text-2xl font-black">
+        {isActivity ? t("heading") : t("tripHeading")}
+      </h1>
       <p className="mt-1 text-sm font-medium text-muted">
-        {t.rich("introActivity", {
-          link: (chunks) => (
-            <Link href="/vibes/new" className="font-bold text-flockie-orange underline">
-              {chunks}
-            </Link>
-          ),
-        })}
+        {isActivity
+          ? t.rich("introActivity", {
+              link: (chunks) => (
+                <Link href="/vibes/new" className="font-bold text-flockie-orange underline">
+                  {chunks}
+                </Link>
+              ),
+            })
+          : t.rich("introTrip", {
+              link: (chunks) => (
+                <Link href="/match/trip?kind=flock" className="font-bold text-flockie-orange underline">
+                  {chunks}
+                </Link>
+              ),
+            })}
       </p>
+      {isActivity && (
       <div className="mt-4 grid grid-cols-2 gap-2">
         <Link
           href="/match"
@@ -87,6 +99,16 @@ export default async function MatchPage({
           <span className="block text-[11px] font-medium text-muted">{t("viewCreateSub")}</span>
         </Link>
       </div>
+      )}
+      {isActivity && (
+        <Link
+          href="/my-activities"
+          className="mt-2 flex items-center justify-between rounded-2xl border border-ink/15 bg-white px-4 py-3 text-sm font-bold text-ink shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5"
+        >
+          <span>🗂️ {t("yourActivities")}</span>
+          <ArrowRight size={16} className="text-ink/50" />
+        </Link>
+      )}
     </>
   );
 

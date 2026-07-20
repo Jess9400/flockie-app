@@ -127,11 +127,6 @@ export default async function FlocksPage({
         {tr.rich("browse.subtitle", { b: (chunks) => <span className="font-bold">{chunks}</span> })}
       </p>
 
-      <div className="mt-4 grid grid-cols-2 gap-2 rounded-full border border-ink/15 bg-white p-1 text-sm font-bold">
-        <Link href="/match" className="rounded-full py-2 text-center text-ink">{tr("browse.tabFindBuddy")}</Link>
-        <span className="rounded-full bg-flockie-blue py-2 text-center text-white">{tr("browse.tabFindFlock")}</span>
-      </div>
-
       <div className="mt-4">
         <FilterSheet basePath="/flocks" sections={FLOCK_FILTER_SECTIONS} />
       </div>

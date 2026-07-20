@@ -6,7 +6,6 @@ import { getTranslations } from "next-intl/server";
 // for a trip (parked "Soon"), find a Flock (group trips), and your own trips.
 export default async function TripsHubPage() {
   const tr = await getTranslations("trips");
-  const tc = await getTranslations("common");
 
   return (
     <main className="px-5 pb-10 pt-6">
@@ -14,19 +13,14 @@ export default async function TripsHubPage() {
       <p className="mt-1 text-sm font-medium text-muted">{tr("hub.subtitle")}</p>
 
       <div className="mt-5 grid grid-cols-2 gap-2">
-        <div
-          aria-disabled="true"
-          className="cursor-not-allowed rounded-2xl border-2 border-ink/10 bg-white px-4 py-5 text-center opacity-60"
+        <Link
+          href="/match?mode=trip"
+          className="rounded-2xl border-2 border-ink/10 bg-white px-4 py-5 text-center transition-transform hover:-translate-y-0.5"
         >
           <span className="block text-2xl">✈️</span>
-          <span className="mt-1 inline-flex items-center gap-1.5 text-sm font-extrabold text-ink">
-            {tr("hub.findTripBuddy")}
-            <span className="rounded-full bg-cream px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-ink/50">
-              {tc("soon")}
-            </span>
-          </span>
+          <span className="mt-1 block text-sm font-extrabold text-ink">{tr("hub.findTripBuddy")}</span>
           <span className="block text-[11px] font-medium text-muted">{tr("hub.findTripBuddySub")}</span>
-        </div>
+        </Link>
         <Link
           href="/flocks"
           className="rounded-2xl border-2 border-ink/10 bg-white px-4 py-5 text-center transition-transform hover:-translate-y-0.5"

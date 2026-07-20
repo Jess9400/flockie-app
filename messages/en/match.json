@@ -31,7 +31,9 @@
     "viewBrowseSub": "Join something already posted in your city",
     "viewCreate": "Create an activity",
     "viewCreateSub": "Post yours & swipe people to invite",
-    "tabTrips": "Trips"
+    "tabTrips": "Trips",
+    "tripHeading": "Find a Trip Buddy",
+    "yourActivities": "Your activities"
   },
   "create": {
     "back": "Back",
