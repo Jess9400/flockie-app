@@ -96,5 +96,15 @@
   "actions": {
     "heading": "Requiere tu acción",
     "review": "Revisar"
+  },
+  "seeAllNearYou": {
+    "button": "Ver todo",
+    "title": "¿Qué estás buscando?",
+    "subtitle": "Ambas cosas pasan en tu ciudad.",
+    "vibes": "Vibes",
+    "vibesSub": "Eventos en grupo con anfitrión",
+    "activities": "Actividades 1:1",
+    "activitiesSub": "Únete a una persona para algo",
+    "cancel": "Cancelar"
   }
 }

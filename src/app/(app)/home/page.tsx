@@ -7,6 +7,7 @@ import { getSessionUser } from "@/lib/supabase/user";
 import { format } from "date-fns";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
 import SayHiButton from "@/components/SayHiButton";
+import SeeAllNearYou from "@/components/SeeAllNearYou";
 import JoinActivityButton from "@/components/JoinActivityButton";
 import { dfLocale } from "@/lib/date-locale";
 import HomeHero from "@/components/HomeHero";
@@ -667,12 +668,7 @@ export default async function HomePage({
               {th(`nearYou.subtitle.${timingKey}.${cityVariant}`, { city: homeCity ?? "" })}
             </p>
           </div>
-          <Link
-            href="/vibes"
-            className="flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-white px-3 py-1.5 text-sm font-bold text-ink"
-          >
-            {th("seeAll")} <ArrowRight size={15} />
-          </Link>
+          <SeeAllNearYou />
         </div>
 
         {near.length === 0 && nearActivities.length === 0 ? (

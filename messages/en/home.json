@@ -96,5 +96,15 @@
   "actions": {
     "heading": "Needs your action",
     "review": "Review"
+  },
+  "seeAllNearYou": {
+    "button": "See all",
+    "title": "What are you looking for?",
+    "subtitle": "Both are happening in your city.",
+    "vibes": "Vibes",
+    "vibesSub": "Group events with a host",
+    "activities": "1:1 Activities",
+    "activitiesSub": "Join one person for something",
+    "cancel": "Cancel"
   }
 }
