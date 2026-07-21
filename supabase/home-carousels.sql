@@ -60,6 +60,7 @@ language sql security definer set search_path = public stable as $$
              + (hashtext(auth.uid()::text || b.id::text || to_char(now(), 'IYYY-IW')) % 250)::float8 / 100.0
            ) as rank_score
     from base b
+    where b.score >= 40
   ),
   fresh as (
     select p.* from pool p
