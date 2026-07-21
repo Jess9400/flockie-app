@@ -26,6 +26,7 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | `autofill_open_vibes`, `auto_rank_due_vibes` + crons | `vibe-auto-matching.sql` |
 | `vibe_match` (regex-guarded `::int` cast, #98) | `recommended-vibes.sql` |
 | `recommended_vibes` | `recommended-vibes.sql` |
+| `vibe_display_match`, `vibe_display_match_scores` (card-only calibrated display score) | `vibe-display-match.sql` |
 | `vibe_review_fit` | `vibe-review-preferences.sql` |
 | `vibe_negative_fit`, `mark_/undo_vibe_not_for_me` | `vibe-not-for-me.sql` |
 | `confirm_vibe` | `ranking.sql` |

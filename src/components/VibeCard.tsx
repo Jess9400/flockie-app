@@ -8,6 +8,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { formatVibeWhen, type InterestStatus } from "@/lib/vibes";
 import { formatApproximateVibeLocation } from "@/lib/vibe-location";
+import type { VibeDisplayMatch } from "@/lib/vibe-stats";
 
 export type VibeCardData = {
   id: string;
@@ -33,7 +34,7 @@ export default function VibeCard({
   vibe,
   confirmedCount,
   myStatus,
-  matchPct,
+  match,
   faded,
   rating,
   canDismiss,
@@ -43,7 +44,7 @@ export default function VibeCard({
   vibe: VibeCardData;
   confirmedCount: number;
   myStatus?: InterestStatus | null;
-  matchPct?: number;
+  match?: VibeDisplayMatch;
   faded?: boolean;
   rating?: number | null;
   canDismiss?: boolean;
@@ -212,9 +213,14 @@ export default function VibeCard({
 
           {isBrowse && (
             <div className="mt-2 flex items-center gap-2.5">
-              {!faded && typeof matchPct === "number" && (
+              {!faded && match?.state === "scored" && typeof match.score === "number" && (
                 <span className="shrink-0 rounded-full bg-flockie-blue/15 px-2.5 py-1 text-[11px] font-extrabold leading-none text-flockie-blue">
-                  {t("card.match", { pct: matchPct })}
+                  {t("card.match", { pct: match.score })}
+                </span>
+              )}
+              {!faded && match?.state === "new_pick" && (
+                <span className="shrink-0 rounded-full bg-cream px-2.5 py-1 text-[11px] font-extrabold leading-none text-muted">
+                  {t("card.newPick")}
                 </span>
               )}
               {faded && typeof rating === "number" && rating > 0 && (
@@ -227,9 +233,14 @@ export default function VibeCard({
 
           {!isBrowse && (
             <div className="mt-2 flex items-center gap-2.5">
-              {!faded && typeof matchPct === "number" && (
+              {!faded && match?.state === "scored" && typeof match.score === "number" && (
                 <span className="shrink-0 rounded-full bg-flockie-blue/15 px-2.5 py-1 text-[11px] font-extrabold leading-none text-flockie-blue">
-                  {t("card.match", { pct: matchPct })}
+                  {t("card.match", { pct: match.score })}
+                </span>
+              )}
+              {!faded && match?.state === "new_pick" && (
+                <span className="shrink-0 rounded-full bg-cream px-2.5 py-1 text-[11px] font-extrabold leading-none text-muted">
+                  {t("card.newPick")}
                 </span>
               )}
               {faded && typeof rating === "number" && rating > 0 && (
