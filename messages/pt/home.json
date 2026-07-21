@@ -5,10 +5,9 @@
     "yourArea": "sua região"
   },
   "buddies": {
-    "topPicks": "Destaques",
     "subtitle": "Pessoas em {city} a fim de fazer algo — mande um oi.",
     "yourCity": "sua cidade",
-    "swipeMore": "Swipe",
+    "seeMore": "Ver mais",
     "emptyTitle": "Nenhum buddy novo para atividades em {city} agora.",
     "emptyBody": "Criar uma atividade não vai gerar um match até que alguém compatível esteja disponível. Convide um amigo ou explore Vibes enquanto o grupo local cresce.",
     "inviteFriend": "Convidar um amigo",

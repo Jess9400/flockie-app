@@ -545,17 +545,9 @@ export default async function HomePage({
       <section className="mx-4 mt-6">
         <div className="flex items-end justify-between gap-3 px-1">
           <div>
-            {/* One line everywhere: title + Top picks tag beside "activity".
-                Sizes tuned so both fit a phone's width. */}
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <h2 className="whitespace-nowrap text-[18px] font-extrabold tracking-tight sm:text-[28px] sm:tracking-normal">
-                {t("findBuddyHeading")}
-              </h2>
-              <span className="shrink-0 -rotate-2 whitespace-nowrap rounded-full bg-flockie-coral px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wide text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:px-2.5 sm:text-[10px]">
-                <span className="hidden sm:inline">✨ </span>
-                {th("buddies.topPicks")}
-              </span>
-            </div>
+            <h2 className="whitespace-nowrap text-[18px] font-extrabold tracking-tight sm:text-[28px] sm:tracking-normal">
+              {t("findBuddyHeading")}
+            </h2>
             <Squiggle />
             <p className="mt-0.5 font-bold text-navy/60">
               {th("buddies.subtitle", { city: homeCity ?? th("buddies.yourCity") })}
@@ -566,7 +558,7 @@ export default async function HomePage({
               href="/match?view=create"
               className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
             >
-              {th("buddies.swipeMore")} <ArrowRight size={15} />
+              {th("buddies.seeMore")} <ArrowRight size={15} />
             </Link>
           )}
         </div>
