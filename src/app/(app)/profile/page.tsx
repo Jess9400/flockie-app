@@ -39,7 +39,10 @@ export default async function ProfilePage({
     .maybeSingle();
 
   // The story uses completed Vibes only. The RPC keeps future plans private.
-  const { data: eventsData } = await supabase.rpc("public_profile_events", { p_user: user!.id });
+  const [{ data: eventsData }, { data: takesData }] = await Promise.all([
+    supabase.rpc("public_profile_events", { p_user: user!.id }),
+    supabase.from("vibe_takes").select("vibe_id, body, updated_at").eq("user_id", user!.id),
+  ]);
 
   return (
     <main className="mx-auto w-full max-w-[1180px] px-4 pb-28 pt-6 font-nunito sm:px-6 sm:pb-12">
@@ -55,6 +58,7 @@ export default async function ProfilePage({
         complete={complete}
         redirectAfter={returnTo}
         events={(eventsData ?? {}) as EventsData}
+        takes={takesData ?? []}
       />
     </main>
   );

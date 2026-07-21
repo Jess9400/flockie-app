@@ -10,6 +10,7 @@ import { isVibePersona, type VibePersona } from "@/lib/onboarding/vibe-onboardin
 import type { EventsData } from "@/components/ProfileEvents";
 import type { Profile } from "@/lib/vibe-check";
 import ProfileIdentityEditor from "@/components/ProfileIdentityEditor";
+import VibeTakeEditor from "@/components/VibeTakeEditor";
 
 type StoryProfile = Partial<Profile> & {
   vibe_goal?: string | null;
@@ -34,10 +35,12 @@ export default function ProfileStory({
   userId,
   profile,
   events,
+  takes = [],
 }: {
   userId: string;
   profile: StoryProfile;
   events?: EventsData;
+  takes?: { vibe_id: string; body: string; updated_at: string }[];
 }) {
   const t = useTranslations("profile.story");
   const locale = useLocale();
@@ -49,6 +52,7 @@ export default function ProfileStory({
   const completedVibes = (events?.vibes ?? []).filter((vibe) => vibe.past).slice(0, 6);
   const upcomingVibe = (events?.vibes ?? []).find((vibe) => !vibe.past);
   const goal = profile.vibe_goal && GOALS[profile.vibe_goal] ? t(`goals.${GOALS[profile.vibe_goal]}`) : null;
+  const takesByVibeId = new Map(takes.map((take) => [take.vibe_id, take]));
 
   return (
     <div className="mx-auto max-w-5xl pb-8">
@@ -155,28 +159,38 @@ export default function ProfileStory({
 
         {completedVibes.length ? (
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {completedVibes.map((vibe, index) => (
-              <Link
-                key={`${vibe.id}-${vibe.role}-${index}`}
-                href={`/vibes/${vibe.id}`}
-                className="group overflow-hidden rounded-3xl border-2 border-ink/10 bg-white shadow-[0_2px_10px_rgba(10,37,69,0.06)]"
-              >
-                <div className="relative aspect-[16/9] overflow-hidden bg-cream">
-                  {vibe.photo ? (
-                    <Image src={vibe.photo} alt="" fill sizes="(max-width: 640px) 100vw, 360px" className="object-cover transition duration-300 group-hover:scale-105" />
-                  ) : (
-                    <span className="flex h-full items-center justify-center text-4xl">✨</span>
-                  )}
+            {completedVibes.map((vibe, index) => {
+              const take = takesByVibeId.get(vibe.id);
+              return (
+                <div key={`${vibe.id}-${vibe.role}-${index}`} className="overflow-hidden rounded-3xl border-2 border-ink/10 bg-white shadow-[0_2px_10px_rgba(10,37,69,0.06)]">
+                  <Link href={`/vibes/${vibe.id}`} className="group block">
+                    <div className="relative aspect-[16/9] overflow-hidden bg-cream">
+                      {vibe.photo ? (
+                        <Image src={vibe.photo} alt="" fill sizes="(max-width: 640px) 100vw, 360px" className="object-cover transition duration-300 group-hover:scale-105" />
+                      ) : (
+                        <span className="flex h-full items-center justify-center text-4xl">✨</span>
+                      )}
+                    </div>
+                    <div className="p-4 pb-0">
+                      <p className="truncate text-base font-extrabold text-navy">{vibe.title}</p>
+                      <p className="mt-1 text-sm font-semibold text-muted">{formatVibeWhen(vibe.starts_at, locale)}</p>
+                      <p className="mt-2 text-xs font-extrabold text-flockie-coral">
+                        {vibe.role === "host" ? t("hosted") : t("joined")}
+                      </p>
+                    </div>
+                  </Link>
+                  <div className="p-4 pt-3">
+                    {take && (
+                      <div className="rounded-2xl bg-cream px-3 py-2.5">
+                        <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-muted">{t("takes.label")}</p>
+                        <p className="mt-1 text-sm font-semibold leading-relaxed text-navy">{take.body}</p>
+                      </div>
+                    )}
+                    <VibeTakeEditor vibeId={vibe.id} vibeTitle={vibe.title} initialBody={take?.body} />
+                  </div>
                 </div>
-                <div className="p-4">
-                  <p className="truncate text-base font-extrabold text-navy">{vibe.title}</p>
-                  <p className="mt-1 text-sm font-semibold text-muted">{formatVibeWhen(vibe.starts_at, locale)}</p>
-                  <p className="mt-2 text-xs font-extrabold text-flockie-coral">
-                    {vibe.role === "host" ? t("hosted") : t("joined")}
-                  </p>
-                </div>
-              </Link>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="mt-4 rounded-3xl border-2 border-dashed border-ink/15 bg-white px-6 py-10 text-center">

@@ -56,6 +56,20 @@
     "photoError": "Couldn’t upload that photo. Try again.",
     "saveError": "Couldn’t save your profile. Try again."
   },
+  "takes": {
+    "label": "My take",
+    "add": "Add a private take",
+    "edit": "Edit my private take",
+    "dialogTitle": "Your take",
+    "privateNote": "This is just for you. It stays on your own profile and is never used as a public rating.",
+    "placeholder": "What do you want to remember about this one?",
+    "characters": "{count}/280",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save take",
+    "saving": "Saving…",
+    "delete": "Delete take"
+  },
   "reviewerFallback": "A flockie",
   "form": {
     "photosTitle": "Photos & video",
