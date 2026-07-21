@@ -1,24 +1,29 @@
 import { createClient } from "@/lib/supabase/server";
 
-// Match % between the current user's profile and each given Vibe, keyed by vibe
-// id (same formula as recommended_vibes). Returns {} gracefully pre-migration.
+export type VibeDisplayMatch = {
+  score: number | null;
+  state: "scored" | "new_pick";
+};
+
+// Card-only match display for the current user, keyed by Vibe id. Unlike the
+// conservative ranking score, this normalizes only across signals that are
+// known for both the user and the Vibe. Returns {} gracefully pre-migration.
 export async function loadVibeMatch(
   supabase: Awaited<ReturnType<typeof createClient>>,
   vibeIds: string[]
-): Promise<Record<string, number>> {
-  const out: Record<string, number> = {};
+): Promise<Record<string, VibeDisplayMatch>> {
+  const out: Record<string, VibeDisplayMatch> = {};
   const ids = Array.from(new Set(vibeIds)).filter(Boolean);
   if (ids.length === 0) return out;
-  const { data, error } = await supabase.rpc("vibe_match_scores", { p_ids: ids });
-  // The match % silently disappears from every card when this RPC isn't on the
-  // database (it's migration-gated). Log it so a prod/SQL drift is visible
-  // instead of just showing blank cards.
+  const { data, error } = await supabase.rpc("vibe_display_match_scores", { p_ids: ids });
   if (error) {
-    console.error("[loadVibeMatch] vibe_match_scores RPC failed:", error.message);
+    console.error("[loadVibeMatch] vibe_display_match_scores RPC failed:", error.message);
     return out;
   }
-  (data ?? []).forEach((r: { vibe_id: string; score: number }) => {
-    if (typeof r.score === "number") out[r.vibe_id] = r.score;
+  (data ?? []).forEach((r: { vibe_id: string; score: number | null; state: string }) => {
+    if (r.state === "scored" || r.state === "new_pick") {
+      out[r.vibe_id] = { score: r.score, state: r.state };
+    }
   });
   return out;
 }

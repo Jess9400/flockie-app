@@ -27,6 +27,7 @@
     "notForMe": "Not for me",
     "went": "{count} went",
     "match": "{pct}% match",
+    "newPick": "New pick",
     "going": "{count} of {capacity} going"
   },
   "status": {

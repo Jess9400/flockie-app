@@ -1,7 +1,8 @@
 -- Profile privacy preparation (phase 1 of 2).
 -- Run in the Supabase SQL editor. Safe to re-run.
 --
--- Run this BEFORE merging/deploying the profile privacy PR. It is additive:
+-- Run this after onboarding-v3-vibes-only.sql and BEFORE merging/deploying the
+-- profile privacy PR. It is additive:
 -- it creates the safe public_profiles view and privacy-aware RPCs without
 -- changing the existing profiles SELECT policy.
 
@@ -111,6 +112,7 @@ select
   p.video_url,
   p.bio,
   p.one_liner,
+  p.vibe_persona,
   p.archetype,
   p.trip_vibe,
   p.activities,

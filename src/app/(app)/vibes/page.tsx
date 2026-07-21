@@ -9,7 +9,7 @@ import LocationPrompt from "@/components/LocationPrompt";
 import PageTabs from "@/components/PageTabs";
 import Pagination from "@/components/Pagination";
 import VibeInlineFilters from "@/components/VibeInlineFilters";
-import { loadVibeMatch } from "@/lib/vibe-stats";
+import { loadVibeMatch, type VibeDisplayMatch } from "@/lib/vibe-stats";
 import { VIBE_CATEGORIES, type InterestStatus } from "@/lib/vibes";
 
 const PAGE_SIZE = 6;
@@ -141,7 +141,7 @@ export default async function VibesPage({
     hostIds.length
       ? supabase.from("public_profiles").select("id, display_name, photos").in("id", hostIds)
       : Promise.resolve({ data: [] }),
-    isPast ? Promise.resolve({} as Record<string, number>) : loadVibeMatch(supabase, ids),
+    isPast ? Promise.resolve({} as Record<string, VibeDisplayMatch>) : loadVibeMatch(supabase, ids),
     isPast && ids.length
       ? supabase.from("vibe_reviews").select("vibe_id, rating").in("vibe_id", ids)
       : Promise.resolve({ data: [] }),
@@ -254,7 +254,7 @@ export default async function VibesPage({
                 vibe={{ ...v, host: hosts[v.host_id] ?? null } as VibeCardData}
                 confirmedCount={counts[v.id] ?? 0}
                 myStatus={isPast ? null : mine[v.id] ?? null}
-                matchPct={isPast || v.host_id === user!.id ? undefined : vibeMatch[v.id]}
+                match={isPast || v.host_id === user!.id ? undefined : vibeMatch[v.id]}
                 faded={isPast}
                 rating={isPast ? ratings[v.id] ?? null : undefined}
                 canDismiss={!isPast && v.host_id !== user!.id && !mine[v.id]}
