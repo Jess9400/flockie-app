@@ -22,7 +22,7 @@ import {
   type InterestStatus,
 } from "@/lib/vibes";
 import { formatApproximateVibeLocation } from "@/lib/vibe-location";
-import { loadVibeMatch } from "@/lib/vibe-stats";
+import { loadVibeMatch, type VibeDisplayMatch } from "@/lib/vibe-stats";
 
 export default async function VibeDetailPage({
   params,
@@ -105,7 +105,7 @@ export default async function VibeDetailPage({
           .maybeSingle()
       : Promise.resolve({ data: null }),
     isHost
-      ? Promise.resolve({} as Record<string, number>)
+      ? Promise.resolve({} as Record<string, VibeDisplayMatch>)
       : loadVibeMatch(supabase, [params.id]),
   ]);
 
@@ -138,7 +138,7 @@ export default async function VibeDetailPage({
   }[];
   const confirmedCount = allAttendees.length;
   const attendees = allAttendees.slice(0, 8);
-  const matchPercent = vibeMatches[vibe.id];
+  const displayMatch = vibeMatches[vibe.id];
 
   const eventStarted = new Date(vibe.starts_at) <= new Date();
   const approximateLocation =
@@ -298,11 +298,13 @@ export default async function VibeDetailPage({
 
   // If the viewer didn't get in, suggest better-matched Vibes.
   let suggestions: { id: string; title: string; photos: string[] | null; match_score: number | null }[] = [];
+  let suggestionMatches: Record<string, VibeDisplayMatch> = {};
   if (!isHost && myInterest && ["standby", "declined", "ghosted"].includes(myInterest.status)) {
     const { data: rec } = await supabase.rpc("recommended_vibes", { p_limit: 4 });
     suggestions = ((rec ?? []) as { id: string; title: string; photos: string[] | null; match_score: number | null }[])
       .filter((r) => r.id !== params.id)
       .slice(0, 3);
+    suggestionMatches = await loadVibeMatch(supabase, suggestions.map((suggestion) => suggestion.id));
   }
 
   return (
@@ -414,9 +416,14 @@ export default async function VibeDetailPage({
                 {t.has(`eventTags.${primaryTag}`) ? t(`eventTags.${primaryTag}`) : primaryTag}
               </span>
             )}
-            {typeof matchPercent === "number" && (
+            {displayMatch?.state === "scored" && typeof displayMatch.score === "number" && (
               <span className="rounded-full bg-[#DDF2FF] px-3 py-1 text-xs font-extrabold text-flockie-blue">
-                {t("card.match", { pct: matchPercent })}
+                {t("card.match", { pct: displayMatch.score })}
+              </span>
+            )}
+            {displayMatch?.state === "new_pick" && (
+              <span className="rounded-full bg-cream px-3 py-1 text-xs font-extrabold text-muted">
+                {t("card.newPick")}
               </span>
             )}
           </div>
@@ -690,9 +697,14 @@ export default async function VibeDetailPage({
                   ) : (
                     <div className="flex h-full items-center justify-center text-2xl">🎟️</div>
                   )}
-                  {typeof s.match_score === "number" && (
+                  {suggestionMatches[s.id]?.state === "scored" && typeof suggestionMatches[s.id]?.score === "number" && (
                     <span className="absolute right-1.5 top-1.5 rounded-full border border-ink/15 bg-flockie-coral px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-white">
-                      {s.match_score}%
+                      {suggestionMatches[s.id].score}%
+                    </span>
+                  )}
+                  {suggestionMatches[s.id]?.state === "new_pick" && (
+                    <span className="absolute right-1.5 top-1.5 rounded-full border border-ink/15 bg-cream px-1.5 py-0.5 text-[9px] font-extrabold leading-none text-muted">
+                      {t("card.newPick")}
                     </span>
                   )}
                 </div>

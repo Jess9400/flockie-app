@@ -2,15 +2,17 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { updateVibeTraits } from "@/lib/onboarding/vibe-onboarding-actions";
 import { personaFromVibeTraits, type VibePersona, type VibeTraits } from "@/lib/onboarding/vibe-onboarding";
+import type { VibeDisplayMatch } from "@/lib/vibe-stats";
 
 type NearbyVibe = {
   id: string;
   title: string;
   startsAt: string;
   city: string;
-  match: number | null;
+  match?: VibeDisplayMatch;
 };
 
 const PERSONAS: Record<VibePersona, { emoji: string; name: string; description: string }> = {
@@ -39,6 +41,7 @@ export function VibeReveal({
   destination: string;
 }) {
   const router = useRouter();
+  const t = useTranslations("vibes");
   const traitsRef = useRef(initialTraits);
   const [traits, setTraits] = useState(initialTraits);
   const [saving, setSaving] = useState(false);
@@ -97,12 +100,13 @@ export function VibeReveal({
                 <button key={vibe.id} type="button" onClick={() => router.push(`/vibes/${vibe.id}`)} className="flex w-full items-center gap-3 rounded-2xl border-2 border-ink/10 bg-white p-3 text-left">
                   <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-flockie-coral/15 text-[23px]">✨</span>
                   <span className="min-w-0 flex-1"><span className="block truncate text-[13.5px] font-extrabold text-navy">{vibe.title}</span><span className="mt-0.5 block text-[11.5px] font-semibold text-muted">{vibe.startsAt} · {vibe.city}</span></span>
-                  {vibe.match != null && <span className="rounded-full bg-flockie-blue/10 px-2 py-1 text-[10px] font-extrabold text-flockie-blue">{vibe.match}% match</span>}
+                  {vibe.match?.state === "scored" && typeof vibe.match.score === "number" && <span className="rounded-full bg-flockie-blue/10 px-2 py-1 text-[10px] font-extrabold text-flockie-blue">{t("card.match", { pct: vibe.match.score })}</span>}
+                  {vibe.match?.state === "new_pick" && <span className="rounded-full bg-cream px-2 py-1 text-[10px] font-extrabold text-muted">{t("card.newPick")}</span>}
                 </button>
               ))}
             </div>
           ) : (
-            <div className="rounded-3xl border-2 border-dashed border-ink/15 bg-white p-5 text-center"><div className="text-3xl">🌱</div><h3 className="mt-2 text-[15px] font-extrabold text-navy">Nothing in your city yet</h3><p className="mt-1 text-[12px] font-semibold leading-relaxed text-muted">Be first to create a Vibe, or browse what’s happening in other locations.</p><div className="mt-4 flex gap-2"><button type="button" onClick={() => router.push("/create-vibe")} className="flex-1 rounded-xl bg-flockie-coral px-3 py-2 text-[12px] font-extrabold text-white">Create a Vibe</button><button type="button" onClick={() => router.push("/vibes")} className="flex-1 rounded-xl border border-ink/20 px-3 py-2 text-[12px] font-extrabold text-navy">Browse all</button></div></div>
+            <div className="rounded-3xl border-2 border-dashed border-ink/15 bg-white p-5 text-center"><div className="text-3xl">🌱</div><h3 className="mt-2 text-[15px] font-extrabold text-navy">Nothing in your city yet</h3><p className="mt-1 text-[12px] font-semibold leading-relaxed text-muted">Be first to create a Vibe, or browse what’s happening in other locations.</p><div className="mt-4 flex gap-2"><button type="button" onClick={() => router.push("/vibes/new")} className="flex-1 rounded-xl bg-flockie-coral px-3 py-2 text-[12px] font-extrabold text-white">Create a Vibe</button><button type="button" onClick={() => router.push("/vibes")} className="flex-1 rounded-xl border border-ink/20 px-3 py-2 text-[12px] font-extrabold text-navy">Browse all</button></div></div>
           )}
         </section>
       </div>

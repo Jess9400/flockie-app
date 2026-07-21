@@ -27,6 +27,7 @@
     "notForMe": "No es para mí",
     "went": "{count} asistieron",
     "match": "{pct}% de match",
+    "newPick": "Nueva opción",
     "going": "{count} de {capacity} van"
   },
   "status": {

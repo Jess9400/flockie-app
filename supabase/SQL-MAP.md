@@ -12,13 +12,14 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 
 | Function / object | Canonical file |
 |---|---|
-| `buddy_pair_score` | `vibe-traits.sql` |
+| `buddy_pair_score` (Vibes-only 1:1 inputs; no legacy quiz/trip fields) | `vibe-traits.sql` |
 | `buddy_hard_block` | `match-priorities.sql` |
 | `buddy_candidates_trip` (priority-weighted + hard block) | `match-priorities.sql` |
 | `buddy_dest_count` | `buddy-candidates-v2.sql` |
 | `buddy_swipe` (3-arg, notify-once) | `buddy-swipe-notify-once.sql` |
 | `activity_candidates` (with hard block + decisions) | `activity-candidate-decisions.sql` |
 | `activity_candidate_decide` | `activity-candidate-decisions.sql` |
+| `activity_feed`, activity join-request RPCs | `activity-join-requests.sql` |
 | `city_people`, `home_flocks` | `home-carousels.sql` |
 | `_rank_vibe_core`, `backfill_vibe` | `vibe-v2-private-link.sql` |
 | `rank_vibe` (thin auth wrapper) | `vibe-auto-matching.sql` |
@@ -26,12 +27,13 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | `autofill_open_vibes`, `auto_rank_due_vibes` + crons | `vibe-auto-matching.sql` |
 | `vibe_match` (regex-guarded `::int` cast, #98) | `recommended-vibes.sql` |
 | `recommended_vibes` | `recommended-vibes.sql` |
+| `vibe_display_match`, `vibe_display_match_scores` (card-only calibrated display score) | `vibe-display-match.sql` |
 | `vibe_review_fit` | `vibe-review-preferences.sql` |
 | `vibe_negative_fit`, `mark_/undo_vibe_not_for_me` | `vibe-not-for-me.sql` |
 | `confirm_vibe` | `ranking.sql` |
 | `expire_invitations`, `decline_vibe` | `expiry.sql` |
 | `vibe_directory`, `vibe_private_logistics`, `public_vibe` | `vibe-location-privacy-prepare.sql` |
-| `public_profiles`, `public_profile_events/stats` | `profile-privacy-prepare.sql` |
+| `public_profiles` (including public Vibe persona), `public_profile_events/stats` | `profile-privacy-prepare.sql` |
 | `trip_join_requests` SELECT policy (`can_see_trip_requests`) | `trip-requests-rls-enforce.sql` |
 | host RPCs (`notify`, `cancel_vibe`, `update_vibe_when`, commit/remove/appeal) | `host-controls.sql` |
 | Vibes-only onboarding profile fields | `onboarding-v3-vibes-only.sql` |

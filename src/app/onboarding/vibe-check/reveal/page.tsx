@@ -3,6 +3,7 @@ import { VibeReveal } from "@/components/onboarding/VibeReveal";
 import { safeRedirectPath } from "@/lib/redirects";
 import { createClient } from "@/lib/supabase/server";
 import { formatVibeWhen } from "@/lib/vibes";
+import { loadVibeMatch } from "@/lib/vibe-stats";
 import type { VibeTraits } from "@/lib/onboarding/vibe-onboarding";
 
 type RecommendedVibe = {
@@ -46,12 +47,17 @@ export default async function VibeRevealPage({
   const { data: recommendations } = profile.home_city
     ? await supabase.rpc("recommended_vibes", { p_limit: 3 })
     : { data: [] as RecommendedVibe[] };
-  const nearby = ((recommendations ?? []) as RecommendedVibe[]).map((vibe) => ({
+  const recommendedVibes = (recommendations ?? []) as RecommendedVibe[];
+  const displayMatches = await loadVibeMatch(
+    supabase,
+    recommendedVibes.map((vibe) => vibe.id)
+  );
+  const nearby = recommendedVibes.map((vibe) => ({
     id: vibe.id,
     title: vibe.title,
     startsAt: formatVibeWhen(vibe.starts_at),
     city: vibe.city,
-    match: vibe.match_score,
+    match: displayMatches[vibe.id],
   }));
 
   return (
