@@ -2,6 +2,46 @@
   "editor": {
     "cancel": "Cancel"
   },
+  "story": {
+    "nameFallback": "Your profile",
+    "publicView": "Public view",
+    "settings": "Settings",
+    "myVibe": "My Vibe",
+    "personas": {
+      "connector": "The Connector",
+      "easygoer": "The Easygoer",
+      "liveWire": "The Live Wire",
+      "deepDiver": "The Deep Diver"
+    },
+    "goals": {
+      "crew": "a regular crew",
+      "friends": "a couple of real friends",
+      "doers": "people to do things with",
+      "out": "a reason to get out more"
+    },
+    "nextUp": "Next up: {title}",
+    "hereFor": "Here for {goal}",
+    "lineLabel": "will show up for →",
+    "lineEmpty": "Add one short line that sounds like you.",
+    "linePlaceholder": "A short line that sounds like you",
+    "addLine": "Add a line",
+    "editLine": "Edit line",
+    "saveLine": "Save line",
+    "savingLine": "Saving…",
+    "lineSaveError": "Couldn’t save that line. Try again.",
+    "cancel": "Cancel",
+    "historyTitle": "Where I’ve been",
+    "historySubtitle": "Real plans, no bio required.",
+    "seeAll": "See all",
+    "hosted": "Hosted",
+    "joined": "Joined",
+    "emptyTitle": "Your first plan starts your story",
+    "emptyBody": "This page fills itself with the things you actually do. Start with one Vibe.",
+    "browseVibes": "Browse Vibes",
+    "vibeTitle": "Your Vibe",
+    "vibeBody": "Your interests and sliders help Flockie find plans that feel right for you.",
+    "adjustVibe": "Adjust my Vibe"
+  },
   "reviewerFallback": "A flockie",
   "form": {
     "photosTitle": "Photos & video",
