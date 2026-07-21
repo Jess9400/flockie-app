@@ -35,10 +35,12 @@ export default function ProfileStory({
   userId,
   profile,
   events,
+  mode = "owner",
 }: {
   userId: string;
   profile: StoryProfile;
   events?: EventsData;
+  mode?: "owner" | "public";
 }) {
   const t = useTranslations("profile.story");
   const locale = useLocale();
@@ -48,6 +50,7 @@ export default function ProfileStory({
   const [line, setLine] = useState(profile.bio ?? "");
   const [savingLine, setSavingLine] = useState(false);
   const [lineError, setLineError] = useState(false);
+  const isOwner = mode === "owner";
   const name = profile.display_name?.trim() || t("nameFallback");
   const nameAge = [name, profile.age ? String(profile.age) : null].filter(Boolean).join(", ");
   const photo = profile.photos?.[0] ?? null;
@@ -93,21 +96,23 @@ export default function ProfileStory({
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/45 to-transparent" />
 
-          <div className="absolute right-4 top-4 flex gap-2">
-            <Link
-              href={`/people/${userId}`}
-              className="rounded-full border border-ink/15 bg-white/95 px-3.5 py-2 text-xs font-extrabold text-navy shadow-[0_2px_10px_rgba(10,37,69,0.12)]"
-            >
-              {t("publicView")}
-            </Link>
-            <Link
-              href="/settings"
-              aria-label={t("settings")}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 bg-white/95 text-navy shadow-[0_2px_10px_rgba(10,37,69,0.12)]"
-            >
-              <Settings size={16} />
-            </Link>
-          </div>
+          {isOwner && (
+            <div className="absolute right-4 top-4 flex gap-2">
+              <Link
+                href={`/people/${userId}`}
+                className="rounded-full border border-ink/15 bg-white/95 px-3.5 py-2 text-xs font-extrabold text-navy shadow-[0_2px_10px_rgba(10,37,69,0.12)]"
+              >
+                {t("publicView")}
+              </Link>
+              <Link
+                href="/settings"
+                aria-label={t("settings")}
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 bg-white/95 text-navy shadow-[0_2px_10px_rgba(10,37,69,0.12)]"
+              >
+                <Settings size={16} />
+              </Link>
+            </div>
+          )}
 
           {persona && (
             <div className="absolute right-4 top-16 flex items-center gap-2 rounded-2xl bg-white px-3 py-2 text-navy shadow-[0_5px_16px_rgba(10,37,69,0.18)] sm:right-5 sm:top-5">
@@ -127,7 +132,7 @@ export default function ProfileStory({
           </div>
         </div>
 
-        {(upcomingVibe || goal) && (
+        {isOwner && (upcomingVibe || goal) && (
           <div className="flex gap-2 overflow-x-auto border-b border-ink/10 bg-cream px-4 py-3 sm:px-6">
             {upcomingVibe && (
               <Link
@@ -153,7 +158,7 @@ export default function ProfileStory({
               {!editingLine && profile.bio ? (
                 <p className="mt-1 text-xl font-extrabold leading-snug text-navy sm:text-2xl">{profile.bio}</p>
               ) : !editingLine ? (
-                <p className="mt-1 text-base font-semibold leading-relaxed text-muted">{t("lineEmpty")}</p>
+                <p className="mt-1 text-base font-semibold leading-relaxed text-muted">{isOwner ? t("lineEmpty") : t("publicLineEmpty", { name })}</p>
               ) : (
                 <div className="mt-2">
                   <textarea
@@ -177,7 +182,7 @@ export default function ProfileStory({
                 </div>
               )}
             </div>
-            {!editingLine && <button type="button" onClick={() => setEditingLine(true)} className="inline-flex shrink-0 items-center justify-center rounded-full border border-ink/15 bg-white px-4 py-2.5 text-sm font-extrabold text-navy">
+            {isOwner && !editingLine && <button type="button" onClick={() => setEditingLine(true)} className="inline-flex shrink-0 items-center justify-center rounded-full border border-ink/15 bg-white px-4 py-2.5 text-sm font-extrabold text-navy">
               {profile.bio ? t("editLine") : t("addLine")}
             </button>}
           </div>
@@ -187,8 +192,8 @@ export default function ProfileStory({
       <section className="mt-7">
         <div className="flex items-end justify-between gap-4 px-1">
           <div>
-            <h2 className="font-fredoka text-2xl font-bold text-navy">{t("historyTitle")}</h2>
-            <p className="mt-1 text-sm font-medium text-muted">{t("historySubtitle")}</p>
+            <h2 className="font-fredoka text-2xl font-bold text-navy">{isOwner ? t("historyTitle") : t("publicHistoryTitle", { name })}</h2>
+            <p className="mt-1 text-sm font-medium text-muted">{isOwner ? t("historySubtitle") : t("publicHistorySubtitle")}</p>
           </div>
           {completedVibes.length > 0 && (
             <Link href="/my-vibes" className="shrink-0 text-sm font-extrabold text-flockie-coral">
@@ -225,27 +230,31 @@ export default function ProfileStory({
         ) : (
           <div className="mt-4 rounded-3xl border-2 border-dashed border-ink/15 bg-white px-6 py-10 text-center">
             <div className="text-4xl">📖</div>
-            <h3 className="mt-3 font-fredoka text-xl font-bold text-navy">{t("emptyTitle")}</h3>
-            <p className="mx-auto mt-2 max-w-md text-sm font-medium leading-relaxed text-muted">{t("emptyBody")}</p>
-            <Link
-              href="/vibes"
-              className="mt-5 inline-flex items-center gap-2 rounded-full border border-ink/15 bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white"
-            >
-              <Sparkles size={16} /> {t("browseVibes")}
-            </Link>
+            <h3 className="mt-3 font-fredoka text-xl font-bold text-navy">{isOwner ? t("emptyTitle") : t("publicEmptyTitle")}</h3>
+            <p className="mx-auto mt-2 max-w-md text-sm font-medium leading-relaxed text-muted">{isOwner ? t("emptyBody") : t("publicEmptyBody", { name })}</p>
+            {isOwner && (
+              <Link
+                href="/vibes"
+                className="mt-5 inline-flex items-center gap-2 rounded-full border border-ink/15 bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white"
+              >
+                <Sparkles size={16} /> {t("browseVibes")}
+              </Link>
+            )}
           </div>
         )}
       </section>
 
-      <section className="mt-7 flex flex-col items-start justify-between gap-4 rounded-3xl border border-ink/10 bg-flockie-blue/10 p-5 sm:flex-row sm:items-center sm:p-6">
-        <div>
-          <h2 className="font-fredoka text-xl font-bold text-navy">{t("vibeTitle")}</h2>
-          <p className="mt-1 max-w-xl text-sm font-medium leading-relaxed text-navy/70">{t("vibeBody")}</p>
-        </div>
-        <Link href="/onboarding/vibe-check/reveal?returnTo=%2Fprofile" className="shrink-0 rounded-full border border-ink/15 bg-white px-4 py-2.5 text-sm font-extrabold text-navy">
-          {t("adjustVibe")}
-        </Link>
-      </section>
+      {isOwner && (
+        <section className="mt-7 flex flex-col items-start justify-between gap-4 rounded-3xl border border-ink/10 bg-flockie-blue/10 p-5 sm:flex-row sm:items-center sm:p-6">
+          <div>
+            <h2 className="font-fredoka text-xl font-bold text-navy">{t("vibeTitle")}</h2>
+            <p className="mt-1 max-w-xl text-sm font-medium leading-relaxed text-navy/70">{t("vibeBody")}</p>
+          </div>
+          <Link href="/onboarding/vibe-check/reveal?returnTo=%2Fprofile" className="shrink-0 rounded-full border border-ink/15 bg-white px-4 py-2.5 text-sm font-extrabold text-navy">
+            {t("adjustVibe")}
+          </Link>
+        </section>
+      )}
     </div>
   );
 }
