@@ -1,28 +1,25 @@
-import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import ProfileEditor from "@/components/ProfileEditor";
 import { type EventsData } from "@/components/ProfileEvents";
-import { type ReviewItem } from "@/components/ProfileReviews";
 import type { Profile } from "@/lib/vibe-check";
 import { safeRedirectPath } from "@/lib/redirects";
 
 export default async function ProfilePage({
   searchParams,
 }: {
-  searchParams: { compat?: string; returnTo?: string; vibe_done?: string };
+  searchParams: { compat?: string; returnTo?: string };
 }) {
   const returnTo =
     safeRedirectPath(searchParams.returnTo, "") ||
     (searchParams.compat ? `/compat/${searchParams.compat}` : undefined);
   const supabase = await createClient();
   const user = await getSessionUser();
-  const t = await getTranslations("profile");
 
   const { data: profile } = await supabase
     .from("profiles")
     .select(
-      "display_name, age, gender, home_city, instagram, x_handle, tiktok, photos, video_url, planning, pace, social_energy, budget, nightlife, adventurousness, trip_vibe, travel_style, dealbreakers, one_liner, activities, activity_skills, activity_social, activity_intensity, activity_vibe, activity_dealbreakers, activity_one_liner, notifications_enabled, vouch_token, onboarding_complete, trip_prefs_complete, activity_prefs_complete, archetype, vibe_completed_at, vibe_scores"
+      "display_name, age, gender, home_city, instagram, x_handle, tiktok, photos, video_url, planning, pace, social_energy, budget, nightlife, adventurousness, trip_vibe, travel_style, dealbreakers, one_liner, activities, activity_skills, activity_social, activity_intensity, activity_vibe, activity_dealbreakers, activity_one_liner, notifications_enabled, vouch_token, onboarding_complete, trip_prefs_complete, activity_prefs_complete, archetype, vibe_completed_at, vibe_scores, vibe_goal, vibe_persona"
     )
     .eq("id", user!.id)
     .single();
@@ -41,34 +38,7 @@ export default async function ProfilePage({
     .eq("id", user!.id)
     .maybeSingle();
 
-  // Reviews about me — shown on my own profile too.
-  const { data: reviewRows } = await supabase
-    .from("reviews")
-    .select("id, rating, comment, created_at, reviewer_id")
-    .eq("subject_id", user!.id)
-    .order("created_at", { ascending: false });
-  const reviews = reviewRows ?? [];
-  const reviewerIds = Array.from(new Set(reviews.map((r) => r.reviewer_id)));
-  const reviewers: Record<string, { display_name: string | null; photos: string[] | null }> = {};
-  if (reviewerIds.length) {
-    const { data: rp } = await supabase
-      .from("public_profiles")
-      .select("id, display_name, photos")
-      .in("id", reviewerIds);
-    rp?.forEach((p) => (reviewers[p.id] = { display_name: p.display_name, photos: p.photos }));
-  }
-  const reviewCount = reviews.length;
-  const reviewItems: ReviewItem[] = reviews.map((r) => ({
-    id: r.id,
-    rating: r.rating,
-    comment: r.comment,
-    created_at: r.created_at,
-    reviewerName: (reviewers[r.reviewer_id]?.display_name || t("reviewerFallback")).split(" ")[0],
-    reviewerPhoto: reviewers[r.reviewer_id]?.photos?.[0] ?? null,
-  }));
-
-  // My activity on Flockie — stats + the vibes/flocks/activities/trips I'm in.
-  const { data: statsData } = await supabase.rpc("public_profile_stats", { p_user: user!.id });
+  // The story uses completed Vibes only. The RPC keeps future plans private.
   const { data: eventsData } = await supabase.rpc("public_profile_events", { p_user: user!.id });
 
   return (
@@ -83,11 +53,7 @@ export default async function ProfilePage({
           } as Partial<Profile>
         }
         complete={complete}
-        reviewCount={reviewCount}
-        reviewItems={reviewItems}
         redirectAfter={returnTo}
-        celebrate={searchParams.vibe_done === "1"}
-        stats={(statsData ?? {}) as Record<string, number>}
         events={(eventsData ?? {}) as EventsData}
       />
     </main>

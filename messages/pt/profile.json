@@ -2,6 +2,46 @@
   "editor": {
     "cancel": "Cancelar"
   },
+  "story": {
+    "nameFallback": "Seu perfil",
+    "publicView": "Ver perfil público",
+    "settings": "Configurações",
+    "myVibe": "Meu Vibe",
+    "personas": {
+      "connector": "A Conectora",
+      "easygoer": "A Tranquila",
+      "liveWire": "A Elétrica",
+      "deepDiver": "A Profunda"
+    },
+    "goals": {
+      "crew": "uma turma fixa",
+      "friends": "alguns amigos de verdade",
+      "doers": "pessoas para fazer coisas juntos",
+      "out": "um motivo para sair mais"
+    },
+    "nextUp": "A seguir: {title}",
+    "hereFor": "Aqui para {goal}",
+    "lineLabel": "sempre topo →",
+    "lineEmpty": "Adicione uma frase curta que pareça com você.",
+    "linePlaceholder": "Uma frase curta que pareça com você",
+    "addLine": "Adicionar frase",
+    "editLine": "Editar frase",
+    "saveLine": "Salvar frase",
+    "savingLine": "Salvando…",
+    "lineSaveError": "Não foi possível salvar a frase. Tente novamente.",
+    "cancel": "Cancelar",
+    "historyTitle": "Por onde passei",
+    "historySubtitle": "Planos reais, sem biografia obrigatória.",
+    "seeAll": "Ver tudo",
+    "hosted": "Organizei",
+    "joined": "Participei",
+    "emptyTitle": "Seu primeiro plano começa sua história",
+    "emptyBody": "Esta página se preenche com as coisas que você realmente faz. Comece com um Vibe.",
+    "browseVibes": "Explorar Vibes",
+    "vibeTitle": "Seu Vibe",
+    "vibeBody": "Seus interesses e controles ajudam o Flockie a encontrar planos que combinam com você.",
+    "adjustVibe": "Ajustar meu Vibe"
+  },
   "reviewerFallback": "Um flockie",
   "form": {
     "photosTitle": "Fotos e vídeo",

@@ -2,6 +2,46 @@
   "editor": {
     "cancel": "Cancelar"
   },
+  "story": {
+    "nameFallback": "Tu perfil",
+    "publicView": "Vista pública",
+    "settings": "Ajustes",
+    "myVibe": "Mi Vibe",
+    "personas": {
+      "connector": "La Conectora",
+      "easygoer": "La Tranquila",
+      "liveWire": "La Chispa",
+      "deepDiver": "La Profunda"
+    },
+    "goals": {
+      "crew": "un grupo habitual",
+      "friends": "un par de amistades reales",
+      "doers": "gente con quien hacer cosas",
+      "out": "un motivo para salir más"
+    },
+    "nextUp": "Próximo: {title}",
+    "hereFor": "Aquí por {goal}",
+    "lineLabel": "siempre me apunto a →",
+    "lineEmpty": "Añade una frase corta que suene a ti.",
+    "linePlaceholder": "Una frase corta que suene a ti",
+    "addLine": "Añadir una frase",
+    "editLine": "Editar frase",
+    "saveLine": "Guardar frase",
+    "savingLine": "Guardando…",
+    "lineSaveError": "No se pudo guardar la frase. Inténtalo de nuevo.",
+    "cancel": "Cancelar",
+    "historyTitle": "Dónde he estado",
+    "historySubtitle": "Planes reales, sin biografía obligatoria.",
+    "seeAll": "Ver todo",
+    "hosted": "Organicé",
+    "joined": "Me uní",
+    "emptyTitle": "Tu primer plan empieza tu historia",
+    "emptyBody": "Esta página se llena con las cosas que realmente haces. Empieza con un Vibe.",
+    "browseVibes": "Explorar Vibes",
+    "vibeTitle": "Tu Vibe",
+    "vibeBody": "Tus intereses y controles ayudan a Flockie a encontrar planes que encajen contigo.",
+    "adjustVibe": "Ajustar mi Vibe"
+  },
   "reviewerFallback": "Un flockie",
   "form": {
     "photosTitle": "Fotos y video",
