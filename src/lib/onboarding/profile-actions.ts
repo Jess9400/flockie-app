@@ -13,6 +13,13 @@ export interface ProfileInput {
   city: string;
 }
 
+export interface ProfileIdentityInput {
+  displayName: string;
+  city: string;
+  bio: string;
+  photoUrl: string;
+}
+
 function ageFromBirthday(birthday: string) {
   const date = new Date(`${birthday}T00:00:00Z`);
   if (Number.isNaN(date.getTime())) throw new Error("Enter a valid birthday");
@@ -62,6 +69,44 @@ export async function saveOnboardingProfile(input: ProfileInput) {
     locale,
     onboarding_complete: true,
   });
+
+  if (error) throw error;
+}
+
+export async function updateProfileIdentity(input: ProfileIdentityInput) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) redirect("/login");
+
+  const displayName = input.displayName.trim();
+  const homeCity = input.city.trim();
+
+  const { data: current } = await supabase
+    .from("profiles")
+    .select("photos")
+    .eq("id", user.id)
+    .maybeSingle();
+  const currentPhotos = Array.isArray(current?.photos)
+    ? current.photos.filter((photo: unknown): photo is string => typeof photo === "string")
+    : [];
+  const ownsUploadedPhoto = input.photoUrl.includes(`/avatars/${user.id}/`);
+  if (!displayName || !homeCity || !input.photoUrl || (!currentPhotos.includes(input.photoUrl) && !ownsUploadedPhoto)) {
+    throw new Error("Add your name, city, and profile photo before saving");
+  }
+  const photos = [input.photoUrl, ...currentPhotos.filter((photo) => photo !== input.photoUrl)];
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      display_name: displayName.slice(0, 60),
+      home_city: homeCity.slice(0, 80),
+      bio: input.bio.slice(0, 160) || null,
+      photos,
+    })
+    .eq("id", user.id);
 
   if (error) throw error;
 }

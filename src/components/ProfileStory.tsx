@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowRight, Settings, Sparkles } from "lucide-react";
@@ -10,7 +9,7 @@ import { formatVibeWhen } from "@/lib/vibes";
 import { isVibePersona, type VibePersona } from "@/lib/onboarding/vibe-onboarding";
 import type { EventsData } from "@/components/ProfileEvents";
 import type { Profile } from "@/lib/vibe-check";
-import { createClient } from "@/lib/supabase/client";
+import ProfileIdentityEditor from "@/components/ProfileIdentityEditor";
 
 type StoryProfile = Partial<Profile> & {
   vibe_goal?: string | null;
@@ -42,12 +41,7 @@ export default function ProfileStory({
 }) {
   const t = useTranslations("profile.story");
   const locale = useLocale();
-  const router = useRouter();
-  const supabase = createClient();
-  const [editingLine, setEditingLine] = useState(false);
-  const [line, setLine] = useState(profile.bio ?? "");
-  const [savingLine, setSavingLine] = useState(false);
-  const [lineError, setLineError] = useState(false);
+  const [editingProfile, setEditingProfile] = useState(false);
   const name = profile.display_name?.trim() || t("nameFallback");
   const nameAge = [name, profile.age ? String(profile.age) : null].filter(Boolean).join(", ");
   const photo = profile.photos?.[0] ?? null;
@@ -55,23 +49,6 @@ export default function ProfileStory({
   const completedVibes = (events?.vibes ?? []).filter((vibe) => vibe.past).slice(0, 6);
   const upcomingVibe = (events?.vibes ?? []).find((vibe) => !vibe.past);
   const goal = profile.vibe_goal && GOALS[profile.vibe_goal] ? t(`goals.${GOALS[profile.vibe_goal]}`) : null;
-
-  async function saveLine() {
-    if (savingLine) return;
-    setSavingLine(true);
-    setLineError(false);
-    const { error } = await supabase
-      .from("profiles")
-      .update({ bio: line.trim() || null })
-      .eq("id", userId);
-    setSavingLine(false);
-    if (error) {
-      setLineError(true);
-      return;
-    }
-    setEditingLine(false);
-    router.refresh();
-  }
 
   return (
     <div className="mx-auto max-w-5xl pb-8">
@@ -150,36 +127,15 @@ export default function ProfileStory({
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-2xl flex-1">
               <p className="font-fredoka text-xl font-semibold text-flockie-coral">{t("lineLabel")}</p>
-              {!editingLine && profile.bio ? (
+              {profile.bio ? (
                 <p className="mt-1 text-xl font-extrabold leading-snug text-navy sm:text-2xl">{profile.bio}</p>
-              ) : !editingLine ? (
-                <p className="mt-1 text-base font-semibold leading-relaxed text-muted">{t("lineEmpty")}</p>
               ) : (
-                <div className="mt-2">
-                  <textarea
-                    value={line}
-                    onChange={(event) => setLine(event.target.value)}
-                    maxLength={160}
-                    rows={3}
-                    autoFocus
-                    className="w-full resize-none rounded-2xl border-2 border-ink/15 bg-cream px-3 py-2.5 text-base font-semibold text-navy outline-none focus:border-flockie-coral"
-                    placeholder={t("linePlaceholder")}
-                  />
-                  {lineError && <p className="mt-1 text-xs font-bold text-red-700">{t("lineSaveError")}</p>}
-                  <div className="mt-2 flex gap-2">
-                    <button type="button" onClick={saveLine} disabled={savingLine} className="rounded-full bg-flockie-coral px-4 py-2 text-sm font-extrabold text-white disabled:opacity-50">
-                      {savingLine ? t("savingLine") : t("saveLine")}
-                    </button>
-                    <button type="button" onClick={() => { setLine(profile.bio ?? ""); setLineError(false); setEditingLine(false); }} className="rounded-full border border-ink/15 bg-white px-4 py-2 text-sm font-extrabold text-navy">
-                      {t("cancel")}
-                    </button>
-                  </div>
-                </div>
+                <p className="mt-1 text-base font-semibold leading-relaxed text-muted">{t("lineEmpty")}</p>
               )}
             </div>
-            {!editingLine && <button type="button" onClick={() => setEditingLine(true)} className="inline-flex shrink-0 items-center justify-center rounded-full border border-ink/15 bg-white px-4 py-2.5 text-sm font-extrabold text-navy">
-              {profile.bio ? t("editLine") : t("addLine")}
-            </button>}
+            <button type="button" onClick={() => setEditingProfile(true)} className="inline-flex shrink-0 items-center justify-center rounded-full border border-ink/15 bg-white px-4 py-2.5 text-sm font-extrabold text-navy">
+              {t("editProfile")}
+            </button>
           </div>
         </div>
       </section>
@@ -246,6 +202,8 @@ export default function ProfileStory({
           {t("adjustVibe")}
         </Link>
       </section>
+
+      {editingProfile && <ProfileIdentityEditor initial={profile} onClose={() => setEditingProfile(false)} />}
     </div>
   );
 }
