@@ -66,6 +66,9 @@ language sql security definer set search_path = public stable as $$
     and p.onboarding_complete
     and lower(coalesce(t.destination, '')) = lower(coalesce(me.home_city, ''))
     and not public.buddy_hard_block(auth.uid(), p.id)
+    -- A 1:1 activity should never be an actionable 0% card. Sparse profiles
+    -- are neutral (50) in buddy_pair_score; explicit poor fits stay out.
+    and public.buddy_pair_score(auth.uid(), p.id) >= 40
     -- filled activities (host accepted someone) drop off for everyone
     and not exists (
       select 1 from public.activity_join_requests f
