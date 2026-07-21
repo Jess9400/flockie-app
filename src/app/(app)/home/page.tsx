@@ -361,7 +361,7 @@ export default async function HomePage({
           vibe={{ ...v, host: vibeMeta.hosts[v.host_id] ?? null } as VibeCardData}
           confirmedCount={vibeMeta.counts[v.id] ?? 0}
           myStatus={st}
-          matchPct={isHostVibe ? undefined : vibeMatch[v.id]}
+          match={isHostVibe ? undefined : vibeMatch[v.id]}
           canDismiss={!isHostVibe && !st}
           variant="home"
           homeCta={homeCta}
