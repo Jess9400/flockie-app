@@ -31,7 +31,7 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | `confirm_vibe` | `ranking.sql` |
 | `expire_invitations`, `decline_vibe` | `expiry.sql` |
 | `vibe_directory`, `vibe_private_logistics`, `public_vibe` | `vibe-location-privacy-prepare.sql` |
-| `public_profiles`, `public_profile_events/stats` | `profile-privacy-prepare.sql` |
+| `public_profiles` (including public Vibe persona), `public_profile_events/stats` | `profile-privacy-prepare.sql` |
 | `trip_join_requests` SELECT policy (`can_see_trip_requests`) | `trip-requests-rls-enforce.sql` |
 | host RPCs (`notify`, `cancel_vibe`, `update_vibe_when`, commit/remove/appeal) | `host-controls.sql` |
 | Vibes-only onboarding profile fields | `onboarding-v3-vibes-only.sql` |
