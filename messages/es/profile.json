@@ -62,6 +62,20 @@
     "photoError": "No se pudo subir la foto. Inténtalo de nuevo.",
     "saveError": "No se pudo guardar tu perfil. Inténtalo de nuevo."
   },
+  "takes": {
+    "label": "Mi recuerdo",
+    "add": "Añadir un recuerdo privado",
+    "edit": "Editar mi recuerdo privado",
+    "dialogTitle": "Tu recuerdo",
+    "privateNote": "Esto es solo para ti. Se queda en tu propio perfil y nunca se usa como una valoración pública.",
+    "placeholder": "¿Qué quieres recordar de esta Vibe?",
+    "characters": "{count}/280",
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "delete": "Eliminar"
+  },
   "reviewerFallback": "Un flockie",
   "form": {
     "photosTitle": "Fotos y video",

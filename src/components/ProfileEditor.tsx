@@ -13,12 +13,14 @@ export default function ProfileEditor({
   complete,
   redirectAfter,
   events,
+  takes,
 }: {
   userId: string;
   profile: Partial<Profile> & { vibe_goal?: string | null; vibe_persona?: string | null };
   complete: boolean;
   redirectAfter?: string;
   events?: EventsData;
+  takes?: { vibe_id: string; body: string; updated_at: string }[];
 }) {
   const t = useTranslations("profile");
   // Start in edit mode if the profile isn't complete yet (first-time onboarding).
@@ -46,6 +48,6 @@ export default function ProfileEditor({
   }
 
   return (
-    <ProfileStory userId={userId} profile={profile} events={events} />
+    <ProfileStory userId={userId} profile={profile} events={events} takes={takes} />
   );
 }

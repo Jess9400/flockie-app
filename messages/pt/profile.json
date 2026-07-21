@@ -62,6 +62,20 @@
     "photoError": "Não foi possível enviar a foto. Tente novamente.",
     "saveError": "Não foi possível salvar seu perfil. Tente novamente."
   },
+  "takes": {
+    "label": "Minha lembrança",
+    "add": "Adicionar uma lembrança privada",
+    "edit": "Editar minha lembrança privada",
+    "dialogTitle": "Sua lembrança",
+    "privateNote": "Isso é só para você. Fica no seu próprio perfil e nunca é usado como avaliação pública.",
+    "placeholder": "O que você quer guardar dessa Vibe?",
+    "characters": "{count}/280",
+    "close": "Fechar",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "saving": "Salvando…",
+    "delete": "Excluir"
+  },
   "reviewerFallback": "Um flockie",
   "form": {
     "photosTitle": "Fotos e vídeo",
