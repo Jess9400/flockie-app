@@ -368,9 +368,9 @@ export default async function MyVibesPage({
         <h1 className="text-2xl font-black">{t("title")}</h1>
         <Link
           href="/vibes/new"
-          className="inline-flex items-center gap-1 rounded-full border border-ink/15 bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
+          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-flockie-orange px-3 py-1.5 text-xs font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:px-4 sm:py-2 sm:text-sm"
         >
-          <Plus size={16} /> {t("create")}
+          <Plus size={15} /> {t("create")}
         </Link>
       </div>
       <p className="mt-1 text-sm font-medium text-muted">{t("subtitle")}</p>
