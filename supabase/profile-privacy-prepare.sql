@@ -4,7 +4,8 @@
 -- Run this after onboarding-v3-vibes-only.sql and BEFORE merging/deploying the
 -- profile privacy PR. It is additive:
 -- it creates the safe public_profiles view and privacy-aware RPCs without
--- changing the existing profiles SELECT policy.
+-- changing the existing profiles SELECT policy. `vibe_persona` is appended to
+-- the view so existing deployments retain their public_profiles column order.
 
 alter table public.profiles
   add column if not exists social_visibility text not null default 'connections';
@@ -112,7 +113,6 @@ select
   p.video_url,
   p.bio,
   p.one_liner,
-  p.vibe_persona,
   p.archetype,
   p.trip_vibe,
   p.activities,
@@ -146,7 +146,8 @@ select
       )
     then p.tiktok
     else null
-  end as tiktok
+  end as tiktok,
+  p.vibe_persona
 from public.profiles p
 where p.onboarding_complete or p.id = auth.uid();
 
