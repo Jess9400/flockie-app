@@ -71,7 +71,7 @@ const PRIMARY_NAV: NavItem[] = [
   // Trips hub: find a trip buddy (soon) + find a flock live here.
   { href: "/trips", labelKey: "trips", icon: Plane, sections: ["trips-hub"] },
   // My Plans owns everything "yours": My Vibes, activities, deals, trips.
-  { href: "/my-activities", labelKey: "myTrips", icon: Map, sections: ["trips", "deals", "my-vibes"] },
+  { href: "/my-vibes", labelKey: "myTrips", icon: Map, sections: ["trips", "deals", "my-vibes"] },
   { href: "/chats", labelKey: "chats", icon: MessageCircle, sections: ["chats"] },
 ];
 
@@ -83,7 +83,7 @@ const TABS: NavItem[] = [
   { href: "/vibes", labelKey: "vibes", icon: Sparkles, sections: ["vibes"] },
   { href: "/match", labelKey: "match", icon: Compass, sections: ["match"] },
   { href: "/chats", labelKey: "chats", icon: MessageCircle, sections: ["chats"] },
-  { href: "/my-activities", labelKey: "myTrips", icon: Map, sections: ["trips", "deals", "my-vibes"] },
+  { href: "/my-vibes", labelKey: "myTrips", icon: Map, sections: ["trips", "deals", "my-vibes"] },
 ];
 
 export default function AppShell({

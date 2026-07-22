@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, ArrowRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
@@ -176,20 +176,12 @@ export default async function VibesPage({
     <main className="px-5 pt-6">
       <div className="flex items-center justify-between gap-2">
         <h1 className="text-2xl font-black">{t("list.heading")}</h1>
-        <div className="flex shrink-0 items-center gap-2">
-        <Link
-          href="/my-vibes"
-          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-white px-4 py-2 text-sm font-bold text-ink"
-        >
-          {t("list.tabMyVibes")}
-        </Link>
         <Link
           href="/vibes/new"
-          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
+          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-flockie-orange px-3 py-1.5 text-xs font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:px-4 sm:py-2 sm:text-sm"
         >
-          <Plus size={16} /> {t("list.create")}
+          <Plus size={15} /> {t("list.create")}
         </Link>
-        </div>
       </div>
       <p className="mt-3 max-w-xl text-sm font-medium text-muted">
         {t.rich("list.intro", { b: (chunks) => <span className="font-bold">{chunks}</span> })}
@@ -266,6 +258,15 @@ export default async function VibesPage({
           <Pagination page={page} totalPages={totalPages} hrefFor={hrefFor} />
         </>
       )}
+
+      {/* Quick link to your own vibes — same bottom-row pattern as Buddy/Trips. */}
+      <Link
+        href="/my-vibes"
+        className="mb-6 mt-6 flex items-center justify-between rounded-2xl border border-ink/15 bg-white px-4 py-3 text-sm font-bold text-ink shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5"
+      >
+        <span>🎉 {t("list.tabMyVibes")}</span>
+        <ArrowRight size={16} className="text-ink/50" />
+      </Link>
 
       <LocationPrompt trackingEnabled={trackingEnabled} />
     </main>
