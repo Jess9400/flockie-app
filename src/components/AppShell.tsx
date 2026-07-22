@@ -66,11 +66,12 @@ type NavItem = {
 // on them (e.g. Vibes stays active on /my-vibes).
 const PRIMARY_NAV: NavItem[] = [
   { href: "/home", labelKey: "home", icon: Home, sections: ["home"] },
-  { href: "/vibes", labelKey: "vibes", icon: Sparkles, sections: ["vibes", "my-vibes"] },
+  { href: "/vibes", labelKey: "vibes", icon: Sparkles, sections: ["vibes"] },
   { href: "/match", labelKey: "findABuddy", icon: Compass, sections: ["match"] },
   // Trips hub: find a trip buddy (soon) + find a flock live here.
   { href: "/trips", labelKey: "trips", icon: Plane, sections: ["trips-hub"] },
-  { href: "/my-activities", labelKey: "myTrips", icon: Map, sections: ["trips", "deals"] },
+  // My Plans owns everything "yours": My Vibes, activities, deals, trips.
+  { href: "/my-activities", labelKey: "myTrips", icon: Map, sections: ["trips", "deals", "my-vibes"] },
   { href: "/chats", labelKey: "chats", icon: MessageCircle, sections: ["chats"] },
 ];
 
@@ -79,10 +80,10 @@ const PRIMARY_NAV: NavItem[] = [
 // is My Plans. Tabs claim their children's sections so e.g. /my-vibes lights
 // up Vibes.
 const TABS: NavItem[] = [
-  { href: "/vibes", labelKey: "vibes", icon: Sparkles, sections: ["vibes", "my-vibes"] },
+  { href: "/vibes", labelKey: "vibes", icon: Sparkles, sections: ["vibes"] },
   { href: "/match", labelKey: "match", icon: Compass, sections: ["match"] },
   { href: "/chats", labelKey: "chats", icon: MessageCircle, sections: ["chats"] },
-  { href: "/my-activities", labelKey: "myTrips", icon: Map, sections: ["trips", "deals"] },
+  { href: "/my-activities", labelKey: "myTrips", icon: Map, sections: ["trips", "deals", "my-vibes"] },
 ];
 
 export default function AppShell({

@@ -11,7 +11,9 @@ export default async function DealsPage() {
   const t = await getTranslations("deals");
   const locale = await getLocale();
 
+  const tmv = await getTranslations("myVibes");
   const TRIP_TABS = [
+    { href: "/my-vibes", label: tmv("tabMyVibes") },
     { href: "/my-activities", label: t("tabMyActivities") },
     { href: "/deals", label: t("tabDeals") },
     { href: "/my-trips", label: t("tabMyTrips") },

@@ -32,7 +32,9 @@ export default async function MyActivitiesPage({
   const user = await getSessionUser();
   const t = await getTranslations("activities");
 
+  const tmv = await getTranslations("myVibes");
   const TRIP_TABS = [
+    { href: "/my-vibes", label: tmv("tabMyVibes") },
     { href: "/my-activities", label: t("tabActivities") },
     { href: "/deals", label: t("tabDeals") },
     { href: "/my-trips", label: t("tabTrips") },

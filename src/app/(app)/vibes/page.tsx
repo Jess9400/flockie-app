@@ -6,7 +6,6 @@ import { getSessionUser } from "@/lib/supabase/user";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
 import VibeSearch from "@/components/VibeSearch";
 import LocationPrompt from "@/components/LocationPrompt";
-import PageTabs from "@/components/PageTabs";
 import Pagination from "@/components/Pagination";
 import VibeInlineFilters from "@/components/VibeInlineFilters";
 import { loadVibeMatch, type VibeDisplayMatch } from "@/lib/vibe-stats";
@@ -28,10 +27,6 @@ export default async function VibesPage({
 }) {
   const supabase = await createClient();
   const t = await getTranslations("vibes");
-  const VIBE_TABS = [
-    { href: "/vibes", label: t("list.tabVibes") },
-    { href: "/my-vibes", label: t("list.tabMyVibes") },
-  ];
   const q = searchParams.q?.trim() ?? "";
   const city = searchParams.city?.trim() ?? "";
   const when =
@@ -179,15 +174,22 @@ export default async function VibesPage({
 
   return (
     <main className="px-5 pt-6">
-      <PageTabs tabs={VIBE_TABS} />
       <div className="flex items-center justify-between gap-2">
         <h1 className="text-2xl font-black">{t("list.heading")}</h1>
+        <div className="flex shrink-0 items-center gap-2">
+        <Link
+          href="/my-vibes"
+          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-white px-4 py-2 text-sm font-bold text-ink"
+        >
+          {t("list.tabMyVibes")}
+        </Link>
         <Link
           href="/vibes/new"
           className="inline-flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-flockie-orange px-4 py-2 text-sm font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
         >
           <Plus size={16} /> {t("list.create")}
         </Link>
+        </div>
       </div>
       <p className="mt-3 max-w-xl text-sm font-medium text-muted">
         {t.rich("list.intro", { b: (chunks) => <span className="font-bold">{chunks}</span> })}
