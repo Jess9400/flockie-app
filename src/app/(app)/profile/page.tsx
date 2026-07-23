@@ -4,6 +4,7 @@ import ProfileEditor from "@/components/ProfileEditor";
 import { type EventsData } from "@/components/ProfileEvents";
 import type { Profile } from "@/lib/vibe-check";
 import { safeRedirectPath } from "@/lib/redirects";
+import { getProfileStoryReviews } from "@/lib/profile-story-reviews";
 
 export default async function ProfilePage({
   searchParams,
@@ -39,9 +40,9 @@ export default async function ProfilePage({
     .maybeSingle();
 
   // The story uses completed Vibes only. The RPC keeps future plans private.
-  const [{ data: eventsData }, { data: takesData }] = await Promise.all([
+  const [{ data: eventsData }, storyReviews] = await Promise.all([
     supabase.rpc("public_profile_events", { p_user: user!.id }),
-    supabase.from("vibe_takes").select("vibe_id, body, updated_at").eq("user_id", user!.id),
+    getProfileStoryReviews(user!.id),
   ]);
 
   return (
@@ -58,7 +59,7 @@ export default async function ProfilePage({
         complete={complete}
         redirectAfter={returnTo}
         events={(eventsData ?? {}) as EventsData}
-        takes={takesData ?? []}
+        reviews={storyReviews}
       />
     </main>
   );

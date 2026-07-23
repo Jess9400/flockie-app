@@ -20,15 +20,17 @@
       "out": "a reason to get out more"
     },
     "nextUp": "Next up: {title}",
+    "rightNow": "Right now",
+    "viewPlan": "View plan",
     "hereFor": "Here for {goal}",
     "lineLabel": "will show up for →",
     "lineEmpty": "Add one short line that sounds like you.",
     "editProfile": "Edit profile",
     "publicLineEmpty": "{name} hasn’t added a line yet.",
     "cancel": "Cancel",
-    "historyTitle": "Where I’ve been",
-    "historySubtitle": "Real plans, no bio required.",
-    "publicHistoryTitle": "Where {name} has been",
+    "historyTitle": "Vibe scrapbook",
+    "historySubtitle": "A few real plans that made the story.",
+    "publicHistoryTitle": "{name}’s Vibe scrapbook",
     "publicHistorySubtitle": "Completed Vibes on Flockie.",
     "seeAll": "See all",
     "hosted": "Hosted",
@@ -40,7 +42,11 @@
     "browseVibes": "Browse Vibes",
     "vibeTitle": "Your Vibe",
     "vibeBody": "Your interests and sliders help Flockie find plans that feel right for you.",
-    "adjustVibe": "Adjust my Vibe"
+    "adjustVibe": "Adjust my Vibe",
+    "kindWordsTitle": "Kind words",
+    "kindWordsSubtitle": "Written after a verified Flockie match — no public scores.",
+    "kindWordsEmpty": "When someone you’ve matched with leaves a kind note, it will appear here. No scores or averages on your profile.",
+    "verifiedConnection": "Verified Flockie match"
   },
   "identityEditor": {
     "title": "Edit profile",

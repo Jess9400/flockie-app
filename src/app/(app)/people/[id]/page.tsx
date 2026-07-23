@@ -7,6 +7,7 @@ import { getSessionUser } from "@/lib/supabase/user";
 import PublicProfileDashboard from "@/components/PublicProfileDashboard";
 import { type EventsData } from "@/components/ProfileEvents";
 import type { Profile } from "@/lib/vibe-check";
+import { getProfileStoryReviews } from "@/lib/profile-story-reviews";
 
 export default async function PersonPage({
   params,
@@ -18,7 +19,7 @@ export default async function PersonPage({
 
   // The public story is intentionally small: privacy-safe profile details and
   // completed Vibes only. The event RPC hides future plans from visitors.
-  const [{ data: profile }, user, { data: eventsData }] = await Promise.all([
+  const [{ data: profile }, user, { data: eventsData }, storyReviews] = await Promise.all([
     supabase
       .from("public_profiles")
       .select(
@@ -28,6 +29,7 @@ export default async function PersonPage({
       .maybeSingle(),
     getSessionUser(),
     supabase.rpc("public_profile_events", { p_user: params.id }),
+    getProfileStoryReviews(params.id),
   ]);
 
   if (!profile) notFound();
@@ -66,6 +68,7 @@ export default async function PersonPage({
         personId={params.id}
         profile={profile as Partial<Profile> & { vibe_persona?: string | null }}
         events={(eventsData ?? {}) as EventsData}
+        reviews={storyReviews}
         incomingLike={incomingLike}
       />
     </main>
