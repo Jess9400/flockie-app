@@ -121,5 +121,27 @@
     "closeBody": "This permanently removes it from discovery and stops new founder invitations. Scheduled Vibes are not cancelled.",
     "closeConfirm": "Close Club",
     "cancel": "Cancel"
+  },
+  "directory": {
+    "eyebrow": "COMMUNITIES THAT COME BACK",
+    "title": "Clubs",
+    "intro": "Small recurring communities, built through real gatherings — not a follower count.",
+    "cityLabel": "City",
+    "cityPlaceholder": "Dubai",
+    "search": "See Clubs",
+    "start": "Start a Club",
+    "forming": "Forming",
+    "active": "Active",
+    "paused": "Paused",
+    "weekly": "Weekly",
+    "biweekly": "Every two weeks",
+    "monthly": "Monthly",
+    "next": "Next: {title}",
+    "nextWhen": "{when}",
+    "noNext": "First gathering being planned",
+    "view": "View Club",
+    "emptyTitle": "No Clubs in {city} yet",
+    "emptyEverywhere": "No Clubs yet",
+    "emptyBody": "Start one around something you would genuinely like to keep doing. It begins as Forming — no fake members needed."
   }
 }

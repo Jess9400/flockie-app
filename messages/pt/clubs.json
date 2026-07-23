@@ -121,5 +121,27 @@
     "closeBody": "Isso o remove permanentemente da descoberta e interrompe novos convites de fundadores. Vibes programadas não são canceladas.",
     "closeConfirm": "Encerrar Club",
     "cancel": "Cancelar"
+  },
+  "directory": {
+    "eyebrow": "COMUNIDADES QUE VOLTAM",
+    "title": "Clubs",
+    "intro": "Pequenas comunidades recorrentes, construídas em encontros reais — não em número de seguidores.",
+    "cityLabel": "Cidade",
+    "cityPlaceholder": "Dubai",
+    "search": "Ver Clubs",
+    "start": "Criar um Club",
+    "forming": "Em formação",
+    "active": "Ativo",
+    "paused": "Pausado",
+    "weekly": "Semanal",
+    "biweekly": "A cada duas semanas",
+    "monthly": "Mensal",
+    "next": "Próximo: {title}",
+    "nextWhen": "{when}",
+    "noNext": "Primeiro encontro sendo planejado",
+    "view": "Ver Club",
+    "emptyTitle": "Ainda não há Clubs em {city}",
+    "emptyEverywhere": "Ainda não há Clubs",
+    "emptyBody": "Crie um em torno de algo que você realmente quer continuar fazendo. Ele começa em formação, sem membros falsos."
   }
 }
