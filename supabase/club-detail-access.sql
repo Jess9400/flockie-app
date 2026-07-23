@@ -17,6 +17,7 @@ returns table (
   openness text,
   is_host boolean,
   membership_status text,
+  has_attended boolean,
   next_vibe_id uuid,
   next_vibe_title text,
   next_vibe_starts_at timestamptz,
@@ -37,6 +38,10 @@ language sql security definer set search_path = public stable as $$
     c.openness,
     c.owner_id = auth.uid() as is_host,
     mine.status as membership_status,
+    exists (
+      select 1 from public.club_attendance ca
+      where ca.club_id = c.id and ca.user_id = auth.uid()
+    ) as has_attended,
     next_vibe.id as next_vibe_id,
     next_vibe.title as next_vibe_title,
     next_vibe.starts_at as next_vibe_starts_at,

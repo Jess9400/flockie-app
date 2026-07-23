@@ -9,6 +9,7 @@ import HostVibeControls from "@/components/HostVibeControls";
 import HostVibeShortlist from "@/components/HostVibeShortlist";
 import HostVibePrivateRequests from "@/components/HostVibePrivateRequests";
 import HostVibeMembers from "@/components/HostVibeMembers";
+import ClubAttendancePanel from "@/components/ClubAttendancePanel";
 import VibeSettingsButton from "@/components/VibeSettingsButton";
 import LeaveVibeButton from "@/components/LeaveVibeButton";
 import ShareVibeButton from "@/components/ShareVibeButton";
@@ -98,9 +99,9 @@ export default async function VibeDetailPage({
     supabase.rpc("vibe_attendees", { p_vibe: params.id }),
     supabase.from("vibe_reviews").select("recommend, rating, tags").eq("vibe_id", params.id),
     isHost
-      ? supabase
-          .from("vibes")
-          .select("host_invite_code, algo_share, preview_rejects_used")
+          ? supabase
+              .from("vibes")
+              .select("host_invite_code, algo_share, preview_rejects_used, club_id")
           .eq("id", params.id)
           .maybeSingle()
       : Promise.resolve({ data: null }),
@@ -285,6 +286,16 @@ export default async function VibeDetailPage({
     : [];
 
   const ended = new Date(vibe.ends_at ?? vibe.starts_at) <= new Date();
+  const clubId: string | null = hostMeta?.club_id ?? null;
+  let recordedClubAttendanceIds: string[] = [];
+  if (isHost && ended && clubId) {
+    const { data: attendanceRows } = await supabase
+      .from("club_attendance")
+      .select("user_id")
+      .eq("club_id", clubId)
+      .eq("vibe_id", vibe.id);
+    recordedClubAttendanceIds = (attendanceRows ?? []).map((row) => row.user_id);
+  }
   const canReview = ended && myInterest?.status === "confirmed";
   const directConfirm =
     !differentCity &&
@@ -660,6 +671,15 @@ export default async function VibeDetailPage({
           eventStarted={eventStarted}
           normalRemovalLimit={normalRemovalLimit}
           normalRemovalUsed={normalRemovalCount}
+        />
+      )}
+
+      {isHost && ended && clubId && (
+        <ClubAttendancePanel
+          clubId={clubId}
+          vibeId={vibe.id}
+          attendees={allAttendees}
+          recordedIds={recordedClubAttendanceIds}
         />
       )}
 

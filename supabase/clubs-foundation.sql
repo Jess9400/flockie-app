@@ -263,11 +263,16 @@ grant execute on function public.record_club_attendance(uuid, uuid, uuid) to aut
 create or replace function public.request_club_membership(p_club uuid)
 returns void
 language plpgsql security definer set search_path = public as $$
+declare
+  v_club_title text;
+  v_host_id uuid;
 begin
-  if not exists (
-    select 1 from public.clubs
-    where id = p_club and status in ('forming', 'active')
-  ) then
+  select title, owner_id
+  into v_club_title, v_host_id
+  from public.clubs
+  where id = p_club and status = 'active';
+
+  if not found then
     raise exception 'this club is not accepting membership requests';
   end if;
   if not exists (
@@ -286,6 +291,14 @@ begin
   if not found then
     raise exception 'membership is already active or awaiting a decision';
   end if;
+
+  perform public.notify(
+    v_host_id,
+    'club_membership_request',
+    'Regular membership request',
+    'Someone who attended ' || v_club_title || ' would like to become a regular.',
+    jsonb_build_object('href', '/clubs/' || p_club)
+  );
 end;
 $$;
 grant execute on function public.request_club_membership(uuid) to authenticated;
@@ -293,10 +306,16 @@ grant execute on function public.request_club_membership(uuid) to authenticated;
 create or replace function public.approve_club_membership(p_club uuid, p_user uuid)
 returns void
 language plpgsql security definer set search_path = public as $$
+declare
+  v_club_title text;
 begin
   if not public.is_club_host(p_club) then
     raise exception 'only the club host can approve membership';
   end if;
+
+  select title into v_club_title
+  from public.clubs
+  where id = p_club;
 
   update public.club_memberships
   set status = 'regular', regular_since = now(), updated_at = now()
@@ -305,6 +324,14 @@ begin
   if not found then
     raise exception 'a pending membership request is required';
   end if;
+
+  perform public.notify(
+    p_user,
+    'club_membership_approved',
+    'You''re a regular in ' || v_club_title,
+    'Your membership was approved. See what''s next with the club.',
+    jsonb_build_object('href', '/clubs/' || p_club)
+  );
 end;
 $$;
 grant execute on function public.approve_club_membership(uuid, uuid) to authenticated;
