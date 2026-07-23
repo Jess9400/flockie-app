@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home, Compass, Map, Sparkles, MessageCircle, User, Bell, Menu, X, ArrowLeft, Plane,
+  Home, Compass, Map, Sparkles, MessageCircle, User, Bell, Menu, X, ArrowLeft, Plane, UsersRound,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Footer from "@/components/Footer";
@@ -25,6 +25,8 @@ function sectionFor(pathname: string): string {
       return "home";
     case "/vibes":
       return "vibes";
+    case "/clubs":
+      return "clubs";
     case "/my-vibes":
       return "my-vibes";
     case "/match":
@@ -59,7 +61,7 @@ type NavItem = {
   sections: string[];
 };
 
-// The drawer/sidebar is deliberately kept to these 5 (+ Profile below). The
+// The drawer/sidebar holds the primary app surfaces (+ Profile below). The
 // nested surfaces are NOT nav rows: My Vibes is a tab inside Vibes, Deals a tab
 // inside My Trips, Inbox is the top-right bell, Settings lives on the Profile
 // page. `sections` therefore include the child tabs so the parent highlights
@@ -67,6 +69,7 @@ type NavItem = {
 const PRIMARY_NAV: NavItem[] = [
   { href: "/home", labelKey: "home", icon: Home, sections: ["home"] },
   { href: "/vibes", labelKey: "vibes", icon: Sparkles, sections: ["vibes"] },
+  { href: "/clubs", labelKey: "clubs", icon: UsersRound, sections: ["clubs"] },
   { href: "/match", labelKey: "findABuddy", icon: Compass, sections: ["match"] },
   // Trips hub: find a trip buddy (soon) + find a flock live here.
   { href: "/trips", labelKey: "trips", icon: Plane, sections: ["trips-hub"] },
