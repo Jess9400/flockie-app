@@ -53,7 +53,8 @@
       "flock": "Flock",
       "vibe": "Vibes Buddy"
     },
-    "activityMatch": "Match de actividad"
+    "activityMatch": "Match de actividad",
+    "clubChat": "Chat del club"
   },
   "chatPage": {
     "yourMatch": "tu match",

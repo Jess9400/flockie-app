@@ -18,7 +18,7 @@ export default async function NewClubPage() {
   return (
     <main className="mx-auto max-w-2xl px-5 pb-10 pt-6">
       <Link
-        href="/vibes"
+        href="/clubs"
         className="inline-flex items-center gap-1 text-sm font-bold text-muted hover:text-ink"
       >
         <ChevronLeft size={16} /> {t("back")}
@@ -28,7 +28,7 @@ export default async function NewClubPage() {
       </p>
       <h1 className="mt-2 text-3xl font-black tracking-tight text-ink">{t("title")}</h1>
       <p className="mt-2 max-w-xl text-base font-medium leading-relaxed text-muted">{t("intro")}</p>
-      <CreateFormingClub defaultCity={profile?.home_city ?? ""} />
+      <CreateFormingClub defaultCity={profile?.home_city ?? ""} userId={user!.id} />
     </main>
   );
 }

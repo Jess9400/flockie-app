@@ -1,6 +1,6 @@
 {
   "create": {
-    "back": "Volver a Vibes",
+    "back": "Clubs",
     "eyebrow": "CLUBS · EN FORMACIÓN",
     "title": "Crea un Club",
     "intro": "Para personas que quieren repetir un plan, no solo conocerse una vez.",
@@ -41,7 +41,12 @@
     "activitySport": "Deporte",
     "activityCreative": "Creativo",
     "activityOutdoors": "Aire libre",
-    "activityGames": "Juegos"
+    "activityGames": "Juegos",
+    "coverLabel": "Foto de portada",
+    "coverUpload": "Sube una foto de portada",
+    "coverUploading": "Subiendo…",
+    "coverRemoveAria": "Quitar portada",
+    "coverUploadError": "No se pudo subir la foto. Inténtalo de nuevo."
   },
   "detail": {
     "back": "Volver a Vibes",

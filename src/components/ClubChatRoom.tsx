@@ -36,6 +36,13 @@ export default function ClubChatRoom({
     endRef.current?.scrollIntoView({ block: "end" });
   }, [messages]);
 
+  // Keep the unified Chats badge honest: mark this room read on mount and as
+  // messages arrive while it's open (chat_reads spans all chat tables).
+  useEffect(() => {
+    supabase.rpc("mark_chat_read", { p_chat: clubId }).then(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clubId, messages.length]);
+
   useEffect(() => {
     try {
       const channel = supabase

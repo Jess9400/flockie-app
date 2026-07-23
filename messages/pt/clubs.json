@@ -1,6 +1,6 @@
 {
   "create": {
-    "back": "Voltar para Vibes",
+    "back": "Clubs",
     "eyebrow": "CLUBS · EM FORMAÇÃO",
     "title": "Crie um Club",
     "intro": "Para pessoas que querem repetir um tipo de plano, não apenas se encontrar uma vez.",
@@ -41,7 +41,12 @@
     "activitySport": "Esporte",
     "activityCreative": "Criativo",
     "activityOutdoors": "Ao ar livre",
-    "activityGames": "Jogos"
+    "activityGames": "Jogos",
+    "coverLabel": "Foto de capa",
+    "coverUpload": "Envie uma foto de capa",
+    "coverUploading": "Enviando…",
+    "coverRemoveAria": "Remover capa",
+    "coverUploadError": "Não foi possível enviar a foto. Tente de novo."
   },
   "detail": {
     "back": "Voltar para Vibes",

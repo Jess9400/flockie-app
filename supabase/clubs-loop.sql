@@ -210,6 +210,11 @@ begin
       update public.clubs set nudge_stage = 0, nudged_at = null, updated_at = now()
       where id = c.id;
 
+      -- The reminder lands IN the club chat (the plan's design), plus inbox.
+      insert into public.club_messages (club_id, sender_id, content)
+      values (c.id, null,
+        c.title || ': ' || trim(to_char(v_next, 'Day')) || ', same place - you in? Tap the next gathering on the club page.');
+
       -- One-tap "you in?" to the whole club (host included).
       for m in
         select user_id from public.club_memberships
@@ -289,3 +294,34 @@ create policy "club members write" on public.club_messages
 do $$ begin
   alter publication supabase_realtime add table public.club_messages;
 exception when others then null; end $$;
+
+-- ── Club chats in the unified Chats list ────────────────────────────────────
+create or replace function public.my_club_chats()
+returns table (club_id uuid, title text, cover_photo text, unread int, last_at timestamptz)
+language sql security definer set search_path = public stable as $$
+  select
+    c.id,
+    c.title,
+    c.cover_photo,
+    (
+      select count(*)::int
+      from public.club_messages m
+      left join public.chat_reads cr
+        on cr.user_id = auth.uid() and cr.chat_id = c.id
+      where m.club_id = c.id
+        and (m.sender_id is null or m.sender_id <> auth.uid())
+        and m.created_at > coalesce(cr.last_read_at, 'epoch'::timestamptz)
+    ) as unread,
+    (select max(m2.created_at) from public.club_messages m2 where m2.club_id = c.id) as last_at
+  from public.clubs c
+  where c.status in ('forming', 'active', 'paused')
+    and (
+      c.owner_id = auth.uid()
+      or exists (
+        select 1 from public.club_memberships cm
+        where cm.club_id = c.id and cm.user_id = auth.uid()
+          and cm.status in ('founding', 'regular')
+      )
+    );
+$$;
+grant execute on function public.my_club_chats() to authenticated;

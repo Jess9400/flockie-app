@@ -20,6 +20,7 @@ export async function GET() {
     you: (message: string) => t("list.youPrefix", { message }),
     tripMatch: t("list.tripMatch"),
     activityMatch: t("list.activityMatch"),
+    clubChat: t("list.clubChat"),
   });
 
   return NextResponse.json(payload, {

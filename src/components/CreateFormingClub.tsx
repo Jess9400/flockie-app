@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, LockKeyhole, MapPin, Sparkles, UsersRound } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import GenerateCoverButton from "@/components/GenerateCoverButton";
 
 type Cadence = "weekly" | "biweekly" | "monthly";
 type Openness = "discoverable" | "invite_only";
@@ -14,7 +15,7 @@ const activityKeys = ["activityCoffee", "activitySport", "activityCreative", "ac
 const inputClass =
   "mt-2 w-full rounded-2xl border-2 border-ink/15 bg-white px-4 py-3 text-sm font-semibold text-ink outline-none placeholder:text-ink/35 focus:border-flockie-blue";
 
-export default function CreateFormingClub({ defaultCity }: { defaultCity: string }) {
+export default function CreateFormingClub({ defaultCity, userId }: { defaultCity: string; userId: string }) {
   const supabase = createClient();
   const router = useRouter();
   const t = useTranslations("clubs.create");
@@ -29,6 +30,27 @@ export default function CreateFormingClub({ defaultCity }: { defaultCity: string
   const [error, setError] = useState<string | null>(null);
   const [clubTitle, setClubTitle] = useState<string | null>(null);
   const [clubId, setClubId] = useState<string | null>(null);
+  const [cover, setCover] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const coverInput = useRef<HTMLInputElement>(null);
+
+  async function onCover(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() ?? "jpg";
+      const path = `${userId}/club-${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+      if (error) throw error;
+      setCover(supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl);
+    } catch {
+      setError(t("coverUploadError"));
+    } finally {
+      setUploading(false);
+      if (coverInput.current) coverInput.current.value = "";
+    }
+  }
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -45,7 +67,7 @@ export default function CreateFormingClub({ defaultCity }: { defaultCity: string
       p_city: city.trim(),
       p_area: area.trim() || null,
       p_category: category.trim() || null,
-      p_cover_photo: null,
+      p_cover_photo: cover,
       p_cadence: cadence,
       p_openness: openness,
     });
@@ -96,6 +118,42 @@ export default function CreateFormingClub({ defaultCity }: { defaultCity: string
 
   return (
     <form onSubmit={submit} className="mt-8 space-y-7 pb-4">
+      <div>
+        <span className="block text-sm font-bold">{t("coverLabel")}</span>
+        {cover ? (
+          <div className="relative mt-2 aspect-[16/9] overflow-hidden rounded-2xl border border-ink/15">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={cover} alt="" className="h-full w-full object-cover" />
+            <button
+              type="button"
+              onClick={() => setCover(null)}
+              className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-ink text-xs font-bold text-white"
+              aria-label={t("coverRemoveAria")}
+            >
+              ✕
+            </button>
+          </div>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={() => coverInput.current?.click()}
+              disabled={uploading}
+              className="mt-2 flex aspect-[16/9] w-full items-center justify-center rounded-2xl border-2 border-dashed border-ink/40 text-sm font-bold text-muted disabled:opacity-50"
+            >
+              {uploading ? t("coverUploading") : t("coverUpload")}
+            </button>
+            <GenerateCoverButton
+              userId={userId}
+              prompt={[title, category, city].filter(Boolean).join(", ")}
+              disabled={uploading}
+              onUploaded={(url) => setCover(url)}
+            />
+          </>
+        )}
+        <input ref={coverInput} type="file" accept="image/*" className="hidden" onChange={onCover} />
+      </div>
+
       <section className="rounded-[2rem] border border-ink/15 bg-white p-5 shadow-[0_8px_30px_rgba(10,37,69,0.05)] sm:p-6">
         <div className="flex items-start gap-3 rounded-2xl bg-flockie-blue/10 p-4">
           <UsersRound className="mt-0.5 shrink-0 text-flockie-blue" size={22} />

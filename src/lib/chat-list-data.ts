@@ -25,7 +25,14 @@ type VibeSummary = {
   starts_at: string;
   unread: number;
 };
-type LastMsg = { sender_id: string; content: string; created_at: string };
+type ClubSummary = {
+  club_id: string;
+  title: string;
+  cover_photo: string | null;
+  unread: number;
+  last_at: string | null;
+};
+type LastMsg = { sender_id: string | null; content: string; created_at: string };
 
 // A conversation row, shape-compatible with the client list renderer. `group`
 // drives the All / Groups / Direct filter; `kind` keeps the finer type for the
@@ -49,7 +56,7 @@ export type ChatListPayload = { rows: ChatListRow[]; unreadTotal: number };
 
 // Group chats (Vibe + Flock) vs 1:1 direct chats (travel/activity buddies).
 function groupFor(kind: string): "group" | "direct" {
-  return kind === "vibe" || kind === "flock" ? "group" : "direct";
+  return kind === "vibe" || kind === "flock" || kind === "club" ? "group" : "direct";
 }
 
 async function latestPerChat(
@@ -88,13 +95,16 @@ export async function getChatList(
   supabase: Supabase,
   meId: string,
   locale: string,
-  labels: { you: (message: string) => string; tripMatch: string; activityMatch: string }
+  labels: { you: (message: string) => string; tripMatch: string; activityMatch: string; clubChat: string }
 ): Promise<ChatListPayload> {
-  const [{ data: buddies }, { data: vibes }, { data: flockChats }] = await Promise.all([
+  const [{ data: buddies }, { data: vibes }, { data: flockChats }, clubsRes] = await Promise.all([
     supabase.rpc("buddy_chat_summaries"),
     supabase.rpc("vibe_chat_summaries"),
     supabase.rpc("my_flock_chats"),
+    // Club rooms — migration-safe (RPC missing on prod → no club rows).
+    supabase.rpc("my_club_chats"),
   ]);
+  const clubList: ClubSummary[] = clubsRes.error ? [] : ((clubsRes.data ?? []) as ClubSummary[]);
   const buddyList = (buddies ?? []) as BuddySummary[];
   const vibeList = (vibes ?? []) as VibeSummary[];
 
@@ -105,9 +115,26 @@ export async function getChatList(
     }
   });
 
-  const [buddyLast, vibeLast, { data: vibeMeta }] = await Promise.all([
+  // Latest club message per club (club_messages keys on club_id, not chat_id).
+  const clubLastPromise: Promise<Record<string, LastMsg>> = (async () => {
+    const out: Record<string, LastMsg> = {};
+    if (clubList.length === 0) return out;
+    const { data } = await supabase
+      .from("club_messages")
+      .select("club_id, sender_id, content, created_at")
+      .in("club_id", clubList.map((c) => c.club_id))
+      .order("created_at", { ascending: false })
+      .limit(200);
+    data?.forEach((m) => {
+      if (!out[m.club_id]) out[m.club_id] = m as LastMsg;
+    });
+    return out;
+  })();
+
+  const [buddyLast, vibeLast, clubLast, { data: vibeMeta }] = await Promise.all([
     latestPerChat(supabase, "buddy_messages", buddyList.map((b) => b.chat_id)),
     latestPerChat(supabase, "vibing_messages", vibeList.map((v) => v.chat_id)),
+    clubLastPromise,
     vibeList.length
       ? supabase.from("vibe_directory").select("id, city, photos").in("id", vibeList.map((v) => v.vibe_id))
       : Promise.resolve({ data: [] as { id: string; city: string; photos: string[] | null }[] }),
@@ -169,8 +196,30 @@ export async function getChatList(
     };
   });
 
+  const clubRows: ChatListRow[] = clubList.map((c) => {
+    const last = clubLast[c.club_id];
+    return {
+      id: `club-${c.club_id}`,
+      href: `/clubs/${c.club_id}/chat`,
+      photo: c.cover_photo,
+      title: c.title,
+      subtitle: preview(last, meId, labels.clubChat, labels.you),
+      time: last ? formatChatTime(last.created_at, locale) : "",
+      unread: c.unread,
+      fallback: c.title[0]?.toUpperCase() ?? "C",
+      fallbackTone: "cream",
+      sortKey: last
+        ? new Date(last.created_at).getTime()
+        : c.last_at
+          ? new Date(c.last_at).getTime()
+          : 0,
+      kind: "club",
+      group: "group",
+    };
+  });
+
   // Unread float to top, then most recent first — one stream, no tabs.
-  const rows = [...buddyRows, ...vibeRows].sort((a, b) => {
+  const rows = [...buddyRows, ...vibeRows, ...clubRows].sort((a, b) => {
     const ua = a.unread > 0 ? 1 : 0;
     const ub = b.unread > 0 ? 1 : 0;
     if (ua !== ub) return ub - ua;

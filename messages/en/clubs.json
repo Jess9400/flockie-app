@@ -1,6 +1,6 @@
 {
   "create": {
-    "back": "Back to Vibes",
+    "back": "Clubs",
     "eyebrow": "CLUBS · FORMING",
     "title": "Start a Club",
     "intro": "For people who want to do the same kind of thing again — not just meet once.",
@@ -41,7 +41,12 @@
     "activitySport": "Sport",
     "activityCreative": "Creative",
     "activityOutdoors": "Outdoors",
-    "activityGames": "Games"
+    "activityGames": "Games",
+    "coverLabel": "Cover photo",
+    "coverUpload": "Upload a cover photo",
+    "coverUploading": "Uploading…",
+    "coverRemoveAria": "Remove cover",
+    "coverUploadError": "Couldn't upload that photo. Try again."
   },
   "detail": {
     "back": "Back to Vibes",
