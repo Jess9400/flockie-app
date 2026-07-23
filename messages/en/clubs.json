@@ -143,5 +143,41 @@
     "emptyTitle": "No Clubs in {city} yet",
     "emptyEverywhere": "No Clubs yet",
     "emptyBody": "Start one around something you would genuinely like to keep doing. It begins as Forming — no fake members needed."
+  },
+  "attendance": {
+    "title": "Record who came",
+    "body": "Confirm the people who actually attended this gathering. This does not make anyone a Club member — it only makes them eligible to request it.",
+    "empty": "No confirmed attendees to record.",
+    "recorded": "Attendance recorded",
+    "record": "Record {count} attendee",
+    "recordPlural": "Record {count} attendees",
+    "recording": "Recording…",
+    "confirmTitle": "Record attendance?",
+    "confirmBody": "Only mark people who actually came. This attendance record cannot be removed here.",
+    "confirm": "Record attendance",
+    "cancel": "Cancel",
+    "error": "Couldn’t record attendance. Please try again."
+  },
+  "membership": {
+    "requestTitle": "Want to make this a regular thing?",
+    "requestBody": "You attended a Club gathering. Request regular membership and the host will decide.",
+    "request": "Request regular membership",
+    "requesting": "Sending request…",
+    "requestedTitle": "Membership request sent",
+    "requestedBody": "The Club host will review it. You are not a regular member until they approve.",
+    "declinedTitle": "Membership isn’t available right now",
+    "declinedBody": "You can keep joining gatherings if new spots open.",
+    "requestError": "Couldn’t send your request. Please try again.",
+    "hostTitle": "Regular membership requests",
+    "hostBody": "These people attended a Club gathering and chose to request regular membership.",
+    "approve": "Approve",
+    "approving": "Approving…",
+    "decline": "Decline",
+    "declining": "Declining…",
+    "declineTitle": "Decline this membership request?",
+    "declineBody": "They will not become a regular member. They can still join future gatherings if eligible.",
+    "declineConfirm": "Decline request",
+    "cancel": "Cancel",
+    "decisionError": "Couldn’t update this request. Please try again."
   }
 }

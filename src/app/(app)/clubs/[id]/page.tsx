@@ -4,6 +4,8 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import FounderInvitePanel, { type FounderInvite } from "@/components/FounderInvitePanel";
 import ClubHeartbeatControls from "@/components/ClubHeartbeatControls";
+import ClubMembershipRequest from "@/components/ClubMembershipRequest";
+import ClubMembershipRequests from "@/components/ClubMembershipRequests";
 
 type ClubDetail = {
   id: string;
@@ -15,6 +17,8 @@ type ClubDetail = {
   cadence: "weekly" | "biweekly" | "monthly";
   status: "forming" | "active" | "paused" | "closed";
   is_host: boolean;
+  membership_status: string | null;
+  has_attended: boolean;
   next_vibe_id: string | null;
   next_vibe_title: string | null;
   next_vibe_starts_at: string | null;
@@ -64,6 +68,27 @@ export default async function ClubPage({ params }: { params: { id: string } }) {
         .in("status", ["active", "accepted"])
         .order("created_at", { ascending: false })
     : { data: [] as FounderInvite[] };
+  let membershipRequests: { id: string; display_name: string | null; photos: string[] | null }[] = [];
+  if (club.is_host) {
+    const { data: requestRows } = await supabase
+      .from("club_memberships")
+      .select("user_id")
+      .eq("club_id", club.id)
+      .eq("status", "requested");
+    const requestIds = (requestRows ?? []).map((row) => row.user_id);
+    if (requestIds.length) {
+      const { data: requestProfiles } = await supabase
+        .from("public_profiles")
+        .select("id, display_name, photos")
+        .in("id", requestIds);
+      const byId = new Map((requestProfiles ?? []).map((profile) => [profile.id, profile]));
+      membershipRequests = requestIds.map((id) => ({
+        id,
+        display_name: byId.get(id)?.display_name ?? null,
+        photos: byId.get(id)?.photos ?? null,
+      }));
+    }
+  }
 
   return (
     <main className="mx-auto max-w-2xl px-5 pb-10 pt-6">
@@ -112,6 +137,12 @@ export default async function ClubPage({ params }: { params: { id: string } }) {
       {club.is_host && (club.status === "forming" || club.status === "active") && (
         <FounderInvitePanel clubId={club.id} initialInvites={(founderInvites ?? []) as FounderInvite[]} />
       )}
+
+      {!club.is_host && club.has_attended && club.status === "active" && !["founding", "regular", "invited"].includes(club.membership_status ?? "") && (
+        <ClubMembershipRequest clubId={club.id} status={club.membership_status} />
+      )}
+
+      {club.is_host && <ClubMembershipRequests clubId={club.id} requests={membershipRequests} />}
 
       {club.is_host && (
         <ClubHeartbeatControls

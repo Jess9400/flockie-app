@@ -143,5 +143,41 @@
     "emptyTitle": "Ainda não há Clubs em {city}",
     "emptyEverywhere": "Ainda não há Clubs",
     "emptyBody": "Crie um em torno de algo que você realmente quer continuar fazendo. Ele começa em formação, sem membros falsos."
+  },
+  "attendance": {
+    "title": "Registrar quem foi",
+    "body": "Confirme quem realmente participou deste encontro. Isso não torna ninguém membro; apenas permite solicitar a adesão.",
+    "empty": "Não há participantes confirmados para registrar.",
+    "recorded": "Presença registrada",
+    "record": "Registrar {count} participante",
+    "recordPlural": "Registrar {count} participantes",
+    "recording": "Registrando…",
+    "confirmTitle": "Registrar presença?",
+    "confirmBody": "Marque somente quem realmente foi. Este registro não pode ser removido aqui.",
+    "confirm": "Registrar presença",
+    "cancel": "Cancelar",
+    "error": "Não foi possível registrar a presença. Tente novamente."
+  },
+  "membership": {
+    "requestTitle": "Quer tornar isso algo regular?",
+    "requestBody": "Você participou de um encontro do Club. Peça adesão regular e o anfitrião decidirá.",
+    "request": "Solicitar adesão regular",
+    "requesting": "Enviando solicitação…",
+    "requestedTitle": "Solicitação de adesão enviada",
+    "requestedBody": "O anfitrião vai revisar. Você não é membro regular até a aprovação.",
+    "declinedTitle": "A adesão não está disponível agora",
+    "declinedBody": "Você ainda pode entrar em futuros encontros se houver vaga.",
+    "requestError": "Não foi possível enviar sua solicitação. Tente novamente.",
+    "hostTitle": "Solicitações de adesão regular",
+    "hostBody": "Estas pessoas participaram de um encontro do Club e escolheram solicitar adesão regular.",
+    "approve": "Aprovar",
+    "approving": "Aprovando…",
+    "decline": "Recusar",
+    "declining": "Recusando…",
+    "declineTitle": "Recusar esta solicitação?",
+    "declineBody": "A pessoa não será membro regular. Ainda pode entrar em futuros encontros se for elegível.",
+    "declineConfirm": "Recusar solicitação",
+    "cancel": "Cancelar",
+    "decisionError": "Não foi possível atualizar esta solicitação. Tente novamente."
   }
 }

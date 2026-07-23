@@ -143,5 +143,41 @@
     "emptyTitle": "Aún no hay Clubs en {city}",
     "emptyEverywhere": "Aún no hay Clubs",
     "emptyBody": "Crea uno alrededor de algo que de verdad quieras seguir haciendo. Empieza en formación, sin miembros falsos."
+  },
+  "attendance": {
+    "title": "Registrar quién asistió",
+    "body": "Confirma a quienes realmente asistieron. Esto no convierte a nadie en miembro; solo permite solicitarlo.",
+    "empty": "No hay asistentes confirmados para registrar.",
+    "recorded": "Asistencia registrada",
+    "record": "Registrar {count} asistente",
+    "recordPlural": "Registrar {count} asistentes",
+    "recording": "Registrando…",
+    "confirmTitle": "¿Registrar asistencia?",
+    "confirmBody": "Marca solo a quienes realmente asistieron. Este registro no puede eliminarse aquí.",
+    "confirm": "Registrar asistencia",
+    "cancel": "Cancelar",
+    "error": "No se pudo registrar la asistencia. Inténtalo otra vez."
+  },
+  "membership": {
+    "requestTitle": "¿Quieres hacerlo habitual?",
+    "requestBody": "Asististe a un encuentro del Club. Solicita membresía regular y el anfitrión decidirá.",
+    "request": "Solicitar membresía regular",
+    "requesting": "Enviando solicitud…",
+    "requestedTitle": "Solicitud de membresía enviada",
+    "requestedBody": "El anfitrión la revisará. No eres miembro regular hasta que la apruebe.",
+    "declinedTitle": "La membresía no está disponible ahora",
+    "declinedBody": "Puedes seguir uniéndote a encuentros futuros si hay lugar.",
+    "requestError": "No se pudo enviar tu solicitud. Inténtalo otra vez.",
+    "hostTitle": "Solicitudes de membresía regular",
+    "hostBody": "Estas personas asistieron a un encuentro del Club y eligieron solicitar membresía regular.",
+    "approve": "Aprobar",
+    "approving": "Aprobando…",
+    "decline": "Rechazar",
+    "declining": "Rechazando…",
+    "declineTitle": "¿Rechazar esta solicitud?",
+    "declineBody": "No se convertirá en miembro regular. Aún puede unirse a futuros encuentros si es elegible.",
+    "declineConfirm": "Rechazar solicitud",
+    "cancel": "Cancelar",
+    "decisionError": "No se pudo actualizar esta solicitud. Inténtalo otra vez."
   }
 }

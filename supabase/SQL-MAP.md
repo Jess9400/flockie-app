@@ -39,6 +39,7 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | `club_detail` (safe Club detail; no roster or exact location) | `club-detail-access.sql` |
 | Founding member invite links and acceptance RPCs | `club-founder-invites.sql` |
 | `set_club_status` (activate, pause, close) | `club-heartbeat.sql` |
+| `decline_club_membership` | `club-membership-decisions.sql` |
 | `trip_join_requests` SELECT policy (`can_see_trip_requests`) | `trip-requests-rls-enforce.sql` |
 | host RPCs (`notify`, `cancel_vibe`, `update_vibe_when`, commit/remove/appeal) | `host-controls.sql` |
 | Vibes-only onboarding profile fields | `onboarding-v3-vibes-only.sql` |
