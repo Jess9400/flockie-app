@@ -232,12 +232,15 @@ export default async function HomePage({
       id: n.id,
       title: n.title,
       body: n.body,
+      // Prefer the notification's own destination (join requests point at
+      // My Plans → Activities, where Accept/Pass live), then fall back.
       href:
-        n.type === "trip_join_request" && n.data?.trip_id
+        n.data?.href ??
+        (n.type === "trip_join_request" && n.data?.trip_id
           ? `/my-trips#trip-${n.data.trip_id}`
           : n.data?.like_from
             ? `/people/${n.data.like_from}`
-            : "/inbox",
+            : "/inbox"),
     }));
 
   const cardStatuses: Record<string, InterestStatus> = {};

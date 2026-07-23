@@ -68,7 +68,9 @@ export default function ProfileStory({
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 1024px"
-              className="object-cover"
+              // object-top: portrait photos crop from the bottom in this wide
+              // hero, never the face.
+              className="object-cover object-top"
             />
           ) : (
             <div className="flex h-full min-h-[360px] items-center justify-center text-8xl sm:min-h-[430px]">
