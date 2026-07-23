@@ -9,11 +9,25 @@ import ActivityVibeForm from "@/components/ActivityVibeForm";
 export default async function NewVibePage({
   searchParams,
 }: {
-  searchParams: { activity?: string; city?: string; title?: string; from?: string };
+    searchParams: { activity?: string; city?: string; title?: string; from?: string; club?: string };
 }) {
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("vibes");
+
+  // A linked gathering is only created by the Club owner. The database trigger
+  // in clubs-foundation.sql enforces the same rule, so a forged URL cannot
+  // attach a Vibe to someone else’s Club.
+  let club: { id: string; title: string; city: string } | null = null;
+  if (searchParams.club) {
+    const { data } = await supabase
+      .from("clubs")
+      .select("id, title, city")
+      .eq("id", searchParams.club)
+      .eq("owner_id", user!.id)
+      .maybeSingle();
+    club = data;
+  }
 
   // "Run it again": pre-fill from one of my past vibes (dates left blank to re-set).
   let clone: Parameters<typeof CreateVibeForm>[0]["clone"];
@@ -69,17 +83,20 @@ export default async function NewVibePage({
       >
         <ChevronLeft size={16} /> {t("create.back")}
       </Link>
-      <h1 className="text-2xl font-black">{clone ? t("create.titleRunAgain") : t("create.titleCreate")}</h1>
+      <h1 className="text-2xl font-black">
+        {club ? t("create.titleClubGathering") : clone ? t("create.titleRunAgain") : t("create.titleCreate")}
+      </h1>
       <p className="mt-1 text-sm font-medium text-muted">
-        {clone ? t("create.subtitleRunAgain") : t("create.subtitleCreate")}
+        {club ? t("create.subtitleClubGathering", { club: club.title }) : clone ? t("create.subtitleRunAgain") : t("create.subtitleCreate")}
       </p>
       <div className="mt-6">
         <CreateVibeForm
           userId={user!.id}
-          defaultCity={searchParams.city ?? ""}
+          defaultCity={searchParams.city ?? club?.city ?? ""}
           defaultActivityUrl={searchParams.activity ?? ""}
           defaultTitle={searchParams.title ?? ""}
           clone={clone}
+          clubId={club?.id}
         />
       </div>
     </main>

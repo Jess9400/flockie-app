@@ -82,12 +82,14 @@ export default function CreateVibeForm({
   defaultActivityUrl = "",
   defaultTitle = "",
   clone,
+  clubId,
 }: {
   userId: string;
   defaultCity: string;
   defaultActivityUrl?: string;
   defaultTitle?: string;
   clone?: VibeClone;
+  clubId?: string;
 }) {
   const supabase = createClient();
   const t = useTranslations("vibes");
@@ -382,6 +384,7 @@ export default function CreateVibeForm({
         dealbreaker_rules: rules,
         diversity_floor_enabled: diversity,
         status: "open",
+        club_id: clubId ?? null,
       })
       .select("id")
       .single();

@@ -77,9 +77,11 @@
   "create": {
     "back": "Atrás",
     "titleCreate": "Crear un Vibe",
+    "titleClubGathering": "Planear un encuentro del Club",
     "titleRunAgain": "Repetirlo",
     "subtitleRunAgain": "Los mismos detalles, nueva fecha — define un nuevo inicio, fecha límite y cupos, y publícalo.",
     "subtitleCreate": "Un grupo seleccionado — los asistentes se emparejan por vibe, no por orden de llegada. Sin swipe.",
+    "subtitleClubGathering": "Este encuentro pertenecerá a {club}. No añade automáticamente a nadie al Club.",
     "successTitle": "¡Tu Vibe ya está activo!",
     "successBody": "Compártelo para invitar gente. Tocan “Me interesa” y el algoritmo arma el grupo con las personas más compatibles.",
     "viewYourVibe": "Ver tu Vibe",
