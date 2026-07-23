@@ -117,7 +117,9 @@ begin
 
   select * into me from public.profiles where id = auth.uid();
   v_score := round(public.buddy_pair_score(auth.uid(), t.creator_id));
-  v_ctx := concat_ws(' · ',
+  -- Separator built with chr(183) ('middle dot') so a copy/paste encoding
+  -- mishap in the SQL editor can never mangle it into mojibake.
+  v_ctx := concat_ws(' ' || chr(183) || ' ',
     nullif(concat_ws(', ',
       coalesce(me.display_name, 'Someone'),
       nullif(me.age::text, ''),
@@ -132,8 +134,8 @@ begin
     coalesce(me.display_name, 'Someone') || ' wants to join "' || coalesce(t.title, 'your activity') || '"',
     v_ctx
       || case when p_note is not null and btrim(p_note) <> ''
-           then e'\n“' || left(btrim(p_note), 200) || '”' else '' end
-      || e'\nReview it under My Plans → Activities.',
+           then e'\n"' || left(btrim(p_note), 200) || '"' else '' end
+      || e'\nReview it under My Plans - Activities.',
     jsonb_build_object('like_from', auth.uid(), 'activity_id', t.id, 'href', '/my-activities')
   );
 
