@@ -64,7 +64,10 @@
     "noGatheringTitle": "Nada planejado ainda",
     "noGatheringBody": "O primeiro encontro aparecerá aqui quando for planejado.",
     "privacyTitle": "Construído em encontros reais",
-    "privacyBody": "A Flockie não mostra uma lista de membros nem o local exato aqui. Fundadores e regulares são conquistados com participação real."
+    "privacyBody": "A Flockie não mostra uma lista de membros nem o local exato aqui. Fundadores e regulares são conquistados com participação real.",
+    "clubChat": "Chat do club",
+    "clubChatSub": "A sala permanente — planos, piadas, tudo entre as reuniões.",
+    "openChat": "Abrir"
   },
   "founders": {
     "title": "Convidar membros fundadores",
@@ -179,5 +182,41 @@
     "declineConfirm": "Recusar solicitação",
     "cancel": "Cancelar",
     "decisionError": "Não foi possível atualizar esta solicitação. Tente novamente."
+  },
+  "convert": {
+    "heading": "Transforme em um club",
+    "subtitle": "\"{title}\" vira a primeira reunião do club — quem foi já faz parte da história.",
+    "nameLabel": "Nome do club",
+    "cadenceLabel": "Com que frequência vocês se encontram?",
+    "cadence": {
+      "weekly": "Semanal",
+      "biweekly": "A cada 2 semanas",
+      "monthly": "Mensal"
+    },
+    "inviteLabel": "Convide membros fundadores",
+    "inviteHint": "Todos que participaram — desmarque quem preferir não convidar.",
+    "invited": "Convidado",
+    "skip": "Pular",
+    "creating": "Criando…",
+    "createCta": "Criar o club"
+  },
+  "loop": {
+    "invitedTitle": "Você foi convidado como membro fundador 🎉",
+    "invitedBody": "O anfitrião escolheu você da reunião que vocês dois participaram. Aceite para oficializar.",
+    "acceptInvite": "Aceitar convite",
+    "accepting": "Aceitando…",
+    "modeTitle": "Quem mantém esse club vivo?",
+    "modeBody": "O heartbeat: as reuniões podem ser agendadas por você, ou automaticamente pela Flockie para o club sobreviver às semanas corridas.",
+    "modeHost": "Eu cuido",
+    "modeHostSub": "Você agenda cada reunião",
+    "modeAuto": "Flockie mantém",
+    "modeAutoSub": "Próxima reunião auto-agendada no seu ritmo — mesmo lugar, mesma hora",
+    "detailChat": "Chat do club"
+  },
+  "chat": {
+    "heading": "Chat do club",
+    "empty": "Sem mensagens ainda — diga oi para o club 👋",
+    "placeholder": "Mensagem para o club…",
+    "send": "Enviar"
   }
 }

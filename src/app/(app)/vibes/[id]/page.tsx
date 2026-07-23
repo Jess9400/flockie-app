@@ -674,6 +674,21 @@ export default async function VibeDetailPage({
         />
       )}
 
+      {isHost && ended && !clubId && (
+        <Link
+          href={`/clubs/from-vibe/${params.id}`}
+          className="mt-5 flex items-center justify-between gap-3 rounded-3xl border-2 border-flockie-coral bg-white p-4 shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5"
+        >
+          <div className="min-w-0">
+            <p className="text-base font-extrabold text-ink">🔁 {t("club.convertTitle")}</p>
+            <p className="mt-0.5 text-sm font-medium text-muted">{t("club.convertBody")}</p>
+          </div>
+          <span className="shrink-0 rounded-full border-2 border-ink bg-flockie-coral px-4 py-2 text-sm font-bold text-white shadow-[0_2px_0_0_#E0512C]">
+            {t("club.convertCta")}
+          </span>
+        </Link>
+      )}
+
       {isHost && ended && clubId && (
         <ClubAttendancePanel
           clubId={clubId}

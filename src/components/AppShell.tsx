@@ -103,7 +103,9 @@ export default function AppShell({
   // Chat rooms fill the viewport exactly (no page scroll, no footer) so the
   // chat window stays static and only the message list scrolls inside it.
   const isChatRoom =
-    /^\/vibes\/[^/]+\/chat$/.test(pathname) || /^\/buddies\/[^/]+$/.test(pathname);
+    /^\/vibes\/[^/]+\/chat$/.test(pathname) ||
+    /^\/buddies\/[^/]+$/.test(pathname) ||
+    /^\/clubs\/[^/]+\/chat$/.test(pathname);
   const isChatsList = pathname === "/chats" || pathname.startsWith("/chats/");
   // Any chat surface gets the persistent desktop rail (list on the left,
   // conversation/placeholder on the right).

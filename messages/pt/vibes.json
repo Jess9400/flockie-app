@@ -376,5 +376,10 @@
     "As described": "Como descrito",
     "On time": "No horário",
     "Would do again": "Faria de novo"
+  },
+  "club": {
+    "convertTitle": "Essa deu certo — virar um club?",
+    "convertBody": "As mesmas pessoas, um ritmo regular. Transforme essa vibe em um club recorrente.",
+    "convertCta": "Virar club"
   }
 }

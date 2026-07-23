@@ -64,7 +64,10 @@
     "noGatheringTitle": "Nothing planned yet",
     "noGatheringBody": "The first gathering will appear here once it is planned.",
     "privacyTitle": "Built through real gatherings",
-    "privacyBody": "Flockie does not show a Club roster or exact location here. Founders and regulars are earned through real participation."
+    "privacyBody": "Flockie does not show a Club roster or exact location here. Founders and regulars are earned through real participation.",
+    "clubChat": "Club chat",
+    "clubChatSub": "The persistent room — plans, jokes, everything between gatherings.",
+    "openChat": "Open"
   },
   "founders": {
     "title": "Invite founding members",
@@ -179,5 +182,41 @@
     "declineConfirm": "Decline request",
     "cancel": "Cancel",
     "decisionError": "Couldn’t update this request. Please try again."
+  },
+  "convert": {
+    "heading": "Turn it into a club",
+    "subtitle": "\"{title}\" becomes the club's first gathering — the people who came are already in the story.",
+    "nameLabel": "Club name",
+    "cadenceLabel": "How often do you meet?",
+    "cadence": {
+      "weekly": "Weekly",
+      "biweekly": "Every 2 weeks",
+      "monthly": "Monthly"
+    },
+    "inviteLabel": "Invite founding members",
+    "inviteHint": "Everyone who attended — untick anyone you'd rather not invite.",
+    "invited": "Invited",
+    "skip": "Skip",
+    "creating": "Creating…",
+    "createCta": "Create the club"
+  },
+  "loop": {
+    "invitedTitle": "You're invited as a founding member 🎉",
+    "invitedBody": "The host picked you from the gathering you both attended. Accept to make it official.",
+    "acceptInvite": "Accept invitation",
+    "accepting": "Accepting…",
+    "modeTitle": "Who keeps this club meeting?",
+    "modeBody": "The heartbeat: gatherings can be scheduled by you, or automatically by Flockie so the club survives busy weeks.",
+    "modeHost": "I'll run it",
+    "modeHostSub": "You schedule each gathering yourself",
+    "modeAuto": "Flockie keeps it going",
+    "modeAutoSub": "Next gathering auto-scheduled on your cadence — same time, same place",
+    "detailChat": "Club chat"
+  },
+  "chat": {
+    "heading": "Club chat",
+    "empty": "No messages yet — say hi to the club 👋",
+    "placeholder": "Message the club…",
+    "send": "Send"
   }
 }

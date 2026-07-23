@@ -203,7 +203,7 @@ export default async function HomePage({
       .eq("user_id", user!.id)
       .is("read_at", null)
       .is("dismissed_at", null)
-      .in("type", ["activity_like", "trip_join_request"])
+      .in("type", ["activity_like", "trip_join_request", "club_founder_invite", "club_join_prompt", "club_heartbeat"])
       .order("created_at", { ascending: false })
       .limit(4),
   ]);

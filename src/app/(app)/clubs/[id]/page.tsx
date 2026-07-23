@@ -4,6 +4,8 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import FounderInvitePanel, { type FounderInvite } from "@/components/FounderInvitePanel";
 import ClubHeartbeatControls from "@/components/ClubHeartbeatControls";
+import ClubInviteAccept from "@/components/ClubInviteAccept";
+import ClubModeToggle from "@/components/ClubModeToggle";
 import ClubMembershipRequest from "@/components/ClubMembershipRequest";
 import ClubMembershipRequests from "@/components/ClubMembershipRequests";
 
@@ -30,6 +32,14 @@ export default async function ClubPage({ params }: { params: { id: string } }) {
   const supabase = await createClient();
   const t = await getTranslations("clubs.detail");
   const { data } = await supabase.rpc("club_detail", { p_club: params.id }).maybeSingle();
+  // Host-only extra: the operating mode drives the heartbeat (RLS limits this
+  // read to the owner; non-hosts just get null).
+  const { data: modeRow } = await supabase
+    .from("clubs")
+    .select("operating_mode")
+    .eq("id", params.id)
+    .maybeSingle();
+  const operatingMode = modeRow?.operating_mode ?? null;
   const club = data as ClubDetail | null;
 
   if (!club) {
@@ -142,7 +152,28 @@ export default async function ClubPage({ params }: { params: { id: string } }) {
         <ClubMembershipRequest clubId={club.id} status={club.membership_status} />
       )}
 
+      {!club.is_host && club.membership_status === "invited" && (
+        <ClubInviteAccept clubId={club.id} />
+      )}
+
+      {(club.is_host || ["founding", "regular"].includes(club.membership_status ?? "")) && (
+        <Link
+          href={`/clubs/${club.id}/chat`}
+          className="mt-5 flex items-center justify-between rounded-[2rem] border border-ink/15 bg-white p-5 shadow-[0_8px_30px_rgba(10,37,69,0.05)] transition-transform hover:-translate-y-0.5 sm:p-6"
+        >
+          <div>
+            <h2 className="text-lg font-black text-ink">💬 {t("clubChat")}</h2>
+            <p className="mt-0.5 text-sm font-medium text-muted">{t("clubChatSub")}</p>
+          </div>
+          <span className="rounded-full bg-flockie-blue px-4 py-2 text-sm font-bold text-white">{t("openChat")}</span>
+        </Link>
+      )}
+
       {club.is_host && <ClubMembershipRequests clubId={club.id} requests={membershipRequests} />}
+
+      {club.is_host && operatingMode && (
+        <ClubModeToggle clubId={club.id} mode={operatingMode} />
+      )}
 
       {club.is_host && (
         <ClubHeartbeatControls
