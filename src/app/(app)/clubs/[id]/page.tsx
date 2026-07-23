@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CalendarDays, ChevronLeft, CircleDot, MapPin, ShieldCheck, Sparkles } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import FounderInvitePanel, { type FounderInvite } from "@/components/FounderInvitePanel";
 
 type ClubDetail = {
   id: string;
@@ -52,6 +53,14 @@ export default async function ClubPage({ params }: { params: { id: string } }) {
         minute: "2-digit",
       }).format(new Date(club.next_vibe_starts_at))
     : null;
+  const { data: founderInvites } = club.is_host
+    ? await supabase
+        .from("club_founder_invites")
+        .select("token, status, expires_at")
+        .eq("club_id", club.id)
+        .in("status", ["active", "accepted"])
+        .order("created_at", { ascending: false })
+    : { data: [] as FounderInvite[] };
 
   return (
     <main className="mx-auto max-w-2xl px-5 pb-10 pt-6">
@@ -95,6 +104,10 @@ export default async function ClubPage({ params }: { params: { id: string } }) {
             {t("planFirst")}
           </Link>
         </section>
+      )}
+
+      {club.is_host && club.status !== "closed" && (
+        <FounderInvitePanel clubId={club.id} initialInvites={(founderInvites ?? []) as FounderInvite[]} />
       )}
 
       <section className="mt-5 rounded-[2rem] border border-ink/15 bg-white p-5 shadow-[0_8px_30px_rgba(10,37,69,0.05)] sm:p-6">
