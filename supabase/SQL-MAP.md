@@ -35,6 +35,7 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | `vibe_directory`, `vibe_private_logistics`, `public_vibe` | `vibe-location-privacy-prepare.sql` |
 | `public_profiles` (including public Vibe persona), `public_profile_events/stats` | `profile-privacy-prepare.sql` |
 | `vibe_takes`, `save_vibe_take` | `vibe-takes.sql` |
+| Club tables, Vibe-link ownership guard, membership/attendance RPCs, `club_directory`, `public_profile_clubs` | `clubs-foundation.sql` |
 | `trip_join_requests` SELECT policy (`can_see_trip_requests`) | `trip-requests-rls-enforce.sql` |
 | host RPCs (`notify`, `cancel_vibe`, `update_vibe_when`, commit/remove/appeal) | `host-controls.sql` |
 | Vibes-only onboarding profile fields | `onboarding-v3-vibes-only.sql` |
