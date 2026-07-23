@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Check, LockKeyhole, MapPin, Sparkles, UsersRound } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
@@ -16,6 +16,7 @@ const inputClass =
 
 export default function CreateFormingClub({ defaultCity }: { defaultCity: string }) {
   const supabase = createClient();
+  const router = useRouter();
   const t = useTranslations("clubs.create");
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
@@ -27,6 +28,7 @@ export default function CreateFormingClub({ defaultCity }: { defaultCity: string
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [clubTitle, setClubTitle] = useState<string | null>(null);
+  const [clubId, setClubId] = useState<string | null>(null);
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -37,7 +39,7 @@ export default function CreateFormingClub({ defaultCity }: { defaultCity: string
     }
 
     setSaving(true);
-    const { error: rpcError } = await supabase.rpc("create_forming_club", {
+    const { data: createdClubId, error: rpcError } = await supabase.rpc("create_forming_club", {
       p_title: title.trim(),
       p_description: description.trim(),
       p_city: city.trim(),
@@ -54,6 +56,7 @@ export default function CreateFormingClub({ defaultCity }: { defaultCity: string
       return;
     }
     setClubTitle(title.trim());
+    setClubId(createdClubId as string);
   }
 
   if (clubTitle) {
@@ -66,12 +69,13 @@ export default function CreateFormingClub({ defaultCity }: { defaultCity: string
         <h2 className="mt-2 text-2xl font-black text-ink">{t("successTitle", { title: clubTitle })}</h2>
         <p className="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-muted">{t("successBody")}</p>
         <div className="mx-auto mt-6 grid max-w-md gap-2 sm:grid-cols-2">
-          <Link
-            href="/vibes"
+          <button
+            type="button"
+            onClick={() => clubId && router.push(`/clubs/${clubId}`)}
             className="rounded-full bg-flockie-coral px-4 py-3 text-sm font-extrabold text-white shadow-[0_3px_0_#d84e32]"
           >
-            {t("explore")}
-          </Link>
+            {t("viewClub")}
+          </button>
           <button
             type="button"
             onClick={() => {

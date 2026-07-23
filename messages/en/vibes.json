@@ -77,9 +77,11 @@
   "create": {
     "back": "Back",
     "titleCreate": "Create a Vibe",
+    "titleClubGathering": "Plan a Club gathering",
     "titleRunAgain": "Run it again",
     "subtitleRunAgain": "Same details, fresh date — set a new start, deadline and spots, then publish.",
     "subtitleCreate": "A curated group room — attendees are matched by vibe, not first-come. No swiping.",
+    "subtitleClubGathering": "This gathering will belong to {club}. It does not automatically add anyone to the Club.",
     "successTitle": "Your Vibe is live!",
     "successBody": "Share it to invite people. They tap “I’m interested” and the algorithm builds the room from the most compatible.",
     "viewYourVibe": "View your Vibe",
