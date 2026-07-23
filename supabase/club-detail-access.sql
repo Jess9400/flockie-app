@@ -19,7 +19,9 @@ returns table (
   membership_status text,
   next_vibe_id uuid,
   next_vibe_title text,
-  next_vibe_starts_at timestamptz
+  next_vibe_starts_at timestamptz,
+  last_completed_vibe_id uuid,
+  last_completed_vibe_title text
 )
 language sql security definer set search_path = public stable as $$
   select
@@ -37,7 +39,9 @@ language sql security definer set search_path = public stable as $$
     mine.status as membership_status,
     next_vibe.id as next_vibe_id,
     next_vibe.title as next_vibe_title,
-    next_vibe.starts_at as next_vibe_starts_at
+    next_vibe.starts_at as next_vibe_starts_at,
+    last_vibe.id as last_completed_vibe_id,
+    last_vibe.title as last_completed_vibe_title
   from public.clubs c
   left join lateral (
     select cm.status
@@ -54,6 +58,15 @@ language sql security definer set search_path = public stable as $$
     order by v.starts_at asc
     limit 1
   ) next_vibe on true
+  left join lateral (
+    select v.id, v.title
+    from public.vibes v
+    where v.club_id = c.id
+      and v.status <> 'cancelled'
+      and coalesce(v.ends_at, v.starts_at) <= now()
+    order by coalesce(v.ends_at, v.starts_at) desc
+    limit 1
+  ) last_vibe on true
   where c.id = p_club
     and (
       c.owner_id = auth.uid()

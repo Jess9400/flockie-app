@@ -99,5 +99,27 @@
     "notFoundTitle": "Esta invitación no está disponible",
     "notFoundBody": "Puede haber caducado, haberse usado o haber sido revocada por el anfitrión.",
     "explore": "Explorar Vibes"
+  },
+  "heartbeat": {
+    "readyTitle": "Tu primer encuentro ya terminó.",
+    "readyBody": "Si se realizó, activa el Club. Así pasa a ser una comunidad recurrente, no solo una idea.",
+    "activate": "Activar Club",
+    "activating": "Activando…",
+    "activeTitle": "Mantén el ritmo",
+    "activeBody": "Planea el próximo encuentro cuando quieras. Nunca creamos uno automáticamente sin que elijas hora y detalles.",
+    "planNext": "Planear el próximo encuentro",
+    "pausedTitle": "Este Club está en pausa",
+    "pausedBody": "Está oculto de Clubes y las invitaciones de fundadores están pausadas. Los encuentros existentes no se cancelan.",
+    "resume": "Reanudar Club",
+    "resuming": "Reanudando…",
+    "pause": "Pausar Club",
+    "pausing": "Pausando…",
+    "close": "Cerrar Club",
+    "closing": "Cerrando…",
+    "pauseError": "No se pudo actualizar este Club. Inténtalo otra vez.",
+    "closeTitle": "¿Cerrar este Club?",
+    "closeBody": "Esto lo elimina permanentemente de Clubes y detiene nuevas invitaciones de fundadores. Los Vibes programados no se cancelan.",
+    "closeConfirm": "Cerrar Club",
+    "cancel": "Cancelar"
   }
 }

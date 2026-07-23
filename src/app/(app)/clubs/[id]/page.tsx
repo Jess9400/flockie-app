@@ -3,6 +3,7 @@ import { CalendarDays, ChevronLeft, CircleDot, MapPin, ShieldCheck, Sparkles } f
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import FounderInvitePanel, { type FounderInvite } from "@/components/FounderInvitePanel";
+import ClubHeartbeatControls from "@/components/ClubHeartbeatControls";
 
 type ClubDetail = {
   id: string;
@@ -17,6 +18,8 @@ type ClubDetail = {
   next_vibe_id: string | null;
   next_vibe_title: string | null;
   next_vibe_starts_at: string | null;
+  last_completed_vibe_id: string | null;
+  last_completed_vibe_title: string | null;
 };
 
 export default async function ClubPage({ params }: { params: { id: string } }) {
@@ -88,7 +91,7 @@ export default async function ClubPage({ params }: { params: { id: string } }) {
         </div>
       </section>
 
-      {club.is_host && club.status === "forming" && (
+      {club.is_host && club.status === "forming" && !club.last_completed_vibe_id && (
         <section className="mt-5 rounded-[2rem] border border-flockie-blue/30 bg-flockie-blue/10 p-5 sm:p-6">
           <div className="flex gap-3">
             <Sparkles className="mt-0.5 shrink-0 text-flockie-coral" size={23} />
@@ -106,8 +109,17 @@ export default async function ClubPage({ params }: { params: { id: string } }) {
         </section>
       )}
 
-      {club.is_host && club.status !== "closed" && (
+      {club.is_host && (club.status === "forming" || club.status === "active") && (
         <FounderInvitePanel clubId={club.id} initialInvites={(founderInvites ?? []) as FounderInvite[]} />
+      )}
+
+      {club.is_host && (
+        <ClubHeartbeatControls
+          clubId={club.id}
+          status={club.status}
+          lastCompletedVibeId={club.last_completed_vibe_id}
+          nextVibeId={club.next_vibe_id}
+        />
       )}
 
       <section className="mt-5 rounded-[2rem] border border-ink/15 bg-white p-5 shadow-[0_8px_30px_rgba(10,37,69,0.05)] sm:p-6">

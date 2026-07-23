@@ -99,5 +99,27 @@
     "notFoundTitle": "Este convite não está disponível",
     "notFoundBody": "Ele pode ter expirado, sido usado ou revogado pelo anfitrião.",
     "explore": "Explorar Vibes"
+  },
+  "heartbeat": {
+    "readyTitle": "Seu primeiro encontro terminou.",
+    "readyBody": "Se ele aconteceu, ative o Club. Assim ele passa a ser uma comunidade recorrente, não apenas uma ideia.",
+    "activate": "Ativar Club",
+    "activating": "Ativando…",
+    "activeTitle": "Mantenha o ritmo",
+    "activeBody": "Planeje o próximo encontro quando quiser. Nunca criamos um automaticamente sem você escolher horário e detalhes.",
+    "planNext": "Planejar o próximo encontro",
+    "pausedTitle": "Este Club está pausado",
+    "pausedBody": "Ele fica oculto da descoberta de Clubs e os convites de fundadores ficam pausados. Encontros existentes não são cancelados.",
+    "resume": "Retomar Club",
+    "resuming": "Retomando…",
+    "pause": "Pausar Club",
+    "pausing": "Pausando…",
+    "close": "Encerrar Club",
+    "closing": "Encerrando…",
+    "pauseError": "Não foi possível atualizar este Club. Tente novamente.",
+    "closeTitle": "Encerrar este Club?",
+    "closeBody": "Isso o remove permanentemente da descoberta e interrompe novos convites de fundadores. Vibes programadas não são canceladas.",
+    "closeConfirm": "Encerrar Club",
+    "cancel": "Cancelar"
   }
 }

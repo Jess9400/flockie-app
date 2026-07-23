@@ -99,5 +99,27 @@
     "notFoundTitle": "This invitation isn’t available",
     "notFoundBody": "It may have expired, been used, or been revoked by the host.",
     "explore": "Explore Vibes"
+  },
+  "heartbeat": {
+    "readyTitle": "Your first gathering is complete.",
+    "readyBody": "If it went ahead, make the Club active. This means it is now a recurring community, not just an idea.",
+    "activate": "Make Club active",
+    "activating": "Activating…",
+    "activeTitle": "Keep the rhythm going",
+    "activeBody": "Plan the next gathering when you’re ready. We never create one automatically without you choosing the time and details.",
+    "planNext": "Plan the next gathering",
+    "pausedTitle": "This Club is paused",
+    "pausedBody": "It is hidden from Club discovery and founder invitations are paused. Existing gatherings are not cancelled.",
+    "resume": "Resume Club",
+    "resuming": "Resuming…",
+    "pause": "Pause Club",
+    "pausing": "Pausing…",
+    "close": "Close Club",
+    "closing": "Closing…",
+    "pauseError": "Couldn’t update this Club. Please try again.",
+    "closeTitle": "Close this Club?",
+    "closeBody": "This permanently removes it from discovery and stops new founder invitations. Scheduled Vibes are not cancelled.",
+    "closeConfirm": "Close Club",
+    "cancel": "Cancel"
   }
 }
