@@ -65,5 +65,39 @@
     "noGatheringBody": "The first gathering will appear here once it is planned.",
     "privacyTitle": "Built through real gatherings",
     "privacyBody": "Flockie does not show a Club roster or exact location here. Founders and regulars are earned through real participation."
+  },
+  "founders": {
+    "title": "Invite founding members",
+    "body": "Create a private, one-use link for someone you want to help shape this Club. They choose whether to accept.",
+    "create": "Create a private invite link",
+    "creating": "Creating link…",
+    "copy": "Copy link",
+    "copied": "Copied",
+    "copyFailed": "Couldn’t copy the link. Please try again.",
+    "active": "Private link ready",
+    "accepted": "Accepted",
+    "revoke": "Revoke",
+    "revoking": "Revoking…",
+    "empty": "No private founder links yet.",
+    "help": "Links expire after 14 days. An accepted link cannot be used again.",
+    "inviteError": "Couldn’t create the invite link. Please try again.",
+    "revokeError": "Couldn’t revoke that link. Please try again."
+  },
+  "invite": {
+    "eyebrow": "FOUNDING MEMBER INVITATION",
+    "title": "Help shape {club}",
+    "body": "You’ve been invited to join the founding group. Founders help set the tone early — joining is your choice.",
+    "location": "{city}",
+    "cadenceWeekly": "Weekly gatherings",
+    "cadenceBiweekly": "Gatherings every two weeks",
+    "cadenceMonthly": "Monthly gatherings",
+    "accept": "Join as a founding member",
+    "accepting": "Joining…",
+    "acceptedTitle": "You’re a founding member.",
+    "acceptedBody": "Welcome to {club}. You can now follow the Club as its first gatherings take shape.",
+    "viewClub": "View Club",
+    "notFoundTitle": "This invitation isn’t available",
+    "notFoundBody": "It may have expired, been used, or been revoked by the host.",
+    "explore": "Explore Vibes"
   }
 }

@@ -65,5 +65,39 @@
     "noGatheringBody": "El primer encuentro aparecerá aquí cuando esté planeado.",
     "privacyTitle": "Construido con encuentros reales",
     "privacyBody": "Flockie no muestra una lista de miembros ni la ubicación exacta aquí. Fundadores y regulares se ganan con participación real."
+  },
+  "founders": {
+    "title": "Invitar miembros fundadores",
+    "body": "Crea un enlace privado de un solo uso para alguien que quieras que ayude a formar este Club. Esa persona decide si acepta.",
+    "create": "Crear enlace privado de invitación",
+    "creating": "Creando enlace…",
+    "copy": "Copiar enlace",
+    "copied": "Copiado",
+    "copyFailed": "No se pudo copiar el enlace. Inténtalo otra vez.",
+    "active": "Enlace privado listo",
+    "accepted": "Aceptada",
+    "revoke": "Revocar",
+    "revoking": "Revocando…",
+    "empty": "Aún no hay enlaces privados para fundadores.",
+    "help": "Los enlaces caducan después de 14 días. Un enlace aceptado no puede volver a usarse.",
+    "inviteError": "No se pudo crear el enlace. Inténtalo otra vez.",
+    "revokeError": "No se pudo revocar ese enlace. Inténtalo otra vez."
+  },
+  "invite": {
+    "eyebrow": "INVITACIÓN DE MIEMBRO FUNDADOR",
+    "title": "Ayuda a formar {club}",
+    "body": "Te han invitado al grupo fundador. Las personas fundadoras ayudan a definir el tono desde el inicio; unirte es tu decisión.",
+    "location": "{city}",
+    "cadenceWeekly": "Encuentros semanales",
+    "cadenceBiweekly": "Encuentros cada dos semanas",
+    "cadenceMonthly": "Encuentros mensuales",
+    "accept": "Unirme como miembro fundador",
+    "accepting": "Uniéndote…",
+    "acceptedTitle": "Eres miembro fundador.",
+    "acceptedBody": "Bienvenido a {club}. Ya puedes seguir el Club mientras toma forma.",
+    "viewClub": "Ver Club",
+    "notFoundTitle": "Esta invitación no está disponible",
+    "notFoundBody": "Puede haber caducado, haberse usado o haber sido revocada por el anfitrión.",
+    "explore": "Explorar Vibes"
   }
 }
