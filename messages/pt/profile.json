@@ -20,15 +20,17 @@
       "out": "um motivo para sair mais"
     },
     "nextUp": "A seguir: {title}",
+    "rightNow": "Agora",
+    "viewPlan": "Ver plano",
     "hereFor": "Aqui para {goal}",
     "lineLabel": "sempre topo →",
     "lineEmpty": "Adicione uma frase curta que pareça com você.",
     "editProfile": "Editar perfil",
     "publicLineEmpty": "{name} ainda não adicionou uma frase.",
     "cancel": "Cancelar",
-    "historyTitle": "Por onde passei",
-    "historySubtitle": "Planos reais, sem biografia obrigatória.",
-    "publicHistoryTitle": "Por onde {name} passou",
+    "historyTitle": "Álbum de Vibes",
+    "historySubtitle": "Alguns planos reais que viraram história.",
+    "publicHistoryTitle": "Álbum de Vibes de {name}",
     "publicHistorySubtitle": "Vibes concluídos no Flockie.",
     "seeAll": "Ver tudo",
     "hosted": "Organizei",
@@ -40,7 +42,11 @@
     "browseVibes": "Explorar Vibes",
     "vibeTitle": "Seu Vibe",
     "vibeBody": "Seus interesses e controles ajudam o Flockie a encontrar planos que combinam com você.",
-    "adjustVibe": "Ajustar meu Vibe"
+    "adjustVibe": "Ajustar meu Vibe",
+    "kindWordsTitle": "Palavras gentis",
+    "kindWordsSubtitle": "Escritas após um match verificado no Flockie — sem notas públicas.",
+    "kindWordsEmpty": "Quando alguém com quem você deu match deixar uma mensagem gentil, ela aparecerá aqui. Sem notas ou médias no seu perfil.",
+    "verifiedConnection": "Match verificado no Flockie"
   },
   "identityEditor": {
     "title": "Editar perfil",
