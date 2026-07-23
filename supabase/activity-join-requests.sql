@@ -164,6 +164,14 @@ begin
     where activity_id = p_activity and user_id = p_user and status = 'pending';
   if not found then raise exception 'request_not_found'; end if;
 
+  -- The request is handled — clear its notification off Home/inbox unread.
+  update public.notifications
+     set read_at = coalesce(read_at, now())
+   where user_id = auth.uid()
+     and type = 'activity_like'
+     and data->>'activity_id' = p_activity::text
+     and data->>'like_from' = p_user::text;
+
   if not p_accept then
     return jsonb_build_object('declined', true);
   end if;
