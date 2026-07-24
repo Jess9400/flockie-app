@@ -68,7 +68,8 @@ export default async function FlocksPage({
     supabase.from("profiles").select("trip_prefs_complete").eq("id", user!.id).maybeSingle(),
     query.order("start_date", { ascending: true }).range(from, from + PAGE_SIZE - 1),
   ]);
-  const tripPrefsDone = prefErr ? true : !!prefRow?.trip_prefs_complete;
+  void prefErr; // trip-prefs quiz retired — never gate joining on it
+  const tripPrefsDone = true;
 
   const list = trips ?? [];
   const ids = list.map((t) => t.id);

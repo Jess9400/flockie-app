@@ -84,15 +84,12 @@ export default async function TripPage({
     .select("trip_prefs_complete, activity_prefs_complete")
     .eq("id", user!.id)
     .maybeSingle();
-  const tripPrefsDone = prefsErr ? true : !!prefs?.trip_prefs_complete;
+  // Trip-prefs quiz retired: Vibes-only scoring (#244/#261) never reads its
+  // answers, so we no longer gate trip creation on it. The activity gate stays
+  // only for pre-v3 profiles (the new onboarding sets activity_prefs_complete).
+  void prefsErr;
   const activityPrefsDone = prefsErr ? true : !!prefs?.activity_prefs_complete;
-  const needsTripVibe = isNew && !showReviewGate && !showCapGate && !isActivity && !tripPrefsDone;
   const needsActivityVibe = isNew && !showReviewGate && !showCapGate && isActivity && !activityPrefsDone;
-
-  // After completing the prefs form, land back on the matching "create" view
-  // (this same route) so the trip/activity-creation form is shown next.
-  if (needsTripVibe)
-    return <TripVibeForm userId={user!.id} redirectAfter="/match/trip?kind=trip" />;
   if (needsActivityVibe)
     return <ActivityVibeForm userId={user!.id} redirectAfter="/match/trip?kind=activity" />;
 

@@ -138,8 +138,10 @@ export default function CityAutocomplete({
                 id={`${listboxId}-opt-${index}`}
                 role="option"
                 aria-selected={active}
-                // onMouseDown (not onClick) so it fires before the input's blur.
-                onMouseDown={(event) => {
+                // onPointerDown (not onClick) so it fires before the input's
+                // blur on BOTH mouse and touch — iOS taps often skip the
+                // synthesized mousedown, which made suggestions untappable.
+                onPointerDown={(event) => {
                   event.preventDefault();
                   select(city);
                 }}

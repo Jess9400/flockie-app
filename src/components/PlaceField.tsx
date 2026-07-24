@@ -145,8 +145,10 @@ export default function PlaceField({
               <li key={`${h.name}-${i}`}>
                 <button
                   type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => pick(h)}
+                  onPointerDown={(e) => {
+                    e.preventDefault();
+                    pick(h);
+                  }}
                   className="flex w-full items-start gap-2 px-3 py-2 text-left hover:bg-cream"
                 >
                   <MapPin size={14} className="mt-0.5 shrink-0 text-flockie-blue" />

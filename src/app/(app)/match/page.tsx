@@ -50,10 +50,12 @@ export default async function MatchPage({
       .eq("id", user!.id)
       .maybeSingle(),
   ]);
-  const tripPrefsDone = prefsErr ? true : !!prefs?.trip_prefs_complete;
+  // Trip-prefs quiz retired (#244/#261: scoring is Vibes-only) — trip mode no
+  // longer gates on it.
+  void prefsErr;
   const complete = isActivity
     ? !!profile?.onboarding_complete && (profile?.activities ?? []).length > 0
-    : tripPrefsDone;
+    : true;
 
   // Header per surface (Trips-hub pattern): the hub shows the two path boxes;
   // each path page shows a back button + its own title instead.
