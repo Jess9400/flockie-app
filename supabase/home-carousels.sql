@@ -74,7 +74,9 @@ language sql security definer set search_path = public stable as $$
              + (hashtext(auth.uid()::text || b.id::text || to_char(now(), 'IYYY-IW')) % 250)::float8 / 100.0
            ) as rank_score
     from base b
-    where b.score >= 40
+    -- Score floor disabled pre-scale (founder call 2026-07-25):
+    -- re-enable `where b.score >= 40` once the city has 100+ users.
+    where true
   ),
   fresh as (
     select p.* from pool p
