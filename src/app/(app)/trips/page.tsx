@@ -1,11 +1,28 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/supabase/user";
+import TripVibeForm from "@/components/TripVibeForm";
 
 // The Trips hub (nav tab): everything travel-shaped lives here — find a buddy
 // for a trip (parked "Soon"), find a Flock (group trips), and your own trips.
 export default async function TripsHubPage() {
+  const supabase = await createClient();
+  const user = await getSessionUser();
   const tr = await getTranslations("trips");
+
+  // One-time travel form at the door (founder call): complete it here, then
+  // everything inside — browsing flocks, creating trips, swiping — is free.
+  const { data: prefs, error: prefsErr } = await supabase
+    .from("profiles")
+    .select("trip_prefs_complete")
+    .eq("id", user!.id)
+    .maybeSingle();
+  const tripPrefsDone = prefsErr ? true : !!prefs?.trip_prefs_complete;
+  if (!tripPrefsDone) {
+    return <TripVibeForm userId={user!.id} redirectAfter="/trips" />;
+  }
 
   return (
     <main className="px-5 pb-10 pt-6">
