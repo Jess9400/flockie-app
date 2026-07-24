@@ -164,3 +164,33 @@ language sql security definer set search_path = public stable as $$
   limit p_limit;
 $$;
 grant execute on function public.feed_posts(int) to authenticated;
+
+-- ── Like notification (throttled: max one unread per post) ──────────────────
+create or replace function public.post_like_notify()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare v_author uuid; v_me text; v_n int;
+begin
+  select author_id into v_author from public.posts where id = new.post_id;
+  if v_author is null or v_author = new.user_id then return new; end if;
+  if exists (
+    select 1 from public.notifications n
+    where n.user_id = v_author and n.type = 'post_like'
+      and (n.data ->> 'post_id') = new.post_id::text and n.read_at is null
+  ) then return new; end if;
+  select count(*)::int into v_n from public.post_likes where post_id = new.post_id;
+  select display_name into v_me from public.profiles where id = new.user_id;
+  perform public.notify(
+    v_author, 'post_like',
+    coalesce(v_me, 'Someone')
+      || case when v_n > 1 then ' and ' || (v_n - 1) || ' others liked your post'
+              else ' liked your post' end,
+    'Nice — your recap is landing.',
+    jsonb_build_object('post_id', new.post_id, 'href', '/home')
+  );
+  return new;
+end;
+$$;
+drop trigger if exists post_like_notify_t on public.post_likes;
+create trigger post_like_notify_t
+after insert on public.post_likes
+for each row execute function public.post_like_notify();

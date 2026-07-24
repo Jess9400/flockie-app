@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { Heart, MessageCircle, Plus } from "lucide-react";
+import { Heart, MessageCircle, Plus, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatChatTime } from "@/lib/chat";
 
@@ -113,6 +113,11 @@ export default function FeedSection({
     }));
   }
 
+  async function deletePost(postId: string) {
+    setPosts((cur) => cur.filter((x) => x.id !== postId));
+    await supabase.from("posts").delete().eq("id", postId).eq("author_id", meId);
+  }
+
   async function addComment(postId: string) {
     const body = (drafts[postId] ?? "").trim();
     if (!body) return;
@@ -188,6 +193,16 @@ export default function FeedSection({
                   {formatChatTime(p.created_at, locale)} · {p.city}
                 </p>
               </div>
+              {p.author_id === meId && (
+                <button
+                  type="button"
+                  onClick={() => deletePost(p.id)}
+                  aria-label={t("deletePost")}
+                  className="shrink-0 rounded-full p-1 text-ink/35 hover:bg-cream hover:text-ink"
+                >
+                  <X size={15} />
+                </button>
+              )}
             </div>
 
             <div className="mt-2.5">{href ? <Link href={href}>{chip}</Link> : chip}</div>

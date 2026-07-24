@@ -53,5 +53,6 @@
     "emptyFind": "Nobody found — try another name.",
     "emptyFollowing": "You're not following anyone yet — start with people you've met.",
     "emptyFollowers": "No followers yet — post a recap and say hi around town."
-  }
+  },
+  "deletePost": "Delete post"
 }
