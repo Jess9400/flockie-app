@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
@@ -72,7 +73,9 @@ export default async function NewVibePage({
     .maybeSingle();
   const activityPrefsDone = prefsErr ? true : !!prefs?.activity_prefs_complete;
   if (!activityPrefsDone) {
-    return <ActivityVibeForm userId={user!.id} redirectAfter="/vibes/new" />;
+    // Pre-v3 profiles go through the NEW one-page vibe check (it sets
+    // activity_prefs_complete), not the retired ActivityVibeForm quiz.
+    redirect("/onboarding/vibe-check?returnTo=%2Fvibes%2Fnew");
   }
 
   return (

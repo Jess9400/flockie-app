@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import Image from "next/image";
 import { ChevronLeft, Star, ArrowRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
@@ -91,7 +92,7 @@ export default async function TripPage({
   const activityPrefsDone = prefsErr ? true : !!prefs?.activity_prefs_complete;
   const needsActivityVibe = isNew && !showReviewGate && !showCapGate && isActivity && !activityPrefsDone;
   if (needsActivityVibe)
-    return <ActivityVibeForm userId={user!.id} redirectAfter="/match/trip?kind=activity" />;
+    redirect("/onboarding/vibe-check?returnTo=%2Fmatch%2Ftrip%3Fkind%3Dactivity");
 
   return (
     <main className="px-5 pb-10 pt-6">
