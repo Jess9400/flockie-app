@@ -39,3 +39,31 @@ already live (see `supabase/email-notify-trigger.sql`, `src/app/api/email/`).
 - **"Reviews to complete" banner** — a single prompt aggregating pending vibe/flock/
   buddy reviews on profile or home (currently scattered: in-app notif + post-trip gate
   + per-event buttons).
+
+## Feed moderation & safety — next version (added 2026-07-24)
+Post reporting shipped in v1 (`report_post` → `post_reports`, flag icon on
+others' posts; user reports were already in `user_reports`). What v1 does NOT
+do yet — build these before the feed scales past trusted beta users:
+
+- **Report alerting** — nothing notifies anyone when a report lands. Options:
+  notify founder accounts in-app, or a weekly digest email. Until then, review
+  manually: `select * from post_reports order by created_at desc;` (same for
+  `user_reports`).
+- **Admin review flow** — a minimal internal surface (or SQL runbook) to view a
+  reported post, delete it (`delete from posts where id = …` as service role),
+  and record the outcome. Currently deletion is manual SQL only.
+- **Hide-on-N-reports** — auto-hide a post from `feed_posts` once it has ≥N
+  distinct reports pending review (cheap `not exists` clause in the RPC).
+- **Block user → feed** — blocking someone should also hide their posts and
+  comments from the blocker's feed (feed_posts/user_posts don't consult
+  hard-block or reports today).
+- **Comment reporting/deletion** — comments can only be deleted by their author;
+  no report flag and the post author can't remove comments on their own post.
+- **Photo moderation** — post photos upload to the public avatars bucket with
+  no scanning. At scale: dedicated bucket + moderation (e.g. a vision-model
+  check) before display.
+- **Rate limits** — create_post / add_post_comment / toggle_follow have no
+  rate_limit_hit guard (spam vector). Add buckets like the geocode routes use.
+- **Legal** — Terms already cover UGC (What you can/can't post). When a formal
+  DSA/DMCA-style notice channel is needed, add a report-abuse email address to
+  the Terms.

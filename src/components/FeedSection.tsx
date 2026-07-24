@@ -35,6 +35,18 @@ const ANCHOR_STYLE: Record<string, string> = {
   club: "bg-flockie-blue/10 text-flockie-blue",
   activity: "bg-onboarding-green/10 text-onboarding-green",
 };
+// Each card carries its anchor's color — a tinted border + avatar ring, so the
+// feed reads coral/blue/green instead of a wall of white.
+const CARD_TINT: Record<string, string> = {
+  vibe: "border-flockie-coral/30",
+  club: "border-flockie-blue/35",
+  activity: "border-onboarding-green/35",
+};
+const RING_TINT: Record<string, string> = {
+  vibe: "ring-flockie-coral/60",
+  club: "ring-flockie-blue/60",
+  activity: "ring-onboarding-green/60",
+};
 const ANCHOR_EMOJI: Record<string, string> = { vibe: "🎉", club: "🔁", activity: "🤝" };
 
 function anchorHref(p: FeedPost): string | null {
@@ -174,7 +186,7 @@ export default function FeedSection({
       {composer && (
       <Link
         href="/posts/new"
-        className="flex items-center gap-2.5 rounded-full border border-ink/15 bg-white py-1.5 pl-3 pr-1.5 shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5"
+        className="flex items-center gap-2.5 rounded-full border-2 border-flockie-coral/40 bg-white py-1.5 pl-3 pr-1.5 shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5"
       >
         {avatar(mePhoto, "You", 28)}
         <span className="min-w-0 flex-1 truncate text-sm font-bold text-muted">{t("teaser")}</span>
@@ -201,9 +213,11 @@ export default function FeedSection({
         );
         const comments = open[p.id];
         return (
-          <article key={p.id} className="rounded-3xl border border-ink/15 bg-white p-4 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
+          <article key={p.id} className={`rounded-3xl border-2 bg-white p-4 shadow-[0_2px_10px_rgba(10,37,69,0.08)] ${CARD_TINT[p.kind] ?? "border-ink/15"}`}>
             <div className="flex items-center gap-2.5">
-              {avatar(p.author_photo, p.author_name, 36)}
+              <span className={`rounded-full ring-2 ring-offset-2 ring-offset-white ${RING_TINT[p.kind] ?? "ring-ink/20"}`}>
+                {avatar(p.author_photo, p.author_name, 36)}
+              </span>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-extrabold">{p.author_name ?? "Flockie"}</p>
                 <p className="text-[11px] font-bold text-muted">

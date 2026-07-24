@@ -677,15 +677,22 @@ export default async function HomePage({
 
       {/* ── The feed: recaps of real vibes, clubs & activities. Same-width
           panel as the near-you box, with its own internal scroll. ── */}
-      <section className="mx-4 mt-8 rounded-3xl border border-ink/10 bg-white p-5 shadow-[0_2px_12px_rgba(10,37,69,0.07)] sm:p-6">
-        <div className="px-1">
-          <h2 className="text-[22px] font-extrabold sm:text-[28px]">{th("feed.heading")}</h2>
-          <Squiggle />
+      <section className="relative mx-4 mt-8 overflow-hidden rounded-3xl border border-ink/10 bg-cream p-5 shadow-[0_2px_12px_rgba(10,37,69,0.07)] sm:p-6">
+        {/* Crisp confetti — same accent language as the blue near-you panel. */}
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <span className="absolute right-7 top-4 text-sm text-flockie-coral/60">✦</span>
+          <span className="absolute right-16 top-9 h-2 w-2 rounded-full bg-flockie-blue/50" />
+          <span className="absolute bottom-5 left-5 h-1.5 w-1.5 rounded-full bg-flockie-coral/50" />
+          <span className="absolute bottom-9 right-8 text-xs text-flockie-blue/50">✦</span>
+        </div>
+        <div className="relative px-1">
+          <h2 className="text-[22px] font-extrabold sm:text-[28px]">📸 {th("feed.heading")}</h2>
+          <Squiggle color="#FF6B4A" />
           <p className="mt-0.5 font-bold text-navy/60">
             {th("feed.subtitle", { city: homeCity ?? th("buddies.yourCity") })}
           </p>
         </div>
-        <div className="carousel-fade mt-4 max-h-[560px] overflow-y-auto pr-1 [scrollbar-width:thin]">
+        <div className="carousel-fade relative mt-4 max-h-[560px] overflow-y-auto pr-1 [scrollbar-width:thin]">
           <div className="mx-auto max-w-xl">
             <FeedSection
               posts={feedPosts}
