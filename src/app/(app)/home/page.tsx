@@ -6,8 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import { format } from "date-fns";
 import VibeCard, { type VibeCardData } from "@/components/VibeCard";
-import SayHiButton from "@/components/SayHiButton";
 import SeeAllNearYou from "@/components/SeeAllNearYou";
+import FeedSection, { type FeedPost } from "@/components/FeedSection";
 import JoinActivityButton from "@/components/JoinActivityButton";
 import { dfLocale } from "@/lib/date-locale";
 import HomeHero from "@/components/HomeHero";
@@ -96,7 +96,7 @@ export default async function HomePage({
     { data: hiddenRows },
     { data: prefRow, error: prefErr },
   ] = await Promise.all([
-    supabase.from("profiles").select("display_name, home_city, vibe_completed_at").eq("id", user!.id).maybeSingle(),
+    supabase.from("profiles").select("display_name, home_city, vibe_completed_at, photos").eq("id", user!.id).maybeSingle(),
     supabase.from("vibe_feedback").select("vibe_id").eq("user_id", user!.id).eq("signal", "not_for_me"),
     supabase
       .from("profiles")
@@ -178,6 +178,7 @@ export default async function HomePage({
     { data: myVibeReviews },
     activityFeedRes,
     { data: actionNotifs },
+    feedRes,
   ] = await Promise.all([
     loadHostsAndCounts(supabase, vibeUnion),
     loadVibeMatch(supabase, unionIds),
@@ -206,6 +207,8 @@ export default async function HomePage({
       .in("type", ["activity_like", "trip_join_request", "club_founder_invite", "club_join_prompt", "club_heartbeat"])
       .order("created_at", { ascending: false })
       .limit(4),
+    // The city feed — anchored recaps. Migration-safe: RPC missing → empty.
+    supabase.rpc("feed_posts", { p_limit: 20 }),
   ]);
   type ActivityFeedRow = {
     activity_id: string;
@@ -225,6 +228,7 @@ export default async function HomePage({
   const nearActivities: ActivityFeedRow[] = activityFeedRes.error
     ? []
     : ((activityFeedRes.data ?? []) as ActivityFeedRow[]);
+  const feedPosts: FeedPost[] = feedRes.error ? [] : ((feedRes.data ?? []) as FeedPost[]);
 
   // "Needs your action" cards: link each request to where it's handled.
   type ActionNotif = { id: string; type: string; title: string; body: string | null; data: Record<string, string> | null };
@@ -528,106 +532,23 @@ export default async function HomePage({
         />
       )}
 
-      {/* ── Find a buddy for an activity (people in your city) ───────────── */}
-      {!localPoolEmpty && (
+      {/* ── The feed: recaps of real vibes, clubs & activities in your city ── */}
       <section className="mx-4 mt-6">
-        <div className="flex items-end justify-between gap-3 px-1">
-          <div>
-            <h2 className="whitespace-nowrap text-[18px] font-extrabold tracking-tight sm:text-[28px] sm:tracking-normal">
-              {t("findBuddyHeading")}
-            </h2>
-            <Squiggle />
-            <p className="mt-0.5 font-bold text-navy/60">
-              {th("buddies.subtitle", { city: homeCity ?? th("buddies.yourCity") })}
-            </p>
-          </div>
-          {people.length > 0 && (
-            <Link
-              href="/match?view=create"
-              className="flex shrink-0 items-center gap-1 text-sm font-bold text-flockie-coral"
-            >
-              {th("buddies.seeMore")} <ArrowRight size={15} />
-            </Link>
-          )}
+        <div className="px-1">
+          <h2 className="text-[22px] font-extrabold sm:text-[28px]">{th("feed.heading")}</h2>
+          <Squiggle />
+          <p className="mt-0.5 font-bold text-navy/60">
+            {th("feed.subtitle", { city: homeCity ?? th("buddies.yourCity") })}
+          </p>
         </div>
-
-        {people.length === 0 ? (
-          <div className="mt-4 rounded-3xl border-2 border-dashed border-ink/25 bg-white p-6 text-center">
-            <p className="font-bold">
-              {th("buddies.emptyTitle", { city: homeCity ?? th("buddies.yourCity") })}
-            </p>
-            <p className="mx-auto mt-1 max-w-xl text-sm font-medium leading-relaxed text-muted">
-              {th("buddies.emptyBody")}
-            </p>
-            <div className="mt-4 flex flex-col justify-center gap-2 sm:flex-row">
-              <InviteFriendsButton
-                inviterId={user!.id}
-                inviterName={profile?.display_name ?? undefined}
-                city={homeCity ?? undefined}
-                label={th("buddies.inviteFriend")}
-              />
-              <Link
-                href="/vibes"
-                className="inline-flex items-center justify-center rounded-full border border-ink/15 bg-white px-5 py-2.5 text-sm font-bold text-ink"
-              >
-                {th("buddies.exploreVibes")}
-              </Link>
-            </div>
-          </div>
-        ) : (
-          <div className="carousel-fade mt-4 flex snap-x gap-4 overflow-x-auto pb-3 pt-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {people.map((p, i) => {
-              const name = (p.display_name ?? th("buddies.someone")).split(" ")[0];
-              const photo = p.photos?.[0] ?? null;
-              return (
-                <div
-                  key={p.id}
-                  className={`flex w-40 shrink-0 snap-start flex-col items-center rounded-2xl border border-ink/12 bg-white p-4 text-center shadow-[0_2px_12px_rgba(10,37,69,0.07)] transition-transform duration-200 hover:-translate-y-1 hover:rotate-0 ${
-                    i % 2 ? "-rotate-[1.2deg]" : "rotate-[1.2deg]"
-                  }`}
-                >
-                  <Link href={`/people/${p.id}`} className="flex w-full flex-col items-center">
-                    <div
-                      className="relative h-[88px] w-[88px] rounded-full p-[3px]"
-                      style={
-                        typeof p.score === "number"
-                          ? {
-                              background: `conic-gradient(#FF6B4A ${Math.round(p.score) * 3.6}deg, rgba(10,37,69,0.12) 0deg)`,
-                            }
-                          : undefined
-                      }
-                    >
-                      <div className="relative h-full w-full overflow-hidden rounded-full border border-ink/10 bg-cream">
-                        {photo ? (
-                          <Image src={photo} alt="" fill sizes="88px" className="object-cover" />
-                        ) : (
-                          <span className="flex h-full items-center justify-center text-2xl font-black text-flockie-blue">
-                            {name[0]}
-                          </span>
-                        )}
-                      </div>
-                      {typeof p.score === "number" && (
-                        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full border border-ink/15 bg-flockie-coral px-1.5 text-[10px] font-extrabold leading-tight text-white">
-                          {Math.round(p.score)}%
-                        </span>
-                      )}
-                    </div>
-                    <p className="mt-3 w-full truncate text-sm font-extrabold">
-                      {name}
-                      {p.age ? `, ${p.age}` : ""}
-                    </p>
-                    {p.one_liner && (
-                      <p className="mt-0.5 line-clamp-2 text-xs font-medium text-muted">{p.one_liner}</p>
-                    )}
-                  </Link>
-                  <SayHiButton personId={p.id} personName={name} />
-                </div>
-              );
-            })}
-          </div>
-        )}
+        <div className="mx-auto mt-4 max-w-xl lg:mx-0">
+          <FeedSection
+            posts={feedPosts}
+            meId={user!.id}
+            mePhoto={(profile?.photos as string[] | null)?.[0] ?? null}
+          />
+        </div>
       </section>
-      )}
 
       {/* ── Happening near you (same city + filters) ────────────────────── */}
       <section className="relative mx-4 mt-8 overflow-hidden rounded-3xl bg-flockie-blue p-5 text-white shadow-[0_16px_32px_-10px_rgba(77,168,218,0.55)] sm:p-6">

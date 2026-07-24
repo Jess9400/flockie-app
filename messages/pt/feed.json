@@ -1,0 +1,29 @@
+{
+  "you": "Você",
+  "teaser": "Como foi? Compartilhe um resumo…",
+  "post": "Postar",
+  "emptyTitle": "Nada por aqui ainda",
+  "emptyBody": "Resumos de vibes, clubs e atividades da sua cidade vão aparecer aqui. O seu pode ser o primeiro!",
+  "commentPlaceholder": "Adicione um comentário…",
+  "send": "Enviar",
+  "composer": {
+    "back": "Início",
+    "heading": "Compartilhe um resumo",
+    "subtitle": "Cada post é sobre algo real que você participou.",
+    "stepAnchor": "1 · Sobre o que é?",
+    "noAnchors": "Nada para postar ainda — participe primeiro de uma vibe, um club ou uma atividade, e depois conte a história.",
+    "stepBody": "2 · Diga algo",
+    "bodyPlaceholder": "Como foi? Quem deveria vir na próxima?",
+    "stepPhotos": "3 · Fotos (até 4)",
+    "photoError": "Não foi possível enviar a foto. Tente de novo.",
+    "removePhoto": "Remover foto",
+    "posting": "Postando…",
+    "cta": "Postar",
+    "ctaDisabled": "Escolha primeiro sobre o que é",
+    "anchorNote": "Sem posts soltos — cada post está ancorado a uma vibe, club ou atividade real.",
+    "subVibe": "Vibe que você foi",
+    "subVibeHosted": "Vibe que você organizou",
+    "subClub": "Seu club",
+    "subActivity": "Atividade 1:1"
+  }
+}

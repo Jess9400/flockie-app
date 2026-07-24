@@ -105,5 +105,9 @@
     "activities": "Actividades 1:1",
     "activitiesSub": "Únete a una persona para algo",
     "cancel": "Cancelar"
+  },
+  "feed": {
+    "heading": "Lo que ha pasado",
+    "subtitle": "Momentos reales de {city} — vibes, clubs y actividades que de verdad pasaron."
   }
 }

@@ -105,5 +105,9 @@
     "activities": "1:1 Activities",
     "activitiesSub": "Join one person for something",
     "cancel": "Cancel"
+  },
+  "feed": {
+    "heading": "What's been happening",
+    "subtitle": "Real moments from {city} — vibes, clubs and activities that actually happened."
   }
 }

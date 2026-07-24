@@ -1,0 +1,29 @@
+{
+  "you": "You",
+  "teaser": "How was it? Share a recap…",
+  "post": "Post",
+  "emptyTitle": "Nothing here yet",
+  "emptyBody": "Recaps from vibes, clubs and activities in your city will show up here. Yours could be first!",
+  "commentPlaceholder": "Add a comment…",
+  "send": "Send",
+  "composer": {
+    "back": "Home",
+    "heading": "Share a recap",
+    "subtitle": "Every post is about something real you were part of.",
+    "stepAnchor": "1 · What is this about?",
+    "noAnchors": "Nothing to post about yet — join a vibe, a club or an activity first, then come tell the story.",
+    "stepBody": "2 · Say something",
+    "bodyPlaceholder": "How was it? Who should come next time?",
+    "stepPhotos": "3 · Photos (up to 4)",
+    "photoError": "Couldn't upload that photo. Try again.",
+    "removePhoto": "Remove photo",
+    "posting": "Posting…",
+    "cta": "Post it",
+    "ctaDisabled": "Pick what it's about first",
+    "anchorNote": "No free-floating posts — every post is anchored to a real vibe, club or activity.",
+    "subVibe": "Vibe you attended",
+    "subVibeHosted": "Vibe you hosted",
+    "subClub": "Your club",
+    "subActivity": "1:1 activity"
+  }
+}
