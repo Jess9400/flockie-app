@@ -85,12 +85,16 @@ export default async function TripPage({
     .select("trip_prefs_complete, activity_prefs_complete")
     .eq("id", user!.id)
     .maybeSingle();
-  // Trip-prefs quiz retired: Vibes-only scoring (#244/#261) never reads its
-  // answers, so we no longer gate trip creation on it. The activity gate stays
-  // only for pre-v3 profiles (the new onboarding sets activity_prefs_complete).
-  void prefsErr;
+  // Trips keep a TRIMMED one-page prefs form (5 questions — pace, budget,
+  // planning, trip vibe, dealbreakers). It doesn't feed scoring (Vibes-only
+  // since #244/#261) but dealbreakers feed buddy_hard_block. Activities gate on
+  // the new vibe check only for pre-v3 profiles.
+  const tripPrefsDone = prefsErr ? true : !!prefs?.trip_prefs_complete;
   const activityPrefsDone = prefsErr ? true : !!prefs?.activity_prefs_complete;
+  const needsTripVibe = isNew && !showReviewGate && !showCapGate && !isActivity && !tripPrefsDone;
   const needsActivityVibe = isNew && !showReviewGate && !showCapGate && isActivity && !activityPrefsDone;
+  if (needsTripVibe)
+    return <TripVibeForm userId={user!.id} redirectAfter={isFlock ? "/match/trip?kind=flock" : "/match/trip?kind=trip"} />;
   if (needsActivityVibe)
     redirect("/onboarding/vibe-check?returnTo=%2Fmatch%2Ftrip%3Fkind%3Dactivity");
 

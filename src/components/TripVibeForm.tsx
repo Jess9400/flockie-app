@@ -66,50 +66,31 @@ export default function TripVibeForm({
   const localizeChoices = (set: string, choices: Choice[]) =>
     choices.map((o) => ({ ...o, label: has(`choices.${set}.${o.value}`) ? t(`choices.${set}.${o.value}`) : o.label }));
 
-  const pages: WizardPage[] = [
-    { title: "", fields: [{ type: "select", key: "pace", label: t("forms.trip.pace"), required: true, options: localizeChoices("pace", PACE_CHOICES) }] },
-    { title: "", fields: [{ type: "select", key: "budget", label: t("forms.trip.budget"), required: true, options: localizeChoices("budget", BUDGET_CHOICES) }] },
-    { title: "", fields: [{ type: "select", key: "social_energy", label: t("forms.trip.socialTravel"), required: true, options: localizeChoices("socialTravel", SOCIAL_TRAVEL_CHOICES) }] },
-    { title: "", fields: [{ type: "select", key: "planning", label: t("forms.trip.planning"), required: true, options: localizeChoices("planning", PLANNING_CHOICES) }] },
-    { title: "", fields: [{ type: "select", key: "nightlife", label: t("forms.trip.nightlife"), required: true, options: localizeChoices("nightlife", NIGHTLIFE_CHOICES) }] },
-    { title: "", fields: [{ type: "select", key: "adventurousness", label: t("forms.trip.adventure"), required: true, options: localizeChoices("adventure", ADVENTURE_CHOICES) }] },
+  // Trimmed to ONE page with the 5 questions that still matter (founder call
+  // 2026-07-25): pace, budget, planning, trip vibe, dealbreakers. Dealbreakers
+  // stay because buddy_hard_block reads the same-gender preference; the rest is
+  // trip-planning context only — Vibes-only scoring never reads it.
+  const pages = [
     {
       title: "",
       fields: [
+        { type: "select" as const, key: "pace", label: t("forms.trip.pace"), required: true, options: localizeChoices("pace", PACE_CHOICES) },
+        { type: "select" as const, key: "budget", label: t("forms.trip.budget"), required: true, options: localizeChoices("budget", BUDGET_CHOICES) },
+        { type: "select" as const, key: "planning", label: t("forms.trip.planning"), required: true, options: localizeChoices("planning", PLANNING_CHOICES) },
         {
-          type: "multi",
+          type: "multi" as const,
           key: "trip_vibe",
           label: t("forms.trip.tripVibeLabel"),
           hint: t("forms.trip.tripVibeHint", { max: MAX_TAGS }),
           max: MAX_TAGS,
-          required: true,
           options: TRIP_VIBES.map((v) => ({ value: v, label: tc.has(`tripTypes.${v}`) ? tc(`tripTypes.${v}`) : v, emoji: TRIP_VIBE_EMOJI[v] })),
         },
-      ],
-    },
-    {
-      title: "",
-      fields: [
         {
-          type: "multi",
+          type: "multi" as const,
           key: "dealbreakers",
           label: t("forms.trip.dealbreakersLabel"),
           hint: t("forms.trip.dealbreakersHint"),
           options: DEALBREAKERS.map((v) => ({ value: v, label: has(`dealbreakers.${v}`) ? t(`dealbreakers.${v}`) : v })),
-        },
-      ],
-    },
-    {
-      title: "",
-      fields: [
-        {
-          type: "multi",
-          key: "match_priorities",
-          label: t("forms.trip.prioritiesLabel"),
-          hint: t("forms.trip.prioritiesHint", { max: PRIORITY_MAX }),
-          max: PRIORITY_MAX,
-          required: true,
-          options: TRIP_PRIORITIES.map((o) => ({ ...o, label: has(`tripPriorities.${o.value}`) ? t(`tripPriorities.${o.value}`) : o.label })),
         },
       ],
     },
@@ -145,13 +126,9 @@ export default function TripVibeForm({
       .update({
         planning: toInt(a.planning),
         pace: toInt(a.pace),
-        social_energy: toInt(a.social_energy),
         budget: toInt(a.budget),
-        nightlife: toInt(a.nightlife),
-        adventurousness: toInt(a.adventurousness),
         trip_vibe: a.trip_vibe ?? [],
         dealbreakers: a.dealbreakers ?? [],
-        match_priorities: a.match_priorities ?? [],
       })
       .eq("id", userId);
     if (error) {
@@ -185,7 +162,6 @@ export default function TripVibeForm({
         initial={initial}
         submitting={saving}
         finishLabel={t("forms.trip.finish")}
-        flat
         onComplete={complete}
         onClose={onClose}
       />
