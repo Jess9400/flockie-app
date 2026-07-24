@@ -100,7 +100,8 @@
       "bar": "Drinks",
       "park": "A park",
       "activity": "An activity"
-    }
+    },
+    "notePlaceholder": "Say why! A few words go a long way… (optional)"
   },
   "invite": {
     "shareTitle": "Join me on Flockie",

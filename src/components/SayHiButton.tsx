@@ -44,6 +44,7 @@ export default function SayHiButton({
   const [place, setPlace] = useState("");
   const [placeUrl, setPlaceUrl] = useState<string | null>(null);
   const [when, setWhen] = useState("");
+  const [note, setNote] = useState("");
   const [city, setCity] = useState<string | null>(null);
   const [sent, setSent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -84,6 +85,7 @@ export default function SayHiButton({
         ? placeUrl ?? mapsSearch(trimmedPlace, city || null)
         : null,
       p_when: whenIso,
+      p_note: note.trim() || null,
     });
     setBusy(false);
     if (error) {
@@ -115,6 +117,7 @@ export default function SayHiButton({
     setPlace("");
     setPlaceUrl(null);
     setWhen("");
+    setNote("");
     setError(null);
   }
 
@@ -213,6 +216,14 @@ export default function SayHiButton({
                         value={when}
                         onChange={(e) => setWhen(e.target.value)}
                         className="h-11 w-full rounded-xl border border-ink/25 px-4 text-sm font-medium text-ink outline-none focus:border-flockie-blue"
+                      />
+                      <textarea
+                        value={note}
+                        onChange={(e) => setNote(e.target.value)}
+                        placeholder={t("notePlaceholder")}
+                        maxLength={280}
+                        rows={2}
+                        className="w-full resize-none rounded-xl border border-ink/25 px-4 py-2.5 text-sm font-medium outline-none focus:border-flockie-blue"
                       />
                       <p className="text-center text-[11px] font-medium text-muted">
                         {t("optionalNote")}

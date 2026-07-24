@@ -214,7 +214,7 @@ export default function VibeCard({
           {isBrowse && (
             <div className="mt-2 flex items-center gap-2.5">
               {!faded && match?.state === "scored" && typeof match.score === "number" && (
-                <span className="shrink-0 rounded-full bg-flockie-blue/15 px-2.5 py-1 text-[11px] font-extrabold leading-none text-flockie-blue">
+                <span className="shrink-0 rounded-full bg-flockie-blue/15 px-3 py-1.5 text-[13px] font-extrabold leading-none text-flockie-blue">
                   {t("card.match", { pct: match.score })}
                 </span>
               )}
@@ -234,7 +234,7 @@ export default function VibeCard({
           {!isBrowse && (
             <div className="mt-2 flex items-center gap-2.5">
               {!faded && match?.state === "scored" && typeof match.score === "number" && (
-                <span className="shrink-0 rounded-full bg-flockie-blue/15 px-2.5 py-1 text-[11px] font-extrabold leading-none text-flockie-blue">
+                <span className="shrink-0 rounded-full bg-flockie-blue/15 px-2.5 py-1 text-[12px] font-extrabold leading-none text-flockie-blue">
                   {t("card.match", { pct: match.score })}
                 </span>
               )}

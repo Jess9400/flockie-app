@@ -100,7 +100,8 @@
       "bar": "Drinks",
       "park": "Um parque",
       "activity": "Uma atividade"
-    }
+    },
+    "notePlaceholder": "Diga o porquê! Algumas palavras ajudam muito… (opcional)"
   },
   "invite": {
     "shareTitle": "Entre no Flockie comigo",
