@@ -12,7 +12,7 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 
 | Function / object | Canonical file |
 |---|---|
-| `buddy_pair_score` (Vibes-only 1:1 inputs; no legacy quiz/trip fields) | `vibe-traits.sql` |
+| `buddy_pair_score` (direct Vibes-only shared tastes; no legacy quiz/trip fields or duplicate derived categories) | `vibe-traits.sql` |
 | `buddy_hard_block` | `match-priorities.sql` |
 | `buddy_candidates_trip` (priority-weighted + hard block) | `match-priorities.sql` |
 | `buddy_dest_count` | `buddy-candidates-v2.sql` |
@@ -20,7 +20,7 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | `activity_candidates` (with hard block + decisions) | `activity-candidate-decisions.sql` |
 | `activity_candidate_decide` | `activity-candidate-decisions.sql` |
 | `activity_feed`, activity join-request RPCs | `activity-join-requests.sql` |
-| `city_people`, `home_flocks` | `home-carousels.sql` |
+| `city_people` (shared-taste reasons), `home_flocks` | `home-carousels.sql` |
 | `_rank_vibe_core`, `backfill_vibe` | `vibe-v2-private-link.sql` |
 | `rank_vibe` (thin auth wrapper) | `vibe-auto-matching.sql` |
 | `invite_city_fallback` (#77 `starts_at > now()` guard) | `vibe-auto-matching.sql` |
