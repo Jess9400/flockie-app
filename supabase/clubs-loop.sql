@@ -219,6 +219,8 @@ begin
       for m in
         select user_id from public.club_memberships
         where club_id = c.id and status in ('founding', 'regular')
+          and not exists (select 1 from public.chat_mutes cm
+                          where cm.user_id = club_memberships.user_id and cm.chat_id = c.id)
       loop
         perform public.notify(
           m.user_id, 'club_gathering',

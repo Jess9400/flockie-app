@@ -1,26 +1,39 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
-import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import ClubChatRoom, { type ClubMsg } from "@/components/ClubChatRoom";
+import ClubChatHeader, { type ClubMember } from "@/components/ClubChatHeader";
 
 // The club's persistent room. Members + host only (RLS enforces it too — the
 // message query returns nothing for outsiders, and we bounce them back).
 export default async function ClubChatPage({ params }: { params: { id: string } }) {
   const supabase = await createClient();
   const user = await getSessionUser();
-  const t = await getTranslations("clubs.chat");
 
   const { data: club } = await supabase
     .rpc("club_detail", { p_club: params.id })
     .maybeSingle();
   if (!club) redirect("/clubs");
-  const detail = club as { id: string; title: string; is_host: boolean; membership_status: string | null };
+  const detail = club as {
+    id: string; title: string; cover_photo: string | null; city: string | null;
+    cadence: string | null; is_host: boolean; membership_status: string | null;
+  };
   const isMember =
     detail.is_host || ["founding", "regular"].includes(detail.membership_status ?? "");
   if (!isMember) redirect(`/clubs/${params.id}`);
+
+  // Members + mute state for the header (migration-safe: RPC missing → empty).
+  const [membersRes, { data: muteRow }] = await Promise.all([
+    supabase.rpc("club_members", { p_club: params.id }),
+    supabase
+      .from("chat_mutes")
+      .select("chat_id")
+      .eq("user_id", user!.id)
+      .eq("chat_id", params.id)
+      .maybeSingle(),
+  ]);
+  const clubMembers: ClubMember[] = membersRes.error ? [] : ((membersRes.data ?? []) as ClubMember[]);
+  const hostId = clubMembers.find((m) => m.role === "host")?.id ?? null;
 
   const { data: messages } = await supabase
     .from("club_messages")
@@ -47,15 +60,17 @@ export default async function ClubChatPage({ params }: { params: { id: string } 
   return (
     <main className="h-full">
       <div className="mx-auto flex h-full w-full max-w-3xl flex-col px-5 font-nunito lg:px-8">
-        <div className="shrink-0 border-b border-ink/10 pb-3 pt-4">
-          <Link
-            href={`/clubs/${params.id}`}
-            className="inline-flex items-center gap-1 text-sm font-bold text-ink/55 hover:text-ink"
-          >
-            <ArrowLeft size={15} /> {detail.title}
-          </Link>
-          <h1 className="mt-1 text-xl font-black">{t("heading")}</h1>
-        </div>
+        <ClubChatHeader
+          clubId={params.id}
+          title={detail.title}
+          cover={detail.cover_photo ?? null}
+          city={detail.city ?? null}
+          cadence={detail.cadence ?? null}
+          isHost={detail.is_host}
+          hostId={hostId}
+          initialMuted={!!muteRow}
+          members={clubMembers}
+        />
         <ClubChatRoom
           clubId={params.id}
           currentUserId={user!.id}
