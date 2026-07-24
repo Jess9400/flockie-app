@@ -12,11 +12,13 @@ export default function GenerateCoverButton({
   userId,
   prompt,
   disabled,
+  label,
   onUploaded,
 }: {
   userId: string;
   prompt: string;
   disabled?: boolean;
+  label?: string;
   onUploaded: (url: string) => void;
 }) {
   const t = useTranslations("components");
@@ -71,7 +73,7 @@ export default function GenerateCoverButton({
         className="flex w-full items-center justify-center gap-2 rounded-2xl border border-ink/15 bg-white py-2.5 text-sm font-bold text-ink disabled:opacity-50"
       >
         <Sparkles size={16} className="text-flockie-orange" />
-        {loading ? t("generateCover.busy") : t("generateCover.button")}
+        {loading ? t("generateCover.busy") : label ?? t("generateCover.button")}
       </button>
       <p className="mt-1 text-xs font-medium text-muted">
         {t("generateCover.helper")}

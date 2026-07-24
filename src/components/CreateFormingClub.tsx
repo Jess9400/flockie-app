@@ -31,8 +31,18 @@ export default function CreateFormingClub({ defaultCity, userId }: { defaultCity
   const [clubTitle, setClubTitle] = useState<string | null>(null);
   const [clubId, setClubId] = useState<string | null>(null);
   const [cover, setCover] = useState<string | null>(null);
+  const [coverDetail, setCoverDetail] = useState("");
   const [uploading, setUploading] = useState(false);
   const coverInput = useRef<HTMLInputElement>(null);
+  const coverPrompt = [
+    title.trim() && `Club name: ${title.trim()}`,
+    category.trim() && `Activity: ${category.trim()}`,
+    description.trim() && `About the club: ${description.trim()}`,
+    city.trim() && `Location: ${[area.trim(), city.trim()].filter(Boolean).join(", ")}`,
+    coverDetail.trim() && `Visual detail: ${coverDetail.trim()}`,
+  ]
+    .filter(Boolean)
+    .join(". ");
 
   async function onCover(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -106,6 +116,8 @@ export default function CreateFormingClub({ defaultCity, userId }: { defaultCity
               setCategory("");
               setDescription("");
               setArea("");
+              setCover(null);
+              setCoverDetail("");
             }}
             className="rounded-full border-2 border-ink/20 bg-white px-4 py-3 text-sm font-extrabold text-ink"
           >
@@ -118,42 +130,6 @@ export default function CreateFormingClub({ defaultCity, userId }: { defaultCity
 
   return (
     <form onSubmit={submit} className="mt-8 space-y-7 pb-4">
-      <div>
-        <span className="block text-sm font-bold">{t("coverLabel")}</span>
-        {cover ? (
-          <div className="relative mt-2 aspect-[16/9] overflow-hidden rounded-2xl border border-ink/15">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={cover} alt="" className="h-full w-full object-cover" />
-            <button
-              type="button"
-              onClick={() => setCover(null)}
-              className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-ink text-xs font-bold text-white"
-              aria-label={t("coverRemoveAria")}
-            >
-              ✕
-            </button>
-          </div>
-        ) : (
-          <>
-            <button
-              type="button"
-              onClick={() => coverInput.current?.click()}
-              disabled={uploading}
-              className="mt-2 flex aspect-[16/9] w-full items-center justify-center rounded-2xl border-2 border-dashed border-ink/40 text-sm font-bold text-muted disabled:opacity-50"
-            >
-              {uploading ? t("coverUploading") : t("coverUpload")}
-            </button>
-            <GenerateCoverButton
-              userId={userId}
-              prompt={[title, category, city].filter(Boolean).join(", ")}
-              disabled={uploading}
-              onUploaded={(url) => setCover(url)}
-            />
-          </>
-        )}
-        <input ref={coverInput} type="file" accept="image/*" className="hidden" onChange={onCover} />
-      </div>
-
       <section className="rounded-[2rem] border border-ink/15 bg-white p-5 shadow-[0_8px_30px_rgba(10,37,69,0.05)] sm:p-6">
         <div className="flex items-start gap-3 rounded-2xl bg-flockie-blue/10 p-4">
           <UsersRound className="mt-0.5 shrink-0 text-flockie-blue" size={22} />
@@ -216,6 +192,54 @@ export default function CreateFormingClub({ defaultCity, userId }: { defaultCity
             className={`${inputClass} resize-none`}
           />
         </label>
+      </section>
+
+      <section className="rounded-[2rem] border border-ink/15 bg-white p-5 shadow-[0_8px_30px_rgba(10,37,69,0.05)] sm:p-6">
+        <span className="block text-sm font-extrabold text-ink">{t("coverLabel")}</span>
+        <p className="mt-1 text-sm font-medium text-muted">{t("coverHelp")}</p>
+        <label className="mt-5 block text-sm font-extrabold text-ink">
+          {t("coverDetailLabel")} <span className="font-semibold text-muted">· {t("descriptionOptional")}</span>
+          <input
+            value={coverDetail}
+            onChange={(event) => setCoverDetail(event.target.value)}
+            maxLength={160}
+            placeholder={t("coverDetailPlaceholder")}
+            className={inputClass}
+          />
+        </label>
+
+        {cover ? (
+          <div className="relative mt-5 aspect-[16/9] overflow-hidden rounded-2xl border border-ink/15">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={cover} alt="" className="h-full w-full object-cover" />
+            <button
+              type="button"
+              onClick={() => setCover(null)}
+              className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-ink text-xs font-bold text-white"
+              aria-label={t("coverRemoveAria")}
+            >
+              ✕
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => coverInput.current?.click()}
+            disabled={uploading}
+            className="mt-5 flex aspect-[16/9] w-full items-center justify-center rounded-2xl border-2 border-dashed border-ink/40 text-sm font-bold text-muted disabled:opacity-50"
+          >
+            {uploading ? t("coverUploading") : t("coverUpload")}
+          </button>
+        )}
+        <GenerateCoverButton
+          userId={userId}
+          prompt={coverPrompt}
+          disabled={uploading || !title.trim()}
+          label={cover ? t("coverTryAnother") : undefined}
+          onUploaded={(url) => setCover(url)}
+        />
+        {!title.trim() && <p className="mt-2 text-xs font-bold text-muted">{t("coverNeedsName")}</p>}
+        <input ref={coverInput} type="file" accept="image/*" className="hidden" onChange={onCover} />
       </section>
 
       <section className="rounded-[2rem] border border-ink/15 bg-white p-5 shadow-[0_8px_30px_rgba(10,37,69,0.05)] sm:p-6">
