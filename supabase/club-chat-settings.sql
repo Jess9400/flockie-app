@@ -17,7 +17,9 @@ language sql security definer set search_path = public stable as $$
   where c.id = p_club
     and m.status in ('founding', 'regular')
     and (public.is_club_member(p_club) or public.is_club_host(p_club))
-  order by (c.owner_id = p.id) desc, m.joined_at nulls last;
+  order by
+    case when c.owner_id = p.id then 0 else 1 end,
+    m.joined_at asc nulls last;
 $$;
 grant execute on function public.club_members(uuid) to authenticated;
 
