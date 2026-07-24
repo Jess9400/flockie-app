@@ -61,5 +61,7 @@
     "placeholder": "What's the issue? (optional)",
     "cta": "Report",
     "done": "Reported — thank you, we'll review it."
-  }
+  },
+  "reviewBadge": "review",
+  "joinVibeCta": "This one's coming up — join it"
 }

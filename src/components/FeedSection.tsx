@@ -26,6 +26,8 @@ export type FeedPost = {
   like_count: number;
   comment_count: number;
   liked_by_me: boolean;
+  is_review?: boolean;
+  anchor_starts_at?: string | null;
 };
 
 type Comment = { id: string; author_id: string; body: string; created_at: string; name: string; photo: string | null };
@@ -220,8 +222,13 @@ export default function FeedSection({
               </span>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-extrabold">{p.author_name ?? "Flockie"}</p>
-                <p className="text-[11px] font-bold text-muted">
+                <p className="flex items-center gap-1.5 text-[11px] font-bold text-muted">
                   {formatChatTime(p.created_at, locale)} · {p.city}
+                  {p.is_review && (
+                    <span className="rounded-full bg-flockie-coral/10 px-2 py-0.5 text-[10px] font-extrabold text-flockie-coral">
+                      ⭐ {t("reviewBadge")}
+                    </span>
+                  )}
                 </p>
               </div>
               {p.author_id === meId ? (
@@ -256,6 +263,15 @@ export default function FeedSection({
                   </div>
                 ))}
               </div>
+            )}
+
+            {p.kind === "vibe" && p.vibe_id && p.anchor_starts_at && new Date(p.anchor_starts_at) > new Date() && (
+              <Link
+                href={`/vibes/${p.vibe_id}`}
+                className="mt-2.5 flex items-center justify-center rounded-full bg-flockie-coral py-2 text-xs font-extrabold text-white"
+              >
+                {t("joinVibeCta")} →
+              </Link>
             )}
 
             <div className="mt-2.5 flex items-center gap-4 border-t border-ink/10 pt-2.5">

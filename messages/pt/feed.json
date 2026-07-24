@@ -61,5 +61,7 @@
     "placeholder": "Qual é o problema? (opcional)",
     "cta": "Denunciar",
     "done": "Denunciado — obrigado, vamos revisar."
-  }
+  },
+  "reviewBadge": "avaliação",
+  "joinVibeCta": "Está chegando — participe"
 }
