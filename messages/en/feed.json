@@ -69,5 +69,13 @@
     "done": "Reported — thank you, we'll review it."
   },
   "reviewBadge": "review",
-  "joinVibeCta": "This one's coming up — join it"
+  "joinVibeCta": "This one's coming up — join it",
+  "menu": {
+    "aria": "Post options",
+    "edit": "Edit post",
+    "delete": "Delete post",
+    "report": "Report post",
+    "save": "Save",
+    "cancel": "Cancel"
+  }
 }

@@ -69,5 +69,13 @@
     "done": "Denunciado — obrigado, vamos revisar."
   },
   "reviewBadge": "avaliação",
-  "joinVibeCta": "Está chegando — participe"
+  "joinVibeCta": "Está chegando — participe",
+  "menu": {
+    "aria": "Opções",
+    "edit": "Editar post",
+    "delete": "Excluir post",
+    "report": "Denunciar post",
+    "save": "Salvar",
+    "cancel": "Cancelar"
+  }
 }

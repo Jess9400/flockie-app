@@ -101,3 +101,8 @@ language sql security definer set search_path = public stable as $$
   limit p_limit;
 $$;
 grant execute on function public.user_posts(uuid, int) to authenticated;
+
+-- ── Edit own posts (body only, via the ⋯ menu) ──────────────────────────────
+drop policy if exists "posts update own" on public.posts;
+create policy "posts update own" on public.posts for update to authenticated
+  using (author_id = auth.uid()) with check (author_id = auth.uid());

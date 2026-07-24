@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { Flag, Heart, MessageCircle, Plus, X } from "lucide-react";
+import { Heart, MessageCircle, MoreVertical, Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatChatTime } from "@/lib/chat";
 import { useConfirm, useToast } from "@/components/ui/feedback";
@@ -78,6 +78,8 @@ export default function FeedSection({
   const [posts, setPosts] = useState(initial);
   const [open, setOpen] = useState<Record<string, Comment[] | "loading">>({});
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [menuFor, setMenuFor] = useState<string | null>(null);
+  const [editing, setEditing] = useState<{ id: string; draft: string } | null>(null);
 
   async function toggleLike(p: FeedPost) {
     // optimistic
@@ -142,6 +144,14 @@ export default function FeedSection({
     if (!res) return;
     await supabase.rpc("report_post", { p_post: postId, p_reason: res.reason || res.note || "" });
     toast(t("report.done"));
+  }
+
+  async function saveEdit() {
+    if (!editing) return;
+    const body = editing.draft.trim();
+    setPosts((cur) => cur.map((x) => (x.id === editing.id ? { ...x, body } : x)));
+    setEditing(null);
+    await supabase.from("posts").update({ body }).eq("id", editing.id).eq("author_id", meId);
   }
 
   async function deletePost(postId: string) {
@@ -231,29 +241,90 @@ export default function FeedSection({
                   )}
                 </p>
               </div>
-              {p.author_id === meId ? (
+              <div className="relative shrink-0">
                 <button
                   type="button"
-                  onClick={() => deletePost(p.id)}
-                  aria-label={t("deletePost")}
-                  className="shrink-0 rounded-full p-1 text-ink/35 hover:bg-cream hover:text-ink"
+                  onClick={() => setMenuFor(menuFor === p.id ? null : p.id)}
+                  aria-label={t("menu.aria")}
+                  className="rounded-full p-1 text-ink/35 hover:bg-cream hover:text-ink"
                 >
-                  <X size={15} />
+                  <MoreVertical size={16} />
                 </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => reportPost(p.id)}
-                  aria-label={t("report.title")}
-                  className="shrink-0 rounded-full p-1 text-ink/25 hover:bg-cream hover:text-ink/60"
-                >
-                  <Flag size={13} />
-                </button>
-              )}
+                {menuFor === p.id && (
+                  <>
+                    <div className="fixed inset-0 z-30" onClick={() => setMenuFor(null)} />
+                    <div className="absolute right-0 z-40 mt-1 w-44 rounded-2xl border border-ink/15 bg-white p-1.5 text-sm font-semibold text-ink shadow-[0_2px_10px_rgba(10,37,69,0.12)]">
+                      {p.author_id === meId ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setMenuFor(null);
+                              setEditing({ id: p.id, draft: p.body });
+                            }}
+                            className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5"
+                          >
+                            ✏️ {t("menu.edit")}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setMenuFor(null);
+                              deletePost(p.id);
+                            }}
+                            className="block w-full rounded-xl px-3 py-2 text-left text-flockie-coral hover:bg-navy/5"
+                          >
+                            🗑️ {t("menu.delete")}
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMenuFor(null);
+                            reportPost(p.id);
+                          }}
+                          className="block w-full rounded-xl px-3 py-2 text-left hover:bg-navy/5"
+                        >
+                          🚩 {t("menu.report")}
+                        </button>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
 
             <div className="mt-2.5">{href ? <Link href={href}>{chip}</Link> : chip}</div>
-            {p.body && <p className="mt-2 whitespace-pre-line text-sm font-semibold text-ink">{p.body}</p>}
+            {editing?.id === p.id ? (
+              <div className="mt-2">
+                <textarea
+                  value={editing.draft}
+                  onChange={(e) => setEditing({ id: p.id, draft: e.target.value })}
+                  maxLength={1000}
+                  rows={3}
+                  className="w-full resize-none rounded-2xl border border-flockie-blue/50 bg-white px-3.5 py-2.5 text-sm font-medium outline-none focus:border-flockie-blue"
+                />
+                <div className="mt-1.5 flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditing(null)}
+                    className="rounded-full border border-ink/15 bg-white px-3.5 py-1.5 text-xs font-bold text-ink"
+                  >
+                    {t("menu.cancel")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={saveEdit}
+                    className="rounded-full bg-flockie-blue px-4 py-1.5 text-xs font-bold text-white"
+                  >
+                    {t("menu.save")}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              p.body && <p className="mt-2 whitespace-pre-line text-sm font-semibold text-ink">{p.body}</p>
+            )}
 
             {p.photos.length > 0 && (
               <div className={`mt-2.5 grid gap-1 overflow-hidden rounded-2xl ${p.photos.length > 1 ? "grid-cols-2" : ""}`}>

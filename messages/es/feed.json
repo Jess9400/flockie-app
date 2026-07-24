@@ -69,5 +69,13 @@
     "done": "Denunciado — gracias, lo revisaremos."
   },
   "reviewBadge": "reseña",
-  "joinVibeCta": "Está por venir — únete"
+  "joinVibeCta": "Está por venir — únete",
+  "menu": {
+    "aria": "Opciones",
+    "edit": "Editar publicación",
+    "delete": "Eliminar publicación",
+    "report": "Denunciar publicación",
+    "save": "Guardar",
+    "cancel": "Cancelar"
+  }
 }
