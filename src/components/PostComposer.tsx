@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
@@ -79,24 +80,45 @@ export default function PostComposer({
           {t("noAnchors")}
         </p>
       ) : (
-        <div className="mt-2 space-y-2">
-          {anchors.map((a) => (
-            <button
-              key={`${a.kind}-${a.id}`}
-              type="button"
-              onClick={() => setPicked(picked?.id === a.id ? null : a)}
-              className={`flex w-full items-center gap-3 rounded-2xl border-2 p-3 text-left transition-colors ${
-                picked?.id === a.id ? "border-flockie-coral bg-flockie-coral/5" : "border-ink/10 bg-white hover:border-flockie-coral/40"
-              }`}
+        <>
+          <div className="relative mt-2">
+            <select
+              value={picked ? `${picked.kind}:${picked.id}` : ""}
+              onChange={(e) => {
+                const [kind, id] = e.target.value.split(":");
+                setPicked(anchors.find((a) => a.kind === kind && a.id === id) ?? null);
+              }}
+              className="w-full appearance-none rounded-2xl border-2 border-ink/15 bg-white px-4 py-3 pr-10 text-sm font-bold text-ink outline-none focus:border-flockie-coral"
             >
-              <span className="text-xl">{KIND_EMOJI[a.kind]}</span>
+              <option value="" disabled>
+                {t("anchorPlaceholder")}
+              </option>
+              {(["vibe", "club", "activity"] as const).map((kind) => {
+                const group = anchors.filter((a) => a.kind === kind);
+                if (group.length === 0) return null;
+                return (
+                  <optgroup key={kind} label={`${KIND_EMOJI[kind]} ${t(`group.${kind}`)}`}>
+                    {group.map((a) => (
+                      <option key={`${a.kind}-${a.id}`} value={`${a.kind}:${a.id}`}>
+                        {a.title} — {a.sub}
+                      </option>
+                    ))}
+                  </optgroup>
+                );
+              })}
+            </select>
+            <ChevronDown size={18} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink/50" />
+          </div>
+          {picked && (
+            <div className="mt-2 flex items-center gap-2 rounded-2xl border-2 border-flockie-coral/40 bg-flockie-coral/5 px-3 py-2.5">
+              <span className="text-lg">{KIND_EMOJI[picked.kind]}</span>
               <span className="min-w-0">
-                <span className="block truncate text-sm font-extrabold text-ink">{a.title}</span>
-                <span className="block truncate text-[11px] font-medium text-muted">{a.sub}</span>
+                <span className="block truncate text-sm font-extrabold text-ink">{picked.title}</span>
+                <span className="block truncate text-[11px] font-medium text-muted">{picked.sub}</span>
               </span>
-            </button>
-          ))}
-        </div>
+            </div>
+          )}
+        </>
       )}
 
       <p className="mt-5 text-xs font-extrabold uppercase tracking-wide text-muted">{t("stepBody")}</p>

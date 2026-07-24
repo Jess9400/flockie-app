@@ -1,6 +1,6 @@
 {
   "you": "Tú",
-  "teaser": "¿Qué tal estuvo? Comparte un resumen…",
+  "teaser": "¿Estuviste en algo? ¿Planeas algo? Compártelo…",
   "post": "Publicar",
   "emptyTitle": "Aún no hay nada",
   "emptyBody": "Los resúmenes de vibes, clubs y actividades de tu ciudad aparecerán aquí. ¡El tuyo puede ser el primero!",
@@ -8,12 +8,12 @@
   "send": "Enviar",
   "composer": {
     "back": "Inicio",
-    "heading": "Comparte un resumen",
-    "subtitle": "Cada publicación es sobre algo real en lo que participaste.",
+    "heading": "Comparte un momento",
+    "subtitle": "Un resumen de algo que pasó — o un aviso de lo que viene.",
     "stepAnchor": "1 · ¿De qué se trata?",
     "noAnchors": "Aún no hay nada que publicar — únete primero a una vibe, un club o una actividad, y luego cuenta la historia.",
     "stepBody": "2 · Di algo",
-    "bodyPlaceholder": "¿Qué tal estuvo? ¿Quién debería venir la próxima?",
+    "bodyPlaceholder": "¿Qué tal estuvo? ¿O qué debería saber la gente antes de que pase?",
     "stepPhotos": "3 · Fotos (hasta 4)",
     "photoError": "No se pudo subir la foto. Inténtalo de nuevo.",
     "removePhoto": "Quitar foto",
@@ -24,7 +24,13 @@
     "subVibe": "Vibe a la que fuiste",
     "subVibeHosted": "Vibe que organizaste",
     "subClub": "Tu club",
-    "subActivity": "Actividad 1:1"
+    "subActivity": "Actividad 1:1",
+    "anchorPlaceholder": "Elige una vibe, club o actividad…",
+    "group": {
+      "vibe": "Vibes",
+      "club": "Clubs",
+      "activity": "Actividades"
+    }
   },
   "follow": {
     "follow": "Seguir",
