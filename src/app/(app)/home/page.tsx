@@ -21,6 +21,7 @@ import ReviewsToDoBanner from "@/components/ReviewsToDoBanner";
 import EarlyCityState from "@/components/EarlyCityState";
 import { loadVibeMatch } from "@/lib/vibe-stats";
 import { formatVibeWhen, type InterestStatus } from "@/lib/vibes";
+import { VIBE_ONBOARDING_INTERESTS } from "@/lib/onboarding/vibe-onboarding";
 
 type CityPerson = {
   id: string;
@@ -30,6 +31,20 @@ type CityPerson = {
   one_liner: string | null;
   home_city: string | null;
   score: number | null;
+  shared_interests: string[] | null;
+  shared_styles: string[] | null;
+};
+
+const INTEREST_LABELS = Object.fromEntries(
+  VIBE_ONBOARDING_INTERESTS.map((interest) => [interest.id, interest.label])
+);
+const STYLE_LABELS: Record<string, string> = {
+  chill: "Chill",
+  quiet: "Low-key",
+  social: "Social",
+  energetic: "High energy",
+  party: "High energy",
+  creative: "Creative",
 };
 
 type HomeFlock = {
@@ -584,6 +599,17 @@ export default async function HomePage({
             {people.map((p, i) => {
               const name = (p.display_name ?? th("buddies.someone")).split(" ")[0];
               const photo = p.photos?.[0] ?? null;
+              const sharedTaste = (p.shared_interests ?? [])
+                .map((interest) => INTEREST_LABELS[interest])
+                .filter(Boolean)
+                .slice(0, 2);
+              const sharedStyle = (p.shared_styles ?? [])
+                .map((style) => STYLE_LABELS[style])
+                .filter(Boolean)
+                .slice(0, 2);
+              const sharedLabels = (sharedTaste.length ? sharedTaste : sharedStyle).filter(
+                (label, index, labels) => labels.indexOf(label) === index
+              );
               return (
                 <div
                   key={p.id}
@@ -621,6 +647,11 @@ export default async function HomePage({
                       {name}
                       {p.age ? `, ${p.age}` : ""}
                     </p>
+                    {sharedLabels.length > 0 && (
+                      <p className="mt-0.5 line-clamp-1 w-full text-[11px] font-bold text-flockie-blue">
+                        {th("buddies.shared", { items: sharedLabels.join(" · ") })}
+                      </p>
+                    )}
                     {p.one_liner && (
                       <p className="mt-0.5 line-clamp-2 text-xs font-medium text-muted">{p.one_liner}</p>
                     )}

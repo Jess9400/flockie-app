@@ -18,10 +18,11 @@
 -- people, top the carousel back up to 6 with people the viewer previously
 -- PASSED on in activity decisions (liked = false), ordered after the fresh
 -- pool — never with hard-blocked people or anyone the viewer buddy-swiped.
-create or replace function public.city_people(p_limit int default 12)
+drop function if exists public.city_people(int);
+create function public.city_people(p_limit int default 12)
 returns table (
   id uuid, display_name text, age int, photos text[], one_liner text,
-  home_city text, score float8
+  home_city text, score float8, shared_interests text[], shared_styles text[]
 )
 language sql security definer set search_path = public stable as $$
   with me as (select * from public.profiles where id = auth.uid()),
@@ -30,6 +31,18 @@ language sql security definer set search_path = public stable as $$
   base as materialized (
     select cp.id, cp.display_name, cp.age, cp.photos, cp.one_liner, cp.home_city,
            public.buddy_pair_score(auth.uid(), cp.id)::float8 as score,
+           array(
+             select interest
+             from unnest(cp.vibe_interests) interest
+             where interest = any(me.vibe_interests)
+             order by array_position(me.vibe_interests, interest)
+           ) as shared_interests,
+           array(
+             select style
+             from unnest(cp.activity_vibe) style
+             where style = any(me.activity_vibe)
+             order by array_position(me.activity_vibe, style)
+           ) as shared_styles,
            u.last_sign_in_at
     from public.profiles cp
     cross join me
@@ -53,6 +66,7 @@ language sql security definer set search_path = public stable as $$
   ),
   pool as (
     select b.id, b.display_name, b.age, b.photos, b.one_liner, b.home_city, b.score,
+           b.shared_interests, b.shared_styles,
            ( coalesce(b.score, 0)
              + case when b.last_sign_in_at is null then 0
                     else 12.0 * exp(-greatest(extract(epoch from (now() - b.last_sign_in_at)), 0)::float8 / 864000.0)
@@ -78,7 +92,8 @@ language sql security definer set search_path = public stable as $$
     order by p.rank_score desc nulls last, p.id
     limit greatest(6 - (select count(*) from fresh), 0)
   )
-  select c.id, c.display_name, c.age, c.photos, c.one_liner, c.home_city, c.score
+  select c.id, c.display_name, c.age, c.photos, c.one_liner, c.home_city, c.score,
+         c.shared_interests, c.shared_styles
   from (
     select f.*, 0 as pri from fresh f
     union all

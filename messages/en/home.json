@@ -12,7 +12,8 @@
     "emptyBody": "Creating an activity won’t produce a match until someone compatible is available. Invite a friend or explore Vibes while the local pool grows.",
     "inviteFriend": "Invite a friend",
     "exploreVibes": "Explore Vibes",
-    "someone": "Someone"
+    "someone": "Someone",
+    "shared": "Both into {items}"
   },
   "joinVibe": {
     "heading": "Join a vibe",

@@ -12,7 +12,8 @@
     "emptyBody": "Criar uma atividade não vai gerar um match até que alguém compatível esteja disponível. Convide um amigo ou explore Vibes enquanto o grupo local cresce.",
     "inviteFriend": "Convidar um amigo",
     "exploreVibes": "Explorar Vibes",
-    "someone": "Alguém"
+    "someone": "Alguém",
+    "shared": "Os dois curtem {items}"
   },
   "joinVibe": {
     "heading": "Entre em uma Vibe",
