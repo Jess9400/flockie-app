@@ -37,12 +37,16 @@ export default function ProfileStory({
   events,
   reviews = [],
   mode = "owner",
+  socialStrip,
+  postsSection,
 }: {
   userId: string;
   profile: StoryProfile;
   events?: EventsData;
   reviews?: ProfileStoryReview[];
   mode?: "owner" | "public";
+  socialStrip?: React.ReactNode;
+  postsSection?: React.ReactNode;
 }) {
   const t = useTranslations("profile.story");
   const locale = useLocale();
@@ -159,6 +163,8 @@ export default function ProfileStory({
         )}
       </section>
 
+      {socialStrip}
+
       <section className="mt-8">
         <div className="flex items-end justify-between gap-4 px-1">
           <div>
@@ -257,6 +263,8 @@ export default function ProfileStory({
           </Link>
         </section>
       )}
+
+      {postsSection}
 
       {isOwner && editingProfile && <ProfileIdentityEditor initial={profile} onClose={() => setEditingProfile(false)} />}
     </div>

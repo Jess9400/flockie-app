@@ -25,5 +25,33 @@
     "subVibeHosted": "Vibe you hosted",
     "subClub": "Your club",
     "subActivity": "1:1 activity"
+  },
+  "follow": {
+    "follow": "Follow",
+    "following": "Following ✓"
+  },
+  "social": {
+    "posts": "posts",
+    "following": "following",
+    "followers": "followers",
+    "findPeople": "Find people",
+    "postsHeading": "Recaps"
+  },
+  "people": {
+    "back": "Profile",
+    "heading": "People",
+    "subtitle": "Your people — and new ones from real rooms in your city.",
+    "tab": {
+      "find": "Find people",
+      "following": "Following",
+      "followers": "Followers"
+    },
+    "searchPlaceholder": "Search people in your city…",
+    "metBadge": "met",
+    "metHeading": "People you've met",
+    "cityHeading": "Also in your city",
+    "emptyFind": "Nobody found — try another name.",
+    "emptyFollowing": "You're not following anyone yet — start with people you've met.",
+    "emptyFollowers": "No followers yet — post a recap and say hi around town."
   }
 }

@@ -25,5 +25,33 @@
     "subVibeHosted": "Vibe que você organizou",
     "subClub": "Seu club",
     "subActivity": "Atividade 1:1"
+  },
+  "follow": {
+    "follow": "Seguir",
+    "following": "Seguindo ✓"
+  },
+  "social": {
+    "posts": "posts",
+    "following": "seguindo",
+    "followers": "seguidores",
+    "findPeople": "Encontrar pessoas",
+    "postsHeading": "Resumos"
+  },
+  "people": {
+    "back": "Perfil",
+    "heading": "Pessoas",
+    "subtitle": "A sua galera — e gente nova de encontros reais na sua cidade.",
+    "tab": {
+      "find": "Encontrar",
+      "following": "Seguindo",
+      "followers": "Seguidores"
+    },
+    "searchPlaceholder": "Busque pessoas na sua cidade…",
+    "metBadge": "conheceu",
+    "metHeading": "Pessoas que você conheceu",
+    "cityHeading": "Também na sua cidade",
+    "emptyFind": "Ninguém encontrado — tente outro nome.",
+    "emptyFollowing": "Você ainda não segue ninguém — comece por quem você conheceu.",
+    "emptyFollowers": "Sem seguidores ainda — poste um resumo e diga oi pela cidade."
   }
 }

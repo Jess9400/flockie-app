@@ -14,18 +14,22 @@ export default function PublicProfileDashboard({
   events,
   reviews,
   incomingLike,
+  socialStrip,
+  postsSection,
 }: {
   personId: string;
   profile: PublicProfile;
   events?: EventsData;
   reviews?: ProfileStoryReview[];
+  socialStrip?: React.ReactNode;
+  postsSection?: React.ReactNode;
   incomingLike: boolean;
 }) {
   const firstName = (profile.display_name || "there").split(" ")[0];
 
   return (
     <div>
-      <ProfileStory userId={personId} profile={profile} events={events} reviews={reviews} mode="public" />
+      <ProfileStory userId={personId} profile={profile} events={events} reviews={reviews} mode="public" socialStrip={socialStrip} postsSection={postsSection} />
       {incomingLike && <MatchBackButton personId={personId} name={firstName} />}
     </div>
   );

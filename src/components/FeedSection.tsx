@@ -48,10 +48,12 @@ export default function FeedSection({
   posts: initial,
   meId,
   mePhoto,
+  composer = true,
 }: {
   posts: FeedPost[];
   meId: string;
   mePhoto: string | null;
+  composer?: boolean;
 }) {
   const supabase = createClient();
   const t = useTranslations("feed");
@@ -147,6 +149,7 @@ export default function FeedSection({
   return (
     <div className="space-y-3">
       {/* composer teaser */}
+      {composer && (
       <Link
         href="/posts/new"
         className="flex items-center gap-2.5 rounded-full border border-ink/15 bg-white py-1.5 pl-3 pr-1.5 shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5"
@@ -157,6 +160,7 @@ export default function FeedSection({
           <Plus size={14} /> {t("post")}
         </span>
       </Link>
+      )}
 
       {posts.length === 0 && (
         <div className="rounded-3xl border-2 border-dashed border-ink/25 bg-white p-8 text-center">

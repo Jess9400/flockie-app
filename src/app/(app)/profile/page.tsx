@@ -4,7 +4,10 @@ import ProfileEditor from "@/components/ProfileEditor";
 import { type EventsData } from "@/components/ProfileEvents";
 import type { Profile } from "@/lib/vibe-check";
 import { safeRedirectPath } from "@/lib/redirects";
+import { getTranslations } from "next-intl/server";
 import { getProfileStoryReviews } from "@/lib/profile-story-reviews";
+import ProfileSocialStrip from "@/components/ProfileSocialStrip";
+import FeedSection, { type FeedPost } from "@/components/FeedSection";
 
 export default async function ProfilePage({
   searchParams,
@@ -16,6 +19,7 @@ export default async function ProfilePage({
     (searchParams.compat ? `/compat/${searchParams.compat}` : undefined);
   const supabase = await createClient();
   const user = await getSessionUser();
+  const tFeed = await getTranslations("feed");
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -40,10 +44,16 @@ export default async function ProfilePage({
     .maybeSingle();
 
   // The story uses completed Vibes only. The RPC keeps future plans private.
-  const [{ data: eventsData }, storyReviews] = await Promise.all([
+  // Social bits are migration-safe: before feed/follows SQL runs they resolve
+  // to zeros/empty and the strip still renders.
+  const [{ data: eventsData }, storyReviews, postsRes, followingRes, followersRes] = await Promise.all([
     supabase.rpc("public_profile_events", { p_user: user!.id }),
     getProfileStoryReviews(user!.id),
+    supabase.rpc("user_posts", { p_user: user!.id, p_limit: 12 }),
+    supabase.from("follows").select("followee_id", { count: "exact", head: true }).eq("follower_id", user!.id),
+    supabase.from("follows").select("follower_id", { count: "exact", head: true }).eq("followee_id", user!.id),
   ]);
+  const myPosts = postsRes.error ? [] : ((postsRes.data ?? []) as FeedPost[]);
 
   return (
     <main className="mx-auto w-full max-w-[1180px] px-4 pb-28 pt-6 font-nunito sm:px-6 sm:pb-12">
@@ -60,6 +70,23 @@ export default async function ProfilePage({
         redirectAfter={returnTo}
         events={(eventsData ?? {}) as EventsData}
         reviews={storyReviews}
+        socialStrip={
+          <ProfileSocialStrip
+            userId={user!.id}
+            isOwner
+            posts={myPosts.length}
+            following={followingRes.count ?? 0}
+            followers={followersRes.count ?? 0}
+          />
+        }
+        postsSection={
+          <section className="mt-8">
+            <h2 className="px-1 font-fredoka text-xl font-bold text-navy">{tFeed("social.postsHeading")}</h2>
+            <div className="mx-auto mt-3 max-w-xl lg:mx-0">
+              <FeedSection posts={myPosts} meId={user!.id} mePhoto={(profile?.photos as string[] | null)?.[0] ?? null} />
+            </div>
+          </section>
+        }
       />
     </main>
   );

@@ -675,8 +675,9 @@ export default async function HomePage({
         )}
       </section>
 
-      {/* ── The feed: recaps of real vibes, clubs & activities in your city ── */}
-      <section className="mx-4 mt-6">
+      {/* ── The feed: recaps of real vibes, clubs & activities. Same-width
+          panel as the near-you box, with its own internal scroll. ── */}
+      <section className="mx-4 mt-8 rounded-3xl border border-ink/10 bg-white p-5 shadow-[0_2px_12px_rgba(10,37,69,0.07)] sm:p-6">
         <div className="px-1">
           <h2 className="text-[22px] font-extrabold sm:text-[28px]">{th("feed.heading")}</h2>
           <Squiggle />
@@ -684,12 +685,14 @@ export default async function HomePage({
             {th("feed.subtitle", { city: homeCity ?? th("buddies.yourCity") })}
           </p>
         </div>
-        <div className="mx-auto mt-4 max-w-xl lg:mx-0">
-          <FeedSection
-            posts={feedPosts}
-            meId={user!.id}
-            mePhoto={(profile?.photos as string[] | null)?.[0] ?? null}
-          />
+        <div className="carousel-fade mt-4 max-h-[560px] overflow-y-auto pr-1 [scrollbar-width:thin]">
+          <div className="mx-auto max-w-xl">
+            <FeedSection
+              posts={feedPosts}
+              meId={user!.id}
+              mePhoto={(profile?.photos as string[] | null)?.[0] ?? null}
+            />
+          </div>
         </div>
       </section>
 

@@ -15,6 +15,8 @@ export default function ProfileEditor({
   redirectAfter,
   events,
   reviews,
+  socialStrip,
+  postsSection,
 }: {
   userId: string;
   profile: Partial<Profile> & { vibe_goal?: string | null; vibe_persona?: string | null };
@@ -22,6 +24,8 @@ export default function ProfileEditor({
   redirectAfter?: string;
   events?: EventsData;
   reviews?: ProfileStoryReview[];
+  socialStrip?: React.ReactNode;
+  postsSection?: React.ReactNode;
 }) {
   const t = useTranslations("profile");
   // Start in edit mode if the profile isn't complete yet (first-time onboarding).
@@ -49,6 +53,6 @@ export default function ProfileEditor({
   }
 
   return (
-    <ProfileStory userId={userId} profile={profile} events={events} reviews={reviews} />
+    <ProfileStory userId={userId} profile={profile} events={events} reviews={reviews} socialStrip={socialStrip} postsSection={postsSection} />
   );
 }

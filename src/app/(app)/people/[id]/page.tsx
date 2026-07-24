@@ -8,6 +8,8 @@ import PublicProfileDashboard from "@/components/PublicProfileDashboard";
 import { type EventsData } from "@/components/ProfileEvents";
 import type { Profile } from "@/lib/vibe-check";
 import { getProfileStoryReviews } from "@/lib/profile-story-reviews";
+import ProfileSocialStrip from "@/components/ProfileSocialStrip";
+import FeedSection, { type FeedPost } from "@/components/FeedSection";
 
 export default async function PersonPage({
   params,
@@ -16,6 +18,7 @@ export default async function PersonPage({
 }) {
   const supabase = await createClient();
   const t = await getTranslations("profile");
+  const tFeed = await getTranslations("feed");
 
   // The public story is intentionally small: privacy-safe profile details and
   // completed Vibes only. The event RPC hides future plans from visitors.
@@ -58,6 +61,17 @@ export default async function PersonPage({
     incomingLike = !m;
   }
 
+  // Social layer — migration-safe (empty before feed/follows SQL runs).
+  const [personPostsRes, followingRes, followersRes, viewerFollowRes] = await Promise.all([
+    supabase.rpc("user_posts", { p_user: params.id, p_limit: 8 }),
+    supabase.from("follows").select("followee_id", { count: "exact", head: true }).eq("follower_id", params.id),
+    supabase.from("follows").select("follower_id", { count: "exact", head: true }).eq("followee_id", params.id),
+    user
+      ? supabase.from("follows").select("followee_id").eq("follower_id", user.id).eq("followee_id", params.id).maybeSingle()
+      : Promise.resolve({ data: null }),
+  ]);
+  const personPosts = personPostsRes.error ? [] : ((personPostsRes.data ?? []) as FeedPost[]);
+
   return (
     <main className="mx-auto w-full max-w-[1180px] px-4 pb-28 pt-6 font-nunito sm:px-6 sm:pb-12">
       <Link href="/match" className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted">
@@ -70,6 +84,26 @@ export default async function PersonPage({
         events={(eventsData ?? {}) as EventsData}
         reviews={storyReviews}
         incomingLike={incomingLike}
+        socialStrip={
+          <ProfileSocialStrip
+            userId={params.id}
+            isOwner={false}
+            posts={personPosts.length}
+            following={followingRes.count ?? 0}
+            followers={followersRes.count ?? 0}
+            viewerFollows={!!viewerFollowRes.data}
+          />
+        }
+        postsSection={
+          personPosts.length > 0 && user ? (
+            <section className="mt-8">
+              <h2 className="px-1 font-fredoka text-xl font-bold text-navy">{tFeed("social.postsHeading")}</h2>
+              <div className="mx-auto mt-3 max-w-xl lg:mx-0">
+                <FeedSection posts={personPosts} meId={user.id} mePhoto={null} composer={false} />
+              </div>
+            </section>
+          ) : null
+        }
       />
     </main>
   );
