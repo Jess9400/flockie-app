@@ -38,20 +38,24 @@ export default async function ProfileSocialStrip({
   };
 
   return (
-    <div className="mt-4 flex flex-wrap items-center gap-1 rounded-[2rem] border border-ink/15 bg-white px-2 py-1.5 shadow-[0_2px_10px_rgba(10,37,69,0.05)]">
-      {stat(posts, t("posts"))}
-      {stat(following, t("following"), isOwner ? "/people?tab=following" : undefined)}
-      {stat(followers, t("followers"), isOwner ? "/people?tab=followers" : undefined)}
-      <span className="ml-auto pr-1">
+    <div className="mt-4 flex flex-col gap-2 rounded-[2rem] border border-ink/15 bg-white p-2 shadow-[0_2px_10px_rgba(10,37,69,0.05)] sm:flex-row sm:items-center sm:gap-1 sm:px-2 sm:py-1.5">
+      <div className="flex items-center justify-around sm:justify-start sm:gap-1">
+        {stat(posts, t("posts"))}
+        {stat(following, t("following"), isOwner ? "/people?tab=following" : undefined)}
+        {stat(followers, t("followers"), isOwner ? "/people?tab=followers" : undefined)}
+      </div>
+      <span className="sm:ml-auto sm:pr-1">
         {isOwner ? (
           <Link
             href="/people"
-            className="rounded-full bg-flockie-blue px-4 py-2 text-xs font-bold text-white"
+            className="flex w-full items-center justify-center rounded-full bg-flockie-blue px-4 py-2.5 text-xs font-bold text-white sm:w-auto sm:py-2"
           >
             {t("findPeople")}
           </Link>
         ) : (
-          <FollowButton userId={userId} initialFollowing={!!viewerFollows} />
+          <span className="flex w-full [&>button]:w-full sm:[&>button]:w-auto">
+            <FollowButton userId={userId} initialFollowing={!!viewerFollows} />
+          </span>
         )}
       </span>
     </div>
