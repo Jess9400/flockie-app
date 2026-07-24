@@ -54,5 +54,12 @@
     "emptyFollowing": "Você ainda não segue ninguém — comece por quem você conheceu.",
     "emptyFollowers": "Sem seguidores ainda — poste um resumo e diga oi pela cidade."
   },
-  "deletePost": "Excluir post"
+  "deletePost": "Excluir post",
+  "report": {
+    "title": "Denunciar este post",
+    "message": "Conte o que há de errado e vamos revisar.",
+    "placeholder": "Qual é o problema? (opcional)",
+    "cta": "Denunciar",
+    "done": "Denunciado — obrigado, vamos revisar."
+  }
 }

@@ -54,5 +54,12 @@
     "emptyFollowing": "You're not following anyone yet — start with people you've met.",
     "emptyFollowers": "No followers yet — post a recap and say hi around town."
   },
-  "deletePost": "Delete post"
+  "deletePost": "Delete post",
+  "report": {
+    "title": "Report this post",
+    "message": "Tell us what's wrong and we'll review it.",
+    "placeholder": "What's the issue? (optional)",
+    "cta": "Report",
+    "done": "Reported — thank you, we'll review it."
+  }
 }

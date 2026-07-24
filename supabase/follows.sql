@@ -194,3 +194,24 @@ drop trigger if exists post_like_notify_t on public.post_likes;
 create trigger post_like_notify_t
 after insert on public.post_likes
 for each row execute function public.post_like_notify();
+
+-- ── Post reporting (mirrors user_reports) ───────────────────────────────────
+create table if not exists public.post_reports (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null references public.posts(id) on delete cascade,
+  reporter_id uuid not null references public.profiles(id) on delete cascade,
+  reason text,
+  created_at timestamptz default now()
+);
+alter table public.post_reports enable row level security;
+drop policy if exists "post report insert" on public.post_reports;
+create policy "post report insert" on public.post_reports for insert to authenticated
+  with check (reporter_id = auth.uid());
+
+create or replace function public.report_post(p_post uuid, p_reason text)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  insert into public.post_reports (post_id, reporter_id, reason)
+  values (p_post, auth.uid(), nullif(trim(p_reason), ''));
+end $$;
+grant execute on function public.report_post(uuid, text) to authenticated;

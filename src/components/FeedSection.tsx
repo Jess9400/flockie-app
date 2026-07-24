@@ -4,9 +4,10 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { Heart, MessageCircle, Plus, X } from "lucide-react";
+import { Flag, Heart, MessageCircle, Plus, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatChatTime } from "@/lib/chat";
+import { useConfirm, useToast } from "@/components/ui/feedback";
 
 export type FeedPost = {
   id: string;
@@ -58,6 +59,8 @@ export default function FeedSection({
   const supabase = createClient();
   const t = useTranslations("feed");
   const locale = useLocale();
+  const confirm = useConfirm();
+  const toast = useToast();
   const [posts, setPosts] = useState(initial);
   const [open, setOpen] = useState<Record<string, Comment[] | "loading">>({});
   const [drafts, setDrafts] = useState<Record<string, string>>({});
@@ -111,6 +114,20 @@ export default function FeedSection({
         photo: profiles[r.author_id]?.photo ?? null,
       })),
     }));
+  }
+
+  async function reportPost(postId: string) {
+    const res = await confirm({
+      title: t("report.title"),
+      message: t("report.message"),
+      allowFreeText: true,
+      freeTextPlaceholder: t("report.placeholder"),
+      confirmLabel: t("report.cta"),
+      destructive: true,
+    });
+    if (!res) return;
+    await supabase.rpc("report_post", { p_post: postId, p_reason: res.reason || res.note || "" });
+    toast(t("report.done"));
   }
 
   async function deletePost(postId: string) {
@@ -193,7 +210,7 @@ export default function FeedSection({
                   {formatChatTime(p.created_at, locale)} · {p.city}
                 </p>
               </div>
-              {p.author_id === meId && (
+              {p.author_id === meId ? (
                 <button
                   type="button"
                   onClick={() => deletePost(p.id)}
@@ -201,6 +218,15 @@ export default function FeedSection({
                   className="shrink-0 rounded-full p-1 text-ink/35 hover:bg-cream hover:text-ink"
                 >
                   <X size={15} />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => reportPost(p.id)}
+                  aria-label={t("report.title")}
+                  className="shrink-0 rounded-full p-1 text-ink/25 hover:bg-cream hover:text-ink/60"
+                >
+                  <Flag size={13} />
                 </button>
               )}
             </div>
