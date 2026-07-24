@@ -48,7 +48,7 @@ export default async function ClubPage({ params }: { params: { id: string } }) {
         <div className="rounded-[2rem] border border-ink/15 bg-white p-8 shadow-[0_8px_30px_rgba(10,37,69,0.05)]">
           <h1 className="text-2xl font-black text-ink">{t("notFoundTitle")}</h1>
           <p className="mt-2 text-sm font-medium text-muted">{t("notFoundBody")}</p>
-          <Link href="/vibes" className="mt-6 inline-flex rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white">
+          <Link href="/clubs" className="mt-6 inline-flex rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white">
             {t("explore")}
           </Link>
         </div>
@@ -102,7 +102,7 @@ export default async function ClubPage({ params }: { params: { id: string } }) {
 
   return (
     <main className="mx-auto max-w-2xl px-5 pb-10 pt-6">
-      <Link href="/vibes" className="inline-flex items-center gap-1 text-sm font-bold text-muted hover:text-ink">
+      <Link href="/clubs" className="inline-flex items-center gap-1 text-sm font-bold text-muted hover:text-ink">
         <ChevronLeft size={16} /> {t("back")}
       </Link>
 
