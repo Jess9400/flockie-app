@@ -258,5 +258,12 @@
       "biweekly": "Every 2 weeks",
       "monthly": "Monthly"
     }
+  },
+  "calendar": {
+    "emptyTitle": "No meetings scheduled yet",
+    "emptyBody": "Your next gathering shows up here once it's set.",
+    "scheduleLink": "Schedule on the club page",
+    "gatheringFallback": "Gathering",
+    "past": "past"
   }
 }

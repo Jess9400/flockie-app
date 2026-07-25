@@ -96,4 +96,22 @@ language sql security definer set search_path = public stable as $$
 $$;
 grant execute on function public.club_agenda_preview(uuid) to authenticated;
 
+-- 5) Scheduled meetings for the club Calendar — the club's own gatherings are
+--    vibes with club_id set (heartbeat schedules them). Upcoming first, then
+--    past. Members only.
+create or replace function public.club_gatherings(p_club uuid)
+returns table (id uuid, title text, starts_at timestamptz, timezone text, status text, city text)
+language sql security definer set search_path = public stable as $$
+  select v.id, v.title, v.starts_at, v.timezone, v.status, v.city
+  from public.vibes v
+  where v.club_id = p_club
+    and v.status <> 'cancelled'
+    and public.is_club_member(p_club)
+  order by
+    case when v.starts_at >= now() then 0 else 1 end,
+    case when v.starts_at >= now() then v.starts_at end asc,
+    v.starts_at desc;
+$$;
+grant execute on function public.club_gatherings(uuid) to authenticated;
+
 notify pgrst, 'reload schema';

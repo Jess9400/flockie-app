@@ -258,5 +258,12 @@
       "biweekly": "Cada 2 semanas",
       "monthly": "Mensual"
     }
+  },
+  "calendar": {
+    "emptyTitle": "Aún no hay reuniones",
+    "emptyBody": "Tu próximo encuentro aparece aquí cuando se programe.",
+    "scheduleLink": "Programar en la página del club",
+    "gatheringFallback": "Encuentro",
+    "past": "pasado"
   }
 }

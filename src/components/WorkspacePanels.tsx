@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CheckSquare, CalendarDays, Wallet, Ticket } from "lucide-react";
 import { useTranslations } from "next-intl";
 import TripWorkspace from "@/components/TripWorkspace";
+import ClubGatherings from "@/components/ClubGatherings";
 
 type Member = { id: string; name: string; photo: string | null };
 type Tab = "checklist" | "agenda" | "costs" | "deals";
@@ -73,18 +74,23 @@ export default function WorkspacePanels({
 
       {open && (
         <div className="max-h-[46vh] overflow-y-auto border-t border-ink/10 bg-cream px-3 py-3">
-          <TripWorkspace
-            tripId={tripId}
-            city={city}
-            checkIn={checkIn}
-            checkOut={checkOut}
-            members={members}
-            meId={meId}
-            spaceKind={spaceKind}
-            only={open}
-            dealsScope={isClub ? "activities" : "all"}
-            embedded
-          />
+          {isClub && open === "agenda" ? (
+            // The club Calendar = its scheduled gatherings, not a free-form agenda.
+            <ClubGatherings clubId={tripId} />
+          ) : (
+            <TripWorkspace
+              tripId={tripId}
+              city={city}
+              checkIn={checkIn}
+              checkOut={checkOut}
+              members={members}
+              meId={meId}
+              spaceKind={spaceKind}
+              only={open}
+              dealsScope={isClub ? "activities" : "all"}
+              embedded
+            />
+          )}
         </div>
       )}
     </div>

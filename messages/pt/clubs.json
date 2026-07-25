@@ -258,5 +258,12 @@
       "biweekly": "A cada 2 semanas",
       "monthly": "Mensal"
     }
+  },
+  "calendar": {
+    "emptyTitle": "Nenhum encontro agendado",
+    "emptyBody": "Seu próximo encontro aparece aqui quando for marcado.",
+    "scheduleLink": "Agendar na página do clube",
+    "gatheringFallback": "Encontro",
+    "past": "passado"
   }
 }

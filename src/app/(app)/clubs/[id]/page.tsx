@@ -8,7 +8,6 @@ import ClubInviteAccept from "@/components/ClubInviteAccept";
 import ClubModeToggle from "@/components/ClubModeToggle";
 import ClubMembershipRequest from "@/components/ClubMembershipRequest";
 import ClubMembershipRequests from "@/components/ClubMembershipRequests";
-import TripAgendaPreview from "@/components/TripAgendaPreview";
 
 type ClubDetail = {
   id: string;
@@ -169,9 +168,6 @@ export default async function ClubPage({ params }: { params: { id: string } }) {
           <span className="rounded-full bg-flockie-blue px-4 py-2 text-sm font-bold text-white">{t("openChat")}</span>
         </Link>
       )}
-
-      {/* Club schedule preview — members see the agenda planned in the chat. */}
-      <TripAgendaPreview clubId={club.id} />
 
       {club.is_host && <ClubMembershipRequests clubId={club.id} requests={membershipRequests} />}
 
