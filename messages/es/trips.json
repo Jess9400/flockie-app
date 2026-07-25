@@ -179,7 +179,7 @@
     "dealCars": "Alquiler de coche",
     "book": "Reservar",
     "affiliate": "Algunos enlaces son de afiliados — reservar ayuda a Flockie.",
-    "checklistHint": "Pasos compartidos — cada persona marca el suyo (toca un nombre para marcar hecho).",
+    "checklistHint": "Marca tu casilla cuando termines cada cosa.",
     "pasteShow": "📋 Pegar / importar un itinerario",
     "pasteHide": "Ocultar",
     "pastePlaceholder": "Un ítem por línea. Empieza con una fecha (2026-08-10 Llegada) para fijar el día.",
@@ -190,6 +190,7 @@
     "eventChecklistDone": "{name} completó: {title}",
     "eventAgendaAdd": "{name} agregó al plan: {title}",
     "eventAgendaImport": "{name} agregó {count} elementos al plan",
-    "eventCostAdd": "{name} agregó un gasto: {title} · {amount}"
+    "eventCostAdd": "{name} agregó un gasto: {title} · {amount}",
+    "checklistYou": "tú"
   }
 }

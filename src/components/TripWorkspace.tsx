@@ -171,18 +171,22 @@ export default function TripWorkspace({
                   <div className="mt-1.5 flex flex-wrap gap-1.5">
                     {members.map((m) => {
                       const done = it.done_by.includes(m.id);
-                      return (
-                        <button
-                          key={m.id}
-                          type="button"
-                          onClick={() => toggleMember(it, m.id)}
-                          className={`flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-bold transition-colors ${
-                            done ? "border-onboarding-green bg-onboarding-green/10 text-onboarding-green" : "border-ink/15 bg-white text-ink/45"
-                          }`}
-                        >
+                      const isMe = m.id === meId;
+                      const cls = `flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-bold transition-colors ${
+                        done ? "border-onboarding-green bg-onboarding-green/10 text-onboarding-green" : "border-ink/15 bg-white text-ink/45"
+                      }`;
+                      // You can only check off your own box — everyone else's chip
+                      // is read-only (shows their status).
+                      return isMe ? (
+                        <button key={m.id} type="button" onClick={() => toggleMember(it, m.id)} className={cls}>
+                          <span>{done ? "✓" : "○"}</span>
+                          {m.name.split(" ")[0]} ({t("checklistYou")})
+                        </button>
+                      ) : (
+                        <span key={m.id} className={`${cls} cursor-default opacity-90`}>
                           <span>{done ? "✓" : "○"}</span>
                           {m.name.split(" ")[0]}
-                        </button>
+                        </span>
                       );
                     })}
                   </div>
