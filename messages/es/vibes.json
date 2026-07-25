@@ -170,7 +170,9 @@
     "errPickLanguage": "Elige el idioma principal del evento.",
     "errAgeOrder": "La edad mínima no puede ser mayor que la máxima.",
     "errPhotoUpload": "Falló la subida de la foto.",
-    "exactLocationPinned": "📍 Ubicación exacta fijada"
+    "exactLocationPinned": "📍 Ubicación exacta fijada",
+    "scheduleGathering": "Programar encuentro",
+    "backToClub": "Volver al club"
   },
   "interest": {
     "ineligible": "Este vibe tiene preferencias que no incluyen tu perfil.",

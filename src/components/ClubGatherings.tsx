@@ -41,9 +41,6 @@ export default function ClubGatherings({ clubId }: { clubId: string }) {
       <div className="rounded-xl border-2 border-dashed border-ink/15 bg-white px-4 py-6 text-center">
         <p className="text-sm font-extrabold text-ink">{t("emptyTitle")}</p>
         <p className="mt-1 text-xs font-medium text-muted">{t("emptyBody")}</p>
-        <Link href={`/clubs/${clubId}`} className="mt-2 inline-block text-xs font-bold text-flockie-blue">
-          {t("scheduleLink")} →
-        </Link>
       </div>
     );
   }

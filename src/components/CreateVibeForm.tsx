@@ -415,10 +415,10 @@ export default function CreateVibeForm({
             {t("create.viewYourVibe")}
           </Link>
           <Link
-            href="/vibes"
+            href={clubId ? `/clubs/${clubId}` : "/vibes"}
             className="rounded-2xl border border-ink/15 bg-white py-2.5 text-center font-fredoka text-sm font-semibold text-ink"
           >
-            {t("create.backToVibes")}
+            {clubId ? t("create.backToClub") : t("create.backToVibes")}
           </Link>
         </div>
       </div>
@@ -956,7 +956,7 @@ export default function CreateVibeForm({
         disabled={saving || uploading}
         className="w-full rounded-full border border-ink/15 bg-flockie-orange py-3.5 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
       >
-        {saving ? t("create.creating") : t("create.createVibe")}
+        {saving ? t("create.creating") : clubId ? t("create.scheduleGathering") : t("create.createVibe")}
       </button>
     </form>
   );

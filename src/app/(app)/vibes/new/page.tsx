@@ -81,10 +81,10 @@ export default async function NewVibePage({
   return (
     <main className="px-5 pt-6">
       <Link
-        href="/vibes"
+        href={club ? `/clubs/${club.id}` : "/vibes"}
         className="mb-3 inline-flex items-center gap-1 text-sm font-bold text-muted"
       >
-        <ChevronLeft size={16} /> {t("create.back")}
+        <ChevronLeft size={16} /> {club ? t("create.backToClub") : t("create.back")}
       </Link>
       <h1 className="text-2xl font-black">
         {club ? t("create.titleClubGathering") : clone ? t("create.titleRunAgain") : t("create.titleCreate")}

@@ -170,7 +170,9 @@
     "errPickLanguage": "Pick the event’s main language.",
     "errAgeOrder": "Minimum age can’t be greater than the maximum age.",
     "errPhotoUpload": "Photo upload failed.",
-    "exactLocationPinned": "📍 Exact location pinned"
+    "exactLocationPinned": "📍 Exact location pinned",
+    "scheduleGathering": "Schedule gathering",
+    "backToClub": "Back to club"
   },
   "interest": {
     "ineligible": "This vibe has preferences that don’t include your profile.",
