@@ -90,20 +90,20 @@ export default async function ClubsPage({ searchParams }: { searchParams: { city
               <Link
                 key={club.id}
                 href={`/clubs/${club.id}`}
-                className="group overflow-hidden rounded-[1.75rem] border border-ink/15 bg-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5"
+                className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-ink/15 bg-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5"
               >
                 <div className={`bg-gradient-to-br ${CARD_BACKGROUNDS[index % CARD_BACKGROUNDS.length]} p-5`}>
                   <span className="inline-flex rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-extrabold text-ink">{status}</span>
                   <div className="mt-10 text-3xl" aria-hidden>✦</div>
                 </div>
-                <div className="p-5">
+                <div className="flex flex-1 flex-col p-5">
                   <h2 className="text-lg font-black leading-tight text-ink">{club.title}</h2>
                   <div className="mt-2 flex flex-wrap gap-2 text-xs font-bold text-muted">
                     <span className="inline-flex items-center gap-1"><MapPin size={14} className="text-flockie-coral" /> {club.area ? `${club.area}, ${club.city}` : club.city}</span>
                     <span className="inline-flex items-center gap-1"><CalendarDays size={14} className="text-flockie-coral" /> {t(club.cadence)}</span>
                   </div>
                   {club.description && <p className="mt-3 line-clamp-2 text-sm font-medium leading-relaxed text-muted">{club.description}</p>}
-                  <div className="mt-4 flex items-center justify-between gap-2 border-t border-ink/10 pt-3">
+                  <div className="mt-auto flex items-center justify-between gap-2 border-t border-ink/10 pt-3">
                     <div className="min-w-0 text-xs font-bold text-ink">
                       {club.next_vibe_title && when ? (
                         <><p className="truncate">{t("next", { title: club.next_vibe_title })}</p><p className="mt-0.5 text-muted">{t("nextWhen", { when })}</p></>
