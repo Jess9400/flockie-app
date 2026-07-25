@@ -80,7 +80,7 @@ export default async function MatchPage({
         <p className="mt-1 text-sm font-medium text-muted">
           {t.rich("introTrip", {
             link: (chunks) => (
-              <Link href="/match/trip?kind=flock" className="font-bold text-flockie-orange underline">
+              <Link href="/match/trip?kind=trip" className="font-bold text-flockie-orange underline">
                 {chunks}
               </Link>
             ),

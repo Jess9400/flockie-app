@@ -219,10 +219,15 @@ export default async function MyTripsPage({
                 )
               )}
             </div>
-            <p className="mt-1 flex items-center gap-1.5 font-extrabold">
+            <Link
+              href={t.visibility === "public" ? `/flocks/${t.id}` : `/trips/${t.id}`}
+              className="mt-1 flex items-center gap-1.5 font-extrabold hover:text-flockie-orange"
+            >
               <MapPin size={15} className="text-flockie-orange" />{" "}
-              {(t.destinations ?? [t.destination]).filter(Boolean).join(" · ")}
-            </p>
+              <span className="min-w-0 break-words underline-offset-2 hover:underline">
+                {(t.destinations ?? [t.destination]).filter(Boolean).join(" · ")}
+              </span>
+            </Link>
             <p className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-muted">
               <CalendarClock size={13} /> {t.start_date} → {t.end_date} · {tr("list.people", { count: t.group_size })}
             </p>

@@ -45,7 +45,12 @@ export default function TripForm({
   const tc = useTranslations("components");
   const supabase = createClient();
   const isActivity = kind === "activity";
-  const isFlock = kind === "flock";
+  // Non-activity create: one form, user picks private (1:1) or Flock (group).
+  // Editing an existing trip keeps its type (public trip = flock).
+  const [flockMode, setFlockMode] = useState(
+    kind === "flock" || (!!initial.id && initial.visibility === "public")
+  );
+  const isFlock = flockMode;
 
   const initialDests = initial.destinations ?? (initial.destination ? [initial.destination] : []);
   const [title, setTitle] = useState(initial.title ?? "");
@@ -148,13 +153,11 @@ export default function TripForm({
     // Activities land straight in the create/invite view with THIS activity
     // selected, so the swipe deck shows immediately — no extra navigation.
     router.push(
-      isFlock
-        ? tripId
-          ? `/flocks/${tripId}`
-          : "/flocks"
-        : isActivity
-          ? `/match?view=create${tripId ? `&trip=${tripId}` : ""}`
-          : `/match?mode=${kind}`
+      isActivity
+        ? `/match?view=create${tripId ? `&trip=${tripId}` : ""}`
+        : isFlock
+          ? tripId ? `/flocks/${tripId}` : "/flocks"
+          : tripId ? `/trips/${tripId}` : "/flocks"
     );
     router.refresh();
   }
@@ -163,6 +166,30 @@ export default function TripForm({
 
   return (
     <form onSubmit={save} className="space-y-5 pb-8">
+      {!isActivity && !initial.id && (
+        <div>
+          <span className="mb-1 block text-sm font-bold">{tf("form.tripTypeLabel")}</span>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setFlockMode(false)}
+              className={`rounded-2xl border-2 px-3 py-3 text-left transition-colors ${!flockMode ? "border-flockie-orange bg-flockie-orange/5" : "border-ink/15 bg-white"}`}
+            >
+              <span className="block text-sm font-extrabold text-ink">👥 {tf("form.typePrivate")}</span>
+              <span className="block text-[11px] font-medium text-muted">{tf("form.typePrivateSub")}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setFlockMode(true)}
+              className={`rounded-2xl border-2 px-3 py-3 text-left transition-colors ${flockMode ? "border-flockie-orange bg-flockie-orange/5" : "border-ink/15 bg-white"}`}
+            >
+              <span className="block text-sm font-extrabold text-ink">🐦 {tf("form.typeFlock")}</span>
+              <span className="block text-[11px] font-medium text-muted">{tf("form.typeFlockSub")}</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {isActivity && (
         <label className="block">
           <span className="mb-1 block text-sm font-bold">{tf("form.labelActivity")}</span>

@@ -97,7 +97,12 @@
     "labelAddress": "¿Dónde exactamente?",
     "addressPlaceholder": "Blue Tokai Coffee, Hiranandani Estate",
     "addressHint": "El lugar o punto de encuentro — se comparte con quien hagas match.",
-    "errAddressRequired": "Añade dónde ocurre la actividad."
+    "errAddressRequired": "Añade dónde ocurre la actividad.",
+    "tripTypeLabel": "¿Qué tipo de viaje?",
+    "typePrivate": "Solo un buddy",
+    "typePrivateSub": "1:1 — tú + un compañero de viaje",
+    "typeFlock": "Grupo abierto",
+    "typeFlockSub": "Un Flock al que otros pueden pedir unirse"
   },
   "hub": {
     "findTripBuddy": "Encuentra un Trip Buddy",
