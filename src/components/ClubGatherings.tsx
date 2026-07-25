@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CalendarDays, ChevronRight } from "lucide-react";
+import { CalendarDays, ChevronRight, Check } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { formatVibeWhen } from "@/lib/vibes";
@@ -15,24 +15,70 @@ type Gathering = {
   status: string;
   city: string | null;
 };
+type Attendee = { id: string; name: string; photo: string | null };
 
 // The club Calendar: the club's scheduled meetings (its gatherings are vibes
-// with club_id set — the heartbeat/prepare-gathering flow creates them). This
-// reads them, it doesn't create — scheduling stays on the club page.
-export default function ClubGatherings({ clubId }: { clubId: string }) {
+// with club_id set). Each member checks whether they'll attend — a personal
+// RSVP everyone can see, like ticking the checklist.
+export default function ClubGatherings({ clubId, meId }: { clubId: string; meId: string }) {
   const supabase = createClient();
   const t = useTranslations("clubs.calendar");
   const locale = useLocale();
   const [items, setItems] = useState<Gathering[]>([]);
+  const [going, setGoing] = useState<Record<string, Attendee[]>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.rpc("club_gatherings", { p_club: clubId }).then(({ data }) => {
-      setItems((data ?? []) as Gathering[]);
+    let alive = true;
+    (async () => {
+      const { data: gRows } = await supabase.rpc("club_gatherings", { p_club: clubId });
+      const gatherings = (gRows ?? []) as Gathering[];
+      const ids = gatherings.map((g) => g.id);
+      const map: Record<string, Attendee[]> = {};
+      if (ids.length) {
+        const { data: rsvps } = await supabase
+          .from("club_gathering_rsvps")
+          .select("vibe_id, user_id")
+          .eq("going", true)
+          .in("vibe_id", ids);
+        const userIds = Array.from(new Set((rsvps ?? []).map((r) => r.user_id)));
+        const byId: Record<string, Attendee> = {};
+        if (userIds.length) {
+          const { data: profs } = await supabase
+            .from("public_profiles")
+            .select("id, display_name, photos")
+            .in("id", userIds);
+          (profs ?? []).forEach((p) => {
+            byId[p.id] = { id: p.id, name: p.display_name ?? "Flockie", photo: p.photos?.[0] ?? null };
+          });
+        }
+        (rsvps ?? []).forEach((r) => {
+          (map[r.vibe_id] ??= []).push(byId[r.user_id] ?? { id: r.user_id, name: "Flockie", photo: null });
+        });
+      }
+      if (!alive) return;
+      setItems(gatherings);
+      setGoing(map);
       setLoading(false);
-    });
+    })();
+    return () => {
+      alive = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clubId]);
+
+  async function toggle(vibeId: string) {
+    const list = going[vibeId] ?? [];
+    const iAmIn = list.some((a) => a.id === meId);
+    // Optimistic
+    setGoing((cur) => ({
+      ...cur,
+      [vibeId]: iAmIn ? (cur[vibeId] ?? []).filter((a) => a.id !== meId) : [...(cur[vibeId] ?? []), { id: meId, name: "You", photo: null }],
+    }));
+    await supabase
+      .from("club_gathering_rsvps")
+      .upsert({ vibe_id: vibeId, user_id: meId, going: !iAmIn, updated_at: new Date().toISOString() }, { onConflict: "vibe_id,user_id" });
+  }
 
   if (loading) return null;
 
@@ -47,17 +93,14 @@ export default function ClubGatherings({ clubId }: { clubId: string }) {
 
   const now = Date.now();
   return (
-    <ul className="space-y-1.5">
+    <ul className="space-y-2">
       {items.map((g) => {
         const upcoming = new Date(g.starts_at).getTime() >= now;
+        const list = going[g.id] ?? [];
+        const iAmIn = list.some((a) => a.id === meId);
         return (
-          <li key={g.id}>
-            <Link
-              href={`/vibes/${g.id}`}
-              className={`flex items-center gap-3 rounded-xl border px-3 py-2.5 transition-colors ${
-                upcoming ? "border-flockie-blue/30 bg-flockie-blue/5" : "border-ink/10 bg-white opacity-70"
-              }`}
-            >
+          <li key={g.id} className={`rounded-xl border ${upcoming ? "border-flockie-blue/30 bg-flockie-blue/5" : "border-ink/10 bg-white opacity-80"}`}>
+            <Link href={`/vibes/${g.id}`} className="flex items-center gap-3 px-3 pt-2.5">
               <CalendarDays size={16} className={`shrink-0 ${upcoming ? "text-flockie-blue" : "text-ink/40"}`} />
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-bold text-ink">{g.title ?? t("gatheringFallback")}</span>
@@ -69,6 +112,43 @@ export default function ClubGatherings({ clubId }: { clubId: string }) {
               </span>
               <ChevronRight size={15} className="shrink-0 text-ink/30" />
             </Link>
+
+            {/* RSVP — each member checks if they'll attend */}
+            <div className="flex items-center gap-2 px-3 pb-2.5 pt-2">
+              {upcoming ? (
+                <button
+                  type="button"
+                  onClick={() => toggle(g.id)}
+                  className={`flex items-center gap-1.5 rounded-full border-2 px-3 py-1 text-xs font-extrabold transition-colors ${
+                    iAmIn
+                      ? "border-onboarding-green bg-onboarding-green text-white"
+                      : "border-ink/20 bg-white text-ink/60 hover:text-ink"
+                  }`}
+                >
+                  <Check size={13} strokeWidth={3} /> {iAmIn ? t("goingYes") : t("goingCta")}
+                </button>
+              ) : (
+                <span className="text-[11px] font-bold text-muted">{t("attendedLabel")}</span>
+              )}
+
+              {list.length > 0 && (
+                <span className="flex items-center gap-1">
+                  <span className="flex -space-x-1.5">
+                    {list.slice(0, 4).map((a) =>
+                      a.photo ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img key={a.id} src={a.photo} alt="" className="h-5 w-5 rounded-full border border-white object-cover" />
+                      ) : (
+                        <span key={a.id} className="flex h-5 w-5 items-center justify-center rounded-full border border-white bg-flockie-blue text-[9px] font-bold text-white">
+                          {a.name[0]?.toUpperCase()}
+                        </span>
+                      )
+                    )}
+                  </span>
+                  <span className="text-[11px] font-bold text-muted">{t("goingCount", { count: list.length })}</span>
+                </span>
+              )}
+            </div>
           </li>
         );
       })}

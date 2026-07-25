@@ -114,4 +114,32 @@ language sql security definer set search_path = public stable as $$
 $$;
 grant execute on function public.club_gatherings(uuid) to authenticated;
 
+-- 6) Gathering RSVPs — each club member checks whether they'll attend a
+--    scheduled meetup (personal, self-only; everyone sees who's going).
+create table if not exists public.club_gathering_rsvps (
+  vibe_id uuid not null references public.vibes(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  going boolean not null default true,
+  updated_at timestamptz not null default now(),
+  primary key (vibe_id, user_id)
+);
+alter table public.club_gathering_rsvps enable row level security;
+
+-- Any member of the gathering's club can read all RSVPs; you write only your own.
+drop policy if exists "rsvp read" on public.club_gathering_rsvps;
+create policy "rsvp read" on public.club_gathering_rsvps for select to authenticated
+  using (exists (select 1 from public.vibes v
+                 where v.id = vibe_id and v.club_id is not null and public.is_club_member(v.club_id)));
+drop policy if exists "rsvp insert" on public.club_gathering_rsvps;
+create policy "rsvp insert" on public.club_gathering_rsvps for insert to authenticated
+  with check (user_id = auth.uid()
+              and exists (select 1 from public.vibes v
+                          where v.id = vibe_id and v.club_id is not null and public.is_club_member(v.club_id)));
+drop policy if exists "rsvp update" on public.club_gathering_rsvps;
+create policy "rsvp update" on public.club_gathering_rsvps for update to authenticated
+  using (user_id = auth.uid()) with check (user_id = auth.uid());
+drop policy if exists "rsvp delete" on public.club_gathering_rsvps;
+create policy "rsvp delete" on public.club_gathering_rsvps for delete to authenticated
+  using (user_id = auth.uid());
+
 notify pgrst, 'reload schema';

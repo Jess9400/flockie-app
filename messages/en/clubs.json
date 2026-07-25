@@ -264,6 +264,10 @@
     "emptyBody": "Your next gathering shows up here once it's set.",
     "scheduleLink": "Schedule on the club page",
     "gatheringFallback": "Gathering",
-    "past": "past"
+    "past": "past",
+    "goingCta": "I'll be there",
+    "goingYes": "Going",
+    "goingCount": "{count} going",
+    "attendedLabel": "Past meetup"
   }
 }

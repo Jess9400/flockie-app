@@ -83,7 +83,7 @@ export default function WorkspacePanels({
         <div className="max-h-[46vh] overflow-y-auto border-t border-ink/10 bg-cream px-3 py-3">
           {isClub && open === "agenda" ? (
             // The club Calendar = its scheduled gatherings, not a free-form agenda.
-            <ClubGatherings clubId={tripId} />
+            <ClubGatherings clubId={tripId} meId={meId} />
           ) : (
             <TripWorkspace
               tripId={tripId}

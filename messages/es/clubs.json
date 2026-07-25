@@ -264,6 +264,10 @@
     "emptyBody": "Tu próximo encuentro aparece aquí cuando se programe.",
     "scheduleLink": "Programar en la página del club",
     "gatheringFallback": "Encuentro",
-    "past": "pasado"
+    "past": "pasado",
+    "goingCta": "Voy a ir",
+    "goingYes": "Voy",
+    "goingCount": "{count} van",
+    "attendedLabel": "Encuentro pasado"
   }
 }
