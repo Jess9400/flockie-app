@@ -204,6 +204,26 @@ begin
     jsonb_build_object('chat_id', v_chat, 'activity_id', t.id)
   );
 
+  -- 1:1 activity is now filled: decline the other pending requests, but softly —
+  -- tell each the spot filled and nudge them to invite the host to something
+  -- else (link to the host's profile Say-hi).
+  declare r_other record;
+  begin
+    for r_other in
+      select user_id from public.activity_join_requests
+      where activity_id = p_activity and status = 'pending' and user_id <> p_user
+    loop
+      update public.activity_join_requests set status = 'declined'
+        where activity_id = p_activity and user_id = r_other.user_id;
+      perform public.notify(
+        r_other.user_id, 'activity_like',
+        'The "' || coalesce(t.title, 'activity') || '" spot was filled',
+        'Someone else joined this one — but the host is around. Invite them to something else!',
+        jsonb_build_object('like_from', auth.uid(), 'href', '/people/' || auth.uid())
+      );
+    end loop;
+  end;
+
   return jsonb_build_object('accepted', true, 'chat_id', v_chat);
 end $$;
 grant execute on function public.respond_activity_request(uuid, uuid, boolean) to authenticated;

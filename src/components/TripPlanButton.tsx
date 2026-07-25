@@ -19,6 +19,7 @@ export default function TripPlanButton({
   checkOut,
   members,
   meId,
+  spaceKind = "trip",
 }: {
   tripId: string;
   city: string;
@@ -26,6 +27,7 @@ export default function TripPlanButton({
   checkOut: string | null;
   members: Member[];
   meId: string;
+  spaceKind?: "trip" | "club";
 }) {
   const t = useTranslations("trips.workspace");
   const [mounted, setMounted] = useState(false);
@@ -57,7 +59,7 @@ export default function TripPlanButton({
                   <X size={20} />
                 </button>
               </div>
-              <TripWorkspace tripId={tripId} city={city} checkIn={checkIn} checkOut={checkOut} members={members} meId={meId} embedded />
+              <TripWorkspace tripId={tripId} city={city} checkIn={checkIn} checkOut={checkOut} members={members} meId={meId} spaceKind={spaceKind} embedded />
             </div>
           </div>,
           document.body

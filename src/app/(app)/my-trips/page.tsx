@@ -245,7 +245,7 @@ export default async function MyTripsPage({
           <div className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:justify-end">
             {!faded && (
               <Link
-                href={chatByTrip[t.id] ? `/buddies/${chatByTrip[t.id]}` : "/chats?tab=travel"}
+                href={chatByTrip[t.id] ? `/buddies/${chatByTrip[t.id]}` : (t.visibility === "public" ? `/flocks/${t.id}` : `/trips/${t.id}`)}
                 className="flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-flockie-blue px-3 py-1.5 text-sm font-bold text-white"
               >
                 <MessageCircle size={14} /> {t.visibility === "public" ? tr("list.flockChat") : tr("list.chat")}

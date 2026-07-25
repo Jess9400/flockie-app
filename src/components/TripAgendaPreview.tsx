@@ -6,10 +6,12 @@ type AgendaItem = { id: string; day: string | null; title: string; note: string 
 // Read-only itinerary shown on the trip/flock detail page to EVERYONE (public
 // flocks) or members (private trips) — so browsers see what the trip is about.
 // Editing happens in the member-only workspace.
-export default async function TripAgendaPreview({ tripId }: { tripId: string }) {
+export default async function TripAgendaPreview({ tripId, clubId }: { tripId?: string; clubId?: string }) {
   const supabase = await createClient();
   const t = await getTranslations("trips.detail");
-  const { data } = await supabase.rpc("trip_agenda_preview", { p_trip: tripId });
+  const { data } = clubId
+    ? await supabase.rpc("club_agenda_preview", { p_club: clubId })
+    : await supabase.rpc("trip_agenda_preview", { p_trip: tripId! });
   const items = (data ?? []) as AgendaItem[];
   if (items.length === 0) return null;
 

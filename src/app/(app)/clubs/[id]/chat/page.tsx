@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import ClubChatRoom, { type ClubMsg } from "@/components/ClubChatRoom";
 import ClubChatHeader, { type ClubMember } from "@/components/ClubChatHeader";
+import TripPlanButton from "@/components/TripPlanButton";
 
 // The club's persistent room. Members + host only (RLS enforces it too — the
 // message query returns nothing for outsiders, and we bounce them back).
@@ -71,6 +72,17 @@ export default async function ClubChatPage({ params }: { params: { id: string } 
           initialMuted={!!muteRow}
           members={clubMembers}
         />
+        {isMember && clubMembers.length > 0 && (
+          <TripPlanButton
+            tripId={params.id}
+            spaceKind="club"
+            city={detail.city ?? ""}
+            checkIn={null}
+            checkOut={null}
+            members={clubMembers.map((m) => ({ id: m.id, name: m.display_name ?? "Flockie", photo: m.photo }))}
+            meId={user!.id}
+          />
+        )}
         <ClubChatRoom
           clubId={params.id}
           currentUserId={user!.id}

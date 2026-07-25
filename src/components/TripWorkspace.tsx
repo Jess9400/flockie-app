@@ -23,6 +23,7 @@ export default function TripWorkspace({
   members,
   meId,
   embedded = false,
+  spaceKind = "trip",
 }: {
   tripId: string;
   city: string;
@@ -31,11 +32,15 @@ export default function TripWorkspace({
   members: Member[];
   meId: string;
   embedded?: boolean;
+  spaceKind?: "trip" | "club";
 }) {
   const supabase = createClient();
   const t = useTranslations("trips.workspace");
   const [tab, setTab] = useState<"checklist" | "agenda" | "costs" | "deals">("checklist");
   const nameOf = (id: string | null) => members.find((m) => m.id === id)?.name ?? "";
+  // Workspace tables are shared by trips/flocks and clubs — same schema, keyed
+  // by either trip_id or club_id.
+  const keyCol = spaceKind === "club" ? "club_id" : "trip_id";
 
   const Wrapper = embedded ? "div" : "section";
   return (
@@ -82,7 +87,7 @@ export default function TripWorkspace({
       supabase
         .from("trip_checklist")
         .select("id, title, assignee, done, done_by")
-        .eq("trip_id", tripId)
+        .eq(keyCol, tripId)
         .order("created_at")
         .then(({ data }) => {
           setItems((data ?? []).map((d) => ({ ...d, done_by: d.done_by ?? [] })) as ChecklistItem[]);
@@ -95,7 +100,7 @@ export default function TripWorkspace({
       if (!title.trim()) return;
       const { data } = await supabase
         .from("trip_checklist")
-        .insert({ trip_id: tripId, title: title.trim(), created_by: meId })
+        .insert({ [keyCol]: tripId, title: title.trim(), created_by: meId })
         .select("id, title, assignee, done, done_by")
         .single();
       if (data) setItems((c) => [...c, { ...data, done_by: [] } as ChecklistItem]);
@@ -180,7 +185,7 @@ export default function TripWorkspace({
       supabase
         .from("trip_agenda")
         .select("id, day, title, note")
-        .eq("trip_id", tripId)
+        .eq(keyCol, tripId)
         .order("day", { ascending: true, nullsFirst: false })
         .order("created_at")
         .then(({ data }) => {
@@ -197,7 +202,7 @@ export default function TripWorkspace({
       if (!title.trim()) return;
       const { data } = await supabase
         .from("trip_agenda")
-        .insert({ trip_id: tripId, day: day || null, title: title.trim(), created_by: meId })
+        .insert({ [keyCol]: tripId, day: day || null, title: title.trim(), created_by: meId })
         .select("id, day, title, note")
         .single();
       if (data) {
@@ -212,7 +217,7 @@ export default function TripWorkspace({
       if (!lines.length) return;
       const rows = lines.map((line) => {
         const m = line.match(/^(\d{4}-\d{2}-\d{2})\s*[-:.]?\s*(.+)$/);
-        return { trip_id: tripId, day: m ? m[1] : null, title: (m ? m[2] : line).slice(0, 200), created_by: meId };
+        return { [keyCol]: tripId, day: m ? m[1] : null, title: (m ? m[2] : line).slice(0, 200), created_by: meId };
       });
       const { data } = await supabase.from("trip_agenda").insert(rows).select("id, day, title, note");
       if (data) setItems((c) => [...c, ...(data as AgendaItem[])].sort((a, b) => (a.day ?? "9999").localeCompare(b.day ?? "9999")));
@@ -279,8 +284,8 @@ export default function TripWorkspace({
 
     async function load() {
       const [{ data: exp }, { data: bal }] = await Promise.all([
-        supabase.from("trip_expenses").select("id, payer_id, title, amount, currency, split_with").eq("trip_id", tripId).order("created_at", { ascending: false }),
-        supabase.rpc("trip_balances", { p_trip: tripId }),
+        supabase.from("trip_expenses").select("id, payer_id, title, amount, currency, split_with").eq(keyCol, tripId).order("created_at", { ascending: false }),
+        supabase.rpc(spaceKind === "club" ? "club_balances" : "trip_balances", spaceKind === "club" ? { p_club: tripId } : { p_trip: tripId }),
       ]);
       setExpenses((exp ?? []) as Expense[]);
       setBalances((bal ?? []) as Balance[]);
@@ -294,7 +299,7 @@ export default function TripWorkspace({
     async function add() {
       const amt = Number(amount);
       if (!title.trim() || !(amt > 0)) return;
-      await supabase.from("trip_expenses").insert({ trip_id: tripId, payer_id: meId, title: title.trim(), amount: amt, currency: "USD", split_with: [] });
+      await supabase.from("trip_expenses").insert({ [keyCol]: tripId, payer_id: meId, title: title.trim(), amount: amt, currency: "USD", split_with: [] });
       setTitle("");
       setAmount("");
       load();
