@@ -1,6 +1,6 @@
 import Link from "next/link";
+import BackLink from "@/components/BackLink";
 import { notFound } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
@@ -74,9 +74,7 @@ export default async function PersonPage({
 
   return (
     <main className="mx-auto w-full max-w-[1180px] px-4 pb-28 pt-6 font-nunito sm:px-6 sm:pb-12">
-      <Link href="/match" className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted">
-        <ChevronLeft size={16} /> {t("page.back")}
-      </Link>
+      <BackLink label={t("page.back")} fallback="/match" />
 
       <PublicProfileDashboard
         personId={params.id}
