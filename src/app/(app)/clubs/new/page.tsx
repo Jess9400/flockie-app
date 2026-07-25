@@ -26,7 +26,7 @@ export default async function NewClubPage() {
       <p className="mt-6 text-xs font-extrabold uppercase tracking-[0.16em] text-flockie-coral">
         {t("eyebrow")}
       </p>
-      <h1 className="mt-2 text-3xl font-black tracking-tight text-ink">{t("title")}</h1>
+      <h1 className="mt-2 text-2xl font-black text-ink">{t("title")}</h1>
       <p className="mt-2 max-w-xl text-base font-medium leading-relaxed text-muted">{t("intro")}</p>
       <CreateFormingClub defaultCity={profile?.home_city ?? ""} userId={user!.id} />
     </main>

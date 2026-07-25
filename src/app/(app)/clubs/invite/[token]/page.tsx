@@ -24,7 +24,7 @@ export default async function ClubFounderInvitePage({ params }: { params: { toke
   if (!invite) {
     return (
       <main className="mx-auto max-w-xl px-5 pb-10 pt-12 text-center">
-        <div className="rounded-[2rem] border border-ink/15 bg-white p-8 shadow-[0_8px_30px_rgba(10,37,69,0.05)]">
+        <div className="rounded-3xl border border-ink/15 bg-white p-8 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
           <h1 className="text-2xl font-black text-ink">{t("notFoundTitle")}</h1>
           <p className="mt-2 text-sm font-medium text-muted">{t("notFoundBody")}</p>
           <Link href="/clubs" className="mt-6 inline-flex rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white">
@@ -42,12 +42,12 @@ export default async function ClubFounderInvitePage({ params }: { params: { toke
 
   return (
     <main className="mx-auto max-w-xl px-5 pb-10 pt-10">
-      <section className="overflow-hidden rounded-[2rem] border border-ink/15 bg-white shadow-[0_10px_35px_rgba(10,37,69,0.08)]">
+      <section className="overflow-hidden rounded-3xl border border-ink/15 bg-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
         <div className="bg-gradient-to-br from-flockie-blue via-[#80c5ea] to-[#d7eefb] p-6 sm:p-8">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 text-xs font-extrabold tracking-wide text-ink">
             <Sparkles size={14} className="text-flockie-coral" /> {t("eyebrow")}
           </span>
-          <h1 className="mt-7 text-3xl font-black tracking-tight text-ink">{t("title", { club: invite.club_title })}</h1>
+          <h1 className="mt-7 text-2xl font-black text-ink">{t("title", { club: invite.club_title })}</h1>
           <p className="mt-3 text-base font-semibold leading-relaxed text-ink/75">{t("body")}</p>
         </div>
 

@@ -57,7 +57,7 @@ export default function ClubHeartbeatControls({
   if (status === "closed") return null;
 
   return (
-    <section className="mt-5 rounded-[2rem] border border-ink/15 bg-white p-5 shadow-[0_8px_30px_rgba(10,37,69,0.05)] sm:p-6">
+    <section className="mt-5 rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:p-6">
       {status === "forming" && lastCompletedVibeId && (
         <div className="rounded-2xl bg-flockie-blue/10 p-4">
           <div className="flex gap-3">
@@ -71,7 +71,7 @@ export default function ClubHeartbeatControls({
             type="button"
             disabled={saving !== null}
             onClick={() => updateStatus("active")}
-            className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-flockie-coral px-4 py-3 text-sm font-extrabold text-white shadow-[0_3px_0_#d84e32] disabled:opacity-60 sm:w-auto"
+            className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-flockie-coral px-4 py-3 text-sm font-extrabold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-60 sm:w-auto"
           >
             {saving === "active" ? t("activating") : t("activate")}
           </button>
@@ -87,7 +87,7 @@ export default function ClubHeartbeatControls({
               <p className="mt-1 text-sm font-medium leading-relaxed text-muted">{t("activeBody")}</p>
             </div>
           </div>
-          <Link href={nextGatheringHref} className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-flockie-coral px-4 py-3 text-sm font-extrabold text-white shadow-[0_3px_0_#d84e32] sm:w-auto">
+          <Link href={nextGatheringHref} className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-flockie-coral px-4 py-3 text-sm font-extrabold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:w-auto">
             {t("planNext")}
           </Link>
         </div>
@@ -106,7 +106,7 @@ export default function ClubHeartbeatControls({
             type="button"
             disabled={saving !== null}
             onClick={() => updateStatus("resume")}
-            className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-flockie-coral px-4 py-3 text-sm font-extrabold text-white shadow-[0_3px_0_#d84e32] disabled:opacity-60 sm:w-auto"
+            className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-flockie-coral px-4 py-3 text-sm font-extrabold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-60 sm:w-auto"
           >
             <RotateCcw className="mr-1.5" size={16} /> {saving === "resume" ? t("resuming") : t("resume")}
           </button>

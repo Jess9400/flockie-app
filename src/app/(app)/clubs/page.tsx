@@ -42,13 +42,12 @@ export default async function ClubsPage({ searchParams }: { searchParams: { city
     <main className="px-5 pb-10 pt-6">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-flockie-coral">{t("eyebrow")}</p>
-          <h1 className="mt-1 text-3xl font-black tracking-tight text-ink">{t("title")}</h1>
+          <h1 className="text-2xl font-black text-ink">{t("title")}</h1>
           <p className="mt-2 max-w-xl text-sm font-medium leading-relaxed text-muted">{t("intro")}</p>
         </div>
         <Link
           href="/clubs/new"
-          className="inline-flex shrink-0 items-center gap-1 rounded-full bg-flockie-coral px-3 py-2 text-xs font-extrabold text-white shadow-[0_3px_0_#d84e32] sm:px-4 sm:text-sm"
+          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-ink/15 bg-flockie-orange px-3 py-1.5 text-xs font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:px-4 sm:py-2 sm:text-sm"
         >
           <Plus size={16} /> {t("start")}
         </Link>
@@ -72,10 +71,10 @@ export default async function ClubsPage({ searchParams }: { searchParams: { city
       </form>
 
       {clubs.length === 0 ? (
-        <section className="mt-6 rounded-[2rem] border-2 border-dashed border-ink/20 bg-white px-6 py-14 text-center">
+        <section className="mt-6 rounded-3xl border-2 border-dashed border-ink/20 bg-white px-6 py-14 text-center">
           <h2 className="text-xl font-black text-ink">{city ? t("emptyTitle", { city }) : t("emptyEverywhere")}</h2>
           <p className="mx-auto mt-2 max-w-md text-sm font-medium leading-relaxed text-muted">{t("emptyBody")}</p>
-          <Link href="/clubs/new" className="mt-6 inline-flex rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white shadow-[0_3px_0_#d84e32]">
+          <Link href="/clubs/new" className="mt-6 inline-flex rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
             {t("start")}
           </Link>
         </section>
@@ -90,7 +89,7 @@ export default async function ClubsPage({ searchParams }: { searchParams: { city
               <Link
                 key={club.id}
                 href={`/clubs/${club.id}`}
-                className="group overflow-hidden rounded-[1.75rem] border border-ink/15 bg-white shadow-[0_6px_22px_rgba(10,37,69,0.07)] transition-transform hover:-translate-y-0.5"
+                className="group overflow-hidden rounded-[1.75rem] border border-ink/15 bg-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5"
               >
                 <div className={`bg-gradient-to-br ${CARD_BACKGROUNDS[index % CARD_BACKGROUNDS.length]} p-5`}>
                   <span className="inline-flex rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-extrabold text-ink">{status}</span>

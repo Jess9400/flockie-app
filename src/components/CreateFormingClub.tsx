@@ -93,7 +93,7 @@ export default function CreateFormingClub({ defaultCity, userId }: { defaultCity
 
   if (clubTitle) {
     return (
-      <section className="mt-8 rounded-[2rem] border border-ink/15 bg-white p-6 text-center shadow-[0_8px_30px_rgba(10,37,69,0.08)] sm:p-8">
+      <section className="mt-8 rounded-3xl border border-ink/15 bg-white p-6 text-center shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:p-8">
         <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-flockie-blue text-white">
           <Sparkles size={28} />
         </span>
@@ -104,7 +104,7 @@ export default function CreateFormingClub({ defaultCity, userId }: { defaultCity
           <button
             type="button"
             onClick={() => clubId && router.push(`/clubs/${clubId}`)}
-            className="rounded-full bg-flockie-coral px-4 py-3 text-sm font-extrabold text-white shadow-[0_3px_0_#d84e32]"
+            className="rounded-full bg-flockie-coral px-4 py-3 text-sm font-extrabold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
           >
             {t("viewClub")}
           </button>
@@ -130,7 +130,7 @@ export default function CreateFormingClub({ defaultCity, userId }: { defaultCity
 
   return (
     <form onSubmit={submit} className="mt-8 space-y-7 pb-4">
-      <section className="rounded-[2rem] border border-ink/15 bg-white p-5 shadow-[0_8px_30px_rgba(10,37,69,0.05)] sm:p-6">
+      <section className="rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:p-6">
         <div className="flex items-start gap-3 rounded-2xl bg-flockie-blue/10 p-4">
           <UsersRound className="mt-0.5 shrink-0 text-flockie-blue" size={22} />
           <div>
@@ -194,7 +194,7 @@ export default function CreateFormingClub({ defaultCity, userId }: { defaultCity
         </label>
       </section>
 
-      <section className="rounded-[2rem] border border-ink/15 bg-white p-5 shadow-[0_8px_30px_rgba(10,37,69,0.05)] sm:p-6">
+      <section className="rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:p-6">
         <span className="block text-sm font-extrabold text-ink">{t("coverLabel")}</span>
         <p className="mt-1 text-sm font-medium text-muted">{t("coverHelp")}</p>
         <label className="mt-5 block text-sm font-extrabold text-ink">
@@ -242,7 +242,7 @@ export default function CreateFormingClub({ defaultCity, userId }: { defaultCity
         <input ref={coverInput} type="file" accept="image/*" className="hidden" onChange={onCover} />
       </section>
 
-      <section className="rounded-[2rem] border border-ink/15 bg-white p-5 shadow-[0_8px_30px_rgba(10,37,69,0.05)] sm:p-6">
+      <section className="rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:p-6">
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block text-sm font-extrabold text-ink">
             {t("cityLabel")}
@@ -290,7 +290,7 @@ export default function CreateFormingClub({ defaultCity, userId }: { defaultCity
         </fieldset>
       </section>
 
-      <section className="rounded-[2rem] border border-ink/15 bg-white p-5 shadow-[0_8px_30px_rgba(10,37,69,0.05)] sm:p-6">
+      <section className="rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:p-6">
         <fieldset>
           <legend className="text-sm font-extrabold text-ink">{t("visibilityLabel")}</legend>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -316,7 +316,7 @@ export default function CreateFormingClub({ defaultCity, userId }: { defaultCity
       <button
         type="submit"
         disabled={saving}
-        className="w-full rounded-full bg-flockie-coral px-5 py-4 text-base font-extrabold text-white shadow-[0_4px_0_#d84e32] transition-transform active:translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-full bg-flockie-coral px-5 py-4 text-base font-extrabold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform active:translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {saving ? t("creating") : t("create")}
       </button>

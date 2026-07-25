@@ -45,7 +45,7 @@ export default async function ClubPage({ params }: { params: { id: string } }) {
   if (!club) {
     return (
       <main className="mx-auto max-w-2xl px-5 pb-10 pt-12 text-center">
-        <div className="rounded-[2rem] border border-ink/15 bg-white p-8 shadow-[0_8px_30px_rgba(10,37,69,0.05)]">
+        <div className="rounded-3xl border border-ink/15 bg-white p-8 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
           <h1 className="text-2xl font-black text-ink">{t("notFoundTitle")}</h1>
           <p className="mt-2 text-sm font-medium text-muted">{t("notFoundBody")}</p>
           <Link href="/clubs" className="mt-6 inline-flex rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white">
@@ -106,12 +106,12 @@ export default async function ClubPage({ params }: { params: { id: string } }) {
         <ChevronLeft size={16} /> {t("back")}
       </Link>
 
-      <section className="mt-6 overflow-hidden rounded-[2rem] border border-ink/15 bg-white shadow-[0_10px_35px_rgba(10,37,69,0.08)]">
+      <section className="mt-6 overflow-hidden rounded-3xl border border-ink/15 bg-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
         <div className="bg-gradient-to-br from-flockie-blue via-[#80c5ea] to-[#d7eefb] p-6 sm:p-8">
           <span className="inline-flex rounded-full bg-white/90 px-3 py-1 text-xs font-extrabold tracking-wide text-ink">
             <CircleDot className="mr-1.5 text-flockie-coral" size={14} /> {t(statusKey)}
           </span>
-          <h1 className="mt-7 max-w-xl text-3xl font-black tracking-tight text-ink sm:text-4xl">{club.title}</h1>
+          <h1 className="mt-7 max-w-xl text-2xl font-black text-ink sm:text-4xl">{club.title}</h1>
           {club.description && <p className="mt-3 max-w-xl text-base font-semibold leading-relaxed text-ink/75">{club.description}</p>}
         </div>
 
@@ -127,7 +127,7 @@ export default async function ClubPage({ params }: { params: { id: string } }) {
       </section>
 
       {club.is_host && club.status === "forming" && !club.last_completed_vibe_id && (
-        <section className="mt-5 rounded-[2rem] border border-flockie-blue/30 bg-flockie-blue/10 p-5 sm:p-6">
+        <section className="mt-5 rounded-3xl border border-flockie-blue/30 bg-flockie-blue/10 p-5 sm:p-6">
           <div className="flex gap-3">
             <Sparkles className="mt-0.5 shrink-0 text-flockie-coral" size={23} />
             <div>
@@ -137,7 +137,7 @@ export default async function ClubPage({ params }: { params: { id: string } }) {
           </div>
           <Link
             href={`/vibes/new?club=${club.id}`}
-            className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white shadow-[0_3px_0_#d84e32] sm:w-auto"
+            className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:w-auto"
           >
             {t("planFirst")}
           </Link>
@@ -159,7 +159,7 @@ export default async function ClubPage({ params }: { params: { id: string } }) {
       {(club.is_host || ["founding", "regular"].includes(club.membership_status ?? "")) && (
         <Link
           href={`/clubs/${club.id}/chat`}
-          className="mt-5 flex items-center justify-between rounded-[2rem] border border-ink/15 bg-white p-5 shadow-[0_8px_30px_rgba(10,37,69,0.05)] transition-transform hover:-translate-y-0.5 sm:p-6"
+          className="mt-5 flex items-center justify-between rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5 sm:p-6"
         >
           <div>
             <h2 className="text-lg font-black text-ink">💬 {t("clubChat")}</h2>
@@ -184,7 +184,7 @@ export default async function ClubPage({ params }: { params: { id: string } }) {
         />
       )}
 
-      <section className="mt-5 rounded-[2rem] border border-ink/15 bg-white p-5 shadow-[0_8px_30px_rgba(10,37,69,0.05)] sm:p-6">
+      <section className="mt-5 rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:p-6">
         <h2 className="text-lg font-black text-ink">{t("nextGathering")}</h2>
         {club.next_vibe_id && club.next_vibe_title && when ? (
           <div className="mt-4 flex flex-col gap-3 rounded-2xl border border-ink/15 bg-cream p-4 sm:flex-row sm:items-center sm:justify-between">
@@ -204,7 +204,7 @@ export default async function ClubPage({ params }: { params: { id: string } }) {
         )}
       </section>
 
-      <section className="mt-5 flex gap-3 rounded-[2rem] border border-ink/15 bg-white p-5 sm:p-6">
+      <section className="mt-5 flex gap-3 rounded-3xl border border-ink/15 bg-white p-5 sm:p-6">
         <ShieldCheck className="mt-0.5 shrink-0 text-flockie-blue" size={23} />
         <div>
           <h2 className="font-black text-ink">{t("privacyTitle")}</h2>

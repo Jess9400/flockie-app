@@ -46,7 +46,7 @@ export default function ClubMembershipRequests({ clubId, requests }: { clubId: s
   if (!requests.length) return null;
 
   return (
-    <section className="mt-5 rounded-[2rem] border border-ink/15 bg-white p-5 shadow-[0_8px_30px_rgba(10,37,69,0.05)] sm:p-6">
+    <section className="mt-5 rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:p-6">
       <h2 className="text-lg font-black text-ink">{t("hostTitle")}</h2>
       <p className="mt-1 text-sm font-medium leading-relaxed text-muted">{t("hostBody")}</p>
       <div className="mt-5 space-y-2">

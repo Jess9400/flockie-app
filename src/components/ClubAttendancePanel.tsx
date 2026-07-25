@@ -71,7 +71,7 @@ export default function ClubAttendancePanel({
   if (!attendees.length) return null;
 
   return (
-    <section className="mt-6 rounded-[2rem] border border-flockie-blue/30 bg-white p-5 shadow-[0_8px_30px_rgba(10,37,69,0.05)] sm:p-6">
+    <section className="mt-6 rounded-3xl border border-flockie-blue/30 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:p-6">
       <div className="flex gap-3">
         <ClipboardCheck className="mt-0.5 shrink-0 text-flockie-coral" size={23} />
         <div>
@@ -122,7 +122,7 @@ export default function ClubAttendancePanel({
           type="button"
           disabled={saving || selected.length === 0}
           onClick={recordAttendance}
-          className="mt-5 w-full rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white shadow-[0_3px_0_#d84e32] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+          className="mt-5 w-full rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
           {saving
             ? t("recording")

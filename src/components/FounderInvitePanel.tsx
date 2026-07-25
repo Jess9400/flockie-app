@@ -72,7 +72,7 @@ export default function FounderInvitePanel({
   const visibleInvites = invites.filter((invite) => invite.status === "active" || invite.status === "accepted");
 
   return (
-    <section className="mt-5 rounded-[2rem] border border-ink/15 bg-white p-5 shadow-[0_8px_30px_rgba(10,37,69,0.05)] sm:p-6">
+    <section className="mt-5 rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:p-6">
       <div className="flex gap-3">
         <UserPlus className="mt-0.5 shrink-0 text-flockie-blue" size={23} />
         <div>
@@ -85,7 +85,7 @@ export default function FounderInvitePanel({
         type="button"
         disabled={creating}
         onClick={createInvite}
-        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white shadow-[0_3px_0_#d84e32] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
       >
         <Link2 size={17} /> {creating ? t("creating") : t("create")}
       </button>

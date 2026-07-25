@@ -20,7 +20,7 @@ export default function ClubMembershipRequest({
 
   if (requestStatus === "requested") {
     return (
-      <section className="mt-5 rounded-[2rem] border border-flockie-blue/30 bg-flockie-blue/10 p-5 sm:p-6">
+      <section className="mt-5 rounded-3xl border border-flockie-blue/30 bg-flockie-blue/10 p-5 sm:p-6">
         <h2 className="text-lg font-black text-ink">{t("requestedTitle")}</h2>
         <p className="mt-1 text-sm font-medium leading-relaxed text-muted">{t("requestedBody")}</p>
       </section>
@@ -28,7 +28,7 @@ export default function ClubMembershipRequest({
   }
   if (requestStatus === "declined") {
     return (
-      <section className="mt-5 rounded-[2rem] border border-ink/15 bg-cream p-5 sm:p-6">
+      <section className="mt-5 rounded-3xl border border-ink/15 bg-cream p-5 sm:p-6">
         <h2 className="text-lg font-black text-ink">{t("declinedTitle")}</h2>
         <p className="mt-1 text-sm font-medium leading-relaxed text-muted">{t("declinedBody")}</p>
       </section>
@@ -48,7 +48,7 @@ export default function ClubMembershipRequest({
   }
 
   return (
-    <section className="mt-5 rounded-[2rem] border border-flockie-blue/30 bg-flockie-blue/10 p-5 sm:p-6">
+    <section className="mt-5 rounded-3xl border border-flockie-blue/30 bg-flockie-blue/10 p-5 sm:p-6">
       <div className="flex gap-3">
         <UserRoundPlus className="mt-0.5 shrink-0 text-flockie-coral" size={23} />
         <div>
@@ -60,7 +60,7 @@ export default function ClubMembershipRequest({
         type="button"
         disabled={saving}
         onClick={requestMembership}
-        className="mt-5 w-full rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white shadow-[0_3px_0_#d84e32] disabled:opacity-60 sm:w-auto"
+        className="mt-5 w-full rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-60 sm:w-auto"
       >
         {saving ? t("requesting") : t("request")}
       </button>
