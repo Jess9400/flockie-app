@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import FlockRequestButton from "@/components/FlockRequestButton";
+import TripWorkspace from "@/components/TripWorkspace";
 import ArchetypeBadge from "@/components/ArchetypeBadge";
 import { loadFlockMatch } from "@/lib/vibe-stats";
 import { tripDays } from "@/lib/trips";
@@ -81,6 +82,14 @@ export default async function FlockDetailPage({
   const accepted = (counts ?? [])[0]?.accepted ?? 0;
   const going = 1 + accepted;
   const isFull = going >= trip.group_size;
+
+  // Members (host + accepted) get the roster + planning workspace.
+  const isMember = isHost || myReq?.status === "accepted";
+  const { data: rosterRows } = isMember
+    ? await supabase.rpc("trip_members", { p_trip: trip.id })
+    : { data: null };
+  type RosterM = { id: string; display_name: string | null; photo: string | null; is_host: boolean };
+  const roster = (rosterRows ?? []) as RosterM[];
   const days = tripDays(trip.start_date, trip.end_date);
   const destination = (trip.destinations ?? [trip.destination]).filter(Boolean).join(" · ");
   const hostName = host?.display_name || tr("browse.hostFallback");
@@ -280,6 +289,36 @@ export default async function FlockDetailPage({
           />
         )}
       </div>
+
+      {isMember && roster.length > 0 && (
+        <div className="mt-6">
+          <p className="text-xs font-extrabold uppercase tracking-wide text-ink/50">{tr("detail.whosGoing")}</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {roster.map((m) => (
+              <Link key={m.id} href={`/people/${m.id}`} className="flex items-center gap-1.5 rounded-full border border-ink/15 bg-white px-2 py-1 text-xs font-bold text-ink">
+                {m.photo ? (
+                  <Image src={m.photo} alt="" width={20} height={20} className="h-5 w-5 rounded-full object-cover" />
+                ) : (
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-flockie-blue text-[10px] font-bold text-white">{(m.display_name ?? "?")[0]?.toUpperCase()}</span>
+                )}
+                {m.display_name ?? "Flockie"}
+                {m.is_host && <span className="text-flockie-coral">★</span>}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {isMember && (
+        <TripWorkspace
+          tripId={trip.id}
+          city={(trip.destinations ?? [trip.destination]).filter(Boolean)[0] ?? trip.destination ?? ""}
+          checkIn={trip.start_date}
+          checkOut={trip.end_date}
+          members={roster.map((m) => ({ id: m.id, name: m.display_name ?? "Flockie", photo: m.photo }))}
+          meId={user!.id}
+        />
+      )}
     </main>
   );
 }

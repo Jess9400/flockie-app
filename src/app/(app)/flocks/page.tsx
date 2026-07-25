@@ -154,7 +154,7 @@ export default async function TripBoardPage({
               const days = tripDays(t.start_date, t.end_date);
               const destination = (t.destinations ?? [t.destination]).filter(Boolean).join(" · ");
               const creatorName = t.creator_name || tr("browse.hostFallback");
-              const href = t.kind === "flock" ? `/flocks/${t.trip_id}` : `/people/${t.creator_id}`;
+              const href = t.kind === "flock" ? `/flocks/${t.trip_id}` : `/trips/${t.trip_id}`;
               return (
                 <div
                   key={t.trip_id}

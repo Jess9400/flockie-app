@@ -136,5 +136,38 @@
     "cancel": "Cancelar",
     "errBlocked": "Vocês têm preferências de match incompatíveis.",
     "countriesVisited": "{count} países"
+  },
+  "detail": {
+    "whosGoing": "Quem vai"
+  },
+  "workspace": {
+    "heading": "Plano da viagem",
+    "sub": "Compartilhado com todos que vão — planejem juntos.",
+    "tab": {
+      "checklist": "Checklist",
+      "agenda": "Agenda",
+      "costs": "Custos",
+      "deals": "Reservar"
+    },
+    "anyone": "Qualquer um",
+    "checklistPlaceholder": "Adicione uma tarefa…",
+    "checklistEmpty": "Nenhuma tarefa ainda — adicione a primeira.",
+    "agendaPlaceholder": "Qual é o plano?",
+    "agendaEmpty": "Sem agenda ainda — esboce os dias.",
+    "costTitle": "Para que foi?",
+    "costNote": "Só o registro — acertem como quiserem. Sem pagamentos aqui.",
+    "balances": "Quem deve o quê",
+    "getsBack": "recebe {amt}",
+    "owes": "deve {amt}",
+    "costsEmpty": "Nenhuma despesa registrada ainda.",
+    "paidBy": "pago por {name}",
+    "dealsIntro": "Reserve para sua viagem para {city}:",
+    "yourCity": "sua viagem",
+    "dealStays": "Hospedagem e hotéis",
+    "dealActivities": "O que fazer",
+    "dealFlights": "Voos",
+    "dealCars": "Aluguel de carro",
+    "book": "Reservar",
+    "affiliate": "Alguns links são de afiliados — reservar ajuda a Flockie."
   }
 }

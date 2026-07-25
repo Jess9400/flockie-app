@@ -136,5 +136,38 @@
     "cancel": "Cancel",
     "errBlocked": "You two have conflicting match preferences.",
     "countriesVisited": "{count} countries"
+  },
+  "detail": {
+    "whosGoing": "Who's going"
+  },
+  "workspace": {
+    "heading": "Trip plan",
+    "sub": "Shared with everyone going — plan it together.",
+    "tab": {
+      "checklist": "Checklist",
+      "agenda": "Agenda",
+      "costs": "Costs",
+      "deals": "Book"
+    },
+    "anyone": "Anyone",
+    "checklistPlaceholder": "Add a to-do…",
+    "checklistEmpty": "No to-dos yet — add the first one.",
+    "agendaPlaceholder": "What's the plan?",
+    "agendaEmpty": "No agenda yet — sketch the days.",
+    "costTitle": "What was it for?",
+    "costNote": "Just the ledger — settle up however you like. No payments here.",
+    "balances": "Who owes what",
+    "getsBack": "gets back {amt}",
+    "owes": "owes {amt}",
+    "costsEmpty": "No expenses logged yet.",
+    "paidBy": "paid by {name}",
+    "dealsIntro": "Book for your trip to {city}:",
+    "yourCity": "your trip",
+    "dealStays": "Stays & hotels",
+    "dealActivities": "Things to do",
+    "dealFlights": "Flights",
+    "dealCars": "Car rental",
+    "book": "Book",
+    "affiliate": "Some links are affiliate links — booking helps support Flockie."
   }
 }
