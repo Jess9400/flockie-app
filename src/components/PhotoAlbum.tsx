@@ -37,15 +37,14 @@ export default function PhotoAlbum({ photos, className }: { photos: string[]; cl
   return (
     <div className={className}>
       <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.12em] text-flockie-coral">{t("photosHeading")}</p>
-      <div className="grid grid-cols-2 gap-2">
+      {/* 2-up carousel — swipe/scroll left for more instead of growing the box. */}
+      <div className="flex gap-2 overflow-x-auto snap-x snap-mandatory pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {photos.map((url, i) => (
           <button
             key={url}
             type="button"
             onClick={() => setIdx(i)}
-            className={`group relative overflow-hidden rounded-2xl border border-ink/12 bg-cream ${
-              photos.length % 2 === 1 && i === 0 ? "col-span-2 aspect-[16/10]" : "aspect-square"
-            }`}
+            className="group relative aspect-square w-[calc(50%-0.25rem)] shrink-0 snap-start overflow-hidden rounded-2xl border border-ink/12 bg-cream"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={url} alt="" className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105" />
