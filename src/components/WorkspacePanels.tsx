@@ -33,12 +33,13 @@ export default function WorkspacePanels({
   const isClub = spaceKind === "club";
   const [open, setOpen] = useState<Tab | null>(null);
 
-  // Each tool has its own colour so the strip pops and reads at a glance.
+  // Soft, colour-coded chips — small and round when idle, gently tinted with a
+  // ring and label when active. Cute, not bulky.
   const COLORS: Record<string, { on: string; off: string }> = {
-    green: { on: "border-onboarding-green bg-onboarding-green text-white", off: "border-onboarding-green/25 bg-onboarding-green/10 text-onboarding-green" },
-    blue: { on: "border-flockie-blue bg-flockie-blue text-white", off: "border-flockie-blue/25 bg-flockie-blue/10 text-flockie-blue" },
-    orange: { on: "border-flockie-orange bg-flockie-orange text-white", off: "border-flockie-orange/25 bg-flockie-orange/10 text-flockie-orange" },
-    coral: { on: "border-flockie-coral bg-flockie-coral text-white", off: "border-flockie-coral/25 bg-flockie-coral/10 text-flockie-coral" },
+    green: { on: "bg-onboarding-green/15 text-onboarding-green ring-2 ring-onboarding-green/35", off: "bg-onboarding-green/10 text-onboarding-green" },
+    blue: { on: "bg-flockie-blue/15 text-flockie-blue ring-2 ring-flockie-blue/35", off: "bg-flockie-blue/10 text-flockie-blue" },
+    orange: { on: "bg-flockie-orange/15 text-flockie-orange ring-2 ring-flockie-orange/35", off: "bg-flockie-orange/10 text-flockie-orange" },
+    coral: { on: "bg-flockie-coral/15 text-flockie-coral ring-2 ring-flockie-coral/35", off: "bg-flockie-coral/10 text-flockie-coral" },
   };
 
   // For a club the "agenda" panel IS the meetup calendar, and the label says so.
@@ -56,8 +57,8 @@ export default function WorkspacePanels({
       ];
 
   return (
-    <div className="shrink-0 border-b border-ink/10 bg-white shadow-[0_1px_6px_rgba(10,37,69,0.05)]">
-      <div className="flex items-center gap-2 px-3 py-2.5">
+    <div className="shrink-0 border-b border-ink/10 bg-white/70">
+      <div className="flex items-center gap-1.5 px-3 py-2">
         {tools.map(({ key, Icon, label, color }) => {
           const active = open === key;
           const c = COLORS[color];
@@ -68,12 +69,12 @@ export default function WorkspacePanels({
               onClick={() => setOpen((cur) => (cur === key ? null : key))}
               aria-pressed={active}
               title={label}
-              className={`flex items-center gap-2 rounded-2xl border-2 px-3.5 py-2 text-[13px] font-extrabold transition-all active:scale-95 ${
-                active ? `${c.on} shadow-[0_2px_8px_rgba(10,37,69,0.15)]` : c.off
+              className={`flex h-8 items-center justify-center rounded-full text-xs font-bold transition-all active:scale-90 ${
+                active ? `gap-1.5 px-3 ${c.on}` : `w-8 ${c.off}`
               }`}
             >
-              <Icon size={18} strokeWidth={2.5} />
-              <span className={active ? "inline" : "hidden sm:inline"}>{label}</span>
+              <Icon size={15} strokeWidth={2.25} />
+              {active && <span>{label}</span>}
             </button>
           );
         })}
