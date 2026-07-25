@@ -11,6 +11,7 @@ import type { EventsData } from "@/components/ProfileEvents";
 import type { Profile } from "@/lib/vibe-check";
 import type { ProfileStoryReview } from "@/lib/profile-story-reviews";
 import ProfileIdentityEditor from "@/components/ProfileIdentityEditor";
+import PhotoStrip from "@/components/PhotoStrip";
 
 type StoryProfile = Partial<Profile> & {
   vibe_goal?: string | null;
@@ -164,6 +165,16 @@ export default function ProfileStory({
       </section>
 
       {socialStrip}
+
+      {/* Photo album — the extra photos beyond the avatar. */}
+      {(profile.photos?.length ?? 0) > 1 && (
+        <section className="mt-8">
+          <h2 className="px-1 font-fredoka text-xl font-bold text-navy">{t("photosHeading")}</h2>
+          <div className="mt-3">
+            <PhotoStrip photos={(profile.photos ?? []).slice(1)} />
+          </div>
+        </section>
+      )}
 
       <section className="mt-8">
         <div className="flex items-end justify-between gap-4 px-1">

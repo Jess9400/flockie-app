@@ -46,7 +46,8 @@
     "kindWordsTitle": "Palavras gentis",
     "kindWordsSubtitle": "Escritas após um match verificado no Flockie — sem notas públicas.",
     "kindWordsEmpty": "Quando alguém com quem você deu match deixar uma mensagem gentil, ela aparecerá aqui. Sem notas ou médias no seu perfil.",
-    "verifiedConnection": "Match verificado no Flockie"
+    "verifiedConnection": "Match verificado no Flockie",
+    "photosHeading": "Fotos"
   },
   "identityEditor": {
     "title": "Editar perfil",
@@ -276,11 +277,23 @@
     "back": "Voltar"
   },
   "archetypes": {
-    "culture": { "description": "Você vai fundo, não em largura. Está no museu antes de abrir e no ponto local depois de fechar." },
-    "social": { "description": "Você veio por uma coisa e ficou pelas pessoas. No segundo dia já sabe o nome de todo mundo." },
-    "night": { "description": "As coisas se revelam depois do escuro e você sabe disso. As manhãs são para se recuperar." },
-    "food": { "description": "Você planeja seus dias em torno das refeições e pega o caminho mais longo pelo lugar certo." },
-    "adventure": { "description": "O plano é não ter plano. Você decide na última hora, viaja leve e sempre encontra as pessoas certas." },
-    "wellness": { "description": "Devagar, com intenção, tranquilo. Você precisa de pelo menos uma tarde sem absolutamente nada planejado." }
+    "culture": {
+      "description": "Você vai fundo, não em largura. Está no museu antes de abrir e no ponto local depois de fechar."
+    },
+    "social": {
+      "description": "Você veio por uma coisa e ficou pelas pessoas. No segundo dia já sabe o nome de todo mundo."
+    },
+    "night": {
+      "description": "As coisas se revelam depois do escuro e você sabe disso. As manhãs são para se recuperar."
+    },
+    "food": {
+      "description": "Você planeja seus dias em torno das refeições e pega o caminho mais longo pelo lugar certo."
+    },
+    "adventure": {
+      "description": "O plano é não ter plano. Você decide na última hora, viaja leve e sempre encontra as pessoas certas."
+    },
+    "wellness": {
+      "description": "Devagar, com intenção, tranquilo. Você precisa de pelo menos uma tarde sem absolutamente nada planejado."
+    }
   }
 }

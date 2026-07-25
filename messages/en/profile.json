@@ -46,7 +46,8 @@
     "kindWordsTitle": "Kind words",
     "kindWordsSubtitle": "Written after a verified Flockie match — no public scores.",
     "kindWordsEmpty": "When someone you’ve matched with leaves a kind note, it will appear here. No scores or averages on your profile.",
-    "verifiedConnection": "Verified Flockie match"
+    "verifiedConnection": "Verified Flockie match",
+    "photosHeading": "Photos"
   },
   "identityEditor": {
     "title": "Edit profile",
@@ -276,11 +277,23 @@
     "back": "Back"
   },
   "archetypes": {
-    "culture": { "description": "You go deep, not wide. You're in the museum before it opens and the local spot after it closes." },
-    "social": { "description": "You came for one thing and stayed for the people. You know everyone's name by day two." },
-    "night": { "description": "Things reveal themselves after dark and you know it. Mornings are for recovery." },
-    "food": { "description": "You plan your days around meals, and you'll take the long way for the right place." },
-    "adventure": { "description": "No plan is the plan. You decide late, travel light, and somehow always find the right people." },
-    "wellness": { "description": "Slow, intentional, unbothered. You need at least one afternoon with absolutely nothing planned." }
+    "culture": {
+      "description": "You go deep, not wide. You're in the museum before it opens and the local spot after it closes."
+    },
+    "social": {
+      "description": "You came for one thing and stayed for the people. You know everyone's name by day two."
+    },
+    "night": {
+      "description": "Things reveal themselves after dark and you know it. Mornings are for recovery."
+    },
+    "food": {
+      "description": "You plan your days around meals, and you'll take the long way for the right place."
+    },
+    "adventure": {
+      "description": "No plan is the plan. You decide late, travel light, and somehow always find the right people."
+    },
+    "wellness": {
+      "description": "Slow, intentional, unbothered. You need at least one afternoon with absolutely nothing planned."
+    }
   }
 }

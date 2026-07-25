@@ -46,7 +46,8 @@
     "kindWordsTitle": "Palabras bonitas",
     "kindWordsSubtitle": "Escritas tras un match verificado en Flockie — sin puntuaciones públicas.",
     "kindWordsEmpty": "Cuando alguien con quien hiciste match deje una nota bonita, aparecerá aquí. Sin puntuaciones ni medias en tu perfil.",
-    "verifiedConnection": "Match verificado en Flockie"
+    "verifiedConnection": "Match verificado en Flockie",
+    "photosHeading": "Fotos"
   },
   "identityEditor": {
     "title": "Editar perfil",
@@ -276,11 +277,23 @@
     "back": "Volver"
   },
   "archetypes": {
-    "culture": { "description": "Vas a fondo, no a lo ancho. Estás en el museo antes de que abra y en el sitio local después de que cierre." },
-    "social": { "description": "Viniste por una cosa y te quedaste por la gente. Para el segundo día ya sabes el nombre de todos." },
-    "night": { "description": "Las cosas se revelan de noche y lo sabes. Las mañanas son para recuperarte." },
-    "food": { "description": "Planeas tus días en torno a las comidas, y tomas el camino largo por el lugar correcto." },
-    "adventure": { "description": "El plan es no tener plan. Decides tarde, viajas ligero y siempre encuentras a la gente indicada." },
-    "wellness": { "description": "Lento, intencional, sin agobios. Necesitas al menos una tarde sin absolutamente nada planeado." }
+    "culture": {
+      "description": "Vas a fondo, no a lo ancho. Estás en el museo antes de que abra y en el sitio local después de que cierre."
+    },
+    "social": {
+      "description": "Viniste por una cosa y te quedaste por la gente. Para el segundo día ya sabes el nombre de todos."
+    },
+    "night": {
+      "description": "Las cosas se revelan de noche y lo sabes. Las mañanas son para recuperarte."
+    },
+    "food": {
+      "description": "Planeas tus días en torno a las comidas, y tomas el camino largo por el lugar correcto."
+    },
+    "adventure": {
+      "description": "El plan es no tener plan. Decides tarde, viajas ligero y siempre encuentras a la gente indicada."
+    },
+    "wellness": {
+      "description": "Lento, intencional, sin agobios. Necesitas al menos una tarde sin absolutamente nada planeado."
+    }
   }
 }
