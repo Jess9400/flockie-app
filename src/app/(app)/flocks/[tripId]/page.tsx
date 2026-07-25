@@ -5,7 +5,6 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import FlockRequestButton from "@/components/FlockRequestButton";
-import TripWorkspace from "@/components/TripWorkspace";
 import TripAgendaPreview from "@/components/TripAgendaPreview";
 import ArchetypeBadge from "@/components/ArchetypeBadge";
 import { loadFlockMatch } from "@/lib/vibe-stats";
@@ -312,16 +311,7 @@ export default async function FlockDetailPage({
         </div>
       )}
 
-      {isMember && (
-        <TripWorkspace
-          tripId={trip.id}
-          city={(trip.destinations ?? [trip.destination]).filter(Boolean)[0] ?? trip.destination ?? ""}
-          checkIn={trip.start_date}
-          checkOut={trip.end_date}
-          members={roster.map((m) => ({ id: m.id, name: m.display_name ?? "Flockie", photo: m.photo }))}
-          meId={user!.id}
-        />
-      )}
+      
     </main>
   );
 }

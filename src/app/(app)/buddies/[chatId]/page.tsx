@@ -5,6 +5,7 @@ import { dfLocale } from "@/lib/date-locale";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import BuddyChatRoom from "@/components/BuddyChatRoom";
+import TripPlanButton from "@/components/TripPlanButton";
 import BuddyChatHeader from "@/components/BuddyChatHeader";
 import FlockJoinRequests, { type JoinReq } from "@/components/FlockJoinRequests";
 import BuddyPlan, { type BuddyPlanData } from "@/components/BuddyPlan";
@@ -246,6 +247,27 @@ export default async function BuddyChatPage({
   // A Flock is a group already committed to a SPECIFIC trip — show that trip's
   // dates and a planning prompt, not the 1:1 "pick a destination together" copy.
   const isFlock = !!flockTripId;
+
+  // Trip planning workspace: flock chats use flockTripId; 1:1 TRIP chats use the
+  // shared private trip on the match (never activity chats). Members-only.
+  let workspaceTripId: string | null = null;
+  if (isFlock) {
+    workspaceTripId = flockTripId;
+  } else if (!isActivityMatch && trip && (trip.kind ?? "trip") === "trip") {
+    workspaceTripId = trip.id ?? null;
+  }
+  type WsMember = { id: string; display_name: string | null; photo: string | null };
+  let wsMembers: WsMember[] = [];
+  let wsCity = ""; let wsStart: string | null = null; let wsEnd: string | null = null;
+  if (workspaceTripId) {
+    const { data: wm } = await supabase.rpc("trip_members", { p_trip: workspaceTripId });
+    wsMembers = (wm ?? []) as WsMember[];
+    const wt = isFlock
+      ? { destination: flockTitle, start_date: flockStart, end_date: flockEnd }
+      : { destination: destination, start_date: trip?.start_date ?? null, end_date: trip?.end_date ?? null };
+    wsCity = wt.destination ?? "";
+    wsStart = wt.start_date ?? null; wsEnd = wt.end_date ?? null;
+  }
   let flockDateRange: string | null = null;
   if (flockStart && flockEnd) {
     const s = new Date(flockStart);
@@ -326,6 +348,17 @@ export default async function BuddyChatPage({
             currentUserId={user!.id}
             initialPlan={currentPlan}
             common={sharedVibe}
+          />
+        )}
+
+        {workspaceTripId && wsMembers.length > 0 && (
+          <TripPlanButton
+            tripId={workspaceTripId}
+            city={wsCity}
+            checkIn={wsStart}
+            checkOut={wsEnd}
+            members={wsMembers.map((m) => ({ id: m.id, name: m.display_name ?? "Flockie", photo: m.photo }))}
+            meId={user!.id}
           />
         )}
 

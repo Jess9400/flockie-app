@@ -22,6 +22,7 @@ export default function TripWorkspace({
   checkOut,
   members,
   meId,
+  embedded = false,
 }: {
   tripId: string;
   city: string;
@@ -29,16 +30,18 @@ export default function TripWorkspace({
   checkOut: string | null;
   members: Member[];
   meId: string;
+  embedded?: boolean;
 }) {
   const supabase = createClient();
   const t = useTranslations("trips.workspace");
   const [tab, setTab] = useState<"checklist" | "agenda" | "costs" | "deals">("checklist");
   const nameOf = (id: string | null) => members.find((m) => m.id === id)?.name ?? "";
 
+  const Wrapper = embedded ? "div" : "section";
   return (
-    <section className="mt-6 rounded-3xl border border-ink/15 bg-white p-4 shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:p-5">
-      <h2 className="text-lg font-black text-ink">🧭 {t("heading")}</h2>
-      <p className="mt-0.5 text-xs font-medium text-muted">{t("sub")}</p>
+    <Wrapper className={embedded ? "" : "mt-6 rounded-3xl border border-ink/15 bg-white p-4 shadow-[0_2px_10px_rgba(10,37,69,0.08)] sm:p-5"}>
+      {!embedded && <h2 className="text-lg font-black text-ink">🧭 {t("heading")}</h2>}
+      <p className="text-xs font-medium text-muted">{t("sub")}</p>
 
       <div className="mt-3 flex gap-1.5 overflow-x-auto pb-1">
         {([
@@ -66,7 +69,7 @@ export default function TripWorkspace({
         {tab === "costs" && <Costs tripId={tripId} members={members} meId={meId} nameOf={nameOf} />}
         {tab === "deals" && <Deals city={city} checkIn={checkIn} checkOut={checkOut} guests={members.length} />}
       </div>
-    </section>
+    </Wrapper>
   );
 
   // ── Checklist (per-member completion) ───────────────────────────────────────

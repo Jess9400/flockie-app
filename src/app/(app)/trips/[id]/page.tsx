@@ -6,7 +6,6 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import TripJoinButton from "@/components/TripJoinButton";
-import TripWorkspace from "@/components/TripWorkspace";
 import TripAgendaPreview from "@/components/TripAgendaPreview";
 
 type Detail = {
@@ -169,16 +168,7 @@ export default async function TripDetailPage({ params }: { params: { id: string 
       )}
 
       {/* Workspace — members only */}
-      {isMember && (
-        <TripWorkspace
-          tripId={d.id}
-          city={destination}
-          checkIn={d.start_date}
-          checkOut={d.end_date}
-          members={members.map((m) => ({ id: m.id, name: m.display_name ?? "Flockie", photo: m.photo }))}
-          meId={user!.id}
-        />
-      )}
+      
     </main>
   );
 }

@@ -179,6 +179,8 @@
     "pasteShow": "📋 Paste / import an itinerary",
     "pasteHide": "Hide paste box",
     "pastePlaceholder": "One item per line. Start a line with a date (2026-08-10 Arrive & check in) to set the day.",
-    "pasteImport": "Import"
+    "pasteImport": "Import",
+    "openCta": "Plan this trip",
+    "close": "Close"
   }
 }

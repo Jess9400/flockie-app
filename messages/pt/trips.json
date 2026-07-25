@@ -179,6 +179,8 @@
     "pasteShow": "📋 Colar / importar um roteiro",
     "pasteHide": "Ocultar",
     "pastePlaceholder": "Um item por linha. Comece com uma data (2026-08-10 Chegada) para definir o dia.",
-    "pasteImport": "Importar"
+    "pasteImport": "Importar",
+    "openCta": "Planejar a viagem",
+    "close": "Close"
   }
 }

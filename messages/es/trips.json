@@ -179,6 +179,8 @@
     "pasteShow": "📋 Pegar / importar un itinerario",
     "pasteHide": "Ocultar",
     "pastePlaceholder": "Un ítem por línea. Empieza con una fecha (2026-08-10 Llegada) para fijar el día.",
-    "pasteImport": "Importar"
+    "pasteImport": "Importar",
+    "openCta": "Planear el viaje",
+    "close": "Close"
   }
 }
