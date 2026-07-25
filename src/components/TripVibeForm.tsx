@@ -8,6 +8,7 @@ import Wizard, { type WizardAnswers, type WizardPage } from "@/components/Wizard
 import { useToast } from "@/components/ui/feedback";
 import { ARCHETYPES } from "@/lib/onboarding/archetypes";
 import { recomputeDisplayedVibe } from "@/lib/onboarding/vibe-actions";
+import { FLOCK_LANGUAGES } from "@/lib/trips";
 import type { VibeDimension } from "@/lib/onboarding/types";
 import {
   TRIP_VIBES,
@@ -92,6 +93,22 @@ export default function TripVibeForm({
           hint: t("forms.trip.dealbreakersHint"),
           options: DEALBREAKERS.map((v) => ({ value: v, label: has(`dealbreakers.${v}`) ? t(`dealbreakers.${v}`) : v })),
         },
+        // Traveler cred — optional, shown on your trip-board cards.
+        {
+          type: "text" as const,
+          key: "countries_visited",
+          label: t("forms.trip.countriesLabel"),
+          hint: t("forms.trip.countriesHint"),
+          placeholder: "12",
+          max: 3,
+        },
+        {
+          type: "multi" as const,
+          key: "languages_spoken",
+          label: t("forms.trip.languagesLabel"),
+          hint: t("forms.trip.languagesHint"),
+          options: FLOCK_LANGUAGES.map((l) => ({ value: l, label: tc.has(`languages.${l}`) ? tc(`languages.${l}`) : l })),
+        },
       ],
     },
   ];
@@ -99,7 +116,7 @@ export default function TripVibeForm({
   useEffect(() => {
     supabase
       .from("profiles")
-      .select("planning, pace, social_energy, budget, nightlife, adventurousness, trip_vibe, dealbreakers, match_priorities")
+      .select("planning, pace, social_energy, budget, nightlife, adventurousness, trip_vibe, dealbreakers, match_priorities, countries_visited, languages_spoken")
       .eq("id", userId)
       .maybeSingle()
       .then(({ data }) => {
@@ -112,6 +129,8 @@ export default function TripVibeForm({
           trip_vibe: data?.trip_vibe ?? [],
           dealbreakers: data?.dealbreakers ?? [],
           match_priorities: data?.match_priorities ?? [],
+          countries_visited: data?.countries_visited != null ? String(data.countries_visited) : "",
+          languages_spoken: data?.languages_spoken ?? [],
         });
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -129,6 +148,11 @@ export default function TripVibeForm({
         budget: toInt(a.budget),
         trip_vibe: a.trip_vibe ?? [],
         dealbreakers: a.dealbreakers ?? [],
+        countries_visited:
+          a.countries_visited && /^\d+$/.test(String(a.countries_visited).trim())
+            ? Math.min(Number(String(a.countries_visited).trim()), 195)
+            : null,
+        languages_spoken: a.languages_spoken ?? [],
       })
       .eq("id", userId);
     if (error) {

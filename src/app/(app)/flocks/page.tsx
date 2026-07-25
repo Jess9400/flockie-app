@@ -34,6 +34,8 @@ type BoardRow = {
   creator_age: number | null;
   creator_photo: string | null;
   trips_taken: number;
+  countries_visited: number | null;
+  languages_spoken: string[] | null;
   going: number;
   score: number | null;
   my_request_status: string | null;
@@ -235,9 +237,18 @@ export default async function TripBoardPage({
                           {creatorName}
                           {t.creator_age ? `, ${t.creator_age}` : ""}
                         </span>
-                        {t.trips_taken > 0 && (
+                        {t.countries_visited && t.countries_visited > 0 ? (
+                          <span className="shrink-0 rounded-full bg-cream px-1.5 py-0.5 text-[9px] font-bold text-ink/60">
+                            🌍 {tb("countriesVisited", { count: t.countries_visited })}
+                          </span>
+                        ) : t.trips_taken > 0 ? (
                           <span className="shrink-0 rounded-full bg-cream px-1.5 py-0.5 text-[9px] font-bold text-ink/60">
                             🌍 {tb("tripsTaken", { count: t.trips_taken })}
+                          </span>
+                        ) : null}
+                        {(t.languages_spoken ?? []).length > 0 && (
+                          <span className="shrink-0 rounded-full bg-cream px-1.5 py-0.5 text-[9px] font-bold text-ink/60">
+                            🗣 {(t.languages_spoken ?? []).slice(0, 2).join(", ")}
                           </span>
                         )}
                         {t.kind === "flock" && (

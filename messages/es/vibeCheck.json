@@ -277,7 +277,11 @@
       "dealbreakersLabel": "¿Alguna preferencia innegociable?",
       "dealbreakersHint": "Se usan como filtros, no solo de adorno. Salta si no hay ninguna.",
       "prioritiesLabel": "Cuando te hagamos match, ¿qué es lo que más importa?",
-      "prioritiesHint": "Elige hasta {max}."
+      "prioritiesHint": "Elige hasta {max}.",
+      "countriesLabel": "¿Cuántos países has visitado?",
+      "countriesHint": "Opcional — aparece en tus tarjetas de viaje como credencial viajera.",
+      "languagesLabel": "Idiomas que hablas",
+      "languagesHint": "Opcional — ayuda a los buddies a saber que podréis comunicaros."
     },
     "activity": {
       "title": "Vibe de evento",

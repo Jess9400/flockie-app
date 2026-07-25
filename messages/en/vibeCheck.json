@@ -277,7 +277,11 @@
       "dealbreakersLabel": "Any hard preferences?",
       "dealbreakersHint": "Used as filters, not just flavor. Skip if none.",
       "prioritiesLabel": "When we match you, what matters most?",
-      "prioritiesHint": "Pick up to {max}."
+      "prioritiesHint": "Pick up to {max}.",
+      "countriesLabel": "How many countries have you visited?",
+      "countriesHint": "Optional — shows on your trip cards as travel cred.",
+      "languagesLabel": "Languages you speak",
+      "languagesHint": "Optional — helps buddies know you can communicate."
     },
     "activity": {
       "title": "Event vibe",

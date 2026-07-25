@@ -5,6 +5,10 @@
 -- ============================================================================
 
 alter table public.trip_join_requests add column if not exists note text;
+alter table public.profiles add column if not exists countries_visited int;
+alter table public.profiles add column if not exists languages_spoken text[] not null default '{}';
+
+drop function if exists public.trip_board(int);
 
 -- One browsable list: other people's active solo trips (1:1) and public
 -- flocks with room. Trip-first cards; the creator is context.
@@ -15,7 +19,8 @@ returns table (
   budget int, description text, cover_photo text, continent text,
   group_gender text, language text,
   creator_id uuid, creator_name text, creator_age int, creator_photo text,
-  trips_taken int, going int, score float8, my_request_status text
+  trips_taken int, countries_visited int, languages_spoken text[],
+  going int, score float8, my_request_status text
 )
 language sql security definer set search_path = public stable as $$
   select
@@ -28,6 +33,8 @@ language sql security definer set search_path = public stable as $$
     (select count(*)::int from public.trips pt
       where pt.user_id = p.id and pt.end_date < current_date
         and pt.status <> 'cancelled') as trips_taken,
+    p.countries_visited,
+    coalesce(p.languages_spoken, '{}'),
     (1 + (select count(*)::int from public.trip_join_requests r
            where r.trip_id = t.id and r.status = 'accepted')) as going,
     public.buddy_pair_score(auth.uid(), p.id)::float8,
@@ -93,7 +100,9 @@ begin
         nullif(me.age::text, ''),
         nullif(me.home_city, '')
       ), ''),
-      v_trips || ' past trips',
+      case when me.countries_visited is not null and me.countries_visited > 0
+           then me.countries_visited || ' countries visited'
+           else v_trips || ' past trips' end,
       v_score || '% match')
       || case when p_note is not null and btrim(p_note) <> ''
            then e'\n"' || left(btrim(p_note), 280) || '"' else '' end,
