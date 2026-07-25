@@ -47,7 +47,10 @@
     "kindWordsSubtitle": "Escritas tras un match verificado en Flockie — sin puntuaciones públicas.",
     "kindWordsEmpty": "Cuando alguien con quien hiciste match deje una nota bonita, aparecerá aquí. Sin puntuaciones ni medias en tu perfil.",
     "verifiedConnection": "Match verificado en Flockie",
-    "photosHeading": "Fotos"
+    "photosHeading": "Fotos",
+    "prevPhoto": "Foto anterior",
+    "nextPhoto": "Foto siguiente",
+    "close": "Cerrar"
   },
   "identityEditor": {
     "title": "Editar perfil",

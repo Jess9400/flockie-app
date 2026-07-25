@@ -11,7 +11,7 @@ import type { EventsData } from "@/components/ProfileEvents";
 import type { Profile } from "@/lib/vibe-check";
 import type { ProfileStoryReview } from "@/lib/profile-story-reviews";
 import ProfileIdentityEditor from "@/components/ProfileIdentityEditor";
-import PhotoStrip from "@/components/PhotoStrip";
+import PhotoAlbum from "@/components/PhotoAlbum";
 
 type StoryProfile = Partial<Profile> & {
   vibe_goal?: string | null;
@@ -56,6 +56,7 @@ export default function ProfileStory({
   const name = profile.display_name?.trim() || t("nameFallback");
   const nameAge = [name, profile.age ? String(profile.age) : null].filter(Boolean).join(", ");
   const photo = profile.photos?.[0] ?? null;
+  const extraPhotos = (profile.photos ?? []).slice(1);
   const persona = isVibePersona(profile.vibe_persona) ? PERSONAS[profile.vibe_persona] : null;
   const completedVibes = (events?.vibes ?? []).filter((vibe) => vibe.past).slice(0, 6);
   const upcomingVibe = (events?.vibes ?? []).find((vibe) => !vibe.past);
@@ -141,16 +142,23 @@ export default function ProfileStory({
             )}
           </div>
 
-          {isOwner && upcomingVibe && (
+          {((isOwner && upcomingVibe) || extraPhotos.length > 0) && (
             <aside className="border-t border-ink/10 bg-cream p-5 lg:border-l lg:border-t-0 sm:p-6">
-              <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-flockie-coral">{t("rightNow")}</p>
-              <h2 className="mt-2 font-fredoka text-2xl font-bold leading-tight text-navy">{upcomingVibe.title}</h2>
-              <p className="mt-2 flex items-center gap-1.5 text-sm font-bold text-muted">
-                <CalendarDays size={15} aria-hidden /> {formatVibeWhen(upcomingVibe.starts_at, locale)}
-              </p>
-              <Link href={`/vibes/${upcomingVibe.id}`} className="mt-5 inline-flex items-center gap-1 text-sm font-extrabold text-flockie-coral">
-                {t("viewPlan")} <ArrowRight size={15} />
-              </Link>
+              {isOwner && upcomingVibe && (
+                <div>
+                  <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-flockie-coral">{t("rightNow")}</p>
+                  <h2 className="mt-2 font-fredoka text-2xl font-bold leading-tight text-navy">{upcomingVibe.title}</h2>
+                  <p className="mt-2 flex items-center gap-1.5 text-sm font-bold text-muted">
+                    <CalendarDays size={15} aria-hidden /> {formatVibeWhen(upcomingVibe.starts_at, locale)}
+                  </p>
+                  <Link href={`/vibes/${upcomingVibe.id}`} className="mt-5 inline-flex items-center gap-1 text-sm font-extrabold text-flockie-coral">
+                    {t("viewPlan")} <ArrowRight size={15} />
+                  </Link>
+                </div>
+              )}
+              {extraPhotos.length > 0 && (
+                <PhotoAlbum photos={extraPhotos} className={isOwner && upcomingVibe ? "mt-6 border-t border-ink/10 pt-5" : ""} />
+              )}
             </aside>
           )}
         </div>
@@ -165,16 +173,6 @@ export default function ProfileStory({
       </section>
 
       {socialStrip}
-
-      {/* Photo album — the extra photos beyond the avatar. */}
-      {(profile.photos?.length ?? 0) > 1 && (
-        <section className="mt-8">
-          <h2 className="px-1 font-fredoka text-xl font-bold text-navy">{t("photosHeading")}</h2>
-          <div className="mt-3">
-            <PhotoStrip photos={(profile.photos ?? []).slice(1)} />
-          </div>
-        </section>
-      )}
 
       <section className="mt-8">
         <div className="flex items-end justify-between gap-4 px-1">

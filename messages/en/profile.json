@@ -47,7 +47,10 @@
     "kindWordsSubtitle": "Written after a verified Flockie match — no public scores.",
     "kindWordsEmpty": "When someone you’ve matched with leaves a kind note, it will appear here. No scores or averages on your profile.",
     "verifiedConnection": "Verified Flockie match",
-    "photosHeading": "Photos"
+    "photosHeading": "Photos",
+    "prevPhoto": "Previous photo",
+    "nextPhoto": "Next photo",
+    "close": "Close"
   },
   "identityEditor": {
     "title": "Edit profile",

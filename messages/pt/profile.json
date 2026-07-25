@@ -47,7 +47,10 @@
     "kindWordsSubtitle": "Escritas após um match verificado no Flockie — sem notas públicas.",
     "kindWordsEmpty": "Quando alguém com quem você deu match deixar uma mensagem gentil, ela aparecerá aqui. Sem notas ou médias no seu perfil.",
     "verifiedConnection": "Match verificado no Flockie",
-    "photosHeading": "Fotos"
+    "photosHeading": "Fotos",
+    "prevPhoto": "Foto anterior",
+    "nextPhoto": "Próxima foto",
+    "close": "Fechar"
   },
   "identityEditor": {
     "title": "Editar perfil",
