@@ -106,14 +106,10 @@ export default async function TripPage({
       <h1 className="text-2xl font-black">
         {trip
           ? isActivity ? t("editHeadingActivity") : isFlock ? t("editHeadingFlock") : t("editHeadingTrip")
-          : isActivity ? t("newHeadingActivity") : isFlock ? t("newHeadingFlock") : t("newHeadingTrip")}
+          : isActivity ? t("newHeadingActivity") : t("newHeadingTrip")}
       </h1>
       <p className="mt-1 text-sm font-medium text-muted">
-        {isActivity
-          ? t("subActivity")
-          : isFlock
-            ? t("subFlock")
-            : t("subTrip")}
+        {isActivity ? t("subActivity") : t("subTrip")}
       </p>
       {showReviewGate ? (
         <div className="mt-6 rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">

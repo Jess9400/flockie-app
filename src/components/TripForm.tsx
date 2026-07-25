@@ -202,7 +202,7 @@ export default function TripForm({
               onClick={() => setFlockMode(false)}
               className={`rounded-2xl border-2 px-3 py-3 text-left transition-colors ${!flockMode ? "border-flockie-orange bg-flockie-orange/5" : "border-ink/15 bg-white"}`}
             >
-              <span className="block text-sm font-extrabold text-ink">👥 {tf("form.typePrivate")}</span>
+              <span className="block text-sm font-extrabold text-ink">{tf("form.typePrivate")}</span>
               <span className="block text-[11px] font-medium text-muted">{tf("form.typePrivateSub")}</span>
             </button>
             <button
@@ -210,7 +210,7 @@ export default function TripForm({
               onClick={() => setFlockMode(true)}
               className={`rounded-2xl border-2 px-3 py-3 text-left transition-colors ${flockMode ? "border-flockie-orange bg-flockie-orange/5" : "border-ink/15 bg-white"}`}
             >
-              <span className="block text-sm font-extrabold text-ink">🐦 {tf("form.typeFlock")}</span>
+              <span className="block text-sm font-extrabold text-ink">{tf("form.typeFlock")}</span>
               <span className="block text-[11px] font-medium text-muted">{tf("form.typeFlockSub")}</span>
             </button>
           </div>
@@ -254,6 +254,16 @@ export default function TripForm({
             <span className="mb-1 block text-sm font-bold">{tf("form.labelAddress")}</span>
             <input className={inputCls} value={locationName} onChange={(e) => setLocationName(e.target.value)} placeholder={tf("form.addressPlaceholder")} />
             <p className="mt-1 text-[11px] font-medium text-muted">{tf("form.addressHint")}</p>
+            {/* Live pin — same embedded map the vibes form uses (no API key). */}
+            {locationName.trim().length > 2 && (
+              <iframe
+                title={tf("form.mapPreviewTitle")}
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(`${locationName}${dest1 ? ", " + dest1 : ""}`)}&z=15&output=embed`}
+                loading="lazy"
+                className="mt-2 h-44 w-full rounded-2xl border border-ink/15"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            )}
           </label>
         </>
       ) : (

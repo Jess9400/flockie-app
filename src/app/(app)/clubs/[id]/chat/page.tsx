@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import ClubChatRoom, { type ClubMsg } from "@/components/ClubChatRoom";
 import ClubChatHeader, { type ClubMember } from "@/components/ClubChatHeader";
-import TripPlanButton from "@/components/TripPlanButton";
+import WorkspacePanels from "@/components/WorkspacePanels";
 
 // The club's persistent room. Members + host only (RLS enforces it too — the
 // message query returns nothing for outsiders, and we bounce them back).
@@ -73,7 +73,7 @@ export default async function ClubChatPage({ params }: { params: { id: string } 
           members={clubMembers}
         />
         {isMember && clubMembers.length > 0 && (
-          <TripPlanButton
+          <WorkspacePanels
             tripId={params.id}
             spaceKind="club"
             city={detail.city ?? ""}

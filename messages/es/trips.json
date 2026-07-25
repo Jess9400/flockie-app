@@ -99,12 +99,13 @@
     "addressHint": "El lugar o punto de encuentro — se comparte con quien hagas match.",
     "errAddressRequired": "Añade dónde ocurre la actividad.",
     "tripTypeLabel": "¿Qué tipo de viaje?",
-    "typePrivate": "Solo un buddy",
-    "typePrivateSub": "1:1 — tú + un compañero de viaje",
-    "typeFlock": "Grupo abierto",
-    "typeFlockSub": "Un Flock al que otros pueden pedir unirse",
+    "typePrivate": "Un viaje privado",
+    "typePrivateSub": "Solo tú + un compañero de viaje",
+    "typeFlock": "Un viaje en grupo",
+    "typeFlockSub": "Otros pueden pedir unirse",
     "labelGallery": "Más fotos (opcional)",
-    "galleryHint": "Agrega algunas — el lugar, encuentros pasados o tú. Hasta 5."
+    "galleryHint": "Agrega algunas — el lugar, encuentros pasados o tú. Hasta 5.",
+    "mapPreviewTitle": "Vista del lugar"
   },
   "hub": {
     "findTripBuddy": "Encuentra un Trip Buddy",
@@ -155,7 +156,8 @@
       "checklist": "Checklist",
       "agenda": "Agenda",
       "costs": "Gastos",
-      "deals": "Reservar"
+      "deals": "Reservar",
+      "calendar": "Calendario"
     },
     "anyone": "Cualquiera",
     "checklistPlaceholder": "Añade una tarea…",

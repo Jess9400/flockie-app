@@ -5,7 +5,7 @@ import { dfLocale } from "@/lib/date-locale";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import BuddyChatRoom from "@/components/BuddyChatRoom";
-import TripPlanButton from "@/components/TripPlanButton";
+import WorkspacePanels from "@/components/WorkspacePanels";
 import BuddyChatHeader from "@/components/BuddyChatHeader";
 import FlockJoinRequests, { type JoinReq } from "@/components/FlockJoinRequests";
 import BuddyPlan, { type BuddyPlanData } from "@/components/BuddyPlan";
@@ -352,7 +352,7 @@ export default async function BuddyChatPage({
         )}
 
         {workspaceTripId && wsMembers.length > 0 && (
-          <TripPlanButton
+          <WorkspacePanels
             tripId={workspaceTripId}
             city={wsCity}
             checkIn={wsStart}

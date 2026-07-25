@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { CheckSquare, CalendarDays, Wallet, Ticket, Plus, X, Hotel, Plane, Car } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
+type Tab = "checklist" | "agenda" | "costs" | "deals";
 type Member = { id: string; name: string; photo: string | null };
 type ChecklistItem = { id: string; title: string; assignee: string | null; done: boolean; done_by: string[] };
 type AgendaItem = { id: string; day: string | null; title: string; note: string | null };
@@ -24,6 +25,8 @@ export default function TripWorkspace({
   meId,
   embedded = false,
   spaceKind = "trip",
+  only,
+  dealsScope = "all",
 }: {
   tripId: string;
   city: string;
@@ -33,14 +36,29 @@ export default function TripWorkspace({
   meId: string;
   embedded?: boolean;
   spaceKind?: "trip" | "club";
+  only?: Tab;
+  dealsScope?: "all" | "activities";
 }) {
   const supabase = createClient();
   const t = useTranslations("trips.workspace");
-  const [tab, setTab] = useState<"checklist" | "agenda" | "costs" | "deals">("checklist");
+  const [tab, setTab] = useState<Tab>(only ?? "checklist");
   const nameOf = (id: string | null) => members.find((m) => m.id === id)?.name ?? "";
   // Workspace tables are shared by trips/flocks and clubs — same schema, keyed
   // by either trip_id or club_id.
   const keyCol = spaceKind === "club" ? "club_id" : "trip_id";
+
+  function panel(which: Tab) {
+    switch (which) {
+      case "checklist": return <Checklist tripId={tripId} members={members} meId={meId} nameOf={nameOf} />;
+      case "agenda": return <Agenda tripId={tripId} meId={meId} />;
+      case "costs": return <Costs tripId={tripId} members={members} meId={meId} nameOf={nameOf} />;
+      case "deals": return <Deals city={city} checkIn={checkIn} checkOut={checkOut} guests={members.length} scope={dealsScope} />;
+    }
+  }
+
+  // Single-panel mode: the caller (WorkspacePanels) owns the icon toggles, so we
+  // render just the requested panel with no tab bar or heading.
+  if (only) return <div>{panel(only)}</div>;
 
   const Wrapper = embedded ? "div" : "section";
   return (
@@ -68,12 +86,7 @@ export default function TripWorkspace({
         ))}
       </div>
 
-      <div className="mt-4">
-        {tab === "checklist" && <Checklist tripId={tripId} members={members} meId={meId} nameOf={nameOf} />}
-        {tab === "agenda" && <Agenda tripId={tripId} meId={meId} />}
-        {tab === "costs" && <Costs tripId={tripId} members={members} meId={meId} nameOf={nameOf} />}
-        {tab === "deals" && <Deals city={city} checkIn={checkIn} checkOut={checkOut} guests={members.length} />}
-      </div>
+      <div className="mt-4">{panel(tab)}</div>
     </Wrapper>
   );
 
@@ -355,7 +368,7 @@ export default function TripWorkspace({
   }
 
   // ── Deals widgets ─────────────────────────────────────────────────────────────
-  function Deals({ city, checkIn, checkOut, guests }: { city: string; checkIn: string | null; checkOut: string | null; guests: number }) {
+  function Deals({ city, checkIn, checkOut, guests, scope = "all" }: { city: string; checkIn: string | null; checkOut: string | null; guests: number; scope?: "all" | "activities" }) {
     const stays = (() => {
       const p = new URLSearchParams({ marker: MARKER, destination: city, adults: String(Math.max(1, guests)), locale: "en", currency: "usd" });
       if (checkIn) p.set("checkIn", checkIn);
@@ -363,12 +376,15 @@ export default function TripWorkspace({
       return `https://search.hotellook.com/?${p}`;
     })();
     const klook = city ? `https://www.klook.com/search/?query=${encodeURIComponent(city)}` : "https://www.klook.com/";
-    const rows: [typeof Hotel, string, string][] = [
-      [Hotel, t("dealStays"), stays],
-      [Ticket, t("dealActivities"), klook],
-      [Plane, t("dealFlights"), `https://www.aviasales.com/?marker=${MARKER}&locale=en`],
-      [Car, t("dealCars"), "https://economybookings.tpo.li/JdOiCIeg"],
-    ];
+    // Clubs only book activities (no hotels/flights/cars — they meet locally).
+    const rows: [typeof Hotel, string, string][] = scope === "activities"
+      ? [[Ticket, t("dealActivities"), klook]]
+      : [
+          [Hotel, t("dealStays"), stays],
+          [Ticket, t("dealActivities"), klook],
+          [Plane, t("dealFlights"), `https://www.aviasales.com/?marker=${MARKER}&locale=en`],
+          [Car, t("dealCars"), "https://economybookings.tpo.li/JdOiCIeg"],
+        ];
     return (
       <div className="space-y-2">
         <p className="text-xs font-medium text-muted">{t("dealsIntro", { city: city || t("yourCity") })}</p>

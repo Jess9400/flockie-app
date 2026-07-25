@@ -99,12 +99,13 @@
     "addressHint": "The venue or meeting point — shared with whoever you match with.",
     "errAddressRequired": "Add where the activity happens.",
     "tripTypeLabel": "What kind of trip?",
-    "typePrivate": "Just a buddy",
-    "typePrivateSub": "1:1 — you + one travel partner",
-    "typeFlock": "Open group",
-    "typeFlockSub": "A Flock others can request to join",
+    "typePrivate": "A private trip",
+    "typePrivateSub": "Just you + a travel buddy",
+    "typeFlock": "A group trip",
+    "typeFlockSub": "Others can request to join",
     "labelGallery": "More photos (optional)",
-    "galleryHint": "Add a few — the place, past meetups, or you. Up to 5."
+    "galleryHint": "Add a few — the place, past meetups, or you. Up to 5.",
+    "mapPreviewTitle": "Location preview"
   },
   "hub": {
     "findTripBuddy": "Find a Trip Buddy",
@@ -155,7 +156,8 @@
       "checklist": "Checklist",
       "agenda": "Agenda",
       "costs": "Costs",
-      "deals": "Book"
+      "deals": "Book",
+      "calendar": "Calendar"
     },
     "anyone": "Anyone",
     "checklistPlaceholder": "Add a to-do…",
