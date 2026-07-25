@@ -102,7 +102,9 @@
     "typePrivate": "Just a buddy",
     "typePrivateSub": "1:1 — you + one travel partner",
     "typeFlock": "Open group",
-    "typeFlockSub": "A Flock others can request to join"
+    "typeFlockSub": "A Flock others can request to join",
+    "labelGallery": "More photos (optional)",
+    "galleryHint": "Add a few — the place, past meetups, or you. Up to 5."
   },
   "hub": {
     "findTripBuddy": "Find a Trip Buddy",

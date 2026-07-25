@@ -15,12 +15,16 @@ returns boolean language sql security definer set search_path = public stable as
 $$;
 grant execute on function public.is_trip_member(uuid) to authenticated;
 
+-- Photo gallery column (a few photos beyond the cover) — needed by trip_detail.
+alter table public.trips add column if not exists gallery text[] not null default '{}';
+
 -- ── Detail for a single 1:1 trip (private trips aren't RLS-readable) ─────────
+drop function if exists public.trip_detail(uuid);
 create or replace function public.trip_detail(p_trip uuid)
 returns table (
   id uuid, kind text, destination text, destinations text[],
   start_date date, end_date date, group_size int, trip_type text[],
-  budget int, pace int, description text, cover_photo text, language text,
+  budget int, pace int, description text, cover_photo text, gallery text[], language text,
   creator_id uuid, creator_name text, creator_age int, creator_photo text,
   creator_one_liner text, creator_countries int, creator_languages text[],
   going int, is_host boolean, my_request_status text
@@ -30,7 +34,8 @@ language sql security definer set search_path = public stable as $$
     t.id,
     case when t.visibility = 'public' then 'flock' else 'trip' end,
     t.destination, t.destinations, t.start_date, t.end_date, t.group_size,
-    t.trip_type, t.budget, t.pace, t.description, t.cover_photo, t.language,
+    t.trip_type, t.budget, t.pace, t.description, t.cover_photo,
+    coalesce(t.gallery, '{}'), t.language,
     p.id, p.display_name, p.age, p.photos[1], p.one_liner,
     p.countries_visited, coalesce(p.languages_spoken, '{}'),
     (1 + (select count(*)::int from public.trip_join_requests r

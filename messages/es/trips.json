@@ -102,7 +102,9 @@
     "typePrivate": "Solo un buddy",
     "typePrivateSub": "1:1 — tú + un compañero de viaje",
     "typeFlock": "Grupo abierto",
-    "typeFlockSub": "Un Flock al que otros pueden pedir unirse"
+    "typeFlockSub": "Un Flock al que otros pueden pedir unirse",
+    "labelGallery": "Más fotos (opcional)",
+    "galleryHint": "Agrega algunas — el lugar, encuentros pasados o tú. Hasta 5."
   },
   "hub": {
     "findTripBuddy": "Encuentra un Trip Buddy",

@@ -15,7 +15,10 @@
     "sendPhoto": "Send photo",
     "sendingPhoto": "Sending photo…",
     "failedRetry": "Failed — tap to retry",
-    "bookSpot": "🎟️ Book your spot →"
+    "bookSpot": "🎟️ Book your spot →",
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "pinnedLabel": "Pinned"
   },
   "list": {
     "title": "Chats",

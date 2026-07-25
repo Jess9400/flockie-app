@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { formatMessageDivider, needsDivider } from "@/lib/chat";
 import { isImageUrl, firstUrl } from "@/lib/chat-content";
 import LinkPreview from "@/components/LinkPreview";
+import { PinnedBanner, PinButton } from "@/components/ChatPin";
 
 export type ClubMsg = {
   id: string;
@@ -122,6 +123,7 @@ export default function ClubChatRoom({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col font-nunito">
+      <PinnedBanner chatId={clubId} />
       <div className="min-h-0 flex-1 space-y-1 overflow-y-auto py-4">
         {messages.length === 0 && (
           <p className="py-10 text-center text-sm font-medium text-muted">{t("empty")}</p>
@@ -140,7 +142,10 @@ export default function ClubChatRoom({
                   <span className="h-px flex-1 bg-navy/10" />
                 </div>
               )}
-              <div className={`flex items-end gap-2 ${mine ? "justify-end" : "justify-start"}`}>
+              <div className={`group/msg flex items-end gap-2 ${mine ? "justify-end" : "justify-start"}`}>
+                {mine && !isImageUrl(m.content) && (
+                  <PinButton chatId={clubId} content={m.content} author={null} meId={currentUserId} />
+                )}
                 {!mine && (
                   <div className="h-7 w-7 shrink-0">
                     {firstInSeq &&
@@ -178,6 +183,9 @@ export default function ClubChatRoom({
                     </>
                   )}
                 </div>
+                {!mine && !isImageUrl(m.content) && (
+                  <PinButton chatId={clubId} content={m.content} author={mem?.name ?? null} meId={currentUserId} />
+                )}
               </div>
             </div>
           );

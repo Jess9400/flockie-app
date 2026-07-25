@@ -7,8 +7,8 @@
 
 
 -- ============================================================================
--- [1/6] trip-workspace.sql
---      Trip/flock workspace: members, checklist, agenda, expenses, balances
+-- [1/8] trip-workspace.sql
+--      Trip/flock workspace: members, checklist, agenda, expenses, balances (+gallery col, +gallery in trip_detail)
 -- ============================================================================
 -- ============================================================================
 -- Flockie - Trip detail + Trip Workspace (checklist, agenda, expenses ledger).
@@ -27,12 +27,16 @@ returns boolean language sql security definer set search_path = public stable as
 $$;
 grant execute on function public.is_trip_member(uuid) to authenticated;
 
+-- Photo gallery column (a few photos beyond the cover) — needed by trip_detail.
+alter table public.trips add column if not exists gallery text[] not null default '{}';
+
 -- ── Detail for a single 1:1 trip (private trips aren't RLS-readable) ─────────
+drop function if exists public.trip_detail(uuid);
 create or replace function public.trip_detail(p_trip uuid)
 returns table (
   id uuid, kind text, destination text, destinations text[],
   start_date date, end_date date, group_size int, trip_type text[],
-  budget int, pace int, description text, cover_photo text, language text,
+  budget int, pace int, description text, cover_photo text, gallery text[], language text,
   creator_id uuid, creator_name text, creator_age int, creator_photo text,
   creator_one_liner text, creator_countries int, creator_languages text[],
   going int, is_host boolean, my_request_status text
@@ -42,7 +46,8 @@ language sql security definer set search_path = public stable as $$
     t.id,
     case when t.visibility = 'public' then 'flock' else 'trip' end,
     t.destination, t.destinations, t.start_date, t.end_date, t.group_size,
-    t.trip_type, t.budget, t.pace, t.description, t.cover_photo, t.language,
+    t.trip_type, t.budget, t.pace, t.description, t.cover_photo,
+    coalesce(t.gallery, '{}'), t.language,
     p.id, p.display_name, p.age, p.photos[1], p.one_liner,
     p.countries_visited, coalesce(p.languages_spoken, '{}'),
     (1 + (select count(*)::int from public.trip_join_requests r
@@ -191,7 +196,22 @@ grant execute on function public.trip_agenda_preview(uuid) to authenticated;
 
 
 -- ============================================================================
--- [2/6] trip-board.sql
+-- [2/8] trip-gallery.sql
+--      Trip/flock photo gallery column
+-- ============================================================================
+-- ============================================================================
+-- Flockie - Trip/flock photo gallery. Beyond the single cover_photo, a host can
+-- add a few photos about the trip/flock (the place, past meetups, themselves).
+-- Shown on the trip/flock detail page. Run in the SQL editor. Idempotent.
+-- ============================================================================
+
+alter table public.trips add column if not exists gallery text[] not null default '{}';
+
+notify pgrst, 'reload schema';
+
+
+-- ============================================================================
+-- [3/8] trip-board.sql
 --      Trips & Flocks board + join requests + traveler cred columns
 -- ============================================================================
 -- ============================================================================
@@ -311,7 +331,7 @@ NOTIFY pgrst, 'reload schema';
 
 
 -- ============================================================================
--- [3/6] activity-join-requests.sql
+-- [4/8] activity-join-requests.sql
 --      Activity address + join requests + accept auto-declines the rest
 -- ============================================================================
 -- ============================================================================
@@ -592,7 +612,7 @@ grant execute on function public.my_joined_activities() to authenticated;
 
 
 -- ============================================================================
--- [4/6] flock-chat-fix.sql
+-- [5/8] flock-chat-fix.sql
 --      Backfill missing flock group chats + broaden my_flock_chats
 -- ============================================================================
 -- ============================================================================
@@ -662,7 +682,7 @@ grant execute on function public.my_flock_chats() to authenticated;
 
 
 -- ============================================================================
--- [5/6] flock-chat-cover.sql
+-- [6/8] flock-chat-cover.sql
 --      Flock chat rows show the trip cover banner, not a member photo
 -- ============================================================================
 -- Flockie - flock chat rows use the trip cover banner, not a member photo.
@@ -708,7 +728,7 @@ $function$;
 
 
 -- ============================================================================
--- [6/6] club-workspace.sql
+-- [7/8] club-workspace.sql
 --      Clubs reuse the workspace via club_id + club_balances/agenda preview
 -- ============================================================================
 -- ============================================================================
@@ -808,6 +828,72 @@ language sql security definer set search_path = public stable as $$
   order by a.day asc nulls last, a.created_at;
 $$;
 grant execute on function public.club_agenda_preview(uuid) to authenticated;
+
+notify pgrst, 'reload schema';
+
+
+-- ============================================================================
+-- [8/8] chat-pins.sql
+--      Pinned messages across all chat types (can_access_chat + chat_pins)
+-- ============================================================================
+-- ============================================================================
+-- Flockie - Pinned messages. One pinned message per chat, across every chat
+-- type (1:1, flock, vibe, club) — chat_id spans buddy_chats / vibing_chats /
+-- clubs, so access is gated by can_access_chat(). Run in the SQL editor.
+-- Idempotent.
+-- ============================================================================
+
+-- Can the caller see this chat? Works for any chat_id namespace we use.
+create or replace function public.can_access_chat(p_chat uuid)
+returns boolean language sql security definer set search_path = public stable as $$
+  select
+    exists (
+      select 1 from public.buddy_chats bc
+      join public.buddy_matches m on m.id = bc.match_id
+      where bc.id = p_chat and auth.uid() in (m.user_a, m.user_b)
+    )
+    or exists (
+      select 1 from public.vibing_chats c
+      where c.id = p_chat and public.is_vibe_member(c.vibe_id)
+    )
+    or public.is_club_member(p_chat)
+    or public.is_club_host(p_chat);
+$$;
+grant execute on function public.can_access_chat(uuid) to authenticated;
+
+create table if not exists public.chat_pins (
+  chat_id uuid primary key,
+  content text not null check (char_length(content) between 1 and 2000),
+  author_name text,
+  pinned_by uuid not null references public.profiles(id) on delete cascade,
+  pinned_at timestamptz not null default now()
+);
+
+alter table public.chat_pins enable row level security;
+
+-- Anyone in the chat can read the pin, and any member can set/replace/clear it
+-- (small trusted groups). Writes must stamp themselves as the pinner.
+drop policy if exists "pin read" on public.chat_pins;
+create policy "pin read" on public.chat_pins for select to authenticated
+  using (public.can_access_chat(chat_id));
+drop policy if exists "pin insert" on public.chat_pins;
+create policy "pin insert" on public.chat_pins for insert to authenticated
+  with check (public.can_access_chat(chat_id) and pinned_by = auth.uid());
+drop policy if exists "pin update" on public.chat_pins;
+create policy "pin update" on public.chat_pins for update to authenticated
+  using (public.can_access_chat(chat_id))
+  with check (public.can_access_chat(chat_id) and pinned_by = auth.uid());
+drop policy if exists "pin delete" on public.chat_pins;
+create policy "pin delete" on public.chat_pins for delete to authenticated
+  using (public.can_access_chat(chat_id));
+
+-- Realtime so a new pin lights up for everyone with the chat open.
+do $$
+begin
+  alter publication supabase_realtime add table public.chat_pins;
+exception when duplicate_object then null;
+  when others then null;
+end $$;
 
 notify pgrst, 'reload schema';
 

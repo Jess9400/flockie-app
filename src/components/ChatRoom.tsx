@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 import { formatMessageDivider, needsDivider } from "@/lib/chat";
 import { isImageUrl, firstUrl } from "@/lib/chat-content";
 import LinkPreview from "@/components/LinkPreview";
+import { PinnedBanner, PinButton } from "@/components/ChatPin";
 
 type Msg = { id: string; sender_id: string | null; content: string; created_at: string };
 // Client-only flags for optimistic local echo (never persisted).
@@ -146,6 +147,7 @@ export default function ChatRoom({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col font-nunito">
+      <PinnedBanner chatId={chatId} />
       <div className="min-h-0 flex-1 space-y-1 overflow-y-auto py-4">
         {/* Welcome breadcrumb */}
         <p className="px-6 py-2 text-center font-nunito text-[13px] font-medium italic text-navy/50">
@@ -176,7 +178,7 @@ export default function ChatRoom({
                   <span className="h-px flex-1 bg-navy/10" />
                 </div>
               )}
-              <div className={`flex items-end gap-2 ${mine ? "flex-row-reverse" : ""}`}>
+              <div className={`group/msg flex items-end gap-2 ${mine ? "flex-row-reverse" : ""}`}>
                 {!mine &&
                   (firstInSeq ? (
                     avatar ? (
@@ -228,6 +230,9 @@ export default function ChatRoom({
                     </>
                   )}
                 </div>
+                {!isImageUrl(m.content) && !m.pending && (
+                  <PinButton chatId={chatId} content={m.content} author={mine ? null : name} meId={currentUserId} />
+                )}
               </div>
             </div>
           );

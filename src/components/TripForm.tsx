@@ -25,6 +25,7 @@ type Trip = {
   pace?: number | null;
   visibility?: string;
   cover_photo?: string | null;
+  gallery?: string[] | null;
   continent?: string | null;
   language?: string | null;
   group_gender?: string | null;
@@ -69,10 +70,13 @@ export default function TripForm({
   const [continent, setContinent] = useState(initial.continent ?? "");
   const [language, setLanguage] = useState(initial.language ?? "");
   const [groupGender, setGroupGender] = useState(initial.group_gender ?? "any");
+  const [gallery, setGallery] = useState<string[]>(initial.gallery ?? []);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const coverInput = useRef<HTMLInputElement>(null);
+  const galleryInput = useRef<HTMLInputElement>(null);
+  const GALLERY_MAX = 5;
 
   async function onCover(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -89,6 +93,28 @@ export default function TripForm({
     } finally {
       setUploading(false);
       if (coverInput.current) coverInput.current.value = "";
+    }
+  }
+
+  async function onGallery(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []).slice(0, GALLERY_MAX - gallery.length);
+    if (!files.length) return;
+    setUploading(true);
+    try {
+      const urls: string[] = [];
+      for (const file of files) {
+        const ext = file.name.split(".").pop() ?? "jpg";
+        const path = `${userId}/trip-${crypto.randomUUID()}.${ext}`;
+        const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+        if (error) throw error;
+        urls.push(supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl);
+      }
+      setGallery((g) => [...g, ...urls].slice(0, GALLERY_MAX));
+    } catch {
+      setErr(tf("form.errPhotoUpload"));
+    } finally {
+      setUploading(false);
+      if (galleryInput.current) galleryInput.current.value = "";
     }
   }
 
@@ -136,6 +162,7 @@ export default function TripForm({
       budget,
       pace,
       cover_photo: cover,
+      gallery,
       visibility: isFlock ? "public" : "private",
       continent: isFlock ? continent : null,
       language: isFlock ? language : null,
@@ -368,6 +395,39 @@ export default function TripForm({
           </>
         )}
         <input ref={coverInput} type="file" accept="image/*" hidden onChange={onCover} />
+      </div>
+
+      {/* A few more photos — the place, past meetups, the host. Optional. */}
+      <div>
+        <span className="mb-1 block text-sm font-bold">{tf("form.labelGallery")}</span>
+        <p className="mb-2 text-xs font-medium text-muted">{tf("form.galleryHint")}</p>
+        <div className="flex flex-wrap gap-2">
+          {gallery.map((url, i) => (
+            <div key={url} className="relative h-20 w-20 overflow-hidden rounded-xl border border-ink/15">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={url} alt="" className="h-full w-full object-cover" />
+              <button
+                type="button"
+                onClick={() => setGallery((g) => g.filter((_, j) => j !== i))}
+                className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-ink text-[10px] font-bold text-white"
+                aria-label={tf("form.removeCoverAria")}
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+          {gallery.length < GALLERY_MAX && (
+            <button
+              type="button"
+              onClick={() => galleryInput.current?.click()}
+              disabled={uploading}
+              className="flex h-20 w-20 items-center justify-center rounded-xl border-2 border-dashed border-ink/40 text-2xl font-bold text-muted disabled:opacity-50"
+            >
+              +
+            </button>
+          )}
+        </div>
+        <input ref={galleryInput} type="file" accept="image/*" multiple hidden onChange={onGallery} />
       </div>
 
       <label className="block">

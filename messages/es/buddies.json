@@ -15,7 +15,10 @@
     "sendPhoto": "Enviar foto",
     "sendingPhoto": "Enviando foto…",
     "failedRetry": "Falló — toca para reintentar",
-    "bookSpot": "🎟️ Reserva tu lugar →"
+    "bookSpot": "🎟️ Reserva tu lugar →",
+    "pin": "Fijar",
+    "unpin": "Quitar",
+    "pinnedLabel": "Fijado"
   },
   "list": {
     "title": "Chats",

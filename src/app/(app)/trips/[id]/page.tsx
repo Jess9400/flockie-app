@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import TripJoinButton from "@/components/TripJoinButton";
 import TripAgendaPreview from "@/components/TripAgendaPreview";
+import PhotoStrip from "@/components/PhotoStrip";
 
 type Detail = {
   id: string;
@@ -21,6 +22,7 @@ type Detail = {
   pace: number | null;
   description: string | null;
   cover_photo: string | null;
+  gallery: string[] | null;
   language: string | null;
   creator_id: string;
   creator_name: string | null;
@@ -100,6 +102,12 @@ export default async function TripDetailPage({ params }: { params: { id: string 
         <p className="mt-4 whitespace-pre-line rounded-2xl border border-ink/12 bg-cream p-4 text-sm font-medium leading-relaxed text-ink">
           {d.description}
         </p>
+      )}
+
+      {(d.gallery ?? []).length > 0 && (
+        <div className="mt-4">
+          <PhotoStrip photos={d.gallery ?? []} />
+        </div>
       )}
 
       {/* Creator */}

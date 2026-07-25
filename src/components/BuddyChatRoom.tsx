@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import { formatMessageDivider, needsDivider } from "@/lib/chat";
 import { isImageUrl, firstUrl } from "@/lib/chat-content";
 import LinkPreview from "@/components/LinkPreview";
+import { PinnedBanner, PinButton } from "@/components/ChatPin";
 
 type Msg = { id: string; sender_id: string; content: string; created_at: string };
 // Client-only flags for optimistic local echo (never persisted).
@@ -210,6 +211,8 @@ export default function BuddyChatRoom({
         </div>
       )}
 
+      <PinnedBanner chatId={chatId} />
+
       <div className="min-h-0 flex-1 space-y-1 overflow-y-auto py-4">
         {/* Algo icebreaker — suppressed when a plan card is carrying the intro
             so we never show two "here's your match" blocks at once. */}
@@ -238,7 +241,10 @@ export default function BuddyChatRoom({
                   <span className="h-px flex-1 bg-navy/10" />
                 </div>
               )}
-              <div className={`flex items-end gap-2 ${mine ? "justify-end" : "justify-start"}`}>
+              <div className={`group/msg flex items-end gap-2 ${mine ? "justify-end" : "justify-start"}`}>
+                {mine && !isImageUrl(m.content) && !m.pending && (
+                  <PinButton chatId={chatId} content={m.content} author={null} meId={currentUserId} />
+                )}
                 {!mine && isGroup && (
                   <div className="h-7 w-7 shrink-0">
                     {firstInSeq &&
@@ -291,6 +297,9 @@ export default function BuddyChatRoom({
                     </>
                   )}
                 </div>
+                {!mine && !isImageUrl(m.content) && (
+                  <PinButton chatId={chatId} content={m.content} author={mem?.name ?? otherName} meId={currentUserId} />
+                )}
               </div>
             </div>
           );

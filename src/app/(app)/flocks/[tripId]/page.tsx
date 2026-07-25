@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import FlockRequestButton from "@/components/FlockRequestButton";
 import TripAgendaPreview from "@/components/TripAgendaPreview";
+import PhotoStrip from "@/components/PhotoStrip";
 import ArchetypeBadge from "@/components/ArchetypeBadge";
 import { loadFlockMatch } from "@/lib/vibe-stats";
 import { tripDays } from "@/lib/trips";
@@ -45,7 +46,7 @@ export default async function FlockDetailPage({
   const { data: trip } = await supabase
     .from("trips")
     .select(
-      "id, user_id, co_host_id, destination, destinations, start_date, end_date, group_size, trip_type, cover_photo, continent, group_gender, language, budget, pace, description, status, visibility, kind"
+      "id, user_id, co_host_id, destination, destinations, start_date, end_date, group_size, trip_type, cover_photo, gallery, continent, group_gender, language, budget, pace, description, status, visibility, kind"
     )
     .eq("id", params.tripId)
     .eq("kind", "trip")
@@ -155,6 +156,12 @@ export default async function FlockDetailPage({
           </span>
         )}
       </div>
+
+      {Array.isArray(trip.gallery) && trip.gallery.length > 0 && (
+        <div className="mt-3">
+          <PhotoStrip photos={trip.gallery as string[]} />
+        </div>
+      )}
 
       {/* Essentials */}
       <h1 className="mt-5 flex items-start gap-2 text-2xl font-black leading-tight">
