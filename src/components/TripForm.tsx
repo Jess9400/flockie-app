@@ -12,6 +12,7 @@ const TYPE_MAX = 3;
 
 type Trip = {
   id?: string;
+  location_name?: string | null;
   destination?: string;
   destinations?: string[];
   title?: string | null;
@@ -49,6 +50,7 @@ export default function TripForm({
   const initialDests = initial.destinations ?? (initial.destination ? [initial.destination] : []);
   const [title, setTitle] = useState(initial.title ?? "");
   const [description, setDescription] = useState(initial.description ?? "");
+  const [locationName, setLocationName] = useState(initial.location_name ?? "");
   const [dest1, setDest1] = useState(initialDests[0] ?? "");
   const [dest2, setDest2] = useState(initialDests[1] ?? "");
   const [dest3, setDest3] = useState(initialDests[2] ?? "");
@@ -101,6 +103,7 @@ export default function TripForm({
       ? [dest1].map((d) => d.trim()).filter(Boolean)
       : [dest1, dest2, dest3].map((d) => d.trim()).filter(Boolean);
     if (isActivity && !title.trim()) return setErr(tf("form.errActivityName"));
+    if (isActivity && !locationName.trim()) return setErr(tf("form.errAddressRequired"));
     if (destinations.length === 0 || !start || !end) {
       return setErr(isActivity ? tf("form.errCityDatesRequired") : tf("form.errDestDatesRequired"));
     }
@@ -124,6 +127,7 @@ export default function TripForm({
       group_size: isFlock ? groupSize : 2, // buddy/activity = 1:1
       trip_type: types,
       description: description.trim() || null,
+      location_name: isActivity ? locationName.trim() : null,
       budget,
       pace,
       cover_photo: cover,
@@ -187,10 +191,17 @@ export default function TripForm({
       </label>
 
       {isActivity ? (
-        <label className="block">
-          <span className="mb-1 block text-sm font-bold">{tf("form.labelCity")}</span>
-          <input className={inputCls} value={dest1} onChange={(e) => setDest1(e.target.value)} placeholder={tf("form.cityPlaceholder")} />
-        </label>
+        <>
+          <label className="block">
+            <span className="mb-1 block text-sm font-bold">{tf("form.labelCity")}</span>
+            <input className={inputCls} value={dest1} onChange={(e) => setDest1(e.target.value)} placeholder={tf("form.cityPlaceholder")} />
+          </label>
+          <label className="block">
+            <span className="mb-1 block text-sm font-bold">{tf("form.labelAddress")}</span>
+            <input className={inputCls} value={locationName} onChange={(e) => setLocationName(e.target.value)} placeholder={tf("form.addressPlaceholder")} />
+            <p className="mt-1 text-[11px] font-medium text-muted">{tf("form.addressHint")}</p>
+          </label>
+        </>
       ) : (
         <div>
           <span className="mb-1 block text-sm font-bold">{tf("form.labelDestinations")}</span>

@@ -93,7 +93,11 @@
     "errContinent": "Pick the continent your Flock is in.",
     "errLanguage": "Pick the group's main language.",
     "aboutActivity": "Tell your story",
-    "descActivityPlaceholder": "I love salsa and dance every week — looking for a partner around my level to hit socials with. Beginners welcome if you're committed!"
+    "descActivityPlaceholder": "I love salsa and dance every week — looking for a partner around my level to hit socials with. Beginners welcome if you're committed!",
+    "labelAddress": "Where exactly?",
+    "addressPlaceholder": "Blue Tokai Coffee, Hiranandani Estate",
+    "addressHint": "The venue or meeting point — shared with whoever you match with.",
+    "errAddressRequired": "Add where the activity happens."
   },
   "hub": {
     "findTripBuddy": "Find a Trip Buddy",

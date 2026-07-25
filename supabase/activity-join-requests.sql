@@ -20,6 +20,7 @@ create table if not exists public.activity_join_requests (
   created_at  timestamptz default now(),
   primary key (activity_id, user_id)
 );
+alter table public.trips add column if not exists location_name text;
 alter table public.activity_join_requests add column if not exists status text not null default 'pending';
 alter table public.activity_join_requests add column if not exists level text;
 alter table public.activity_join_requests add column if not exists note text;
@@ -41,7 +42,7 @@ drop function if exists public.activity_feed(int);
 create or replace function public.activity_feed(p_limit int default 30)
 returns table (
   activity_id uuid, title text, start_date date, end_date date, city text,
-  cover_photo text, description text,
+  cover_photo text, description text, location_name text,
   creator_id uuid, display_name text, age int, photo text, one_liner text,
   score float8,
   my_request_status text
@@ -50,7 +51,7 @@ language sql security definer set search_path = public stable as $$
   with me as (select * from public.profiles where id = auth.uid())
   select
     t.id, t.title, t.start_date, t.end_date, t.destination,
-    t.cover_photo, t.description,
+    t.cover_photo, t.description, t.location_name,
     p.id, p.display_name, p.age, p.photos[1], p.activity_one_liner,
     public.buddy_pair_score(auth.uid(), p.id)::float8,
     (select r.status from public.activity_join_requests r
@@ -193,7 +194,7 @@ begin
   update public.buddy_plans set status = 'declined'
     where chat_id = v_chat and status = 'proposed';
   insert into public.buddy_plans (chat_id, proposed_by, category, place_name, when_at, status)
-    values (v_chat, p_user, 'activity', nullif(btrim(t.title), ''), null, 'accepted');
+    values (v_chat, p_user, 'activity', coalesce(nullif(btrim(t.location_name), ''), nullif(btrim(t.title), '')), null, 'accepted');
   insert into public.buddy_messages (chat_id, sender_id, content)
     values (v_chat, null, '✅ accepted the plan');
 

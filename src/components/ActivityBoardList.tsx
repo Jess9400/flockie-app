@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Plus } from "lucide-react";
+import { Plus, MapPin } from "lucide-react";
 import { getTranslations, getLocale } from "next-intl/server";
 import { format } from "date-fns";
 import { dfLocale } from "@/lib/date-locale";
@@ -14,6 +14,7 @@ export type ActivityFeedRow = {
   city: string | null;
   cover_photo?: string | null;
   description?: string | null;
+  location_name?: string | null;
   creator_id: string;
   display_name: string | null;
   age: number | null;
@@ -76,6 +77,11 @@ export default async function ActivityBoardList({
               <p className="text-[11px] font-extrabold uppercase tracking-wide text-flockie-blue">
                 {[fmtDates(r.start_date, r.end_date), r.city].filter(Boolean).join(" · ")}
               </p>
+              {r.location_name && (
+                <p className="mt-0.5 flex items-center gap-1 text-[11px] font-medium text-muted">
+                  <MapPin size={11} className="shrink-0" /> {r.location_name}
+                </p>
+              )}
               <h2 className="mt-1 text-base font-extrabold leading-snug text-ink">
                 {r.title || t("untitled")}
               </h2>
