@@ -11,7 +11,16 @@ export default function PhotoAlbum({ photos, className }: { photos: string[]; cl
   const [idx, setIdx] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
   const touchX = useRef<number | null>(null);
+  const stripRef = useRef<HTMLDivElement>(null);
   const open = idx !== null;
+
+  // Advance the strip by one pair; wrap back to the start at the end.
+  function nudge() {
+    const el = stripRef.current;
+    if (!el) return;
+    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 8;
+    el.scrollTo({ left: atEnd ? 0 : el.scrollLeft + el.clientWidth, behavior: "smooth" });
+  }
 
   useEffect(() => setMounted(true), []);
 
@@ -33,33 +42,37 @@ export default function PhotoAlbum({ photos, className }: { photos: string[]; cl
 
   if (!photos.length) return null;
 
-  // Chunk into pages of 4 (a 2×2 grid each) — swipe to the next page.
-  const pages: { url: string; i: number }[][] = [];
-  photos.forEach((url, i) => {
-    if (i % 4 === 0) pages.push([]);
-    pages[pages.length - 1].push({ url, i });
-  });
-
   return (
     <div className={className}>
       <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.12em] text-flockie-coral">{t("photosHeading")}</p>
-      {/* Paged 2×2 carousel — swipe/scroll left for the next four. */}
-      <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {pages.map((page, p) => (
-          <div key={p} className="grid w-full shrink-0 snap-start grid-cols-2 gap-2">
-            {page.map(({ url, i }) => (
-              <button
-                key={url}
-                type="button"
-                onClick={() => setIdx(i)}
-                className="group relative aspect-square overflow-hidden rounded-2xl border border-ink/12 bg-cream"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={url} alt="" className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105" />
-              </button>
-            ))}
-          </div>
-        ))}
+      {/* 2-up carousel — swipe/scroll or tap the arrow for more; keeps the card short. */}
+      <div className="relative">
+        <div
+          ref={stripRef}
+          className="flex gap-2 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {photos.map((url, i) => (
+            <button
+              key={url}
+              type="button"
+              onClick={() => setIdx(i)}
+              className="group relative aspect-square w-[calc(50%-0.25rem)] shrink-0 snap-start overflow-hidden rounded-2xl border border-ink/12 bg-cream"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={url} alt="" className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105" />
+            </button>
+          ))}
+        </div>
+        {photos.length > 2 && (
+          <button
+            type="button"
+            onClick={nudge}
+            aria-label={t("nextPhoto")}
+            className="absolute right-1.5 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-ink/10 bg-white/90 text-navy shadow-[0_2px_8px_rgba(10,37,69,0.15)] backdrop-blur hover:bg-white"
+          >
+            <ChevronRight size={18} />
+          </button>
+        )}
       </div>
 
       {open &&
