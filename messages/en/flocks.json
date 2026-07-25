@@ -26,7 +26,7 @@
     "comfort": "Comfort"
   },
   "detail": {
-    "back": "Flocks",
+    "back": "Trips & Flocks",
     "unavailableTitle": "This Flock isn't available",
     "unavailableBody": "It may have been cancelled, filled up, or made private.",
     "exploreFlocks": "Explore Flocks",
@@ -46,6 +46,7 @@
     "inFlock": "You're in this Flock 🎉",
     "openChats": "Open your chats",
     "datesPassed": "This Flock's dates have passed.",
-    "flockFull": "This Flock is full — someone's spot may still open up."
+    "flockFull": "This Flock is full — someone's spot may still open up.",
+    "whosGoing": "Who's going"
   }
 }

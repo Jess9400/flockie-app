@@ -26,7 +26,7 @@
     "comfort": "Confortável"
   },
   "detail": {
-    "back": "Flocks",
+    "back": "Viagens e Flocks",
     "unavailableTitle": "Este Flock não está disponível",
     "unavailableBody": "Pode ter sido cancelado, lotado ou tornado privado.",
     "exploreFlocks": "Explorar Flocks",
@@ -46,6 +46,7 @@
     "inFlock": "Você está neste Flock 🎉",
     "openChats": "Abra seus chats",
     "datesPassed": "As datas deste Flock já passaram.",
-    "flockFull": "Este Flock está lotado — pode ser que uma vaga abra."
+    "flockFull": "Este Flock está lotado — pode ser que uma vaga abra.",
+    "whosGoing": "Quem vai"
   }
 }

@@ -43,6 +43,7 @@ export default async function TripDetailPage({ params }: { params: { id: string 
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("trips");
+  const tf = await getTranslations("flocks");
 
   const { data: rows } = await supabase.rpc("trip_detail", { p_trip: params.id });
   const d = (rows?.[0] ?? null) as Detail | null;
@@ -58,7 +59,7 @@ export default async function TripDetailPage({ params }: { params: { id: string 
   const destination = (d.destinations ?? [d.destination]).filter(Boolean).join(" · ");
   const budgetLabel =
     typeof d.budget === "number"
-      ? d.budget <= 2 ? t("budget.friendly") : d.budget === 3 ? t("budget.mid") : t("budget.comfort")
+      ? d.budget <= 2 ? tf("budget.friendly") : d.budget === 3 ? tf("budget.mid") : tf("budget.comfort")
       : null;
 
   return (
@@ -81,7 +82,7 @@ export default async function TripDetailPage({ params }: { params: { id: string 
       </h1>
       <p className="mt-1 flex items-center gap-2 text-sm font-bold text-muted">
         <CalendarClock size={15} /> {d.start_date} → {d.end_date}
-        <span className="flex items-center gap-1"><Users size={14} /> {t("detail.going", { going: d.going, capacity: d.group_size })}</span>
+        <span className="flex items-center gap-1"><Users size={14} /> {tf("detail.going", { going: d.going, capacity: d.group_size })}</span>
       </p>
 
       <div className="mt-3 flex flex-wrap gap-2">
@@ -112,7 +113,7 @@ export default async function TripDetailPage({ params }: { params: { id: string 
           </span>
         )}
         <span className="min-w-0 flex-1">
-          <span className="block text-xs font-bold uppercase tracking-wide text-muted">{t("detail.hostedBy")}</span>
+          <span className="block text-xs font-bold uppercase tracking-wide text-muted">{tf("detail.hostedBy")}</span>
           <span className="block truncate text-base font-extrabold text-ink">
             {d.creator_name}{d.creator_age ? `, ${d.creator_age}` : ""}
           </span>
@@ -124,7 +125,7 @@ export default async function TripDetailPage({ params }: { params: { id: string 
             ].filter(Boolean).join(" · ")}
           </span>
         </span>
-        <span className="shrink-0 text-sm font-bold text-flockie-blue">{t("detail.view")}</span>
+        <span className="shrink-0 text-sm font-bold text-flockie-blue">{tf("detail.view")}</span>
       </Link>
 
       {/* Itinerary preview — visible to browsers too */}
@@ -134,7 +135,7 @@ export default async function TripDetailPage({ params }: { params: { id: string 
       <div className="mt-4">
         {d.is_host ? (
           <Link href="/my-trips" className="block rounded-2xl border border-ink/15 bg-cream p-4 text-center text-sm font-bold text-ink">
-            {t("detail.manageInMyTrips")}
+            {tf("detail.manageInMyTrips")}
           </Link>
         ) : d.my_request_status === "accepted" ? (
           <div className="rounded-2xl border border-ink/15 bg-[#06D6A0]/10 p-4 text-center font-extrabold text-ink">
