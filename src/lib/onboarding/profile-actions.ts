@@ -18,6 +18,8 @@ export interface ProfileIdentityInput {
   city: string;
   bio: string;
   photoUrl: string;
+  // Album photos beyond the avatar. When omitted, existing extras are kept.
+  extraPhotos?: string[];
 }
 
 function ageFromBirthday(birthday: string) {
@@ -96,7 +98,17 @@ export async function updateProfileIdentity(input: ProfileIdentityInput) {
   if (!displayName || !homeCity || !input.photoUrl || (!currentPhotos.includes(input.photoUrl) && !ownsUploadedPhoto)) {
     throw new Error("Add your name, city, and profile photo before saving");
   }
-  const photos = [input.photoUrl, ...currentPhotos.filter((photo) => photo !== input.photoUrl)];
+  // Extra album photos: use the supplied list when given (allows add/remove),
+  // else keep whatever's already there. Only keep photos the user owns or that
+  // were already saved, and dedupe against the avatar. Cap the album size.
+  const ownsPhoto = (u: string) => currentPhotos.includes(u) || u.includes(`/avatars/${user.id}/`);
+  const rawExtra = input.extraPhotos !== undefined
+    ? input.extraPhotos
+    : currentPhotos.filter((photo) => photo !== input.photoUrl);
+  const extra = Array.from(
+    new Set(rawExtra.filter((p) => typeof p === "string" && p !== input.photoUrl && ownsPhoto(p)))
+  ).slice(0, 8);
+  const photos = [input.photoUrl, ...extra];
 
   const { error } = await supabase
     .from("profiles")

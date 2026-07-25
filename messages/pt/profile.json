@@ -67,7 +67,9 @@
     "saving": "Salvando…",
     "signInError": "Entre novamente para mudar sua foto.",
     "photoError": "Não foi possível enviar a foto. Tente novamente.",
-    "saveError": "Não foi possível salvar seu perfil. Tente novamente."
+    "saveError": "Não foi possível salvar seu perfil. Tente novamente.",
+    "albumTitle": "Mais fotos",
+    "removePhoto": "Remover foto"
   },
   "takes": {
     "label": "Minha lembrança",

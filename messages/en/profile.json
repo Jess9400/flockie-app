@@ -67,7 +67,9 @@
     "saving": "Saving…",
     "signInError": "Please sign in again to change your photo.",
     "photoError": "Couldn’t upload that photo. Try again.",
-    "saveError": "Couldn’t save your profile. Try again."
+    "saveError": "Couldn’t save your profile. Try again.",
+    "albumTitle": "More photos",
+    "removePhoto": "Remove photo"
   },
   "takes": {
     "label": "My take",

@@ -27,12 +27,15 @@ export default function ProfileIdentityEditor({
   const router = useRouter();
   const supabase = createClient();
   const photoInput = useRef<HTMLInputElement>(null);
+  const albumInput = useRef<HTMLInputElement>(null);
   const [name, setName] = useState(initial.display_name ?? "");
   const [city, setCity] = useState(initial.home_city ?? "");
   const [line, setLine] = useState(initial.bio ?? "");
   const [photoUrl, setPhotoUrl] = useState(initial.photos?.[0] ?? null);
+  const [album, setAlbum] = useState<string[]>(initial.photos?.slice(1) ?? []);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const ALBUM_MAX = 5;
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -64,6 +67,31 @@ export default function ProfileIdentityEditor({
     }
   }
 
+  async function onAlbum(event: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(event.target.files ?? []).slice(0, ALBUM_MAX - album.length);
+    if (!files.length) return;
+    setUploading(true);
+    setError(null);
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) throw new Error(t("signInError"));
+      const urls: string[] = [];
+      for (const file of files) {
+        const ext = file.name.split(".").pop() ?? "jpg";
+        const path = `${auth.user.id}/album-${crypto.randomUUID()}.${ext}`;
+        const { error: upErr } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+        if (upErr) throw upErr;
+        urls.push(supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl);
+      }
+      setAlbum((a) => [...a, ...urls].slice(0, ALBUM_MAX));
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : t("photoError"));
+    } finally {
+      setUploading(false);
+      if (albumInput.current) albumInput.current.value = "";
+    }
+  }
+
   async function save() {
     if (!canSave || !photoUrl) return;
     setSaving(true);
@@ -74,6 +102,7 @@ export default function ProfileIdentityEditor({
         city: city.trim(),
         bio: line.trim(),
         photoUrl,
+        extraPhotos: album,
       });
       router.refresh();
       onClose();
@@ -111,6 +140,38 @@ export default function ProfileIdentityEditor({
             <p className="mt-1 text-xs font-medium leading-relaxed text-muted">{t("photoHelp")}</p>
           </div>
           <input ref={photoInput} type="file" accept="image/*" hidden onChange={selectPhoto} />
+        </div>
+
+        {/* Photo album — a few more shots beyond the avatar. */}
+        <div className="mt-5">
+          <p className="text-xs font-extrabold uppercase tracking-wide text-muted">{t("albumTitle")}</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {album.map((url, i) => (
+              <div key={url} className="relative h-16 w-16 overflow-hidden rounded-xl border border-ink/15">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={url} alt="" className="h-full w-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => setAlbum((a) => a.filter((_, j) => j !== i))}
+                  aria-label={t("removePhoto")}
+                  className="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-navy text-[10px] font-bold text-white"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+            {album.length < ALBUM_MAX && (
+              <button
+                type="button"
+                onClick={() => albumInput.current?.click()}
+                disabled={uploading}
+                className="flex h-16 w-16 items-center justify-center rounded-xl border-2 border-dashed border-ink/40 text-2xl font-bold text-muted disabled:opacity-50"
+              >
+                +
+              </button>
+            )}
+          </div>
+          <input ref={albumInput} type="file" accept="image/*" multiple hidden onChange={onAlbum} />
         </div>
 
         <label className="mt-5 block">
