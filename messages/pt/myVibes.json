@@ -16,7 +16,8 @@
     "ranking": "Classificando",
     "finalized": "Finalizada",
     "completed": "Concluída",
-    "cancelled": "Cancelada"
+    "cancelled": "Cancelada",
+    "reviewing": "Em análise"
   },
   "interest": {
     "interested": "Interessado",
