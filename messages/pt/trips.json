@@ -100,6 +100,34 @@
     "findFlockSub": "Participe de uma viagem em grupo",
     "heading": "Viagens",
     "subtitle": "Viaje em companhia — encontre com quem viajar ou entre em um grupo.",
-    "yourTrips": "Suas viagens e flocks"
+    "yourTrips": "Suas viagens e flocks",
+    "browseBoard": "Ver viagens e flocks",
+    "browseBoardSub": "Entre numa viagem que já existe",
+    "postTrip": "Publicar uma viagem",
+    "postTripSub": "Seu plano vai pro mural — buddies pedem para entrar"
+  },
+  "board": {
+    "heading": "Viagens e Flocks",
+    "subtitle": "Viagens que estão sendo planejadas — viajantes solo buscando buddy e Flocks em grupo com vaga.",
+    "searchPlaceholder": "Busque destinos, pessoas…",
+    "filterKind": "Tipo",
+    "kindTrip": "Viagem · 1:1",
+    "kindFlock": "Flock · grupo",
+    "tripsTaken": "{count} viagens",
+    "emptyNone": "Nenhuma viagem aberta ainda — publique a primeira!",
+    "askToJoin": "Pedir para entrar",
+    "requested": "Solicitado ✓",
+    "going": "Você vai! 🎉",
+    "dialogAria": "Pedir para entrar na viagem para {destination}",
+    "dialogTitle": "Pedir para entrar: {destination}",
+    "dialogSubtitle": "{name} vai ver quem você é, suas viagens passadas e sua nota.",
+    "notePlaceholder": "Por que essa viagem? Algumas palavras ajudam… (opcional)",
+    "sendRequest": "Enviar solicitação",
+    "sending": "Enviando…",
+    "sentTitle": "Solicitação enviada!",
+    "sentBody": "{name} vai revisar — você recebe uma notificação de qualquer forma.",
+    "done": "Pronto",
+    "cancel": "Cancelar",
+    "errBlocked": "Vocês têm preferências de match incompatíveis."
   }
 }

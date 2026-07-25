@@ -14,6 +14,7 @@ export type JoinReq = {
   age: number | null;
   photo: string | null;
   oneLiner: string | null;
+  note?: string | null;
   status: string;
   match?: number | null;
 };
@@ -110,6 +111,7 @@ export default function FlockJoinRequests({
                     <MatchBadge pct={r.match} />
                   </span>
                   {r.oneLiner && <span className="block truncate text-[11px] font-medium text-muted">{r.oneLiner}</span>}
+                  {r.note && <span className="block text-[11px] font-medium italic text-ink/70">“{r.note}”</span>}
                 </span>
               </Link>
               <button

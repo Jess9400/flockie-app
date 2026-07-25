@@ -31,20 +31,20 @@ export default async function TripsHubPage() {
 
       <div className="mt-5 grid grid-cols-2 gap-2">
         <Link
-          href="/match?mode=trip"
-          className="rounded-2xl border-2 border-ink/10 bg-white px-4 py-5 text-center transition-transform hover:-translate-y-0.5"
-        >
-          <span className="block text-2xl">✈️</span>
-          <span className="mt-1 block text-sm font-extrabold text-ink">{tr("hub.findTripBuddy")}</span>
-          <span className="block text-[11px] font-medium text-muted">{tr("hub.findTripBuddySub")}</span>
-        </Link>
-        <Link
           href="/flocks"
           className="rounded-2xl border-2 border-ink/10 bg-white px-4 py-5 text-center transition-transform hover:-translate-y-0.5"
         >
-          <span className="block text-2xl">🐦</span>
-          <span className="mt-1 block text-sm font-extrabold text-ink">{tr("hub.findFlock")}</span>
-          <span className="block text-[11px] font-medium text-muted">{tr("hub.findFlockSub")}</span>
+          <span className="block text-2xl">🔎</span>
+          <span className="mt-1 block text-sm font-extrabold text-ink">{tr("hub.browseBoard")}</span>
+          <span className="block text-[11px] font-medium text-muted">{tr("hub.browseBoardSub")}</span>
+        </Link>
+        <Link
+          href="/match/trip?kind=trip"
+          className="rounded-2xl border-2 border-ink/10 bg-white px-4 py-5 text-center transition-transform hover:-translate-y-0.5"
+        >
+          <span className="block text-2xl">➕</span>
+          <span className="mt-1 block text-sm font-extrabold text-ink">{tr("hub.postTrip")}</span>
+          <span className="block text-[11px] font-medium text-muted">{tr("hub.postTripSub")}</span>
         </Link>
       </div>
 

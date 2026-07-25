@@ -100,6 +100,34 @@
     "findFlockSub": "Join a group trip",
     "heading": "Trips",
     "subtitle": "Travel together — find company for a trip or join a group one.",
-    "yourTrips": "Your trips & flocks"
+    "yourTrips": "Your trips & flocks",
+    "browseBoard": "Browse trips & flocks",
+    "browseBoardSub": "Join a trip that already exists",
+    "postTrip": "Post a trip",
+    "postTripSub": "Your plan goes on the board — buddies ask to join"
+  },
+  "board": {
+    "heading": "Trips & Flocks",
+    "subtitle": "Trips people are planning — solo travelers looking for a buddy, and group Flocks with room.",
+    "searchPlaceholder": "Search destinations, people…",
+    "filterKind": "Type",
+    "kindTrip": "Trip · 1:1",
+    "kindFlock": "Flock · group",
+    "tripsTaken": "{count} trips",
+    "emptyNone": "No open trips yet — post the first one!",
+    "askToJoin": "Ask to join",
+    "requested": "Requested ✓",
+    "going": "You're in 🎉",
+    "dialogAria": "Ask to join the {destination} trip",
+    "dialogTitle": "Ask to join: {destination}",
+    "dialogSubtitle": "{name} will see who you are, your past trips and your note.",
+    "notePlaceholder": "Why this trip? A few words help a lot… (optional)",
+    "sendRequest": "Send request",
+    "sending": "Sending…",
+    "sentTitle": "Request sent!",
+    "sentBody": "{name} will review it — you'll get a notification either way.",
+    "done": "Done",
+    "cancel": "Cancel",
+    "errBlocked": "You two have conflicting match preferences."
   }
 }

@@ -100,6 +100,34 @@
     "findFlockSub": "Únete a un viaje en grupo",
     "heading": "Viajes",
     "subtitle": "Viaja en compañía — encuentra con quién viajar o únete a un grupo.",
-    "yourTrips": "Tus viajes y flocks"
+    "yourTrips": "Tus viajes y flocks",
+    "browseBoard": "Ver viajes y flocks",
+    "browseBoardSub": "Únete a un viaje que ya existe",
+    "postTrip": "Publicar un viaje",
+    "postTripSub": "Tu plan va al tablón — los buddies piden unirse"
+  },
+  "board": {
+    "heading": "Viajes y Flocks",
+    "subtitle": "Viajes que la gente está planeando — viajeros solos buscando buddy y Flocks de grupo con sitio.",
+    "searchPlaceholder": "Busca destinos, gente…",
+    "filterKind": "Tipo",
+    "kindTrip": "Viaje · 1:1",
+    "kindFlock": "Flock · grupo",
+    "tripsTaken": "{count} viajes",
+    "emptyNone": "Aún no hay viajes abiertos — ¡publica el primero!",
+    "askToJoin": "Pedir unirme",
+    "requested": "Solicitado ✓",
+    "going": "¡Vas! 🎉",
+    "dialogAria": "Pedir unirte al viaje a {destination}",
+    "dialogTitle": "Pedir unirme: {destination}",
+    "dialogSubtitle": "{name} verá quién eres, tus viajes pasados y tu nota.",
+    "notePlaceholder": "¿Por qué este viaje? Unas palabras ayudan… (opcional)",
+    "sendRequest": "Enviar solicitud",
+    "sending": "Enviando…",
+    "sentTitle": "¡Solicitud enviada!",
+    "sentBody": "{name} la revisará — recibirás una notificación en cualquier caso.",
+    "done": "Listo",
+    "cancel": "Cancelar",
+    "errBlocked": "Tenéis preferencias de match incompatibles."
   }
 }

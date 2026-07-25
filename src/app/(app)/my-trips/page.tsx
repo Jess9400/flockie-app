@@ -117,7 +117,7 @@ export default async function MyTripsPage({
     activeIds.length
       ? supabase
           .from("trip_join_requests")
-          .select("trip_id, user_id, status")
+          .select("trip_id, user_id, status, note")
           .in("trip_id", activeIds)
       : Promise.resolve({ data: null }),
     allTripIds.length
@@ -168,6 +168,7 @@ export default async function MyTripsPage({
       age: rp[r.user_id]?.age ?? null,
       photo: rp[r.user_id]?.photos?.[0] ?? null,
       oneLiner: rp[r.user_id]?.one_liner ?? null,
+      note: (r as { note?: string | null }).note ?? null,
       match: matchByUser[r.user_id] ?? null,
     });
   });
