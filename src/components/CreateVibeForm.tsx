@@ -93,6 +93,7 @@ export default function CreateVibeForm({
 }) {
   const supabase = createClient();
   const t = useTranslations("vibes");
+  const tCal = useTranslations("clubs.calendar");
   const locale = useLocale();
   const tc = useTranslations("components");
   const catLabel = (c: string) =>
@@ -391,6 +392,16 @@ export default function CreateVibeForm({
     setSaving(false);
 
     if (error) return setErr(error.message);
+    // Announce a newly scheduled gathering into the club chat.
+    if (clubId) {
+      supabase
+        .rpc("post_workspace_event", {
+          p_kind: "club",
+          p_id: clubId,
+          p_text: tCal("eventScheduled", { title: title.trim() || tCal("gatheringFallback") }),
+        })
+        .then(() => {});
+    }
     setCreatedId(data.id);
   }
 

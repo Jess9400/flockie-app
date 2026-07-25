@@ -227,7 +227,8 @@
     "heading": "Club chat",
     "empty": "No messages yet — say hi to the club 👋",
     "placeholder": "Message the club…",
-    "send": "Send"
+    "send": "Send",
+    "edited": "edited"
   },
   "chatHeader": {
     "back": "Club",
@@ -268,6 +269,8 @@
     "goingCta": "I'll be there",
     "goingYes": "Going",
     "goingCount": "{count} going",
-    "attendedLabel": "Past meetup"
+    "attendedLabel": "Past meetup",
+    "eventGoing": "{name} is going to {title}",
+    "eventScheduled": "New gathering scheduled: {title}"
   }
 }

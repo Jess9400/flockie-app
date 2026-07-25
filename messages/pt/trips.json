@@ -185,6 +185,11 @@
     "pastePlaceholder": "Um item por linha. Comece com uma data (2026-08-10 Chegada) para definir o dia.",
     "pasteImport": "Importar",
     "openCta": "Planejar a viagem",
-    "close": "Close"
+    "close": "Close",
+    "eventChecklistAdd": "{name} adicionou uma tarefa: {title}",
+    "eventChecklistDone": "{name} concluiu: {title}",
+    "eventAgendaAdd": "{name} adicionou ao plano: {title}",
+    "eventAgendaImport": "{name} adicionou {count} itens ao plano",
+    "eventCostAdd": "{name} adicionou um custo: {title} · {amount}"
   }
 }

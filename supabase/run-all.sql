@@ -7,8 +7,8 @@
 
 
 -- ============================================================================
--- [1/8] trip-workspace.sql
---      Trip/flock workspace: members, checklist, agenda, expenses, balances (+gallery col, +gallery in trip_detail)
+-- [1/10] trip-workspace.sql
+--      Trip/flock workspace + gallery col + gallery in trip_detail
 -- ============================================================================
 -- ============================================================================
 -- Flockie - Trip detail + Trip Workspace (checklist, agenda, expenses ledger).
@@ -196,7 +196,7 @@ grant execute on function public.trip_agenda_preview(uuid) to authenticated;
 
 
 -- ============================================================================
--- [2/8] trip-gallery.sql
+-- [2/10] trip-gallery.sql
 --      Trip/flock photo gallery column
 -- ============================================================================
 -- ============================================================================
@@ -211,8 +211,8 @@ notify pgrst, 'reload schema';
 
 
 -- ============================================================================
--- [3/8] trip-board.sql
---      Trips & Flocks board + join requests + traveler cred columns
+-- [3/10] trip-board.sql
+--      Trips & Flocks board + join requests + traveler cred
 -- ============================================================================
 -- ============================================================================
 -- Flockie - the Trip Board: browse solo trips + flocks in one list, ask to
@@ -331,7 +331,7 @@ NOTIFY pgrst, 'reload schema';
 
 
 -- ============================================================================
--- [4/8] activity-join-requests.sql
+-- [4/10] activity-join-requests.sql
 --      Activity address + join requests + accept auto-declines the rest
 -- ============================================================================
 -- ============================================================================
@@ -612,7 +612,7 @@ grant execute on function public.my_joined_activities() to authenticated;
 
 
 -- ============================================================================
--- [5/8] flock-chat-fix.sql
+-- [5/10] flock-chat-fix.sql
 --      Backfill missing flock group chats + broaden my_flock_chats
 -- ============================================================================
 -- ============================================================================
@@ -682,8 +682,8 @@ grant execute on function public.my_flock_chats() to authenticated;
 
 
 -- ============================================================================
--- [6/8] flock-chat-cover.sql
---      Flock chat rows show the trip cover banner, not a member photo
+-- [6/10] flock-chat-cover.sql
+--      Flock chat rows show the trip cover banner
 -- ============================================================================
 -- Flockie - flock chat rows use the trip cover banner, not a member photo.
 -- Run in the SQL editor. Idempotent.
@@ -728,8 +728,8 @@ $function$;
 
 
 -- ============================================================================
--- [7/8] club-workspace.sql
---      Clubs workspace via club_id + club_balances + club_gatherings (Calendar) + gathering RSVPs
+-- [7/10] club-workspace.sql
+--      Clubs workspace + club_gatherings (Calendar) + gathering RSVPs
 -- ============================================================================
 -- ============================================================================
 -- Flockie - Club Workspace. Clubs reuse the trip workspace tables (checklist,
@@ -879,8 +879,8 @@ notify pgrst, 'reload schema';
 
 
 -- ============================================================================
--- [8/8] chat-pins.sql
---      Pinned messages across all chat types (can_access_chat + chat_pins)
+-- [8/10] chat-pins.sql
+--      Pinned messages across all chat types
 -- ============================================================================
 -- ============================================================================
 -- Flockie - Pinned messages. One pinned message per chat, across every chat
@@ -940,6 +940,74 @@ begin
 exception when duplicate_object then null;
   when others then null;
 end $$;
+
+notify pgrst, 'reload schema';
+
+
+-- ============================================================================
+-- [9/10] chat-message-edits.sql
+--      Edit/delete your own messages (+ edited_at) in every chat
+-- ============================================================================
+-- ============================================================================
+-- Flockie - Let a sender edit or delete their own messages, in every chat type
+-- (1:1/flock buddy_messages, vibe vibing_messages, club club_messages).
+-- Adds edited_at + own-row UPDATE/DELETE policies. Run in the SQL editor.
+-- Idempotent.
+-- ============================================================================
+
+do $$
+declare tbl text;
+begin
+  foreach tbl in array array['buddy_messages','vibing_messages','club_messages'] loop
+    execute format('alter table public.%I add column if not exists edited_at timestamptz', tbl);
+
+    execute format('drop policy if exists "msg edit own" on public.%I', tbl);
+    execute format('create policy "msg edit own" on public.%I for update to authenticated using (sender_id = auth.uid()) with check (sender_id = auth.uid())', tbl);
+
+    execute format('drop policy if exists "msg delete own" on public.%I', tbl);
+    execute format('create policy "msg delete own" on public.%I for delete to authenticated using (sender_id = auth.uid())', tbl);
+  end loop;
+end $$;
+
+notify pgrst, 'reload schema';
+
+
+-- ============================================================================
+-- [10/10] workspace-events.sql
+--      System line into chat on workspace changes (post_workspace_event)
+-- ============================================================================
+-- ============================================================================
+-- Flockie - Post a system line into a chat when something happens in the shared
+-- workspace (a to-do checked/added, a cost added, a meeting scheduled, an RSVP).
+-- Null sender = renders as a centered system message. Membership-gated.
+-- Run in the SQL editor. Idempotent.
+-- ============================================================================
+
+create or replace function public.post_workspace_event(p_kind text, p_id uuid, p_text text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if p_text is null or char_length(btrim(p_text)) = 0 or char_length(p_text) > 500 then
+    return;
+  end if;
+
+  if p_kind = 'club' then
+    if not (public.is_club_member(p_id) or public.is_club_host(p_id)) then
+      raise exception 'not_allowed';
+    end if;
+    insert into public.club_messages (club_id, sender_id, content) values (p_id, null, p_text);
+  elsif p_kind = 'buddy' then
+    if not public.is_buddy_chat_member(p_id) then
+      raise exception 'not_allowed';
+    end if;
+    insert into public.buddy_messages (chat_id, sender_id, content) values (p_id, null, p_text);
+  end if;
+end;
+$$;
+grant execute on function public.post_workspace_event(text, uuid, text) to authenticated;
 
 notify pgrst, 'reload schema';
 

@@ -185,6 +185,11 @@
     "pastePlaceholder": "One item per line. Start a line with a date (2026-08-10 Arrive & check in) to set the day.",
     "pasteImport": "Import",
     "openCta": "Plan this trip",
-    "close": "Close"
+    "close": "Close",
+    "eventChecklistAdd": "{name} added a to-do: {title}",
+    "eventChecklistDone": "{name} checked off: {title}",
+    "eventAgendaAdd": "{name} added to the plan: {title}",
+    "eventAgendaImport": "{name} added {count} plan items",
+    "eventCostAdd": "{name} added a cost: {title} · {amount}"
   }
 }

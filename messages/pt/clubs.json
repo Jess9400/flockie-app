@@ -227,7 +227,8 @@
     "heading": "Chat do club",
     "empty": "Sem mensagens ainda — diga oi para o club 👋",
     "placeholder": "Mensagem para o club…",
-    "send": "Enviar"
+    "send": "Enviar",
+    "edited": "editado"
   },
   "chatHeader": {
     "back": "Club",
@@ -268,6 +269,8 @@
     "goingCta": "Vou comparecer",
     "goingYes": "Vou",
     "goingCount": "{count} vão",
-    "attendedLabel": "Encontro passado"
+    "attendedLabel": "Encontro passado",
+    "eventGoing": "{name} vai a {title}",
+    "eventScheduled": "Novo encontro agendado: {title}"
   }
 }

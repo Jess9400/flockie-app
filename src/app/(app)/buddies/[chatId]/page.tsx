@@ -354,6 +354,7 @@ export default async function BuddyChatPage({
         {workspaceTripId && wsMembers.length > 0 && (
           <WorkspacePanels
             tripId={workspaceTripId}
+            chatId={params.chatId}
             city={wsCity}
             checkIn={wsStart}
             checkOut={wsEnd}

@@ -11,8 +11,10 @@ import { formatMessageDivider, needsDivider } from "@/lib/chat";
 import { isImageUrl, firstUrl } from "@/lib/chat-content";
 import LinkPreview from "@/components/LinkPreview";
 import { PinnedBanner, PinButton } from "@/components/ChatPin";
+import MessageText from "@/components/MessageText";
+import MessageActions from "@/components/MessageActions";
 
-type Msg = { id: string; sender_id: string | null; content: string; created_at: string };
+type Msg = { id: string; sender_id: string | null; content: string; created_at: string; edited_at?: string | null };
 // Client-only flags for optimistic local echo (never persisted).
 type LocalMsg = Msg & { pending?: boolean; failed?: boolean };
 type Member = { display_name: string | null; photos: string[] | null };
@@ -87,6 +89,22 @@ export default function ChatRoom({
           setMessages((cur) => (cur.some((x) => x.id === m.id) ? cur : [...cur, m]));
         }
       )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "vibing_messages", filter: `chat_id=eq.${chatId}` },
+        (payload) => {
+          const m = payload.new as Msg;
+          setMessages((cur) => cur.map((x) => (x.id === m.id ? { ...x, content: m.content, edited_at: m.edited_at } : x)));
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table: "vibing_messages" },
+        (payload) => {
+          const oldId = (payload.old as { id?: string }).id;
+          if (oldId) setMessages((cur) => cur.filter((x) => x.id !== oldId));
+        }
+      )
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
@@ -135,6 +153,13 @@ export default function ChatRoom({
   // Precompute sequence/divider flags.
   let prevSender: string | null | undefined;
   let prevTime: string | null = null;
+  function applyEdit(id: string, content: string) {
+    setMessages((cur) => cur.map((x) => (x.id === id ? { ...x, content, edited_at: new Date().toISOString() } : x)));
+  }
+  function applyDelete(id: string) {
+    setMessages((cur) => cur.filter((x) => x.id !== id));
+  }
+
   const rows = messages.map((m) => {
     const divider = needsDivider(prevTime, m.created_at);
     const firstInSeq = divider || prevSender !== m.sender_id;
@@ -215,7 +240,12 @@ export default function ChatRoom({
                             : "rounded-[18px] rounded-bl-[4px] bg-white text-navy"
                         } ${m.pending ? "opacity-60" : ""}`}
                       >
-                        {m.content}
+                        <MessageText content={m.content} mine={mine} />
+                        {m.edited_at && (
+                          <span className={`ml-1.5 text-[10px] font-semibold ${mine ? "text-white/60" : "text-navy/40"}`}>
+                            ({t("shared.edited")})
+                          </span>
+                        )}
                       </div>
                       {m.failed && (
                         <button
@@ -230,6 +260,9 @@ export default function ChatRoom({
                     </>
                   )}
                 </div>
+                {mine && !isImageUrl(m.content) && !m.pending && (
+                  <MessageActions table="vibing_messages" id={m.id} content={m.content} onChanged={applyEdit} onRemoved={applyDelete} />
+                )}
                 {!isImageUrl(m.content) && !m.pending && (
                   <PinButton chatId={chatId} content={m.content} author={mine ? null : name} meId={currentUserId} />
                 )}

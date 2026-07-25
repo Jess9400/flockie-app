@@ -8,6 +8,8 @@ import { formatMessageDivider, needsDivider } from "@/lib/chat";
 import { isImageUrl, firstUrl } from "@/lib/chat-content";
 import LinkPreview from "@/components/LinkPreview";
 import { PinnedBanner, PinButton } from "@/components/ChatPin";
+import MessageText from "@/components/MessageText";
+import MessageActions from "@/components/MessageActions";
 
 export type ClubMsg = {
   id: string;
@@ -15,6 +17,7 @@ export type ClubMsg = {
   sender_id: string | null;
   content: string;
   created_at: string;
+  edited_at?: string | null;
 };
 
 // The club's persistent room — realtime chat over club_messages, styled to
@@ -65,6 +68,22 @@ export default function ClubChatRoom({
             setMessages((cur) => (cur.some((x) => x.id === m.id) ? cur : [...cur, m]));
           }
         )
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "club_messages", filter: `club_id=eq.${clubId}` },
+          (payload) => {
+            const m = payload.new as ClubMsg;
+            setMessages((cur) => cur.map((x) => (x.id === m.id ? { ...x, content: m.content, edited_at: m.edited_at } : x)));
+          }
+        )
+        .on(
+          "postgres_changes",
+          { event: "DELETE", schema: "public", table: "club_messages" },
+          (payload) => {
+            const oldId = (payload.old as { id?: string }).id;
+            if (oldId) setMessages((cur) => cur.filter((x) => x.id !== oldId));
+          }
+        )
         .subscribe();
       return () => {
         supabase.removeChannel(channel);
@@ -110,6 +129,13 @@ export default function ClubChatRoom({
     }
   }
 
+  function applyEdit(id: string, content: string) {
+    setMessages((cur) => cur.map((x) => (x.id === id ? { ...x, content, edited_at: new Date().toISOString() } : x)));
+  }
+  function applyDelete(id: string) {
+    setMessages((cur) => cur.filter((x) => x.id !== id));
+  }
+
   // sequence/divider flags (club rooms are always group chats)
   let prevTime: string | null = null;
   let prevSender: string | null = null;
@@ -129,6 +155,16 @@ export default function ClubChatRoom({
           <p className="py-10 text-center text-sm font-medium text-muted">{t("empty")}</p>
         )}
         {rows.map(({ m, divider, firstInSeq }) => {
+          // Workspace/system events (null sender) render as a centered line.
+          if (m.sender_id === null) {
+            return (
+              <div key={m.id} className="px-6 py-1.5 text-center">
+                <span className="inline-block rounded-full bg-cream px-3 py-1 font-nunito text-[12px] font-semibold text-navy/55">
+                  {m.content}
+                </span>
+              </div>
+            );
+          }
           const mine = m.sender_id === currentUserId;
           const mem = m.sender_id ? members[m.sender_id] : null;
           return (
@@ -143,6 +179,9 @@ export default function ClubChatRoom({
                 </div>
               )}
               <div className={`group/msg flex items-end gap-2 ${mine ? "justify-end" : "justify-start"}`}>
+                {mine && !isImageUrl(m.content) && (
+                  <MessageActions table="club_messages" id={m.id} content={m.content} onChanged={applyEdit} onRemoved={applyDelete} />
+                )}
                 {mine && !isImageUrl(m.content) && (
                   <PinButton chatId={clubId} content={m.content} author={null} meId={currentUserId} />
                 )}
@@ -177,7 +216,12 @@ export default function ClubChatRoom({
                             : "rounded-[18px] rounded-bl-[4px] bg-white text-navy"
                         }`}
                       >
-                        {m.content}
+                        <MessageText content={m.content} mine={mine} />
+                        {m.edited_at && (
+                          <span className={`ml-1.5 text-[10px] font-semibold ${mine ? "text-white/60" : "text-navy/40"}`}>
+                            ({t("edited")})
+                          </span>
+                        )}
                       </div>
                       {firstUrl(m.content) && <LinkPreview url={firstUrl(m.content)!} />}
                     </>

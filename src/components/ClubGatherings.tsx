@@ -20,7 +20,17 @@ type Attendee = { id: string; name: string; photo: string | null };
 // The club Calendar: the club's scheduled meetings (its gatherings are vibes
 // with club_id set). Each member checks whether they'll attend — a personal
 // RSVP everyone can see, like ticking the checklist.
-export default function ClubGatherings({ clubId, meId }: { clubId: string; meId: string }) {
+export default function ClubGatherings({
+  clubId,
+  meId,
+  meName,
+  announce,
+}: {
+  clubId: string;
+  meId: string;
+  meName?: string;
+  announce?: (text: string) => void;
+}) {
   const supabase = createClient();
   const t = useTranslations("clubs.calendar");
   const locale = useLocale();
@@ -78,6 +88,10 @@ export default function ClubGatherings({ clubId, meId }: { clubId: string; meId:
     await supabase
       .from("club_gathering_rsvps")
       .upsert({ vibe_id: vibeId, user_id: meId, going: !iAmIn, updated_at: new Date().toISOString() }, { onConflict: "vibe_id,user_id" });
+    if (!iAmIn) {
+      const g = items.find((x) => x.id === vibeId);
+      announce?.(t("eventGoing", { name: (meName ?? "").split(" ")[0] || "Someone", title: g?.title ?? t("gatheringFallback") }));
+    }
   }
 
   if (loading) return null;

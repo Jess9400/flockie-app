@@ -27,6 +27,7 @@ export default function TripWorkspace({
   spaceKind = "trip",
   only,
   dealsScope = "all",
+  announce,
 }: {
   tripId: string;
   city: string;
@@ -38,11 +39,13 @@ export default function TripWorkspace({
   spaceKind?: "trip" | "club";
   only?: Tab;
   dealsScope?: "all" | "activities";
+  announce?: (text: string) => void;
 }) {
   const supabase = createClient();
   const t = useTranslations("trips.workspace");
   const [tab, setTab] = useState<Tab>(only ?? "checklist");
   const nameOf = (id: string | null) => members.find((m) => m.id === id)?.name ?? "";
+  const firstName = (id: string | null) => (nameOf(id).split(" ")[0] || "Someone");
   // Workspace tables are shared by trips/flocks and clubs — same schema, keyed
   // by either trip_id or club_id.
   const keyCol = spaceKind === "club" ? "club_id" : "trip_id";
@@ -116,7 +119,10 @@ export default function TripWorkspace({
         .insert({ [keyCol]: tripId, title: title.trim(), created_by: meId })
         .select("id, title, assignee, done, done_by")
         .single();
-      if (data) setItems((c) => [...c, { ...data, done_by: [] } as ChecklistItem]);
+      if (data) {
+        setItems((c) => [...c, { ...data, done_by: [] } as ChecklistItem]);
+        announce?.(t("eventChecklistAdd", { name: firstName(meId), title: title.trim() }));
+      }
       setTitle("");
     }
     // Toggle a member's done state on an item (small trusted group — anyone can
@@ -125,8 +131,10 @@ export default function TripWorkspace({
       const next = it.done_by.includes(userId)
         ? it.done_by.filter((u) => u !== userId)
         : [...it.done_by, userId];
+      const nowDone = !it.done_by.includes(userId);
       setItems((c) => c.map((x) => (x.id === it.id ? { ...x, done_by: next } : x)));
       await supabase.from("trip_checklist").update({ done_by: next }).eq("id", it.id);
+      if (nowDone) announce?.(t("eventChecklistDone", { name: firstName(userId), title: it.title }));
     }
     async function remove(id: string) {
       setItems((c) => c.filter((x) => x.id !== id));
@@ -220,6 +228,7 @@ export default function TripWorkspace({
         .single();
       if (data) {
         setItems((c) => [...c, data as AgendaItem].sort((a, b) => (a.day ?? "9999").localeCompare(b.day ?? "9999")));
+        announce?.(t("eventAgendaAdd", { name: firstName(meId), title: title.trim() }));
       }
       setTitle("");
     }
@@ -233,7 +242,10 @@ export default function TripWorkspace({
         return { [keyCol]: tripId, day: m ? m[1] : null, title: (m ? m[2] : line).slice(0, 200), created_by: meId };
       });
       const { data } = await supabase.from("trip_agenda").insert(rows).select("id, day, title, note");
-      if (data) setItems((c) => [...c, ...(data as AgendaItem[])].sort((a, b) => (a.day ?? "9999").localeCompare(b.day ?? "9999")));
+      if (data) {
+        setItems((c) => [...c, ...(data as AgendaItem[])].sort((a, b) => (a.day ?? "9999").localeCompare(b.day ?? "9999")));
+        announce?.(t("eventAgendaImport", { name: firstName(meId), count: data.length }));
+      }
       setBulk("");
       setShowBulk(false);
     }
@@ -313,6 +325,7 @@ export default function TripWorkspace({
       const amt = Number(amount);
       if (!title.trim() || !(amt > 0)) return;
       await supabase.from("trip_expenses").insert({ [keyCol]: tripId, payer_id: meId, title: title.trim(), amount: amt, currency: "USD", split_with: [] });
+      announce?.(t("eventCostAdd", { name: firstName(meId), title: title.trim(), amount: `USD ${amt.toFixed(2)}` }));
       setTitle("");
       setAmount("");
       load();

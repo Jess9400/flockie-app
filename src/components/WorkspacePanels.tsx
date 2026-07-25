@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CheckSquare, CalendarDays, Wallet, Ticket } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { createClient } from "@/lib/supabase/client";
 import TripWorkspace from "@/components/TripWorkspace";
 import ClubGatherings from "@/components/ClubGatherings";
 
@@ -14,6 +15,7 @@ type Tab = "checklist" | "agenda" | "costs" | "deals";
 // get the full set; clubs get calendar + to-dos + activity deals (no costs).
 export default function WorkspacePanels({
   tripId,
+  chatId,
   city,
   checkIn,
   checkOut,
@@ -22,6 +24,7 @@ export default function WorkspacePanels({
   spaceKind = "trip",
 }: {
   tripId: string;
+  chatId?: string; // the chat to post workspace events into (defaults to tripId)
   city: string;
   checkIn: string | null;
   checkOut: string | null;
@@ -30,8 +33,19 @@ export default function WorkspacePanels({
   spaceKind?: "trip" | "club";
 }) {
   const t = useTranslations("trips.workspace");
+  const supabase = createClient();
   const isClub = spaceKind === "club";
   const [open, setOpen] = useState<Tab | null>(null);
+  const meName = (members.find((m) => m.id === meId)?.name ?? "").split(" ")[0] || "Someone";
+
+  // Post a system line into the chat when the workspace changes.
+  async function announce(text: string) {
+    await supabase.rpc("post_workspace_event", {
+      p_kind: isClub ? "club" : "buddy",
+      p_id: chatId ?? tripId,
+      p_text: text,
+    });
+  }
 
   // Soft, colour-coded chips — small and round when idle, gently tinted with a
   // ring and label when active. Cute, not bulky.
@@ -84,7 +98,7 @@ export default function WorkspacePanels({
         <div className="max-h-[46vh] overflow-y-auto border-t border-ink/10 bg-cream px-3 py-3">
           {isClub && open === "agenda" ? (
             // The club Calendar = its scheduled gatherings, not a free-form agenda.
-            <ClubGatherings clubId={tripId} meId={meId} />
+            <ClubGatherings clubId={tripId} meId={meId} meName={meName} announce={announce} />
           ) : (
             <TripWorkspace
               tripId={tripId}
@@ -96,6 +110,7 @@ export default function WorkspacePanels({
               spaceKind={spaceKind}
               only={open}
               dealsScope={isClub ? "activities" : "all"}
+              announce={announce}
               embedded
             />
           )}

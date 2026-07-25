@@ -18,7 +18,14 @@
     "bookSpot": "🎟️ Reserve seu lugar →",
     "pin": "Fixar",
     "unpin": "Remover",
-    "pinnedLabel": "Fixado"
+    "pinnedLabel": "Fixado",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "editTitle": "Editar mensagem",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "deleteConfirm": "Excluir esta mensagem?",
+    "edited": "editado"
   },
   "list": {
     "title": "Chats",
