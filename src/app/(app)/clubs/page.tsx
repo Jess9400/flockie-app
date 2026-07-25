@@ -43,6 +43,7 @@ export default async function ClubsPage({ searchParams }: { searchParams: { city
       <div className="flex items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-black text-ink">{t("title")}</h1>
+          <p className="mt-0.5 text-xs font-extrabold uppercase tracking-[0.14em] text-flockie-coral">{t("eyebrow")}</p>
           <p className="mt-2 max-w-xl text-sm font-medium leading-relaxed text-muted">{t("intro")}</p>
         </div>
         <Link
