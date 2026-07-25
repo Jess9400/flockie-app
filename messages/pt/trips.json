@@ -138,7 +138,8 @@
     "countriesVisited": "{count} países"
   },
   "detail": {
-    "whosGoing": "Quem vai"
+    "whosGoing": "Quem vai",
+    "itinerary": "Roteiro"
   },
   "workspace": {
     "heading": "Plano da viagem",
@@ -168,6 +169,11 @@
     "dealFlights": "Voos",
     "dealCars": "Aluguel de carro",
     "book": "Reservar",
-    "affiliate": "Alguns links são de afiliados — reservar ajuda a Flockie."
+    "affiliate": "Alguns links são de afiliados — reservar ajuda a Flockie.",
+    "checklistHint": "Passos compartilhados — cada um marca o seu (toque num nome para marcar feito).",
+    "pasteShow": "📋 Colar / importar um roteiro",
+    "pasteHide": "Ocultar",
+    "pastePlaceholder": "Um item por linha. Comece com uma data (2026-08-10 Chegada) para definir o dia.",
+    "pasteImport": "Importar"
   }
 }

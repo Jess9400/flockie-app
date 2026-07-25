@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import FlockRequestButton from "@/components/FlockRequestButton";
 import TripWorkspace from "@/components/TripWorkspace";
+import TripAgendaPreview from "@/components/TripAgendaPreview";
 import ArchetypeBadge from "@/components/ArchetypeBadge";
 import { loadFlockMatch } from "@/lib/vibe-stats";
 import { tripDays } from "@/lib/trips";
@@ -289,6 +290,8 @@ export default async function FlockDetailPage({
           />
         )}
       </div>
+
+      <TripAgendaPreview tripId={trip.id} />
 
       {isMember && roster.length > 0 && (
         <div className="mt-6">

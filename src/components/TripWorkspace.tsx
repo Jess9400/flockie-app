@@ -6,7 +6,7 @@ import { CheckSquare, CalendarDays, Wallet, Ticket, Plus, X, Hotel, Plane, Car }
 import { createClient } from "@/lib/supabase/client";
 
 type Member = { id: string; name: string; photo: string | null };
-type ChecklistItem = { id: string; title: string; assignee: string | null; done: boolean };
+type ChecklistItem = { id: string; title: string; assignee: string | null; done: boolean; done_by: string[] };
 type AgendaItem = { id: string; day: string | null; title: string; note: string | null };
 type Expense = { id: string; payer_id: string; title: string; amount: number; currency: string; split_with: string[] };
 type Balance = { user_id: string; display_name: string | null; photo: string | null; net: number };
@@ -69,21 +69,20 @@ export default function TripWorkspace({
     </section>
   );
 
-  // ── Checklist ──────────────────────────────────────────────────────────────
-  function Checklist({ tripId, members, meId, nameOf }: { tripId: string; members: Member[]; meId: string; nameOf: (id: string | null) => string }) {
+  // ── Checklist (per-member completion) ───────────────────────────────────────
+  function Checklist({ tripId, members, meId }: { tripId: string; members: Member[]; meId: string; nameOf: (id: string | null) => string }) {
     const [items, setItems] = useState<ChecklistItem[]>([]);
     const [title, setTitle] = useState("");
-    const [assignee, setAssignee] = useState("");
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
       supabase
         .from("trip_checklist")
-        .select("id, title, assignee, done")
+        .select("id, title, assignee, done, done_by")
         .eq("trip_id", tripId)
         .order("created_at")
         .then(({ data }) => {
-          setItems((data ?? []) as ChecklistItem[]);
+          setItems((data ?? []).map((d) => ({ ...d, done_by: d.done_by ?? [] })) as ChecklistItem[]);
           setLoading(false);
         });
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -93,16 +92,20 @@ export default function TripWorkspace({
       if (!title.trim()) return;
       const { data } = await supabase
         .from("trip_checklist")
-        .insert({ trip_id: tripId, title: title.trim(), assignee: assignee || null, created_by: meId })
-        .select("id, title, assignee, done")
+        .insert({ trip_id: tripId, title: title.trim(), created_by: meId })
+        .select("id, title, assignee, done, done_by")
         .single();
-      if (data) setItems((c) => [...c, data as ChecklistItem]);
+      if (data) setItems((c) => [...c, { ...data, done_by: [] } as ChecklistItem]);
       setTitle("");
-      setAssignee("");
     }
-    async function toggle(it: ChecklistItem) {
-      setItems((c) => c.map((x) => (x.id === it.id ? { ...x, done: !x.done } : x)));
-      await supabase.from("trip_checklist").update({ done: !it.done }).eq("id", it.id);
+    // Toggle a member's done state on an item (small trusted group — anyone can
+    // update, e.g. the organizer marking for someone).
+    async function toggleMember(it: ChecklistItem, userId: string) {
+      const next = it.done_by.includes(userId)
+        ? it.done_by.filter((u) => u !== userId)
+        : [...it.done_by, userId];
+      setItems((c) => c.map((x) => (x.id === it.id ? { ...x, done_by: next } : x)));
+      await supabase.from("trip_checklist").update({ done_by: next }).eq("id", it.id);
     }
     async function remove(id: string) {
       setItems((c) => c.filter((x) => x.id !== id));
@@ -119,32 +122,44 @@ export default function TripWorkspace({
             placeholder={t("checklistPlaceholder")}
             className="h-10 min-w-0 flex-1 rounded-xl border border-ink/25 px-3 text-sm font-medium outline-none focus:border-flockie-blue"
           />
-          <select
-            value={assignee}
-            onChange={(e) => setAssignee(e.target.value)}
-            className="h-10 shrink-0 rounded-xl border border-ink/25 bg-white px-2 text-xs font-bold outline-none"
-          >
-            <option value="">{t("anyone")}</option>
-            {members.map((m) => (
-              <option key={m.id} value={m.id}>{m.name}</option>
-            ))}
-          </select>
           <button type="button" onClick={add} className="shrink-0 rounded-xl bg-flockie-coral px-3 text-white"><Plus size={16} /></button>
         </div>
+        <p className="mt-1 text-[10px] font-medium text-muted">{t("checklistHint")}</p>
         {loading ? null : items.length === 0 ? (
           <p className="mt-4 text-center text-xs font-medium text-muted">{t("checklistEmpty")}</p>
         ) : (
-          <ul className="mt-3 space-y-1.5">
-            {items.map((it) => (
-              <li key={it.id} className="flex items-center gap-2.5 rounded-xl border border-ink/10 px-3 py-2">
-                <button type="button" onClick={() => toggle(it)} className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 ${it.done ? "border-onboarding-green bg-onboarding-green text-white" : "border-ink/25"}`}>
-                  {it.done && "✓"}
-                </button>
-                <span className={`min-w-0 flex-1 text-sm font-semibold ${it.done ? "text-muted line-through" : "text-ink"}`}>{it.title}</span>
-                {it.assignee && <span className="shrink-0 rounded-full bg-cream px-2 py-0.5 text-[10px] font-bold text-ink/60">{nameOf(it.assignee)}</span>}
-                <button type="button" onClick={() => remove(it.id)} className="shrink-0 text-ink/30 hover:text-ink"><X size={14} /></button>
-              </li>
-            ))}
+          <ul className="mt-3 space-y-2">
+            {items.map((it) => {
+              const doneCount = members.filter((m) => it.done_by.includes(m.id)).length;
+              const allDone = doneCount === members.length && members.length > 0;
+              return (
+                <li key={it.id} className="rounded-xl border border-ink/10 px-3 py-2.5">
+                  <div className="flex items-center gap-2">
+                    <span className={`min-w-0 flex-1 text-sm font-bold ${allDone ? "text-onboarding-green" : "text-ink"}`}>{it.title}</span>
+                    <span className="shrink-0 text-[11px] font-bold text-muted">{doneCount}/{members.length}</span>
+                    <button type="button" onClick={() => remove(it.id)} className="shrink-0 text-ink/30 hover:text-ink"><X size={14} /></button>
+                  </div>
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
+                    {members.map((m) => {
+                      const done = it.done_by.includes(m.id);
+                      return (
+                        <button
+                          key={m.id}
+                          type="button"
+                          onClick={() => toggleMember(it, m.id)}
+                          className={`flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-bold transition-colors ${
+                            done ? "border-onboarding-green bg-onboarding-green/10 text-onboarding-green" : "border-ink/15 bg-white text-ink/45"
+                          }`}
+                        >
+                          <span>{done ? "✓" : "○"}</span>
+                          {m.name.split(" ")[0]}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>
@@ -172,6 +187,9 @@ export default function TripWorkspace({
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const [bulk, setBulk] = useState("");
+    const [showBulk, setShowBulk] = useState(false);
+
     async function add() {
       if (!title.trim()) return;
       const { data } = await supabase
@@ -183,6 +201,20 @@ export default function TripWorkspace({
         setItems((c) => [...c, data as AgendaItem].sort((a, b) => (a.day ?? "9999").localeCompare(b.day ?? "9999")));
       }
       setTitle("");
+    }
+    // Paste a whole itinerary — one line per item; a leading date (2026-08-10 …)
+    // is picked up as the day.
+    async function importBulk() {
+      const lines = bulk.split("\n").map((l) => l.trim()).filter(Boolean).slice(0, 60);
+      if (!lines.length) return;
+      const rows = lines.map((line) => {
+        const m = line.match(/^(\d{4}-\d{2}-\d{2})\s*[-:.]?\s*(.+)$/);
+        return { trip_id: tripId, day: m ? m[1] : null, title: (m ? m[2] : line).slice(0, 200), created_by: meId };
+      });
+      const { data } = await supabase.from("trip_agenda").insert(rows).select("id, day, title, note");
+      if (data) setItems((c) => [...c, ...(data as AgendaItem[])].sort((a, b) => (a.day ?? "9999").localeCompare(b.day ?? "9999")));
+      setBulk("");
+      setShowBulk(false);
     }
     async function remove(id: string) {
       setItems((c) => c.filter((x) => x.id !== id));
@@ -202,6 +234,21 @@ export default function TripWorkspace({
           />
           <button type="button" onClick={add} className="shrink-0 rounded-xl bg-flockie-coral px-3 text-white"><Plus size={16} /></button>
         </div>
+        <button type="button" onClick={() => setShowBulk((v) => !v)} className="mt-1.5 text-[11px] font-bold text-flockie-blue">
+          {showBulk ? t("pasteHide") : t("pasteShow")}
+        </button>
+        {showBulk && (
+          <div className="mt-1.5">
+            <textarea
+              value={bulk}
+              onChange={(e) => setBulk(e.target.value)}
+              rows={4}
+              placeholder={t("pastePlaceholder")}
+              className="w-full resize-none rounded-xl border border-ink/25 px-3 py-2 text-xs font-medium outline-none focus:border-flockie-blue"
+            />
+            <button type="button" onClick={importBulk} className="mt-1 rounded-full bg-flockie-blue px-4 py-1.5 text-xs font-bold text-white">{t("pasteImport")}</button>
+          </div>
+        )}
         {loading ? null : items.length === 0 ? (
           <p className="mt-4 text-center text-xs font-medium text-muted">{t("agendaEmpty")}</p>
         ) : (

@@ -138,7 +138,8 @@
     "countriesVisited": "{count} countries"
   },
   "detail": {
-    "whosGoing": "Who's going"
+    "whosGoing": "Who's going",
+    "itinerary": "Itinerary"
   },
   "workspace": {
     "heading": "Trip plan",
@@ -168,6 +169,11 @@
     "dealFlights": "Flights",
     "dealCars": "Car rental",
     "book": "Book",
-    "affiliate": "Some links are affiliate links — booking helps support Flockie."
+    "affiliate": "Some links are affiliate links — booking helps support Flockie.",
+    "checklistHint": "Shared steps — each person ticks their own (tap a name to mark done).",
+    "pasteShow": "📋 Paste / import an itinerary",
+    "pasteHide": "Hide paste box",
+    "pastePlaceholder": "One item per line. Start a line with a date (2026-08-10 Arrive & check in) to set the day.",
+    "pasteImport": "Import"
   }
 }

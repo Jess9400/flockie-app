@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import TripJoinButton from "@/components/TripJoinButton";
 import TripWorkspace from "@/components/TripWorkspace";
+import TripAgendaPreview from "@/components/TripAgendaPreview";
 
 type Detail = {
   id: string;
@@ -125,6 +126,9 @@ export default async function TripDetailPage({ params }: { params: { id: string 
         </span>
         <span className="shrink-0 text-sm font-bold text-flockie-blue">{t("detail.view")}</span>
       </Link>
+
+      {/* Itinerary preview — visible to browsers too */}
+      <TripAgendaPreview tripId={d.id} />
 
       {/* Action / status */}
       <div className="mt-4">

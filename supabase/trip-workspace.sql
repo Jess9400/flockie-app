@@ -72,9 +72,11 @@ create table if not exists public.trip_checklist (
   title text not null check (char_length(title) between 1 and 200),
   assignee uuid references public.profiles(id) on delete set null,
   done boolean not null default false,
+  done_by uuid[] not null default '{}',
   created_by uuid not null references public.profiles(id) on delete cascade,
   created_at timestamptz default now()
 );
+alter table public.trip_checklist add column if not exists done_by uuid[] not null default '{}';
 create index if not exists trip_checklist_trip_idx on public.trip_checklist (trip_id, created_at);
 
 -- Agenda (day-by-day schedule) -------------------------------------------------
@@ -158,3 +160,19 @@ language sql security definer set search_path = public stable as $$
   order by (coalesce(paid.paid,0) - coalesce(owed.owed,0)) desc;
 $$;
 grant execute on function public.trip_balances(uuid) to authenticated;
+
+-- ── Public agenda preview: the itinerary shows on the trip/flock page so
+-- browsers see what the trip is about. Read-only; writing stays member-gated.
+create or replace function public.trip_agenda_preview(p_trip uuid)
+returns table (id uuid, day date, title text, note text)
+language sql security definer set search_path = public stable as $$
+  select a.id, a.day, a.title, a.note
+  from public.trip_agenda a
+  join public.trips t on t.id = a.trip_id
+  where a.trip_id = p_trip
+    and t.status = 'active'
+    -- visible for public flocks to anyone; private trips to members only
+    and (t.visibility = 'public' or public.is_trip_member(p_trip))
+  order by a.day asc nulls last, a.created_at;
+$$;
+grant execute on function public.trip_agenda_preview(uuid) to authenticated;
