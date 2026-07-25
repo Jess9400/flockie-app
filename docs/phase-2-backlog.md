@@ -67,3 +67,25 @@ do yet — build these before the feed scales past trusted beta users:
 - **Legal** — Terms already cover UGC (What you can/can't post). When a formal
   DSA/DMCA-style notice channel is needed, add a report-abuse email address to
   the Terms.
+
+## Trip Workspace — the trip/flock chat becomes the planning HQ (founder idea, 2026-07-25)
+When trips unpark, the trip/flock chat grows from a message stream into the
+group's workspace. Everything shared among everyone going:
+
+- **Agenda / calendar** — day-by-day trip schedule, anyone can add items; the
+  chat pins "today's plan."
+- **Shared checklist** — packing/booking todos, assignable per member
+  ("Marco: book the van"), check-off visible to all.
+- **Costs ledger (Splitwise-style)** — who paid what, who owes whom. LEDGER
+  ONLY, link out to settle (no payments/wallet — regulated territory; matches
+  the communities-plan §5 note).
+- **Deals widgets in context** — the Deals affiliate blocks (stays for these
+  dates/city, activities, flights, car) embedded in the trip workspace. This
+  is affiliate revenue exactly where booking intent lives — likely the
+  strongest monetization surface of the trips product.
+- Data model sketch: trip_agenda_items, trip_checklist_items (assignee),
+  trip_expenses (payer, amount, split_with[]), all keyed on trip_id with
+  member-only RLS (trip_join_requests accepted + host).
+
+Effort: multiple sessions. Build AFTER trips unpark; the board (shipped
+2026-07-25) is the funnel that would justify it.

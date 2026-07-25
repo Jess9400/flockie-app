@@ -13,6 +13,7 @@ export type ActivityFeedRow = {
   end_date: string | null;
   city: string | null;
   cover_photo?: string | null;
+  description?: string | null;
   creator_id: string;
   display_name: string | null;
   age: number | null;
@@ -78,8 +79,10 @@ export default async function ActivityBoardList({
               <h2 className="mt-1 text-base font-extrabold leading-snug text-ink">
                 {r.title || t("untitled")}
               </h2>
-              {r.one_liner && (
-                <p className="mt-1 line-clamp-2 text-xs font-medium text-muted">{r.one_liner}</p>
+              {(r.description || r.one_liner) && (
+                <p className="mt-1 line-clamp-3 text-xs font-medium text-muted">
+                  {r.description || r.one_liner}
+                </p>
               )}
             </div>
           </div>

@@ -233,6 +233,7 @@ export default async function HomePage({
     end_date: string | null;
     city: string | null;
     cover_photo?: string | null;
+    description?: string | null;
     my_request_status?: string | null;
     creator_id: string;
     display_name: string | null;

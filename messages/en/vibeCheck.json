@@ -310,6 +310,7 @@
       "hardPrefsTitle": "Hard preferences",
       "hardPrefsHint": "Tick what applies. These are used as hard filters.",
       "oneLinerTitle": "One-liner"
-    }
+    },
+    "form": {}
   }
 }

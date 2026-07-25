@@ -310,6 +310,7 @@
       "hardPrefsTitle": "Preferencias innegociables",
       "hardPrefsHint": "Marca lo que aplique. Se usan como filtros estrictos.",
       "oneLinerTitle": "Una frase"
-    }
+    },
+    "form": {}
   }
 }

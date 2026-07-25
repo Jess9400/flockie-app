@@ -166,21 +166,25 @@ export default function TripForm({
         </label>
       )}
 
-      {!isActivity && (
-        <label className="block">
-          <span className="mb-1 block text-sm font-bold">
-            {isFlock ? tf("form.aboutFlock") : tf("form.aboutTrip")}{" "}
-            <span className="font-medium text-muted">{tf("form.optional")}</span>
-          </span>
-          <textarea
-            className={`${inputCls} h-24 resize-none`}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            maxLength={600}
-            placeholder={isFlock ? tf("form.descFlockPlaceholder") : tf("form.descTripPlaceholder")}
-          />
-        </label>
-      )}
+      <label className="block">
+        <span className="mb-1 block text-sm font-bold">
+          {isActivity ? tf("form.aboutActivity") : isFlock ? tf("form.aboutFlock") : tf("form.aboutTrip")}{" "}
+          <span className="font-medium text-muted">{tf("form.optional")}</span>
+        </span>
+        <textarea
+          className={`${inputCls} h-24 resize-none`}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          maxLength={600}
+          placeholder={
+            isActivity
+              ? tf("form.descActivityPlaceholder")
+              : isFlock
+                ? tf("form.descFlockPlaceholder")
+                : tf("form.descTripPlaceholder")
+          }
+        />
+      </label>
 
       {isActivity ? (
         <label className="block">

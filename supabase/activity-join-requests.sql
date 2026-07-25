@@ -41,7 +41,7 @@ drop function if exists public.activity_feed(int);
 create or replace function public.activity_feed(p_limit int default 30)
 returns table (
   activity_id uuid, title text, start_date date, end_date date, city text,
-  cover_photo text,
+  cover_photo text, description text,
   creator_id uuid, display_name text, age int, photo text, one_liner text,
   score float8,
   my_request_status text
@@ -50,7 +50,7 @@ language sql security definer set search_path = public stable as $$
   with me as (select * from public.profiles where id = auth.uid())
   select
     t.id, t.title, t.start_date, t.end_date, t.destination,
-    t.cover_photo,
+    t.cover_photo, t.description,
     p.id, p.display_name, p.age, p.photos[1], p.activity_one_liner,
     public.buddy_pair_score(auth.uid(), p.id)::float8,
     (select r.status from public.activity_join_requests r

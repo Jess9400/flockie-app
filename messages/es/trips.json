@@ -91,7 +91,9 @@
     "errActivityVibe": "Elige al menos una Vibe de actividad.",
     "errTripType": "Elige al menos un tipo de viaje.",
     "errContinent": "Elige el continente en el que está tu Flock.",
-    "errLanguage": "Elige el idioma principal del grupo."
+    "errLanguage": "Elige el idioma principal del grupo.",
+    "aboutActivity": "Cuenta tu historia",
+    "descActivityPlaceholder": "Me encanta la salsa y bailo cada semana — busco pareja de mi nivel para ir a sociales. ¡Principiantes bienvenidos si hay compromiso!"
   },
   "hub": {
     "findTripBuddy": "Encuentra un Trip Buddy",
