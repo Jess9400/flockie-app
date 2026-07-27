@@ -63,11 +63,12 @@ begin
   end loop;
 end $$;
 
--- A user declines -> mark declined + immediately backfill
+-- A user declines, mark declined and immediately backfill.
 create or replace function public.decline_vibe(p_vibe uuid)
 returns void language plpgsql security definer set search_path = public as $$
 begin
-  update public.vibe_interests set status = 'declined'
+  update public.vibe_interests
+    set status = 'declined', declined_at = now()
     where vibe_id = p_vibe and user_id = auth.uid();
   perform public.backfill_vibe(p_vibe);
 end $$;

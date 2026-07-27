@@ -14,7 +14,7 @@ const email = (
 
 export default function PrivacyPage() {
   return (
-    <LegalShell title="Privacy Policy" updated="29 June 2026">
+    <LegalShell title="Privacy Policy" updated="27 July 2026">
       <div className="rounded-2xl border-2 border-flockie-orange/30 bg-flockie-orange/10 p-4 text-sm">
         <p>
           Flockie is in beta. This means the platform is still being built and tested with a small
@@ -52,6 +52,10 @@ export default function PrivacyPage() {
         <p className="font-bold text-ink">Information collected automatically:</p>
         <ul className="list-disc space-y-1 pl-5">
           <li>App usage data, device type, browser, IP address</li>
+          <li>
+            Vibe discovery activity, including cards shown to you, Vibe pages you open, how long a
+            Vibe page stays visible, and actions such as Interested or Not for me
+          </li>
           <li>
             Your location, including precise coordinates from your device when you grant
             permission, used to surface nearby people and Vibes. Other members never see your exact
@@ -102,6 +106,7 @@ export default function PrivacyPage() {
           immediately and permanently; any copies in routine system backups are rotated out shortly
           afterward and cannot be restored.
         </p>
+        <p>Passive Vibe discovery event summaries are deleted after 180 days.</p>
       </Section>
 
       <Section heading="Your rights">

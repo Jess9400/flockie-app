@@ -30,6 +30,9 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | `vibe_display_match`, `vibe_display_match_scores` (card-only calibrated display score) | `vibe-display-match.sql` |
 | `vibe_review_fit` | `vibe-review-preferences.sql` |
 | `vibe_negative_fit`, `mark_/undo_vibe_not_for_me` | `vibe-not-for-me.sql` |
+| Passive Vibe behavior shadow events, retention, write RPC | `vibe-behavior-shadow.sql` |
+| Admin-only passive-signal coverage and pair diagnostics | `vibe-behavior-diagnostics.sql` |
+| Explicit preference-signal ledger, ordinary Vibe attendance, and admin-only summaries | `explicit-preference-signals.sql` |
 | `express_interest` (records self-expressed interest separately from algorithm-created rows) | `vibe-express-interest-autoconfirm.sql` |
 | `confirm_vibe` | `ranking.sql` |
 | `expire_invitations`, `decline_vibe` | `expiry.sql` |

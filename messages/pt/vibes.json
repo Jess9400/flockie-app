@@ -386,5 +386,18 @@
     "convertTitle": "Essa deu certo - virar um club?",
     "convertBody": "As mesmas pessoas, um ritmo regular. Transforme essa vibe em um club recorrente.",
     "convertCta": "Virar club"
+  },
+  "attendance": {
+    "title": "Registrar quem foi",
+    "body": "Confirme quem realmente participou. Isso ajuda a Flockie a aprender com planos reais.",
+    "recorded": "Presença registrada",
+    "record": "Registrar {count} participante",
+    "recordPlural": "Registrar {count} participantes",
+    "recording": "Registrando...",
+    "confirmTitle": "Registrar presença?",
+    "confirmBody": "Marque apenas quem realmente foi. Este registro não pode ser removido aqui.",
+    "confirm": "Registrar presença",
+    "cancel": "Cancelar",
+    "error": "Não foi possível registrar a presença. Tente novamente."
   }
 }

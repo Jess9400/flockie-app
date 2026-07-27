@@ -10,10 +10,12 @@ import HostVibeShortlist from "@/components/HostVibeShortlist";
 import HostVibePrivateRequests from "@/components/HostVibePrivateRequests";
 import HostVibeMembers from "@/components/HostVibeMembers";
 import ClubAttendancePanel from "@/components/ClubAttendancePanel";
+import VibeAttendancePanel from "@/components/VibeAttendancePanel";
 import VibeSettingsButton from "@/components/VibeSettingsButton";
 import LeaveVibeButton from "@/components/LeaveVibeButton";
 import ShareVibeButton from "@/components/ShareVibeButton";
 import VibeReviewSummary from "@/components/VibeReviewSummary";
+import VibeDetailBehavior from "@/components/VibeBehaviorTracker";
 import Stars from "@/components/Stars";
 import {
   formatVibeWhen,
@@ -288,6 +290,7 @@ export default async function VibeDetailPage({
   const ended = new Date(vibe.ends_at ?? vibe.starts_at) <= new Date();
   const clubId: string | null = hostMeta?.club_id ?? null;
   let recordedClubAttendanceIds: string[] = [];
+  let recordedVibeAttendanceIds: string[] = [];
   if (isHost && ended && clubId) {
     const { data: attendanceRows } = await supabase
       .from("club_attendance")
@@ -295,6 +298,13 @@ export default async function VibeDetailPage({
       .eq("club_id", clubId)
       .eq("vibe_id", vibe.id);
     recordedClubAttendanceIds = (attendanceRows ?? []).map((row) => row.user_id);
+  }
+  if (isHost && ended && !clubId) {
+    const { data: attendanceRows } = await supabase
+      .from("vibe_attendance")
+      .select("user_id")
+      .eq("vibe_id", vibe.id);
+    recordedVibeAttendanceIds = (attendanceRows ?? []).map((row) => row.user_id);
   }
   const canReview = ended && myInterest?.status === "confirmed";
   const directConfirm =
@@ -320,6 +330,7 @@ export default async function VibeDetailPage({
 
   return (
     <main className="mx-auto w-full max-w-5xl px-5 pb-10 pt-6">
+      {!isHost && <VibeDetailBehavior vibeId={vibe.id} />}
       <Link
         href="/vibes"
         className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted"
@@ -671,6 +682,14 @@ export default async function VibeDetailPage({
           eventStarted={eventStarted}
           normalRemovalLimit={normalRemovalLimit}
           normalRemovalUsed={normalRemovalCount}
+        />
+      )}
+
+      {isHost && ended && !clubId && (
+        <VibeAttendancePanel
+          vibeId={vibe.id}
+          attendees={allAttendees}
+          recordedIds={recordedVibeAttendanceIds}
         />
       )}
 
