@@ -1,5 +1,13 @@
 # Session changelog - home redesign + bug fixes
 
+## Pending matching V2 stack
+
+- **PR #265** removes em dashes from repository copy.
+- **PR #267** recalibrates buddy matching with onboarding and explicit behavior.
+- **Next stacked PR** collects private passive Vibe behavior in shadow mode.
+  It does not change ranking or displayed percentages. After merge, run
+  `supabase/vibe-behavior-shadow.sql`.
+
 Worked on the home page (intent-first redesign), the "Say hi → activity" flow,
 several bug fixes, and a matching-cron correctness fix. All PRs below are merged
 to `main` and deployed to production unless noted.

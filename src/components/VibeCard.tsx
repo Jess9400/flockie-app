@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import { formatVibeWhen, type InterestStatus } from "@/lib/vibes";
 import { formatApproximateVibeLocation } from "@/lib/vibe-location";
 import type { VibeDisplayMatch } from "@/lib/vibe-stats";
+import { useVibeCardImpression } from "@/components/VibeBehaviorTracker";
 
 export type VibeCardData = {
   id: string;
@@ -70,6 +71,11 @@ export default function VibeCard({
     formatApproximateVibeLocation(vibe) || t("card.locationTbd");
   const catLabel = (c: string) => (t.has(`categories.${c}`) ? t(`categories.${c}`) : c);
   const isBrowse = variant === "browse";
+  const impressionRef = useVibeCardImpression(
+    vibe.id,
+    isBrowse ? "browse" : "home",
+    !faded && !myStatus
+  );
 
   useEffect(() => {
     if (!hidden) return;
@@ -118,6 +124,7 @@ export default function VibeCard({
 
   return (
     <div
+      ref={impressionRef}
       className={
         isBrowse
           ? `relative rounded-3xl border border-ink/10 bg-white p-2 shadow-[0_2px_12px_rgba(10,37,69,0.07)] sm:p-2.5 ${

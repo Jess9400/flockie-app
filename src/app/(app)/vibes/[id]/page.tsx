@@ -14,6 +14,7 @@ import VibeSettingsButton from "@/components/VibeSettingsButton";
 import LeaveVibeButton from "@/components/LeaveVibeButton";
 import ShareVibeButton from "@/components/ShareVibeButton";
 import VibeReviewSummary from "@/components/VibeReviewSummary";
+import VibeDetailBehavior from "@/components/VibeBehaviorTracker";
 import Stars from "@/components/Stars";
 import {
   formatVibeWhen,
@@ -320,6 +321,7 @@ export default async function VibeDetailPage({
 
   return (
     <main className="mx-auto w-full max-w-5xl px-5 pb-10 pt-6">
+      {!isHost && <VibeDetailBehavior vibeId={vibe.id} />}
       <Link
         href="/vibes"
         className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted"
