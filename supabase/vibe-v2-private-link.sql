@@ -7,7 +7,7 @@
 -- host accepts them manually). A `source` tag keeps the two tracks from colliding.
 
 alter table public.vibe_interests
-  add column if not exists source text not null default 'algo' check (source in ('algo', 'private'));
+  add column if not exists source text not null default 'algo' check (source in ('algo', 'private', 'self'));
 
 -- Algo's currently-available spots: its share (or, after the 12h roll-back,
 -- whatever the host didn't fill privately), minus what the algo already holds.
