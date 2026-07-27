@@ -67,7 +67,7 @@ begin
     where swiper_id = p_target and target_id = auth.uid();
 
     -- A plan-based (Home "Say hi") match has NO shared trip. Only borrow a
-    -- personal trip for context when NEITHER side attached a plan — and never a
+    -- personal trip for context when NEITHER side attached a plan - and never a
     -- public (flock) trip, which would render this 1:1 as a Flock group chat.
     -- This keeps the random "Jul 25 · Party" trip line out of plan matches and
     -- stops the review gate from firing on a borrowed trip.
@@ -125,7 +125,7 @@ begin
       coalesce(v_liker, 'Someone') || ' is in ' || coalesce(v_city, 'your city') ||
         ' looking for someone to do ' ||
         coalesce(nullif(p_activity_title, ''), v_cat, 'something') ||
-        ' — your vibes match. Match back to chat.'
+        ' - your vibes match. Match back to chat.'
         || case when p_note is not null and btrim(p_note) <> ''
              then e'\n"' || left(btrim(p_note), 280) || '"' else '' end,
       jsonb_build_object('like_from', auth.uid())

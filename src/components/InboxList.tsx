@@ -26,7 +26,7 @@ export type Notif = {
   created_at: string;
 };
 
-// One emoji per type, shown in a tinted thumbnail — the type signal, so the
+// One emoji per type, shown in a tinted thumbnail - the type signal, so the
 // cards themselves stay calm and uniform.
 const EMOJI: Record<string, string> = {
   vibe_invitation: "✉️",

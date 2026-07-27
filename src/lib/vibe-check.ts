@@ -1,4 +1,4 @@
-// Vibe check v2 — 6 sliders (compatibility math) + 2 multi-selects (filters)
+// Vibe check v2 - 6 sliders (compatibility math) + 2 multi-selects (filters)
 // + 1 dealbreaker set (safety) + 1 one-liner. The friend-vouch form reuses the
 // same questions about the user. MBTI/astrology/bio/etc. intentionally excluded.
 
@@ -129,7 +129,7 @@ export const DEALBREAKERS = [
 ] as const;
 
 // ─────────────────── Single-tap card questions (screenshot format) ───────────
-// Each is one tap-to-pick screen. `value` is the value stored on the profile —
+// Each is one tap-to-pick screen. `value` is the value stored on the profile -
 // a numeric string for the 1..5 scale dimensions (converted to int on save),
 // or a category token for the trait columns.
 export type Choice = { value: string; label: string; emoji: string };
@@ -179,20 +179,20 @@ export const ACTIVITY_INTENSITY_CHOICES: Choice[] = [
   { value: "3", label: "Balanced", emoji: "⚖️" },
   { value: "5", label: "All in", emoji: "🔥" },
 ];
-// "Walking into a room of strangers, you…" — extroversion, stored in social_style.
+// "Walking into a room of strangers, you…" - extroversion, stored in social_style.
 export const SOCIAL_STYLE_CHOICES: Choice[] = [
   { value: "5", label: "Work the room", emoji: "🗣️" },
   { value: "3", label: "Find one or two people", emoji: "🙂" },
   { value: "1", label: "Hang back, warm up slowly", emoji: "👀" },
 ];
 // New trait columns (wired into matching):
-// "What pulls you out of the house?" — activity_motivation.
+// "What pulls you out of the house?" - activity_motivation.
 export const MOTIVATION_CHOICES: Choice[] = [
   { value: "people", label: "Meeting new people", emoji: "🤝" },
   { value: "activity", label: "The actual thing we're doing", emoji: "🎯" },
   { value: "company", label: "Just not wanting to be alone", emoji: "🌙" },
 ];
-// "Are you more the one who…" — initiator (a starter pairs best with a joiner).
+// "Are you more the one who…" - initiator (a starter pairs best with a joiner).
 export const INITIATOR_CHOICES: Choice[] = [
   { value: "starter", label: "Starts the plan", emoji: "✨" },
   { value: "joiner", label: "Happily joins the plan", emoji: "🙌" },

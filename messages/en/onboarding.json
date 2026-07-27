@@ -13,11 +13,11 @@
     "firstNamePlaceholder": "Your name",
     "fromGoogle": "from Google",
     "birthday": "Birthday",
-    "birthdayHelp": "Keeps your age accurate — only the number shows.",
+    "birthdayHelp": "Keeps your age accurate - only the number shows.",
     "gender": "Gender",
     "city": "Your city right now",
     "cityPlaceholder": "e.g. Lisbon",
-    "cityHelp": "Powers who's nearby — update anytime.",
+    "cityHelp": "Powers who's nearby - update anytime.",
     "genders": {
       "woman": "Woman",
       "man": "Man",
@@ -53,7 +53,7 @@
     "questions": {
       "qmood": {
         "mechanicLabel": "Tap one",
-        "text": "No overthinking — which pulls you in?",
+        "text": "No overthinking - which pulls you in?",
         "options": [
           "Small group, good conversation",
           "Loud, energetic, up till late",
@@ -101,7 +101,7 @@
   "reveal": {
     "confident": "≈{percent}% confident",
     "earlyRead": "· early read, 5 answers",
-    "secondLean": "Could also be leaning {emoji} {name} — a few more signals will tell us for sure.",
+    "secondLean": "Could also be leaning {emoji} {name} - a few more signals will tell us for sure.",
     "sections": {
       "wired": "How you're wired",
       "matching": "What this means for matching",
@@ -128,11 +128,11 @@
     "archetypes": {
       "culture": {
         "description": "You go deep, not wide. You're in the museum before it opens and the local spot after it closes.",
-        "insight": "You don't just visit places — you actually learn them. Pair you with someone who matches that pace, not someone who wants to rush you through."
+        "insight": "You don't just visit places - you actually learn them. Pair you with someone who matches that pace, not someone who wants to rush you through."
       },
       "social": {
         "description": "You came for one thing and stayed for the people. You know everyone's name by day two.",
-        "insight": "A room of strangers doesn't scare you — it's basically an invitation. We'll keep your feed full of people and plans, not just places."
+        "insight": "A room of strangers doesn't scare you - it's basically an invitation. We'll keep your feed full of people and plans, not just places."
       },
       "night": {
         "description": "Things reveal themselves after dark and you know it. Mornings are for recovery.",
@@ -155,12 +155,12 @@
   "completeCard": {
     "completeTitle": "Your vibe's complete 🎉",
     "almostTitle": "You're almost there",
-    "completeBody": "All three pieces are in — your matches are as sharp as they get.",
+    "completeBody": "All three pieces are in - your matches are as sharp as they get.",
     "almostBody": "Each piece makes your matches sharper. Add them now, or they fill in as you travel and join things.",
     "travelTitle": "Travel Vibe",
-    "travelDesc": "Pace, budget, how you travel — sharpens trip matches",
+    "travelDesc": "Pace, budget, how you travel - sharpens trip matches",
     "eventTitle": "Event Vibe",
-    "eventDesc": "What you want from a night out, group size — sharpens local plans",
+    "eventDesc": "What you want from a night out, group size - sharpens local plans",
     "seeReading": "See your full reading →",
     "unlockTitle": "Your full reading unlocks at 100%",
     "unlockBody": "Finish all three to get the complete read on who you are.",
@@ -173,7 +173,7 @@
     "friendFallback": "your friend",
     "takeCheck": "Take the 60-sec vibe check",
     "signupHint": "Sign up with Google, answer a few questions, see your score.",
-    "ownLink": "This is your own link — share it with friends to see your match %.",
+    "ownLink": "This is your own link - share it with friends to see your match %.",
     "takeCheckReveal": "Take the 60-sec vibe check to reveal your score",
     "resultGreat": "You and {name} are a great match 🎉",
     "resultCompatible": "You and {name} are compatible 🎉",

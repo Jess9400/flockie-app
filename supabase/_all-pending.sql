@@ -1,12 +1,12 @@
--- ⚠️⚠️ DO NOT RUN — SUPERSEDED HISTORICAL SNAPSHOT (pre-2026-06-27 hardening). ⚠️⚠️
+-- ⚠️⚠️ DO NOT RUN - SUPERSEDED HISTORICAL SNAPSHOT (pre-2026-06-27 hardening). ⚠️⚠️
 -- This bundle predates ALL the security hardening (profile/vibe/trips/join-request
 -- RLS lockdowns, the public_profiles/vibe_directory views, rate limiting, the
--- matching source-of-truth cleanup). Re-running it would REVERT those fixes —
+-- matching source-of-truth cleanup). Re-running it would REVERT those fixes -
 -- e.g. it still sets `trip_join_requests` SELECT to `using (true)`.
 -- For a fresh database, run the individual current files, not this one.
 -- Kept only as history.
 --
--- Flockie — all pending migrations, ordered. (Historical — do not run.)
+-- Flockie - all pending migrations, ordered. (Historical - do not run.)
 
 
 -- ============================================================
@@ -16,10 +16,10 @@
 -- editor. Safe to re-run.
 --
 -- vibe_match(user, vibe) -> 0-100, how well an open Vibe fits a user's profile:
---   0.40 category fit   — does the Vibe's category match something you do?
---   0.30 vibe-tag fit   — event tags (chill/social/party…) vs your activity vibe
---   0.15 skill fit      — required skill vs your skill in that activity
---   0.15 social fit     — how social the event reads vs your activity-social pref
+--   0.40 category fit   - does the Vibe's category match something you do?
+--   0.30 vibe-tag fit   - event tags (chill/social/party…) vs your activity vibe
+--   0.15 skill fit      - required skill vs your skill in that activity
+--   0.15 social fit     - how social the event reads vs your activity-social pref
 -- Used by both the "X% your vibe" card badge and the "Picked for you" ranking.
 
 create or replace function public.vibe_match(p_user uuid, p_vibe uuid)
@@ -598,10 +598,10 @@ grant execute on function public.leave_vibe(uuid) to authenticated;
 -- ============================================================
 -- Match % between a browsing user and an open group trip (Find a Flock).
 -- Run the whole file in the Supabase SQL editor. Safe to re-run.
---   0.35 activity fit  — trip_type vs your trip-vibe / activity-vibe
---   0.20 budget fit    — trip budget vs your budget
---   0.20 pace fit      — trip pace vs your pace
---   0.25 vibe fit      — slider closeness with the trip host
+--   0.35 activity fit  - trip_type vs your trip-vibe / activity-vibe
+--   0.20 budget fit    - trip budget vs your budget
+--   0.20 pace fit      - trip pace vs your pace
+--   0.25 vibe fit      - slider closeness with the trip host
 
 create or replace function public.flock_match(p_user uuid, p_trip uuid)
 returns int language plpgsql security definer set search_path = public stable as $$
@@ -827,10 +827,10 @@ grant execute on function public.public_vibe(uuid) to anon, authenticated;
 -- editor. Safe to re-run.
 --
 -- Two upgrades the matching algo needs to actually differentiate people:
---   1. WEIGHTS  — each user picks the 2-3 things that matter most to them.
+--   1. WEIGHTS  - each user picks the 2-3 things that matter most to them.
 --      Those dimensions count ~2x in THEIR ranking, so a budget-obsessed
 --      traveler and a budget-agnostic one no longer get the same score.
---   2. FILTERS  — the dealbreakers we already collect (same-gender, sober)
+--   2. FILTERS  - the dealbreakers we already collect (same-gender, sober)
 --      now hard-exclude incompatible candidates instead of being dead data.
 -- Also rescales the personality cosine, which structurally lands ~0.7-0.95 for
 -- everyone, so scores spread across a usable range.
@@ -868,7 +868,7 @@ $$;
 grant execute on function public.buddy_hard_block(uuid, uuid) to authenticated;
 
 -- ── 3. Weighted pair score ───────────────────────────────────────────────────
--- Weights are taken from p_a (the viewer) — "what matters to ME when ranking
+-- Weights are taken from p_a (the viewer) - "what matters to ME when ranking
 -- you." A prioritized dimension counts 2x; everything else counts 1x, then the
 -- block is renormalized so the total still sums to 1.
 create or replace function public.buddy_pair_score(p_a uuid, p_b uuid)
@@ -974,7 +974,7 @@ begin
 
   -- ----- Weighted blend over the components both people have ------------------
   wsum := pers_w + trip_w + act_w;
-  if wsum = 0 then return 50; end if; -- no shared data — neutral
+  if wsum = 0 then return 50; end if; -- no shared data - neutral
   total := coalesce(pers_sim * pers_w, 0) + coalesce(trip_sim * trip_w, 0) + coalesce(act_sim * act_w, 0);
   return round(100 * (total / wsum));
 end $$;
@@ -1283,7 +1283,7 @@ create policy "see incoming swipes" on public.buddy_swipes
 --
 -- The Flock group chat is a buddy_chat hung off a buddy_match whose trip_a/trip_b
 -- points at the flock trip. Flocks *converted from a buddy pair* already have
--- that match+chat, but Flocks *created directly* (Create a Flock) never do — so
+-- that match+chat, but Flocks *created directly* (Create a Flock) never do - so
 -- respond_join_request accepted the member but no chat existed. This:
 --   1) re-creates respond_join_request to SEED the group chat on first approval,
 --   2) backfills a chat for already-accepted flocks that are missing one.
@@ -1347,7 +1347,7 @@ begin
   end if;
 
   perform public.notify(p_user, 'flock_approved', 'You''re in! ' || v_dest,
-    'Your request to join was approved — say hi in the group chat.',
+    'Your request to join was approved - say hi in the group chat.',
     jsonb_build_object('trip_id', p_trip));
 end $$;
 grant execute on function public.respond_join_request(uuid, uuid, boolean) to authenticated;

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 
-// Follow / Following toggle — backed by toggle_follow (notifies once, no spam).
+// Follow / Following toggle - backed by toggle_follow (notifies once, no spam).
 export default function FollowButton({
   userId,
   initialFollowing,

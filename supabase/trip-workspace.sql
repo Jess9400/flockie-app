@@ -15,7 +15,7 @@ returns boolean language sql security definer set search_path = public stable as
 $$;
 grant execute on function public.is_trip_member(uuid) to authenticated;
 
--- Photo gallery column (a few photos beyond the cover) — needed by trip_detail.
+-- Photo gallery column (a few photos beyond the cover) - needed by trip_detail.
 alter table public.trips add column if not exists gallery text[] not null default '{}';
 
 -- ── Detail for a single 1:1 trip (private trips aren't RLS-readable) ─────────
@@ -67,7 +67,7 @@ $$;
 grant execute on function public.trip_members(uuid) to authenticated;
 
 -- ============================================================================
--- WORKSPACE TABLES — one per trip, member-gated. All keyed on trip_id.
+-- WORKSPACE TABLES - one per trip, member-gated. All keyed on trip_id.
 -- ============================================================================
 
 -- Checklist (to-dos, optionally assigned) --------------------------------------
@@ -96,7 +96,7 @@ create table if not exists public.trip_agenda (
 );
 create index if not exists trip_agenda_trip_idx on public.trip_agenda (trip_id, day, created_at);
 
--- Expenses ledger (WHO PAID WHAT — no payments, settle outside the app) --------
+-- Expenses ledger (WHO PAID WHAT - no payments, settle outside the app) --------
 create table if not exists public.trip_expenses (
   id uuid primary key default gen_random_uuid(),
   trip_id uuid not null references public.trips(id) on delete cascade,

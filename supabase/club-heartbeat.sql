@@ -1,4 +1,4 @@
--- Flockie Clubs — lifecycle controls
+-- Flockie Clubs - lifecycle controls
 -- Run this AFTER clubs-foundation.sql and then re-run club-detail-access.sql.
 -- Safe to re-run. Pausing and closing a Club never cancel a scheduled Vibe.
 

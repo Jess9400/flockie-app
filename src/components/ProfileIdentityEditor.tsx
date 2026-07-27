@@ -142,7 +142,7 @@ export default function ProfileIdentityEditor({
           <input ref={photoInput} type="file" accept="image/*" hidden onChange={selectPhoto} />
         </div>
 
-        {/* Photo album — a few more shots beyond the avatar. */}
+        {/* Photo album - a few more shots beyond the avatar. */}
         <div className="mt-5">
           <p className="text-xs font-extrabold uppercase tracking-wide text-muted">{t("albumTitle")}</p>
           <div className="mt-2 flex flex-wrap gap-2">

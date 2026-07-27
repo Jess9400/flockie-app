@@ -1,7 +1,7 @@
 -- 24h invitation expiry + rolling backfill. Run in Supabase SQL Editor.
 
 -- SUPERSEDED: canonical backfill_vibe is in supabase/vibe-v2-private-link.sql
--- (live; uses _vibe_algo_remaining). Wrapped out 2026-06-28 — repo-only, no DB
+-- (live; uses _vibe_algo_remaining). Wrapped out 2026-06-28 - repo-only, no DB
 -- change. (expire_invitations / decline_vibe below stay active.)
 /*
 -- Fill open slots (capacity - confirmed - active invites) from the top of standby
@@ -36,7 +36,7 @@ begin
       where vibe_id = p_vibe and user_id = c.user_id;
     insert into public.notifications (user_id, type, title, body, data)
       values (c.user_id, 'vibe_invitation', 'A spot opened up: ' || v.title,
-              'You''re in — confirm within 24 hours.', jsonb_build_object('vibe_id', p_vibe));
+              'You''re in - confirm within 24 hours.', jsonb_build_object('vibe_id', p_vibe));
     v_added := v_added + 1;
   end loop;
   return v_added;

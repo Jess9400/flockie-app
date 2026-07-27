@@ -178,7 +178,7 @@ export default function TripForm({
     // Flocks land on their own detail page (the browse list excludes your own
     // trips, so /flocks would show a page that doesn't contain what you made).
     // Activities land straight in the create/invite view with THIS activity
-    // selected, so the swipe deck shows immediately — no extra navigation.
+    // selected, so the swipe deck shows immediately - no extra navigation.
     router.push(
       isActivity
         ? `/match?view=create${tripId ? `&trip=${tripId}` : ""}`
@@ -254,7 +254,7 @@ export default function TripForm({
             <span className="mb-1 block text-sm font-bold">{tf("form.labelAddress")}</span>
             <input className={inputCls} value={locationName} onChange={(e) => setLocationName(e.target.value)} placeholder={tf("form.addressPlaceholder")} />
             <p className="mt-1 text-[11px] font-medium text-muted">{tf("form.addressHint")}</p>
-            {/* Live pin — same embedded map the vibes form uses (no API key). */}
+            {/* Live pin - same embedded map the vibes form uses (no API key). */}
             {locationName.trim().length > 2 && (
               <iframe
                 title={tf("form.mapPreviewTitle")}
@@ -407,7 +407,7 @@ export default function TripForm({
         <input ref={coverInput} type="file" accept="image/*" hidden onChange={onCover} />
       </div>
 
-      {/* A few more photos — the place, past meetups, the host. Optional. */}
+      {/* A few more photos - the place, past meetups, the host. Optional. */}
       <div>
         <span className="mb-1 block text-sm font-bold">{tf("form.labelGallery")}</span>
         <p className="mb-2 text-xs font-medium text-muted">{tf("form.galleryHint")}</p>

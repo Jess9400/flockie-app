@@ -1,6 +1,6 @@
 // Maps an in-app notification (the row inserted by notify()) to a Tier-1
 // transactional email, rendered in the RECIPIENT's persisted language
-// (profiles.locale). The in-app notification's title/body stay English —
+// (profiles.locale). The in-app notification's title/body stay English -
 // only the EMAIL output is localized here.
 //
 // i18n conventions (must hold across every locale):
@@ -139,19 +139,19 @@ const EMAIL_TEMPLATES: Record<NotifType, Record<Locale, Template>> = {
     en: {
       subject: "A Vibe was cancelled",
       heading: "A Vibe was cancelled",
-      body: "One of your Vibes was called off. Open it for the details — and find another to jump into.",
+      body: "One of your Vibes was called off. Open it for the details - and find another to jump into.",
       cta: "See details",
     },
     es: {
       subject: "Se canceló una Vibe",
       heading: "Se canceló una Vibe",
-      body: "Se canceló una de tus Vibes. Ábrela para ver los detalles — y encuentra otra a la que sumarte.",
+      body: "Se canceló una de tus Vibes. Ábrela para ver los detalles - y encuentra otra a la que sumarte.",
       cta: "Ver detalles",
     },
     pt: {
       subject: "Uma Vibe foi cancelada",
       heading: "Uma Vibe foi cancelada",
-      body: "Uma das suas Vibes foi cancelada. Abra para ver os detalhes — e encontre outra para participar.",
+      body: "Uma das suas Vibes foi cancelada. Abra para ver os detalhes - e encontre outra para participar.",
       cta: "Ver detalhes",
     },
   },
@@ -179,19 +179,19 @@ const EMAIL_TEMPLATES: Record<NotifType, Record<Locale, Template>> = {
     en: {
       subject: "How was your Vibe?",
       heading: "How was your Vibe?",
-      body: "Leave a quick review of the Vibe you went to — it helps the whole community.",
+      body: "Leave a quick review of the Vibe you went to - it helps the whole community.",
       cta: "Leave a review",
     },
     es: {
       subject: "¿Qué tal tu Vibe?",
       heading: "¿Qué tal tu Vibe?",
-      body: "Deja una reseña rápida de la Vibe a la que fuiste — ayuda a toda la comunidad.",
+      body: "Deja una reseña rápida de la Vibe a la que fuiste - ayuda a toda la comunidad.",
       cta: "Dejar una reseña",
     },
     pt: {
       subject: "Como foi sua Vibe?",
       heading: "Como foi sua Vibe?",
-      body: "Deixe uma avaliação rápida da Vibe que você foi — isso ajuda toda a comunidade.",
+      body: "Deixe uma avaliação rápida da Vibe que você foi - isso ajuda toda a comunidade.",
       cta: "Deixar avaliação",
     },
   },
@@ -239,19 +239,19 @@ const EMAIL_TEMPLATES: Record<NotifType, Record<Locale, Template>> = {
     en: {
       subject: "Your Vibe is tomorrow",
       heading: "Your Vibe is tomorrow",
-      body: "It kicks off soon — open the chat to coordinate with your group.",
+      body: "It kicks off soon - open the chat to coordinate with your group.",
       cta: "Open the chat",
     },
     es: {
       subject: "Tu Vibe es mañana",
       heading: "Tu Vibe es mañana",
-      body: "Empieza pronto — abre el chat para coordinar con tu grupo.",
+      body: "Empieza pronto - abre el chat para coordinar con tu grupo.",
       cta: "Abrir el chat",
     },
     pt: {
       subject: "Sua Vibe é amanhã",
       heading: "Sua Vibe é amanhã",
-      body: "Começa em breve — abra o chat para combinar com o seu grupo.",
+      body: "Começa em breve - abra o chat para combinar com o seu grupo.",
       cta: "Abrir o chat",
     },
   },
@@ -279,19 +279,19 @@ const EMAIL_TEMPLATES: Record<NotifType, Record<Locale, Template>> = {
     en: {
       subject: "You have new messages",
       heading: "You have new messages",
-      body: "There are new messages waiting for you — jump back in and keep the plan moving.",
+      body: "There are new messages waiting for you - jump back in and keep the plan moving.",
       cta: "Open the chat",
     },
     es: {
       subject: "Tienes mensajes nuevos",
       heading: "Tienes mensajes nuevos",
-      body: "Tienes mensajes nuevos esperándote — vuelve y sigue con el plan.",
+      body: "Tienes mensajes nuevos esperándote - vuelve y sigue con el plan.",
       cta: "Abrir el chat",
     },
     pt: {
       subject: "Você tem mensagens novas",
       heading: "Você tem mensagens novas",
-      body: "Tem mensagens novas esperando por você — volte e siga com o plano.",
+      body: "Tem mensagens novas esperando por você - volte e siga com o plano.",
       cta: "Abrir o chat",
     },
   },
@@ -319,19 +319,19 @@ const EMAIL_TEMPLATES: Record<NotifType, Record<Locale, Template>> = {
     en: {
       subject: "A Vibe you might love",
       heading: "A Vibe near you",
-      body: "We found a Vibe in your city that matches your vibe. Take a look — and join if it's your thing.",
+      body: "We found a Vibe in your city that matches your vibe. Take a look - and join if it's your thing.",
       cta: "Check it out",
     },
     es: {
       subject: "Una Vibe que te puede gustar",
       heading: "Una Vibe cerca de ti",
-      body: "Encontramos una Vibe en tu ciudad que encaja contigo. Échale un vistazo — y únete si es lo tuyo.",
+      body: "Encontramos una Vibe en tu ciudad que encaja contigo. Échale un vistazo - y únete si es lo tuyo.",
       cta: "Verla",
     },
     pt: {
       subject: "Uma Vibe que você pode curtir",
       heading: "Uma Vibe perto de você",
-      body: "Encontramos uma Vibe na sua cidade que combina com você. Dê uma olhada — e entre se for a sua vibe.",
+      body: "Encontramos uma Vibe na sua cidade que combina com você. Dê uma olhada - e entre se for a sua vibe.",
       cta: "Ver a Vibe",
     },
   },
@@ -339,19 +339,19 @@ const EMAIL_TEMPLATES: Record<NotifType, Record<Locale, Template>> = {
     en: {
       subject: "You're in the running",
       heading: "You're in the running",
-      body: "You're in the running for a Vibe. We'll confirm your spot soon — keep an eye out.",
+      body: "You're in the running for a Vibe. We'll confirm your spot soon - keep an eye out.",
       cta: "See the Vibe",
     },
     es: {
       subject: "Estás en la lista",
       heading: "Estás en la lista",
-      body: "Estás en la lista para una Vibe. Pronto confirmamos tu lugar — mantente atento.",
+      body: "Estás en la lista para una Vibe. Pronto confirmamos tu lugar - mantente atento.",
       cta: "Ver la Vibe",
     },
     pt: {
       subject: "Você está concorrendo a uma vaga",
       heading: "Você está concorrendo",
-      body: "Você está concorrendo a uma vaga em uma Vibe. Em breve confirmamos a sua vaga — fique de olho.",
+      body: "Você está concorrendo a uma vaga em uma Vibe. Em breve confirmamos a sua vaga - fique de olho.",
       cta: "Ver a Vibe",
     },
   },

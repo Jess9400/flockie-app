@@ -5,7 +5,7 @@
     "yourArea": "tu zona"
   },
   "buddies": {
-    "subtitle": "Gente en {city} con ganas de hacer algo — salúdalos.",
+    "subtitle": "Gente en {city} con ganas de hacer algo - salúdalos.",
     "yourCity": "tu ciudad",
     "seeMore": "Ver más",
     "emptyTitle": "No hay nuevos buddies para actividades en {city} ahora mismo.",
@@ -17,7 +17,7 @@
   },
   "joinVibe": {
     "heading": "Únete a un vibe",
-    "subtitle": "Planes en grupo por todas partes — únete a uno."
+    "subtitle": "Planes en grupo por todas partes - únete a uno."
   },
   "nearYou": {
     "liveNow": "en vivo",
@@ -58,11 +58,11 @@
   },
   "explore": {
     "heading": "Explora Vibes por todo el mundo",
-    "subtitle": "Explorando planes en grupo en otras ciudades — únete a uno."
+    "subtitle": "Explorando planes en grupo en otras ciudades - únete a uno."
   },
   "flocks": {
     "heading": "Flocks a los que puedes unirte, en cualquier lugar",
-    "subtitle": "Los viajes en grupo más recientes de todo el mundo — solicita unirte.",
+    "subtitle": "Los viajes en grupo más recientes de todo el mundo - solicita unirte.",
     "emptyTitle": "No hay flocks abiertos ahora mismo.",
     "emptyBody": "Crea uno y deja que otros viajeros soliciten unirse.",
     "createFlock": "Crear un flock",
@@ -109,6 +109,6 @@
   },
   "feed": {
     "heading": "Fresh from Flockie",
-    "subtitle": "Momentos reales de {city} — directo de la gente que hace planes."
+    "subtitle": "Momentos reales de {city} - directo de la gente que hace planes."
   }
 }

@@ -24,7 +24,7 @@ export default function CompatShareButton({
         await navigator.share({ title: t("compatShare.shareTitle"), text, url });
         return;
       } catch {
-        // cancelled / unsupported — fall through to copy
+        // cancelled / unsupported - fall through to copy
       }
     }
     try {

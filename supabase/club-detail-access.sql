@@ -1,4 +1,4 @@
--- Flockie Clubs — safe detail access
+-- Flockie Clubs - safe detail access
 -- Run this AFTER supabase/clubs-foundation.sql has been run on production.
 -- Safe to re-run. This deliberately returns no exact gathering location or
 -- membership roster.

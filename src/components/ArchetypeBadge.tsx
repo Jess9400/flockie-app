@@ -2,7 +2,7 @@ import { ARCHETYPES } from "@/lib/onboarding/archetypes";
 import type { VibeDimension } from "@/lib/onboarding/types";
 
 // Each archetype rendered as a unique CSS medallion (its own gradient ring)
-// rather than a bare platform emoji — consistent across devices.
+// rather than a bare platform emoji - consistent across devices.
 export default function ArchetypeBadge({
   archetypeKey,
   size = 40,

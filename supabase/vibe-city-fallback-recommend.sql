@@ -2,7 +2,7 @@
 -- Before: cold same-city people were inserted straight into the run as
 -- 'shortlisted' (on the host's review list) without ever opting in.
 -- Now: it sends a 'vibe_recommendation' notification (in-app + email) so they
--- can open the Vibe and click "I'm interested" themselves — no vibe_interests
+-- can open the Vibe and click "I'm interested" themselves - no vibe_interests
 -- row is created until THEY opt in. Deduped: at most one recommendation per
 -- person per vibe, and total recommendations are capped to the algo budget so it
 -- doesn't nudge the whole city. Same-city / eligibility / activity-vibe-check /
@@ -24,7 +24,7 @@ begin
   select count(*) into v_pool from public.vibe_interests
     where vibe_id = p_vibe and status in ('interested','requested','standby','shortlisted','invited','confirmed');
   -- ...plus people we've already recommended (they didn't create a row, so count
-  -- the notifications) — keeps total reach bounded to the spots available.
+  -- the notifications) - keeps total reach bounded to the spots available.
   select count(*) into v_recommended from public.notifications
     where type = 'vibe_recommendation' and data->>'vibe_id' = p_vibe::text;
   v_remaining := public._vibe_algo_remaining(p_vibe) - v_pool - v_recommended;
@@ -52,9 +52,9 @@ begin
     order by score desc nulls last, p.id
     limit v_remaining
   loop
-    -- RECOMMEND ONLY — no vibe_interests row. They enter the run via "I'm interested".
+    -- RECOMMEND ONLY - no vibe_interests row. They enter the run via "I'm interested".
     perform public.notify(c.id, 'vibe_recommendation', 'A Vibe in ' || v.city || ' you might love: ' || v.title,
-            'Tap to check it out — join if it''s your vibe.', jsonb_build_object('vibe_id', p_vibe));
+            'Tap to check it out - join if it''s your vibe.', jsonb_build_object('vibe_id', p_vibe));
     v_added := v_added + 1;
   end loop;
   return v_added;

@@ -9,9 +9,9 @@
   "composer": {
     "back": "Início",
     "heading": "Compartilhe um momento",
-    "subtitle": "Um resumo de algo que aconteceu — ou um aviso do que vem por aí.",
+    "subtitle": "Um resumo de algo que aconteceu - ou um aviso do que vem por aí.",
     "stepAnchor": "1 · Sobre o que é?",
-    "noAnchors": "Nada para postar ainda — participe primeiro de uma vibe, um club ou uma atividade, e depois conte a história.",
+    "noAnchors": "Nada para postar ainda - participe primeiro de uma vibe, um club ou uma atividade, e depois conte a história.",
     "stepBody": "2 · Diga algo",
     "bodyPlaceholder": "Como foi? Ou o que as pessoas deveriam saber antes de acontecer?",
     "stepPhotos": "3 · Fotos (até 4)",
@@ -20,7 +20,7 @@
     "posting": "Postando…",
     "cta": "Postar",
     "ctaDisabled": "Escolha primeiro sobre o que é",
-    "anchorNote": "Sem posts soltos — cada post está ancorado a uma vibe, club ou atividade real.",
+    "anchorNote": "Sem posts soltos - cada post está ancorado a uma vibe, club ou atividade real.",
     "subVibe": "Vibe que você foi",
     "subVibeHosted": "Vibe que você organizou",
     "subClub": "Seu club",
@@ -46,7 +46,7 @@
   "people": {
     "back": "Perfil",
     "heading": "Pessoas",
-    "subtitle": "A sua galera — e gente nova de encontros reais na sua cidade.",
+    "subtitle": "A sua galera - e gente nova de encontros reais na sua cidade.",
     "tab": {
       "find": "Encontrar",
       "following": "Seguindo",
@@ -56,9 +56,9 @@
     "metBadge": "conheceu",
     "metHeading": "Pessoas que você conheceu",
     "cityHeading": "Também na sua cidade",
-    "emptyFind": "Ninguém encontrado — tente outro nome.",
-    "emptyFollowing": "Você ainda não segue ninguém — comece por quem você conheceu.",
-    "emptyFollowers": "Sem seguidores ainda — poste um resumo e diga oi pela cidade."
+    "emptyFind": "Ninguém encontrado - tente outro nome.",
+    "emptyFollowing": "Você ainda não segue ninguém - comece por quem você conheceu.",
+    "emptyFollowers": "Sem seguidores ainda - poste um resumo e diga oi pela cidade."
   },
   "deletePost": "Excluir post",
   "report": {
@@ -66,10 +66,10 @@
     "message": "Conte o que há de errado e vamos revisar.",
     "placeholder": "Qual é o problema? (opcional)",
     "cta": "Denunciar",
-    "done": "Denunciado — obrigado, vamos revisar."
+    "done": "Denunciado - obrigado, vamos revisar."
   },
   "reviewBadge": "avaliação",
-  "joinVibeCta": "Está chegando — participe",
+  "joinVibeCta": "Está chegando - participe",
   "menu": {
     "aria": "Opções",
     "edit": "Editar post",

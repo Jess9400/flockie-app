@@ -134,7 +134,7 @@ export default function InterestButton({
     const { data, error } = await supabase.rpc("express_interest", { p_vibe: vibeId });
     setBusy(false);
     if (error) {
-      // Eligibility is enforced server-side too — translate the raw violation
+      // Eligibility is enforced server-side too - translate the raw violation
       // (pre-check skipped/raced) into the same friendly message.
       const ineligible =
         error.code === "42501" || /row-level security|not eligible/i.test(error.message);
@@ -381,7 +381,7 @@ export default function InterestButton({
   } else if (status === "interested") {
     control = (
       <div className="space-y-2">
-        {statusPanel(t("interest.runningTitle"), t("interest.runningBody"))}
+        {statusPanel(t("interest.interestedTitle"), t("interest.interestedBody"))}
         <button onClick={untap} disabled={busy} className={`${base} bg-white text-muted`}>
           {t("interest.withdrawInterest")}
         </button>
@@ -404,7 +404,10 @@ export default function InterestButton({
         {directConfirm
           ? statusPanel(t("interest.fastFillTitle"), t("interest.fastFillBody"))
           : matchingTime
-            ? statusPanel(t("interest.matchingScheduled", { time: matchingTime }))
+            ? statusPanel(
+                t("interest.matchingScheduled", { time: matchingTime }),
+                t("interest.matchingScheduledBody")
+              )
             : null}
         <div className="grid grid-cols-2 gap-2">
           <button

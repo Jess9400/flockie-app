@@ -21,7 +21,7 @@ export default async function MatchPage({
   const user = await getSessionUser();
   const t = await getTranslations("match.find");
 
-  // Trip buddy matching is parked "Soon" — default to Activity.
+  // Trip buddy matching is parked "Soon" - default to Activity.
   const mode = searchParams.mode === "trip" ? "trip" : "activity";
   const isActivity = mode === "activity";
   // Activity mode mirrors the Trips hub: a main page with two path boxes
@@ -50,7 +50,7 @@ export default async function MatchPage({
       .eq("id", user!.id)
       .maybeSingle(),
   ]);
-  // Trip-prefs quiz retired (#244/#261: scoring is Vibes-only) — trip mode no
+  // Trip-prefs quiz retired (#244/#261: scoring is Vibes-only) - trip mode no
   // longer gates on it.
   void prefsErr;
   const complete = isActivity
@@ -130,7 +130,7 @@ export default async function MatchPage({
       </>
     );
 
-  // Quick link to manage what you've posted — rendered BELOW the main content
+  // Quick link to manage what you've posted - rendered BELOW the main content
   // (board / deck / gate), mirroring the Trips hub's "your trips" row.
   const yourActivitiesLink = isActivity ? (
     <Link
@@ -153,7 +153,7 @@ export default async function MatchPage({
   }
 
   // ── Browse view: activities other people posted in your city. Open to
-  // EVERYONE — no vibe-check or posting gate; the create CTA only appears in
+  // EVERYONE - no vibe-check or posting gate; the create CTA only appears in
   // the empty state when nothing is posted in the city. Creating + the invite deck live
   // under the "Create an activity" path.
   if (isActivity && view === "browse") {
@@ -253,7 +253,7 @@ export default async function MatchPage({
   let body: React.ReactNode;
 
   if (isActivity) {
-    // Discovery pool: anyone in the activity's city who is open to discovery —
+    // Discovery pool: anyone in the activity's city who is open to discovery -
     // no posted activity or city-count gate required.
     const { data: cands } = await supabase.rpc("activity_candidates", { p_trip: selectedId, p_limit: 30 });
     body =
@@ -338,7 +338,7 @@ export default async function MatchPage({
   );
 }
 
-// Crisp confetti accents around the swipe deck — same language as the home
+// Crisp confetti accents around the swipe deck - same language as the home
 // page's blue panel: small sharp shapes, no blur, clear of the cards.
 function DeckFrame({ children }: { children: React.ReactNode }) {
   return (

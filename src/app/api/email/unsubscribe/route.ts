@@ -16,7 +16,7 @@ export async function GET(req: Request) {
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) return html("Something went wrong — please try again later.");
+  if (!url || !serviceKey) return html("Something went wrong - please try again later.");
 
   const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
   const { error } = await admin
@@ -24,6 +24,6 @@ export async function GET(req: Request) {
     .update({ email_notifications: false })
     .eq("email_unsubscribe_token", token);
 
-  if (error) return html("Something went wrong — please try again later.");
+  if (error) return html("Something went wrong - please try again later.");
   return html("You've been unsubscribed from Flockie emails.");
 }

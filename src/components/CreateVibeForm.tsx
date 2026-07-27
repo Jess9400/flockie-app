@@ -217,7 +217,7 @@ export default function CreateVibeForm({
     setLocationMsg(null);
     try {
       // Geocode in the browser with the Maps key (works with the referrer
-      // restriction, unlike the server route) — same engine as Google Maps.
+      // restriction, unlike the server route) - same engine as Google Maps.
       // Robust to a mismatched city (address alone is tried as a fallback).
       const place = await geocodeVibeLocation(locationName, city);
       if (!place) {
@@ -228,7 +228,7 @@ export default function CreateVibeForm({
       setResolvedLocation(place);
       setLocationLat(place.lat);
       setLocationLng(place.lng);
-      // The city/area come from the VENUE, not the host's profile — so a vibe in
+      // The city/area come from the VENUE, not the host's profile - so a vibe in
       // another city gets the right public city automatically.
       if (place.city) setCity(place.city);
       if (place.area && !area.trim()) setArea(place.area);
@@ -326,7 +326,7 @@ export default function CreateVibeForm({
 
     setSaving(true);
 
-    // Always capture coordinates so every vibe gets an exact map pin — even if
+    // Always capture coordinates so every vibe gets an exact map pin - even if
     // the host never tapped "find exact location". Geocode from the typed
     // location + city; on any failure just save without coords (the map link
     // then falls back to the city). We keep the host's typed location_name as-is
@@ -341,7 +341,7 @@ export default function CreateVibeForm({
           coordLng = place.lng;
         }
       } catch {
-        // ignore — save the vibe without coords
+        // ignore - save the vibe without coords
       }
     }
 
@@ -369,7 +369,7 @@ export default function CreateVibeForm({
         starts_at: new Date(startsAt).toISOString(),
         ends_at: endsAt ? new Date(endsAt).toISOString() : null,
         signup_deadline: new Date(deadline).toISOString(),
-        // The tz the host entered the time in — pairs with starts_at (a UTC
+        // The tz the host entered the time in - pairs with starts_at (a UTC
         // instant) so we can render the correct local wall-clock time everywhere.
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         capacity,
@@ -721,7 +721,7 @@ export default function CreateVibeForm({
             value={locationName}
             onChange={(e) => onLocationChange(e.target.value)}
             onBlur={() => {
-              // Auto-pin the exact coordinates when the host finishes typing —
+              // Auto-pin the exact coordinates when the host finishes typing -
               // no need to tap the button. Only if not already pinned.
               if (locationLat == null && locationName.trim().length >= 3 && city.trim()) {
                 findExactLocation();

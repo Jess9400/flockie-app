@@ -89,7 +89,7 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
     opts?.allowFreeText ? freeText.trim() : "",
   ]
     .filter(Boolean)
-    .join(" — ");
+    .join(" - ");
   const canConfirm = !opts?.reasonRequired || composedReason.length > 0;
 
   // ── Toasts ─────────────────────────────────────────────────────────────

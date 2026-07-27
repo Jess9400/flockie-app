@@ -16,7 +16,7 @@ export type PostAnchor = {
 const KIND_EMOJI: Record<string, string> = { vibe: "🎉", club: "🔁", activity: "🤝" };
 
 // Share a recap: pick the real thing it's about (required), say something,
-// add photos. No free-floating posts — that's the whole point.
+// add photos. No free-floating posts - that's the whole point.
 export default function PostComposer({
   anchors,
   userId,
@@ -100,7 +100,7 @@ export default function PostComposer({
                   <optgroup key={kind} label={`${KIND_EMOJI[kind]} ${t(`group.${kind}`)}`}>
                     {group.map((a) => (
                       <option key={`${a.kind}-${a.id}`} value={`${a.kind}:${a.id}`}>
-                        {a.title} — {a.sub}
+                        {a.title} - {a.sub}
                       </option>
                     ))}
                   </optgroup>

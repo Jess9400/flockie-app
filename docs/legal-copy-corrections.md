@@ -10,7 +10,7 @@ Contact for all legal/privacy matters: **hello@findflockie.com**
 
 ---
 
-## Fix #2 — Location is precise, not "city-level approximate"
+## Fix #2 - Location is precise, not "city-level approximate"
 
 The app stores a precise `location geography(point)` per profile (via
 `set_my_location(lng, lat)`) and uses it for distance matching. The draft
@@ -22,13 +22,13 @@ understated this.
 
 **with:**
 
-> - Your location — including precise coordinates from your device when you grant
->   permission — used to surface nearby people and Vibes and to measure distance.
+> - Your location - including precise coordinates from your device when you grant
+>   permission - used to surface nearby people and Vibes and to measure distance.
 >   Other members never see your exact location, only your city.
 
 ---
 
-## Fixes #1 + #3 — Retention matches immediate deletion; drop the 3-year claim
+## Fixes #1 + #3 - Retention matches immediate deletion; drop the 3-year claim
 
 `delete_my_account()` performs an immediate hard cascade delete of the user's
 `auth.users` row, wiping all related data at once. There is **no** mechanism that
@@ -75,6 +75,6 @@ claim was untrue and has been removed.
 - Publish the full beta Privacy Policy / Terms drafts (replacing the live short
   pages), with the corrections above applied.
 - Create the **Safety Guide** page the Terms link to (or remove the link).
-- Footer "Beta — not yet a registered company" tag + `/about` founder/roadmap page.
-- Signup beta acknowledgment + required checkbox — **DONE** (PR #109).
-- Consent timestamp persistence (`accept_terms` / `terms_accepted_at`) — **DONE** (PR #108).
+- Footer "Beta - not yet a registered company" tag + `/about` founder/roadmap page.
+- Signup beta acknowledgment + required checkbox - **DONE** (PR #109).
+- Consent timestamp persistence (`accept_terms` / `terms_accepted_at`) - **DONE** (PR #108).

@@ -76,7 +76,7 @@ export default async function CompatPage({ params }: { params: { id: string } })
       const highlights = (s?.[0]?.highlights as string[] | undefined) ?? [];
       inner = (
         <div className="mt-6 text-center">
-          <p className="font-fredoka text-6xl font-bold text-flockie-coral">{score ?? "—"}%</p>
+          <p className="font-fredoka text-6xl font-bold text-flockie-coral">{score ?? "-"}%</p>
           <p className="mt-1 font-nunito text-base font-semibold text-white">
             {score != null && score >= 70
               ? tr("resultGreat", { name })

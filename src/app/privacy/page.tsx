@@ -67,14 +67,14 @@ export default function PrivacyPage() {
           <li>To improve our matching algorithm</li>
           <li>To keep the platform safe</li>
           <li>
-            To email you about your account and your Flockie activity — invitations, matches,
+            To email you about your account and your Flockie activity - invitations, matches,
             confirmations, and reminders
           </li>
         </ul>
         <p>
           We send these emails (and in-app notifications) about activity on your account. You can
           opt out of non-essential emails anytime via the unsubscribe link at the bottom of any
-          email, or in your settings — we&rsquo;ll still send essential account and safety messages.
+          email, or in your settings - we&rsquo;ll still send essential account and safety messages.
         </p>
         <p>
           <strong>

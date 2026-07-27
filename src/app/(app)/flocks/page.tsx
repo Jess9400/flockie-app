@@ -41,7 +41,7 @@ type BoardRow = {
   my_request_status: string | null;
 };
 
-// The Trip Board: solo trips (1:1) and Flocks (group) in one browsable list —
+// The Trip Board: solo trips (1:1) and Flocks (group) in one browsable list -
 // trip-first cards, the creator as context, "Ask to join" with a note.
 export default async function TripBoardPage({
   searchParams,
@@ -83,7 +83,7 @@ export default async function TripBoardPage({
   const { data: boardRaw, error: boardErr } = await supabase.rpc("trip_board", { p_limit: 120 });
   const all: BoardRow[] = boardErr ? [] : ((boardRaw ?? []) as BoardRow[]);
 
-  // Lists are small pre-scale — filter in TS so the existing filter UI keeps
+  // Lists are small pre-scale - filter in TS so the existing filter UI keeps
   // working without a parameter-heavy RPC.
   const filtered = all.filter((t) => {
     if (kindFilter && t.kind !== kindFilter) return false;

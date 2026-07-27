@@ -26,7 +26,7 @@ begin
       perform public.notify(
         m.user_id, 'vibe_starting_soon',
         'Your Vibe is tomorrow: ' || r.title,
-        'It kicks off soon — open the chat to coordinate with your group.',
+        'It kicks off soon - open the chat to coordinate with your group.',
         jsonb_build_object('vibe_id', r.id, 'href', '/vibes/' || r.id || '/chat'));
     end loop;
     update public.vibes set starting_soon_reminded_at = now() where id = r.id;

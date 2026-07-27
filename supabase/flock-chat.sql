@@ -97,7 +97,7 @@ begin
 end $$;
 grant execute on function public.leave_flock(uuid) to authenticated;
 
--- Flock chats I've joined (as an approved member, not an original buddy) — so
+-- Flock chats I've joined (as an approved member, not an original buddy) - so
 -- they show in my Chats list.
 create or replace function public.my_flock_chats()
 returns table (chat_id uuid, name text, photo text)

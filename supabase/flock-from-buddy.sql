@@ -38,7 +38,7 @@ begin
     on conflict (trip_id, user_id) do update set status = 'accepted';
 
   perform public.notify(v_other, 'flock_created', 'Your trip is now a Flock',
-    'You and your buddy opened the trip to a group — approve who joins together.',
+    'You and your buddy opened the trip to a group - approve who joins together.',
     jsonb_build_object('trip_id', v_trip));
   return v_trip;
 end $$;

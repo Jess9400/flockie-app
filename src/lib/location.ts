@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/client";
 
 // Captures the device location and stores the precise point (used for distance,
-// never shown to others). It also keeps home_city current — but NEVER silently
+// never shown to others). It also keeps home_city current - but NEVER silently
 // overwrites a city the user already set: it auto-fills only when home_city is
 // empty, and otherwise asks before changing it. Resolves true if permission was
 // granted.
@@ -15,7 +15,7 @@ export function captureAndStoreLocation(): Promise<boolean> {
         try {
           const supabase = createClient();
           const { latitude: lat, longitude: lng } = pos.coords;
-          // Always store the precise point — this is what powers "near me".
+          // Always store the precise point - this is what powers "near me".
           await supabase.rpc("set_my_location", { p_lng: lng, p_lat: lat });
 
           const res = await fetch(`/api/reverse-geocode?lat=${lat}&lng=${lng}`);

@@ -49,7 +49,7 @@ export default async function MyActivitiesPage({
 
   const all = (activities ?? []) as ActivityRow[];
 
-  // Activities I JOINED (via the board "I'm in") — per-activity status from
+  // Activities I JOINED (via the board "I'm in") - per-activity status from
   // my_joined_activities(): accepted plan → you're on; proposed → waiting;
   // no chat yet → requested. Migration-safe: RPC missing → section hidden.
   type Joined = {
@@ -64,7 +64,7 @@ export default async function MyActivitiesPage({
   };
   const [joinedRes, hostReqRes] = await Promise.all([
     supabase.rpc("my_joined_activities"),
-    // Requests ON my activities (host view) — Accept/Pass per person.
+    // Requests ON my activities (host view) - Accept/Pass per person.
     supabase.rpc("activity_requests_for_mine"),
   ]);
   const joinedAll: Joined[] = joinedRes.error ? [] : ((joinedRes.data ?? []) as Joined[]);

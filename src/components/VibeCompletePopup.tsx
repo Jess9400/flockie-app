@@ -19,7 +19,7 @@ export default function VibeCompletePopup({
   tags: string[];
   archetypeKey?: string | null;
   allComplete: boolean;
-  force?: boolean; // ?vibe_done=1 — show right after finishing the last form
+  force?: boolean; // ?vibe_done=1 - show right after finishing the last form
 }) {
   const t = useTranslations("profile");
   const [show, setShow] = useState(false);
@@ -27,7 +27,7 @@ export default function VibeCompletePopup({
   useEffect(() => {
     if (!allComplete || typeof window === "undefined") return;
     // Celebrate exactly once, ever. `force` (?vibe_done=1) must NOT bypass this
-    // guard — otherwise the popup re-fires on every profile open/edit that keeps
+    // guard - otherwise the popup re-fires on every profile open/edit that keeps
     // the query param in the URL.
     if (localStorage.getItem("flockie_vibe_celebrated")) return;
     localStorage.setItem("flockie_vibe_celebrated", "1");

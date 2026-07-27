@@ -1,5 +1,5 @@
 -- ============================================================================
--- Flockie — Activity Board: browse 1:1 activities near you + join with context.
+-- Flockie - Activity Board: browse 1:1 activities near you + join with context.
 -- Run once in the Supabase SQL editor. Idempotent / safe to re-run.
 --
 -- Two RPCs:
@@ -8,8 +8,8 @@
 --   request_join_activity(id, lvl, note)→ "I'm in": records the like (with the
 --                                         plan stashed so the match seeds a
 --                                         buddy_plan) and sends the creator a
---                                         RICH notification — age, gender,
---                                         self-declared level, note, match % —
+--                                         RICH notification - age, gender,
+--                                         self-declared level, note, match % -
 --                                         so they accept with full context.
 --
 -- Accept path (no new UI needed): notification → requester's profile →

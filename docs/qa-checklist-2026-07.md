@@ -1,4 +1,4 @@
-# QA checklist — everything deployed (2026-07)
+# QA checklist - everything deployed (2026-07)
 
 Test each change in the live app. Grouped by area. Each item: **what changed → how to test → expected.**
 Legend: 🗄️ = enabled by SQL you ran · 💻 = client change (deployed with `main`) · ⏰ = cron/time-based (can't trigger instantly).
@@ -48,12 +48,12 @@ Legend: 🗄️ = enabled by SQL you ran · 💻 = client change (deployed with 
 - [ ] The **attendee/member gets a cancellation notification** ("The host left Flockie…").
 - [ ] Your uploaded **photos/video are gone** from storage (old profile image URLs stop working).
 
-## 9. Email notifications — Tier 2/3 ⏰🗄️
-These fire on schedules, so they're **hard to trigger on demand** — verify the in-app notification appears and (if email is on) an email arrives:
-- [ ] **Review reminder** — after an event/trip ends, you get a "How was …?" notification **+ email** with a "Leave a review" link.
-- [ ] **"Your Vibe is tomorrow"** — a confirmed attendee gets a reminder ~24h before the vibe.
-- [ ] **New message while away** — if you have an unread chat message >15 min old and you're away, you get **one** nudge email (not per-message).
-- [ ] **Weekly "Vibes near you"** digest — one email per week summarizing vibes in your city.
+## 9. Email notifications - Tier 2/3 ⏰🗄️
+These fire on schedules, so they're **hard to trigger on demand** - verify the in-app notification appears and (if email is on) an email arrives:
+- [ ] **Review reminder** - after an event/trip ends, you get a "How was …?" notification **+ email** with a "Leave a review" link.
+- [ ] **"Your Vibe is tomorrow"** - a confirmed attendee gets a reminder ~24h before the vibe.
+- [ ] **New message while away** - if you have an unread chat message >15 min old and you're away, you get **one** nudge email (not per-message).
+- [ ] **Weekly "Vibes near you"** digest - one email per week summarizing vibes in your city.
 - [ ] Turning off email notifications suppresses these.
 
 ## 10. Privacy / security (verify behavior) 🗄️
@@ -64,20 +64,20 @@ These fire on schedules, so they're **hard to trigger on demand** — verify the
 
 ## Client-only changes that shipped alongside (no SQL, but test them) 💻
 - [ ] **Bottom tab bar** on mobile (Home / Vibes / Match / Chats / Profile); drawer is the short 5-item version (no My Vibes/Deals/Settings rows).
-- [ ] **Branded confirm dialogs + toasts** everywhere (no more browser `alert/confirm` popups) — leave match, report user, delete, etc.
+- [ ] **Branded confirm dialogs + toasts** everywhere (no more browser `alert/confirm` popups) - leave match, report user, delete, etc.
 - [ ] **Loading skeletons** on navigation (no more blank waits).
-- [ ] **Chat**: your sent message appears **instantly** (and shows "Failed — tap to retry" if it doesn't send).
+- [ ] **Chat**: your sent message appears **instantly** (and shows "Failed - tap to retry" if it doesn't send).
 - [ ] **"In the running"** section in My Vibes (vibes you've joined: interested/shortlisted/invited/confirmed).
 - [ ] Vibe grids are **2-col on phones**; pinch-zoom works.
 - [ ] Taisiya's UI: fixed narrow mobile activity cards, aligned profile badges, Match-setup redesign, centered AirHelp action, aligned Vibe/Flock card footers.
 
 ## Perf (not directly visible) 🗄️💻
-- [ ] Pages that parallelized their reads (Home, Match, Chats, Vibe detail, buddy/flock chat, My Trips, public profile, Flocks) should feel a bit snappier. (Deeper latency work is still on the list — see `user-feedback-solutions.md` #10.)
+- [ ] Pages that parallelized their reads (Home, Match, Chats, Vibe detail, buddy/flock chat, My Trips, public profile, Flocks) should feel a bit snappier. (Deeper latency work is still on the list - see `user-feedback-solutions.md` #10.)
 
 ---
 
-## NOT yet done (so don't expect these — they're in the feedback backlog)
+## NOT yet done (so don't expect these - they're in the feedback backlog)
 - Time-filter chips still reload the whole page (feedback #4).
 - Match% / attendee-count sizing on vibe cards (feedback #6).
 - Invite message textarea (#1), budget on flock card (#8b), join-without-creating (#7), no-show gating (#5).
-- `/about` page + full legal docs (#7 of V2 — needs your bios/legal).
+- `/about` page + full legal docs (#7 of V2 - needs your bios/legal).

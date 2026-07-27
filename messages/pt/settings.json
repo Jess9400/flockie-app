@@ -1,7 +1,7 @@
 {
   "backToProfile": "Perfil",
   "title": "Configurações",
-  "saveError": "Não foi possível salvar — verifique sua conexão e tente de novo.",
+  "saveError": "Não foi possível salvar - verifique sua conexão e tente de novo.",
   "account": {
     "title": "Conta",
     "signOut": "Sair"
@@ -16,7 +16,7 @@
   },
   "location": {
     "title": "Manter minha localização atualizada",
-    "description": "Deixe o Flockie encontrar Vibes, viagens e pessoas perto de você — e atualizar sua cidade automaticamente quando você viaja, para você nunca precisar definir na mão."
+    "description": "Deixe o Flockie encontrar Vibes, viagens e pessoas perto de você - e atualizar sua cidade automaticamente quando você viaja, para você nunca precisar definir na mão."
   },
   "discovery": {
     "title": "Aberto a ser descoberto",
@@ -45,7 +45,7 @@
     "confirmTitle": "Excluir sua conta?",
     "confirmMessage": "Isso remove permanentemente seu perfil, fotos, vibe check e matches. Não dá para desfazer.",
     "confirmLabel": "Excluir conta",
-    "mediaError": "Não foi possível remover seus arquivos — tente de novo. ",
+    "mediaError": "Não foi possível remover seus arquivos - tente de novo. ",
     "deleting": "Excluindo…",
     "button": "Excluir conta"
   }

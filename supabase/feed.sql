@@ -1,8 +1,8 @@
 -- ============================================================================
--- Flockie — the Feed ("Strava, not Facebook").
+-- Flockie - the Feed ("Strava, not Facebook").
 -- Run in the Supabase SQL editor. Idempotent / safe to re-run.
 --
--- Every post is ANCHORED to a real thing the author was part of — a Vibe
+-- Every post is ANCHORED to a real thing the author was part of - a Vibe
 -- (host/confirmed), a Club (host/member), or a 1:1 activity (creator/accepted
 -- joiner). No free-floating posts. City-scoped feed + likes + comments.
 -- ============================================================================

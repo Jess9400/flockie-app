@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import FollowButton from "@/components/FollowButton";
 
 // Compact social strip under the profile hero: posts · following · followers
-// (+ Follow button on someone else's profile). Deliberately small — the story
+// (+ Follow button on someone else's profile). Deliberately small - the story
 // layout stays Taisiya's.
 export default async function ProfileSocialStrip({
   userId,

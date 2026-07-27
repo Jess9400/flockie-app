@@ -103,7 +103,7 @@ begin
 end $$;
 grant execute on function public.vibe_negative_fit(uuid, uuid) to authenticated;
 
--- SUPERSEDED 2026-06-28: stale vibe_match copy — raw `::int` cast (no #98 regex
+-- SUPERSEDED 2026-06-28: stale vibe_match copy - raw `::int` cast (no #98 regex
 -- guard, line below) and a different scoring formula. Canonical guarded vibe_match
 -- is in recommended-vibes.sql (verified live on prod). Wrapped so re-running this
 -- file (it owns the live vibe_negative_fit above) can't downgrade the score.

@@ -1,4 +1,4 @@
--- Flockie Clubs — founding member invite links
+-- Flockie Clubs - founding member invite links
 -- Run this AFTER clubs-foundation.sql and club-detail-access.sql.
 -- Safe to re-run. Each link is private, single-use, and expires after 14 days.
 

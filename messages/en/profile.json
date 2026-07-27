@@ -44,7 +44,7 @@
     "vibeBody": "Your interests and sliders help Flockie find plans that feel right for you.",
     "adjustVibe": "Adjust my Vibe",
     "kindWordsTitle": "Kind words",
-    "kindWordsSubtitle": "Written after a verified Flockie match — no public scores.",
+    "kindWordsSubtitle": "Written after a verified Flockie match - no public scores.",
     "kindWordsEmpty": "When someone you’ve matched with leaves a kind note, it will appear here. No scores or averages on your profile.",
     "verifiedConnection": "Verified Flockie match",
     "photosHeading": "Photos",
@@ -91,7 +91,7 @@
   "reviewerFallback": "A flockie",
   "form": {
     "photosTitle": "Photos & video",
-    "photosSubtitle": "At least one photo. Your first photo is your primary — drag to reorder.",
+    "photosSubtitle": "At least one photo. Your first photo is your primary - drag to reorder.",
     "aboutTitle": "About you",
     "name": "Name",
     "namePlaceholder": "Your first name",
@@ -176,10 +176,10 @@
     "matchSetupNote": "Soft preferences improve ranking. Dealbreakers strictly filter. Interest, Not for me, invitation responses, attendance, and reviews also teach the algorithm.",
     "redoConfirm": {
       "title": "Retake your vibe quiz?",
-      "message": "You'll answer the whole quiz again from question 1 — there's no saving halfway. Your current vibe stays active until you finish.",
+      "message": "You'll answer the whole quiz again from question 1 - there's no saving halfway. Your current vibe stays active until you finish.",
       "confirmLabel": "Start the quiz"
     },
-    "redoError": "Couldn't reset the quiz — try again.",
+    "redoError": "Couldn't reset the quiz - try again.",
     "visibility": {
       "title": "Visibility summary",
       "description": "These rules are enforced by the profile privacy layer.",
@@ -212,7 +212,7 @@
       "description": "Verified feedback from completed Flockie interactions.",
       "showLess": "Show less",
       "seeAllCount": "See all {count}",
-      "empty": "No reviews yet — reviews appear after you travel together, do an activity, or share a Flock.",
+      "empty": "No reviews yet - reviews appear after you travel together, do an activity, or share a Flock.",
       "verified": "Verified interaction"
     },
     "roles": {
@@ -233,7 +233,7 @@
     "stillAdding": "{name} is still adding details to their public profile.",
     "history": {
       "title": "Flockie history",
-      "description": "Completed public Vibes and flocks—not future plans.",
+      "description": "Completed public Vibes and flocks-not future plans.",
       "completedCount": "{count} completed",
       "empty": "No completed public plans to show yet."
     },
@@ -260,7 +260,7 @@
   },
   "reviews": {
     "title": "Reviews",
-    "empty": "No reviews yet — reviews appear after you travel together, do an activity, or share a Flock."
+    "empty": "No reviews yet - reviews appear after you travel together, do an activity, or share a Flock."
   },
   "events": {
     "vibes": "Vibes",

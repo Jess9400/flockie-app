@@ -11,7 +11,7 @@ type Member = { id: string; name: string; photo: string | null };
 type Tab = "checklist" | "agenda" | "costs" | "deals";
 
 // Compact planning strip that sits under the chat header. Each icon toggles a
-// single inline panel (click again to hide) — one open at a time. Trips/flocks
+// single inline panel (click again to hide) - one open at a time. Trips/flocks
 // get the full set; clubs get calendar + to-dos + activity deals (no costs).
 export default function WorkspacePanels({
   tripId,
@@ -47,7 +47,7 @@ export default function WorkspacePanels({
     });
   }
 
-  // Soft, colour-coded chips — small and round when idle, gently tinted with a
+  // Soft, colour-coded chips - small and round when idle, gently tinted with a
   // ring and label when active. Cute, not bulky.
   const COLORS: Record<string, { on: string; off: string }> = {
     green: { on: "bg-onboarding-green/15 text-onboarding-green ring-2 ring-onboarding-green/35", off: "bg-onboarding-green/10 text-onboarding-green" },

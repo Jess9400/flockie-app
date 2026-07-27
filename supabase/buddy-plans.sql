@@ -1,6 +1,6 @@
 -- Buddy plans: let two matched buddies (1:1) propose a concrete plan in their
--- chat — a category (coffee/restaurant/bar/park/activity), an optional place +
--- time — and accept it. Powers the "propose a plan" card + the honest,
+-- chat - a category (coffee/restaurant/bar/park/activity), an optional place +
+-- time - and accept it. Powers the "propose a plan" card + the honest,
 -- plan-anchored "Did you meet?" review prompt.
 --
 -- Run in the Supabase SQL editor. Idempotent / safe to re-run.

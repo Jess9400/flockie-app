@@ -45,7 +45,7 @@ export default function PhotoAlbum({ photos, className }: { photos: string[]; cl
   return (
     <div className={className}>
       <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.12em] text-flockie-coral">{t("photosHeading")}</p>
-      {/* 2-up carousel — swipe/scroll or tap the arrow for more; keeps the card short. */}
+      {/* 2-up carousel - swipe/scroll or tap the arrow for more; keeps the card short. */}
       <div className="relative">
         <div
           ref={stripRef}

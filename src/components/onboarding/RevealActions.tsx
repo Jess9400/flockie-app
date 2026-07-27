@@ -23,7 +23,7 @@ export default function RevealActions({
   const [showCard, setShowCard] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // Share a "how compatible are we?" link — the friend takes the vibe check.
+  // Share a "how compatible are we?" link - the friend takes the vibe check.
   async function checkMatch() {
     const url = `https://app.findflockie.com/compat/${userId}`;
     const text = t("revealActions.shareText");
@@ -32,7 +32,7 @@ export default function RevealActions({
         await navigator.share({ title: t("revealActions.shareTitle"), text, url });
         return;
       } catch {
-        // cancelled — fall through to copy
+        // cancelled - fall through to copy
       }
     }
     try {

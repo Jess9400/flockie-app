@@ -1,6 +1,6 @@
 -- One-tap join for POST-MATCHING vibes. Once the algo/host has ranked a vibe
 -- (status 'ranking'/'finalized') and there's still room, a person tapping
--- "I'm interested" is confirmed straight away — no separate invite→confirm step,
+-- "I'm interested" is confirmed straight away - no separate invite→confirm step,
 -- since at that point we're just filling the room. Before matching (status
 -- 'open'/'reviewing') or when full, it falls back to normal soft interest.
 --
@@ -33,7 +33,7 @@ begin
   -- Same-city gate for the ONE-TAP confirm: only auto-confirm people in the
   -- vibe's city (they can actually show up). A different-city person still gets
   -- to express interest (falls through below) and can join via the normal flow
-  -- if they're genuinely travelling there — they're just never silently
+  -- if they're genuinely travelling there - they're just never silently
   -- confirmed into an event they likely can't attend.
   select (p.home_city is not null and lower(p.home_city) = lower(v.city))
     into v_same_city
@@ -47,8 +47,9 @@ begin
              or (status='invited' and (invitation_expires_at is null or invitation_expires_at > now())));
     if v_held < v.capacity then
       insert into public.vibe_interests (vibe_id, user_id, status, source, confirmed_at)
-        values (p_vibe, auth.uid(), 'confirmed', 'algo', now())
-      on conflict (vibe_id, user_id) do update set status='confirmed', confirmed_at=now();
+        values (p_vibe, auth.uid(), 'confirmed', 'self', now())
+      on conflict (vibe_id, user_id) do update
+        set status='confirmed', source='self', confirmed_at=now();
 
       -- Mirror confirm_vibe's side effects so they land in the room cleanly.
       insert into public.vibing_chats (vibe_id) values (p_vibe) on conflict (vibe_id) do nothing;
@@ -66,8 +67,9 @@ begin
 
   -- Otherwise: normal soft interest (pre-matching, or full → waits for a spot).
   insert into public.vibe_interests (vibe_id, user_id, status, source)
-    values (p_vibe, auth.uid(), 'interested', 'algo')
-    on conflict (vibe_id, user_id) do update set status='interested';
+    values (p_vibe, auth.uid(), 'interested', 'self')
+    on conflict (vibe_id, user_id) do update
+      set status='interested', source='self';
   return jsonb_build_object('status','interested','confirmed',false);
 end $$;
 grant execute on function public.express_interest(uuid) to authenticated;

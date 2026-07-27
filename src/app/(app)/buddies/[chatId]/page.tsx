@@ -19,7 +19,7 @@ export default async function BuddyChatPage({
   const supabase = await createClient();
   const t = await getTranslations("buddies");
   const locale = await getLocale();
-  // The chat lookup only needs params.chatId — fetch it alongside the user.
+  // The chat lookup only needs params.chatId - fetch it alongside the user.
   const [user, { data: chat }] = await Promise.all([
     getSessionUser(),
     supabase.from("buddy_chats").select("id, match_id").eq("id", params.chatId).maybeSingle(),
@@ -59,8 +59,8 @@ export default async function BuddyChatPage({
 
   const publicFields =
     "id, display_name, age, photos, home_city, one_liner, trip_vibe";
-  // The flock lookup and the five chat reads are independent — one stage.
-  // Any public trip behind this chat is a Flock — group chat for host + all
+  // The flock lookup and the five chat reads are independent - one stage.
+  // Any public trip behind this chat is a Flock - group chat for host + all
   // accepted members. (Previously required a co-host, which wrongly excluded
   // directly-created flocks and rendered them as a 1:1.)
   const [
@@ -208,7 +208,7 @@ export default async function BuddyChatPage({
 
   const isActivityMatch = (trip?.kind ?? "trip") === "activity";
 
-  // Activity matches (incl. Home "Say hi") stay generic — no travel wording and
+  // Activity matches (incl. Home "Say hi") stay generic - no travel wording and
   // NO specific activity title: the match just borrows each person's latest
   // active post, so naming it ("play chess") is misleading. The real plan is set
   // via "Propose a plan" in the chat.
@@ -244,7 +244,7 @@ export default async function BuddyChatPage({
   }));
   const isHostOfFlock = !!flockHostId && user!.id === flockHostId;
 
-  // A Flock is a group already committed to a SPECIFIC trip — show that trip's
+  // A Flock is a group already committed to a SPECIFIC trip - show that trip's
   // dates and a planning prompt, not the 1:1 "pick a destination together" copy.
   const isFlock = !!flockTripId;
 
@@ -296,7 +296,7 @@ export default async function BuddyChatPage({
     currentPlan = (planRes.data as BuddyPlanData | null) ?? null;
   }
 
-  // A plan-based (Home "Say hi") match has no real shared trip — any trip on the
+  // A plan-based (Home "Say hi") match has no real shared trip - any trip on the
   // match was borrowed for context and reads as random junk ("Jul 25 · Party").
   // When there's a plan, the plan card IS the context: strip the trip line and
   // the generic "you matched" icebreaker so the two don't compete.

@@ -5,7 +5,7 @@
     "yourArea": "your area"
   },
   "buddies": {
-    "subtitle": "People in {city} up for doing something — say hi.",
+    "subtitle": "People in {city} up for doing something - say hi.",
     "yourCity": "your city",
     "seeMore": "See more",
     "emptyTitle": "No new activity buddies in {city} right now.",
@@ -17,7 +17,7 @@
   },
   "joinVibe": {
     "heading": "Join a vibe",
-    "subtitle": "Group plans everywhere — jump into one."
+    "subtitle": "Group plans everywhere - jump into one."
   },
   "nearYou": {
     "liveNow": "live now",
@@ -58,11 +58,11 @@
   },
   "explore": {
     "heading": "Explore Vibes around the world",
-    "subtitle": "Browsing group plans in other cities — jump into one."
+    "subtitle": "Browsing group plans in other cities - jump into one."
   },
   "flocks": {
     "heading": "Flocks you can join, anywhere",
-    "subtitle": "Newest open group trips worldwide — request in.",
+    "subtitle": "Newest open group trips worldwide - request in.",
     "emptyTitle": "No open flocks right now.",
     "emptyBody": "Start one and let travelers request in.",
     "createFlock": "Create a flock",
@@ -109,6 +109,6 @@
   },
   "feed": {
     "heading": "Fresh from Flockie",
-    "subtitle": "Real moments from {city} — straight from the people making plans."
+    "subtitle": "Real moments from {city} - straight from the people making plans."
   }
 }

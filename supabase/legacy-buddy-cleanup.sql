@@ -1,7 +1,7 @@
 -- Cleanup (2026-07-02): drop the legacy buddy-matching functions from
 -- supabase/buddy-matching.sql. Run in the Supabase SQL editor. Safe to re-run.
 --
--- These were the original flat-weight deck — no hard-block filtering, still
+-- These were the original flat-weight deck - no hard-block filtering, still
 -- granted to authenticated, and unused by the client. Canonical replacements:
 --   • buddy_candidates_trip            (supabase/match-priorities.sql)
 --   • buddy_swipe(uuid, boolean, text) (supabase/buddy-swipe-notify-once.sql)

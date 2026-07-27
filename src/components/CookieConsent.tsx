@@ -37,12 +37,12 @@ export default function CookieConsent() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    if (!GA_ID) return; // analytics not configured — never show the banner
+    if (!GA_ID) return; // analytics not configured - never show the banner
     let choice: string | null = null;
     try {
       choice = localStorage.getItem(STORAGE_KEY);
     } catch {
-      // localStorage unavailable (private mode / blocked) — show the banner.
+      // localStorage unavailable (private mode / blocked) - show the banner.
     }
     if (choice === "granted") {
       loadGoogleAnalytics();

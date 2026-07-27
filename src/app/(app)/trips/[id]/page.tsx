@@ -37,7 +37,7 @@ type Detail = {
 };
 type Member = { id: string; display_name: string | null; photo: string | null; age: number | null; one_liner: string | null; is_host: boolean };
 
-// Full page for a 1:1 trip — everything the board card can't hold: full
+// Full page for a 1:1 trip - everything the board card can't hold: full
 // description, budget/style, the roster of who's going, and (for members) the
 // planning workspace. A Flock has its own page at /flocks/[tripId].
 export default async function TripDetailPage({ params }: { params: { id: string } }) {
@@ -135,7 +135,7 @@ export default async function TripDetailPage({ params }: { params: { id: string 
         <span className="shrink-0 text-sm font-bold text-flockie-blue">{tf("detail.view")}</span>
       </Link>
 
-      {/* Itinerary preview — visible to browsers too */}
+      {/* Itinerary preview - visible to browsers too */}
       <TripAgendaPreview tripId={d.id} />
 
       {/* Action / status */}
@@ -155,7 +155,7 @@ export default async function TripDetailPage({ params }: { params: { id: string 
         )}
       </div>
 
-      {/* Roster — members only */}
+      {/* Roster - members only */}
       {isMember && members.length > 0 && (
         <div className="mt-6">
           <p className="text-xs font-extrabold uppercase tracking-wide text-ink/50">{t("detail.whosGoing")}</p>
@@ -175,7 +175,7 @@ export default async function TripDetailPage({ params }: { params: { id: string 
         </div>
       )}
 
-      {/* Workspace — members only */}
+      {/* Workspace - members only */}
       
     </main>
   );

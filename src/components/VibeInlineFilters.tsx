@@ -8,7 +8,7 @@ type Option = { value: string; label: string };
 
 // Inline filter pills that live inside the Vibes search bar: a single-select
 // "Any time" (time window) and a multi-select "Category". They write the same
-// `when` / `category` URL params the server page reads — no popup sheet.
+// `when` / `category` URL params the server page reads - no popup sheet.
 export default function VibeInlineFilters({
   whenOptions,
   categoryOptions,

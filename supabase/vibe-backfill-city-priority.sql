@@ -1,5 +1,5 @@
 -- Vibe backfill: when a spot opens up (a confirmed attendee drops), invite from
--- the standby list SAME-CITY FIRST — mirrors the shortlist priority in
+-- the standby list SAME-CITY FIRST - mirrors the shortlist priority in
 -- _rank_vibe_core (see vibe-ranking-city-priority.sql). Score breaks ties within
 -- each group; anyone missing a city falls to the score-ordered group. Everything
 -- else (algo-share host-spot accounting via _vibe_algo_remaining, the private-spot
@@ -32,7 +32,7 @@ begin
     update public.vibe_interests set status='invited', invitation_sent_at=now(),
       invitation_expires_at=public._vibe_confirm_deadline(v.starts_at) where vibe_id=p_vibe and user_id=c.user_id;
     perform public.notify(c.user_id, 'vibe_invitation', 'A spot opened up: ' || v.title,
-            'You''re in — confirm to lock your spot.', jsonb_build_object('vibe_id', p_vibe));
+            'You''re in - confirm to lock your spot.', jsonb_build_object('vibe_id', p_vibe));
     v_added := v_added + 1;
   end loop;
   return v_added;

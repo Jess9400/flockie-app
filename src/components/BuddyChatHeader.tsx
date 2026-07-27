@@ -48,9 +48,9 @@ export default function BuddyChatHeader({
   isGroup?: boolean;
   groupTitle?: string;
   groupMembers?: { id: string; name: string; photo: string | null; isHost: boolean }[];
-  // "Turn into a Flock" only applies to 1:1 TRIP matches — never activities.
+  // "Turn into a Flock" only applies to 1:1 TRIP matches - never activities.
   canFlock?: boolean;
-  // The Flock's trip id (group chats only) — enables "Leave Flock".
+  // The Flock's trip id (group chats only) - enables "Leave Flock".
   flockTripId?: string | null;
 }) {
   const router = useRouter();

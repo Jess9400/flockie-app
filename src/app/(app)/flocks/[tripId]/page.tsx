@@ -13,7 +13,7 @@ import { tripDays } from "@/lib/trips";
 import { ARCHETYPES } from "@/lib/onboarding/archetypes";
 import type { VibeDimension } from "@/lib/onboarding/types";
 
-// Friendly unavailable state — same graceful pattern as the Vibe detail page
+// Friendly unavailable state - same graceful pattern as the Vibe detail page
 // (no hard 404: the Flock may simply be cancelled, deleted, or private).
 async function Unavailable() {
   const tr = await getTranslations("flocks");
@@ -42,7 +42,7 @@ export default async function FlockDetailPage({
   const tr = await getTranslations("flocks");
 
   // Same table/columns the browse page reads; RLS (can_see_trip) already allows
-  // owner / co-host / public / accepted member — see supabase/trips-rls.sql.
+  // owner / co-host / public / accepted member - see supabase/trips-rls.sql.
   const { data: trip } = await supabase
     .from("trips")
     .select(
@@ -96,7 +96,7 @@ export default async function FlockDetailPage({
   const hostName = host?.display_name || tr("browse.hostFallback");
   const archetype = host?.archetype ? ARCHETYPES[host.archetype as VibeDimension] : null;
 
-  // Vibe-match % (viewer vs this Flock) — only meaningful for non-hosts.
+  // Vibe-match % (viewer vs this Flock) - only meaningful for non-hosts.
   const pct = isHost ? undefined : (await loadFlockMatch(supabase, [trip.id]))[trip.id];
 
   // Join gate: same Trip-form check the browse page applies (migration-safe).
@@ -289,7 +289,7 @@ export default async function FlockDetailPage({
         ) : (
           <FlockRequestButton
             tripId={trip.id}
-            // Only a live request counts as "requested" — a declined one lets
+            // Only a live request counts as "requested" - a declined one lets
             // you ask again (consistent with the browse list's status filter).
             requested={myReq?.status === "pending" || myReq?.status === "waiting"}
             tripPrefsDone={tripPrefsDone}

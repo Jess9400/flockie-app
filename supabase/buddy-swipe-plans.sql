@@ -1,5 +1,5 @@
 -- ============================================================================
--- Flockie — "invite with a plan" from the Home Say Hi card.
+-- Flockie - "invite with a plan" from the Home Say Hi card.
 -- Idempotent / safe to re-run. Paste into the Supabase SQL editor and Run.
 --
 -- Redesign: the plan (category + place + date) is now attached at the Say Hi
@@ -7,7 +7,7 @@
 -- Tokai, Thu 6pm" on the person's Home card; we stash that on their swipe row.
 -- When the other person matches back, we auto-seed a buddy_plans row from the
 -- FIRST proposer's stash, so the recipient opens the chat to
--- "Jess invited you for coffee at Blue Tokai · Thu 6pm — Accept".
+-- "Jess invited you for coffee at Blue Tokai · Thu 6pm - Accept".
 -- Requires run-on-prod-2026-07-18.sql to have created buddy_plans first.
 -- ============================================================================
 
@@ -80,7 +80,7 @@ begin
     where swiper_id = p_target and target_id = auth.uid();
 
     -- A plan-based (Home "Say hi") match has NO shared trip. Only borrow a
-    -- personal trip for context when NEITHER side attached a plan — and never a
+    -- personal trip for context when NEITHER side attached a plan - and never a
     -- public (flock) trip, which would render this 1:1 as a Flock group chat.
     -- This keeps the random "Jul 25 · Party" trip line out of plan matches and
     -- stops the review gate from firing on a borrowed trip.
@@ -138,7 +138,7 @@ begin
       coalesce(v_liker, 'Someone') || ' is in ' || coalesce(v_city, 'your city') ||
         ' looking for someone to do ' ||
         coalesce(nullif(p_activity_title, ''), v_cat, 'something') ||
-        ' — your vibes match. Match back to chat.',
+        ' - your vibes match. Match back to chat.',
       jsonb_build_object('like_from', auth.uid())
     );
   end if;

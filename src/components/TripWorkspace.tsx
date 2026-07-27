@@ -46,7 +46,7 @@ export default function TripWorkspace({
   const [tab, setTab] = useState<Tab>(only ?? "checklist");
   const nameOf = (id: string | null) => members.find((m) => m.id === id)?.name ?? "";
   const firstName = (id: string | null) => (nameOf(id).split(" ")[0] || "Someone");
-  // Workspace tables are shared by trips/flocks and clubs — same schema, keyed
+  // Workspace tables are shared by trips/flocks and clubs - same schema, keyed
   // by either trip_id or club_id.
   const keyCol = spaceKind === "club" ? "club_id" : "trip_id";
 
@@ -125,7 +125,7 @@ export default function TripWorkspace({
       }
       setTitle("");
     }
-    // Toggle a member's done state on an item (small trusted group — anyone can
+    // Toggle a member's done state on an item (small trusted group - anyone can
     // update, e.g. the organizer marking for someone).
     async function toggleMember(it: ChecklistItem, userId: string) {
       const next = it.done_by.includes(userId)
@@ -175,7 +175,7 @@ export default function TripWorkspace({
                       const cls = `flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-bold transition-colors ${
                         done ? "border-onboarding-green bg-onboarding-green/10 text-onboarding-green" : "border-ink/15 bg-white text-ink/45"
                       }`;
-                      // You can only check off your own box — everyone else's chip
+                      // You can only check off your own box - everyone else's chip
                       // is read-only (shows their status).
                       return isMe ? (
                         <button key={m.id} type="button" onClick={() => toggleMember(it, m.id)} className={cls}>
@@ -236,7 +236,7 @@ export default function TripWorkspace({
       }
       setTitle("");
     }
-    // Paste a whole itinerary — one line per item; a leading date (2026-08-10 …)
+    // Paste a whole itinerary - one line per item; a leading date (2026-08-10 …)
     // is picked up as the day.
     async function importBulk() {
       const lines = bulk.split("\n").map((l) => l.trim()).filter(Boolean).slice(0, 60);
@@ -393,7 +393,7 @@ export default function TripWorkspace({
       return `https://search.hotellook.com/?${p}`;
     })();
     const klook = city ? `https://www.klook.com/search/?query=${encodeURIComponent(city)}` : "https://www.klook.com/";
-    // Clubs only book activities (no hotels/flights/cars — they meet locally).
+    // Clubs only book activities (no hotels/flights/cars - they meet locally).
     const rows: [typeof Hotel, string, string][] = scope === "activities"
       ? [[Ticket, t("dealActivities"), klook]]
       : [

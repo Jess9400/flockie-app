@@ -31,7 +31,7 @@ export default async function ProfilePage({
 
   const complete = profile?.onboarding_complete ?? false;
 
-  // Bio — separate, migration-safe (column may not exist yet).
+  // Bio - separate, migration-safe (column may not exist yet).
   const { data: bioRow } = await supabase
     .from("profiles")
     .select("bio")

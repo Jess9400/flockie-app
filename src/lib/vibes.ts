@@ -5,7 +5,7 @@ import { dfLocale, relativeWords, intlLocale } from "@/lib/date-locale";
 // "Today, 3pm" / "Tomorrow, 3pm" / "Sat Jun 21, 3pm".
 //
 // `timeZone` (IANA, e.g. "Asia/Kolkata") renders the instant in the VIBE's own
-// zone, so a Bangalore vibe reads "5pm" for everyone — server- or client-
+// zone, so a Bangalore vibe reads "5pm" for everyone - server- or client-
 // rendered, and regardless of the viewer's location. Without it, the time was
 // rendered in the runtime zone, so a server component (UTC) and a client
 // component (the viewer's browser) disagreed for the same vibe. Legacy vibes

@@ -1,18 +1,18 @@
 -- ════════════════════════════════════════════════════════════════════════════
--- deploy-2026-07-02.sql — tombstone-followup batch. Run on prod in this order.
+-- deploy-2026-07-02.sql - tombstone-followup batch. Run on prod in this order.
 -- Idempotent (CREATE OR REPLACE / DROP ... IF EXISTS). Safe to re-run.
 --
 -- Contains ONLY what must run on prod for this batch:
---   1. vibe_match  — adds the 0.15 review-fit term (rescaled the other 4 weights).
---   2. invite_city_fallback — the age+gender eligibility version (via vibe_eligible)
+--   1. vibe_match  - adds the 0.15 review-fit term (rescaled the other 4 weights).
+--   2. invite_city_fallback - the age+gender eligibility version (via vibe_eligible)
 --      with the #77 starts_at>now() guard. (Unchanged this batch; re-affirmed here
 --      so the deploy is self-contained.)
 --   3. DROP the legacy buddy functions defused in buddy-matching.sql.
 --
 -- DEPENDENCIES that must already exist on prod (from earlier merged work):
---   • vibe_review_fit         (supabase/vibe-review-preferences.sql) — for #1
---   • vibe_eligible           (supabase/vibe-eligibility-enforce.sql) — for #2
---   • _vibe_algo_remaining, _vibe_confirm_deadline, notify, backfill_vibe — for #2
+--   • vibe_review_fit         (supabase/vibe-review-preferences.sql) - for #1
+--   • vibe_eligible           (supabase/vibe-eligibility-enforce.sql) - for #2
+--   • _vibe_algo_remaining, _vibe_confirm_deadline, notify, backfill_vibe - for #2
 -- If those are NOT yet on prod, run vibe-eligibility-enforce.sql and
 -- vibe-review-preferences.sql FIRST (see the run order in the deploy notes).
 -- ════════════════════════════════════════════════════════════════════════════
@@ -108,7 +108,7 @@ begin
   -- Same remaining-spots helper as _rank_vibe_core: shortlisted/invited/confirmed
   -- holds and the host's private share are all accounted for inside
   -- _vibe_algo_remaining. Then subtract everyone still WAITING in the funnel
-  -- (interested/requested/standby — they'll be ranked / host-reviewed), so cold
+  -- (interested/requested/standby - they'll be ranked / host-reviewed), so cold
   -- candidates never displace genuinely-interested people when this runs early.
   select count(*) into v_pool from public.vibe_interests
     where vibe_id = p_vibe and status in ('interested','requested','standby');
@@ -141,7 +141,7 @@ begin
       values (p_vibe, c.id, 'shortlisted', 'algo', c.score)
       on conflict (vibe_id, user_id) do nothing;
     perform public.notify(c.id, 'vibe_shortlisted', 'A Vibe in ' || v.city || ' you might love: ' || v.title,
-            'You''re in the running — we''ll notify you if a spot is yours.', jsonb_build_object('vibe_id', p_vibe));
+            'You''re in the running - we''ll notify you if a spot is yours.', jsonb_build_object('vibe_id', p_vibe));
     v_added := v_added + 1;
   end loop;
   return v_added;

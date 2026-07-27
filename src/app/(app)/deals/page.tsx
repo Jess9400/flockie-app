@@ -23,7 +23,7 @@ export default async function DealsPage() {
 
   const [{ data: profile }, { data: trips }, { data: myConfirmed }] = await Promise.all([
     supabase.from("profiles").select("home_city").eq("id", user!.id).maybeSingle(),
-    // Upcoming trips/flocks the user is organising — the destinations they'll
+    // Upcoming trips/flocks the user is organising - the destinations they'll
     // actually book stays / flights / activities for.
     supabase
       .from("trips")
@@ -34,7 +34,7 @@ export default async function DealsPage() {
       .gte("end_date", new Date().toISOString().slice(0, 10))
       .order("start_date", { ascending: true })
       .limit(8),
-    // Vibes the user is confirmed for — real upcoming plans to shop for.
+    // Vibes the user is confirmed for - real upcoming plans to shop for.
     supabase
       .from("vibe_interests")
       .select("vibe_id")

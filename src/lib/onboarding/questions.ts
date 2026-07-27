@@ -77,7 +77,7 @@ export const VIBE_QUESTIONS: VibeQuestion[] = [
     id: "qmood",
     type: "mood",
     mechanicLabel: "Tap one",
-    text: "No overthinking — which pulls you in?",
+    text: "No overthinking - which pulls you in?",
     options: [
       {
         emoji: "🕯️",

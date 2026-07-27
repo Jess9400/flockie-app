@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 // Reverse-geocode lat/lng → city. Uses Google Geocoding if GEOCODING_KEY is set
-// (server-side, unrestricted/IP-restricted key — NOT the referrer-restricted
+// (server-side, unrestricted/IP-restricted key - NOT the referrer-restricted
 // NEXT_PUBLIC_GMAPS_KEY), otherwise the free OpenStreetMap Nominatim service.
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -23,7 +23,7 @@ export async function GET(req: Request) {
     p_max: 60,
     p_window_seconds: 3600,
   });
-  if (allowed === false) return NextResponse.json({ error: "Too many requests — slow down." }, { status: 429 });
+  if (allowed === false) return NextResponse.json({ error: "Too many requests - slow down." }, { status: 429 });
 
   const key = process.env.GEOCODING_KEY || process.env.NEXT_PUBLIC_GMAPS_KEY;
   try {

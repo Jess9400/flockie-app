@@ -9,9 +9,9 @@
   "composer": {
     "back": "Home",
     "heading": "Share a moment",
-    "subtitle": "A recap of something that happened — or a heads-up about what's coming.",
+    "subtitle": "A recap of something that happened - or a heads-up about what's coming.",
     "stepAnchor": "1 · What is this about?",
-    "noAnchors": "Nothing to post about yet — join a vibe, a club or an activity first, then come tell the story.",
+    "noAnchors": "Nothing to post about yet - join a vibe, a club or an activity first, then come tell the story.",
     "stepBody": "2 · Say something",
     "bodyPlaceholder": "How was it? Or what should people know before it happens?",
     "stepPhotos": "3 · Photos (up to 4)",
@@ -20,7 +20,7 @@
     "posting": "Posting…",
     "cta": "Post it",
     "ctaDisabled": "Pick what it's about first",
-    "anchorNote": "No free-floating posts — every post is anchored to a real vibe, club or activity.",
+    "anchorNote": "No free-floating posts - every post is anchored to a real vibe, club or activity.",
     "subVibe": "Vibe you attended",
     "subVibeHosted": "Vibe you hosted",
     "subClub": "Your club",
@@ -46,7 +46,7 @@
   "people": {
     "back": "Profile",
     "heading": "People",
-    "subtitle": "Your people — and new ones from real rooms in your city.",
+    "subtitle": "Your people - and new ones from real rooms in your city.",
     "tab": {
       "find": "Find people",
       "following": "Following",
@@ -56,9 +56,9 @@
     "metBadge": "met",
     "metHeading": "People you've met",
     "cityHeading": "Also in your city",
-    "emptyFind": "Nobody found — try another name.",
-    "emptyFollowing": "You're not following anyone yet — start with people you've met.",
-    "emptyFollowers": "No followers yet — post a recap and say hi around town."
+    "emptyFind": "Nobody found - try another name.",
+    "emptyFollowing": "You're not following anyone yet - start with people you've met.",
+    "emptyFollowers": "No followers yet - post a recap and say hi around town."
   },
   "deletePost": "Delete post",
   "report": {
@@ -66,10 +66,10 @@
     "message": "Tell us what's wrong and we'll review it.",
     "placeholder": "What's the issue? (optional)",
     "cta": "Report",
-    "done": "Reported — thank you, we'll review it."
+    "done": "Reported - thank you, we'll review it."
   },
   "reviewBadge": "review",
-  "joinVibeCta": "This one's coming up — join it",
+  "joinVibeCta": "This one's coming up - join it",
   "menu": {
     "aria": "Post options",
     "edit": "Edit post",

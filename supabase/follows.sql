@@ -1,5 +1,5 @@
 -- ============================================================================
--- Flockie — Feed phase 2: follows + people directory + profile posts.
+-- Flockie - Feed phase 2: follows + people directory + profile posts.
 -- Run AFTER feed.sql. Idempotent / safe to re-run.
 -- ============================================================================
 
@@ -20,7 +20,7 @@ create policy "follows insert own" on public.follows for insert to authenticated
 drop policy if exists "follows delete own" on public.follows;
 create policy "follows delete own" on public.follows for delete to authenticated using (follower_id = auth.uid());
 
--- Toggle + notify (once per pair while unread — no follow/unfollow spam).
+-- Toggle + notify (once per pair while unread - no follow/unfollow spam).
 create or replace function public.toggle_follow(p_user uuid)
 returns boolean language plpgsql security definer set search_path = public as $$
 declare v_me text; v_new boolean;
@@ -184,7 +184,7 @@ begin
     coalesce(v_me, 'Someone')
       || case when v_n > 1 then ' and ' || (v_n - 1) || ' others liked your post'
               else ' liked your post' end,
-    'Nice — your recap is landing.',
+    'Nice - your recap is landing.',
     jsonb_build_object('post_id', new.post_id, 'href', '/home')
   );
   return new;

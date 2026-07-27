@@ -2,7 +2,7 @@
 
 -- SUPERSEDED: the live rank_vibe is the thin auth wrapper in
 -- supabase/vibe-auto-matching.sql. This older direct-ranking copy is wrapped out
--- 2026-06-28 — repo-only, no DB change. (confirm_vibe below stays active.)
+-- 2026-06-28 - repo-only, no DB change. (confirm_vibe below stays active.)
 /*
 -- ── rank_vibe: score interested candidates, invite up to capacity, standby rest
 create or replace function public.rank_vibe(p_vibe uuid)

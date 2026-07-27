@@ -1,12 +1,12 @@
 // Loading-state primitives for route-level loading.tsx files.
 // Styled to the design system (ink borders softened to ink/10, cream/white
-// surfaces, rounded-2xl/3xl) — no data, no client JS.
+// surfaces, rounded-2xl/3xl) - no data, no client JS.
 
 export function SkeletonLine({ className = "" }: { className?: string }) {
   return <div className={`animate-pulse rounded-full bg-ink/10 ${className}`} />;
 }
 
-// Square-artwork "trading card" — mirrors VibeCard / flock cards.
+// Square-artwork "trading card" - mirrors VibeCard / flock cards.
 export function SkeletonCard() {
   return (
     <div className="overflow-hidden rounded-2xl border-2 border-ink/10 bg-white">
@@ -20,7 +20,7 @@ export function SkeletonCard() {
   );
 }
 
-// Compact list row — mirrors chat rows / My Vibes / My Trips rows.
+// Compact list row - mirrors chat rows / My Vibes / My Trips rows.
 export function SkeletonListRow() {
   return (
     <div className="flex items-center gap-3 rounded-2xl border-2 border-ink/10 bg-white p-3">
@@ -34,7 +34,7 @@ export function SkeletonListRow() {
   );
 }
 
-// Horizontal browse-card row — mirrors the Vibes list without changing other list loaders.
+// Horizontal browse-card row - mirrors the Vibes list without changing other list loaders.
 export function SkeletonVibeListCard() {
   return (
     <div className="flex min-h-28 overflow-hidden rounded-2xl border-2 border-ink/10 bg-white">
@@ -48,7 +48,7 @@ export function SkeletonVibeListCard() {
   );
 }
 
-// Horizontal snap carousel — mirrors the Home page card rails.
+// Horizontal snap carousel - mirrors the Home page card rails.
 export function SkeletonCarousel({ count = 3 }: { count?: number }) {
   return (
     <div className="flex gap-4 overflow-hidden pb-2">

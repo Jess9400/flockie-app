@@ -142,7 +142,7 @@ export default function ActivityQuestions({ answers, onChange }: Props) {
         />
       </div>
 
-      {/* Vibe — max 2 */}
+      {/* Vibe - max 2 */}
       <div>
         <p className="font-nunito text-[15px] font-semibold text-navy">
           Ideal experience vibe <Counter n={answers.activity_vibe.length} max={ACTIVITY_VIBE_MAX} />
@@ -160,7 +160,7 @@ export default function ActivityQuestions({ answers, onChange }: Props) {
         </div>
       </div>
 
-      {/* Dealbreakers — toggle pills */}
+      {/* Dealbreakers - toggle pills */}
       <div>
         <p className="mb-3 font-nunito text-[15px] font-semibold text-navy">Hard preferences</p>
         <div className="space-y-3">

@@ -49,7 +49,7 @@ export default function TermsPage() {
         <ul className="list-disc space-y-1 pl-5">
           <li>Tell a trusted person where you&rsquo;re going</li>
           <li>Meet first in a public place</li>
-          <li>Trust your instincts — leave if something feels wrong</li>
+          <li>Trust your instincts - leave if something feels wrong</li>
           <li>Never send money or share identity documents</li>
           <li>For any safety incident, contact local authorities first, then us at {email}</li>
         </ul>
@@ -103,7 +103,7 @@ export default function TermsPage() {
       <Section heading="Verification (future feature)">
         <p>
           Currently, Flockie does not run identity verification or background checks. When
-          verification launches, it will confirm identity only — not safety. We do not screen
+          verification launches, it will confirm identity only - not safety. We do not screen
           members against criminal databases.
         </p>
       </Section>
@@ -145,7 +145,7 @@ export default function TermsPage() {
         </ul>
       </Section>
 
-      <Section heading="Activities, trips, and meetings — your responsibility">
+      <Section heading="Activities, trips, and meetings - your responsibility">
         <p>When you participate in any Vibe, trip, or meeting:</p>
         <ul className="list-disc space-y-1 pl-5">
           <li>Flockie does not organize, supervise, or attend</li>

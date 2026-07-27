@@ -186,7 +186,7 @@ export default function BuddyPlan({
       </span>
     );
 
-  // ── Accepted plan — the single "it's a match + you're on" confirmation ──
+  // ── Accepted plan - the single "it's a match + you're on" confirmation ──
   if (plan?.status === "accepted") {
     const details = [plan.place_name, plan.when_at ? fmtWhen(plan.when_at) : null]
       .filter(Boolean)
@@ -232,7 +232,7 @@ export default function BuddyPlan({
     );
   }
 
-  // ── Proposed plan — the invite. Recipient sees Accept/Decline; sender waits ──
+  // ── Proposed plan - the invite. Recipient sees Accept/Decline; sender waits ──
   if (plan?.status === "proposed" && !composing) {
     const mine = plan.proposed_by === currentUserId;
     const details = [plan.place_name, plan.when_at ? fmtWhen(plan.when_at) : null]

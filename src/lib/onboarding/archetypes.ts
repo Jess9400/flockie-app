@@ -8,7 +8,7 @@ export const ARCHETYPES: Record<VibeDimension, Archetype> = {
     gradientFrom: "#1A6899",
     gradientTo: "#2C7CB2",
     description: "You go deep, not wide. You're in the museum before it opens and the local spot after it closes.",
-    insight: "You don't just visit places — you actually learn them. Pair you with someone who matches that pace, not someone who wants to rush you through.",
+    insight: "You don't just visit places - you actually learn them. Pair you with someone who matches that pace, not someone who wants to rush you through.",
     compatibleWith: ["food", "night"],
   },
   social: {
@@ -18,7 +18,7 @@ export const ARCHETYPES: Record<VibeDimension, Archetype> = {
     gradientFrom: "#FF6B4A",
     gradientTo: "#E0512C",
     description: "You came for one thing and stayed for the people. You know everyone's name by day two.",
-    insight: "A room of strangers doesn't scare you — it's basically an invitation. We'll keep your feed full of people and plans, not just places.",
+    insight: "A room of strangers doesn't scare you - it's basically an invitation. We'll keep your feed full of people and plans, not just places.",
     compatibleWith: ["night", "adventure"],
   },
   night: {

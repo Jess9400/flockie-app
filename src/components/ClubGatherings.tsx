@@ -18,7 +18,7 @@ type Gathering = {
 type Attendee = { id: string; name: string; photo: string | null };
 
 // The club Calendar: the club's scheduled meetings (its gatherings are vibes
-// with club_id set). Each member checks whether they'll attend — a personal
+// with club_id set). Each member checks whether they'll attend - a personal
 // RSVP everyone can see, like ticking the checklist.
 export default function ClubGatherings({
   clubId,
@@ -127,7 +127,7 @@ export default function ClubGatherings({
               <ChevronRight size={15} className="shrink-0 text-ink/30" />
             </Link>
 
-            {/* RSVP — each member checks if they'll attend */}
+            {/* RSVP - each member checks if they'll attend */}
             <div className="flex items-center gap-2 px-3 pb-2.5 pt-2">
               {upcoming ? (
                 <button

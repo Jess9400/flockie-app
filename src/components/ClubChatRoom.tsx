@@ -20,7 +20,7 @@ export type ClubMsg = {
   edited_at?: string | null;
 };
 
-// The club's persistent room — realtime chat over club_messages, styled to
+// The club's persistent room - realtime chat over club_messages, styled to
 // match the buddy/vibe rooms: date dividers, sender grouping, image messages,
 // link previews, and a photo attach button.
 export default function ClubChatRoom({

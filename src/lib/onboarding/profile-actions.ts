@@ -143,7 +143,7 @@ export async function getOnboardingProfileDefaults() {
 
   return {
     firstName: profile?.display_name?.trim().split(/\s+/)[0] || metadataName || "",
-    // Photo is uploaded manually (most people have no Google avatar) — only
+    // Photo is uploaded manually (most people have no Google avatar) - only
     // reuse one already saved on the profile, never the Google avatar.
     photoUrl: profile?.photos?.[0] || null,
     birthday: profile?.birthday || "",

@@ -63,7 +63,7 @@ export default function VibeShareCard({
       ctx.fillRect(0, 0, W, H);
       ctx.textAlign = "center";
 
-      // Flockie logo mark + wordmark — top-left
+      // Flockie logo mark + wordmark - top-left
       if (logo) {
         const lw = 78;
         ctx.drawImage(logo, 64, 60, lw, lw * (104 / 118));
@@ -109,7 +109,7 @@ export default function VibeShareCard({
         y = 520;
       }
 
-      // tag pills (up to 3) — single centered horizontal row
+      // tag pills (up to 3) - single centered horizontal row
       const shown = tags
         .filter(Boolean)
         .map((t) => (t.length > 18 ? t.slice(0, 17).trim() + "…" : t))
@@ -134,7 +134,7 @@ export default function VibeShareCard({
         ctx.textBaseline = "alphabetic";
       }
 
-      // footer — sign-up CTA so anyone who sees the card can join
+      // footer - sign-up CTA so anyone who sees the card can join
       ctx.fillStyle = "#FF6B4A";
       ctx.font = "700 40px system-ui, sans-serif";
       ctx.fillText("Find your vibe → findflockie.com", W / 2, H - 78);
@@ -167,7 +167,7 @@ export default function VibeShareCard({
           await nav.share(data);
           return;
         } catch {
-          /* cancelled — fall through to download */
+          /* cancelled - fall through to download */
         }
       }
       const a = document.createElement("a");

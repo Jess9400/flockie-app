@@ -5,7 +5,7 @@
   "create": "Criar",
   "subtitle": "As Vibes que você organiza e aquelas de que você participa.",
   "inTheRunning": "Na disputa",
-  "inTheRunningHelp": "Vibes de que você participa — a gente avisa quando o anfitrião montar o grupo.",
+  "inTheRunningHelp": "Vibes de que você participa - a gente avisa quando o anfitrião montar o grupo.",
   "hosting": "Organizando",
   "emptyHosting": "Você ainda não organizou nenhuma Vibe próxima. Crie a sua primeira.",
   "shareToFill": "Compartilhe para lotar o seu grupo mais rápido 🚀",
@@ -26,7 +26,7 @@
     "confirmed": "Confirmado"
   },
   "youreGoing": "Você vai",
-  "youreGoingHelp": "Confirmado — você está dentro. Abra uma para ver os detalhes e o chat.",
+  "youreGoingHelp": "Confirmado - você está dentro. Abra uma para ver os detalhes e o chat.",
   "seatsFilled": "{filled} de {capacity} vagas preenchidas",
   "openChat": "Abrir chat",
   "directions": "Como chegar",

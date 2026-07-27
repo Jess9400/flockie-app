@@ -2,7 +2,7 @@
 --
 -- The Flock group chat is a buddy_chat hung off a buddy_match whose trip_a/trip_b
 -- points at the flock trip. Flocks *converted from a buddy pair* already have
--- that match+chat, but Flocks *created directly* (Create a Flock) never do — so
+-- that match+chat, but Flocks *created directly* (Create a Flock) never do - so
 -- respond_join_request accepted the member but no chat existed. This:
 --   1) re-creates respond_join_request to SEED the group chat on first approval,
 --   2) backfills a chat for already-accepted flocks that are missing one.
@@ -75,7 +75,7 @@ begin
   -- chat_id in the payload so the inbox can deep-link straight into the chat
   -- (/my-trips only lists trips the viewer hosts, so it was a dead end here).
   perform public.notify(p_user, 'flock_approved', 'You''re in! ' || v_dest,
-    'Your request to join was approved — say hi in the group chat.',
+    'Your request to join was approved - say hi in the group chat.',
     jsonb_build_object('trip_id', p_trip, 'chat_id', v_chat));
 end $$;
 grant execute on function public.respond_join_request(uuid, uuid, boolean) to authenticated;

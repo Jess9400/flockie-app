@@ -1,7 +1,7 @@
 -- Confirm-spot windows tuned so spots turn over fast enough to fill, and the
 -- confirmed list is people who are actually committed:
 --   * short vibe (<24h out): 1h to confirm
---   * normal vibe (>=24h out): 6h to confirm (was 24h — too long; spots sat held)
+--   * normal vibe (>=24h out): 6h to confirm (was 24h - too long; spots sat held)
 -- Never past ~30 min before start. Unconfirmed spots cascade to standby via
 -- backfill_vibe. confirm_vibe already rejects expired/over-fill. Idempotent.
 create or replace function public._vibe_confirm_deadline(p_starts timestamptz)

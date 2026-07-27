@@ -14,7 +14,7 @@ export type ConvertAttendee = {
 
 const CADENCES = ["weekly", "biweekly", "monthly"] as const;
 
-// "Turn this into a club?" — the vibe that just happened becomes the club's
+// "Turn this into a club?" - the vibe that just happened becomes the club's
 // first completed gathering; the host picks a rhythm and which attendees to
 // invite as founding members.
 export default function ConvertVibeToClub({

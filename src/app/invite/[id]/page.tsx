@@ -59,7 +59,7 @@ export default async function InvitePage({
   const viaHost = searchParams.via === "host";
   const hostCode = searchParams.code?.trim() || "";
   // Once matching has run (ranking/finalized) and there's still room, tapping
-  // through confirms instantly on the vibe page — so the CTA reads "Join now"
+  // through confirms instantly on the vibe page - so the CTA reads "Join now"
   // to match. (Same-city is enforced server-side there; this public page can't
   // know the viewer's city, so it shows the optimistic label.)
   const directConfirm =

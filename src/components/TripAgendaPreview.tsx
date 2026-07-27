@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 type AgendaItem = { id: string; day: string | null; title: string; note: string | null };
 
 // Read-only itinerary shown on the trip/flock detail page to EVERYONE (public
-// flocks) or members (private trips) — so browsers see what the trip is about.
+// flocks) or members (private trips) - so browsers see what the trip is about.
 // Editing happens in the member-only workspace.
 export default async function TripAgendaPreview({ tripId, clubId }: { tripId?: string; clubId?: string }) {
   const supabase = await createClient();

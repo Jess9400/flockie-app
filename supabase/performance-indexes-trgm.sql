@@ -1,4 +1,4 @@
--- Phase 1 latency cleanup — follow-up to performance-indexes.sql. Safe to re-run.
+-- Phase 1 latency cleanup - follow-up to performance-indexes.sql. Safe to re-run.
 --
 -- Why: the Home and Vibes feed filter city with ILIKE
 --   home:  .ilike("city", homeCity)        -> city ILIKE 'berlin'

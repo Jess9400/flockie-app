@@ -4,7 +4,7 @@
 //
 // Deliberately display-only: profiles.vibe_scores stays quiz-pure because the
 // matching engine (buddy_pair_score) already consumes trip/activity answers as
-// separate weighted components — blending them into the personality cosine too
+// separate weighted components - blending them into the personality cosine too
 // would double-count those signals.
 import { VibeDimension, VibeScores } from "./types";
 import { normalizeScores } from "./scoring";

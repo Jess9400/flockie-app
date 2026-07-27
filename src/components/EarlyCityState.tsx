@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import InviteFriendsButton from "@/components/InviteFriendsButton";
 
 // Shown when the viewer's LOCAL pool is empty (no activity buddies AND no Vibes
-// in their city). Frames the emptiness as opportunity — not an apology — and
+// in their city). Frames the emptiness as opportunity - not an apology - and
 // leads with an invite CTA, so the page never opens on "everyone is in <some
 // other city>". Global browsing still lives below, clearly labelled as global.
 export default function EarlyCityState({

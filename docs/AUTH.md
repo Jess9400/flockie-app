@@ -9,7 +9,7 @@ Email/password was removed for launch. Rationale (co-founder decision):
 - Google is one tap, no password to forget, verified email, and a profile photo/name we can prefill.
 
 ## How it works
-- **Login page:** `src/app/login/page.tsx` — a single **"Continue with Google"** button on the navy hero, plus passive "By continuing, you agree to Terms & Privacy" text (no checkbox gate).
+- **Login page:** `src/app/login/page.tsx` - a single **"Continue with Google"** button on the navy hero, plus passive "By continuing, you agree to Terms & Privacy" text (no checkbox gate).
 - **OAuth:** `supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: \`${origin}/auth/callback?next=<redirect>\` } })`.
 - **Callback:** `src/app/auth/callback/route.ts` exchanges the code and redirects to `next` (defaults `/match`). Deep links (e.g. invite → `/vibes/[id]?interested=1`) are preserved via the `redirect`/`next` param set by the middleware and login page.
 - **Terms:** `localStorage["flockie-pending-terms"]` is set before the Google redirect so terms acceptance can be recorded for brand-new accounts after callback.
@@ -22,7 +22,7 @@ The email/password UI and handlers were deleted from `src/app/login/page.tsx`:
 - the "agree to Terms" **checkbox gate** (replaced by passive text)
 - the "Already have an account? / New here?" toggle
 
-The Supabase **Email** auth provider can stay enabled in the dashboard (harmless) — there's just no UI for it. Re-enabling the UI is the v2 task; see **`docs/V2-EMAIL-AUTH.md`**.
+The Supabase **Email** auth provider can stay enabled in the dashboard (harmless) - there's just no UI for it. Re-enabling the UI is the v2 task; see **`docs/V2-EMAIL-AUTH.md`**.
 
 ## Supabase config that must stay correct
 - **Google** provider enabled with the correct Client ID/Secret.

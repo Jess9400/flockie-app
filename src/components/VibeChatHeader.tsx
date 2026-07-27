@@ -107,7 +107,7 @@ export default function VibeChatHeader({
 
   return (
     <div className="z-20 -mx-5 shrink-0 border-b border-navy/12 bg-cream px-5">
-      {/* Back to the chat list — mobile only. On desktop the list rail is
+      {/* Back to the chat list - mobile only. On desktop the list rail is
           always beside the thread, so a back link there is redundant. */}
       <Link
         href="/chats"

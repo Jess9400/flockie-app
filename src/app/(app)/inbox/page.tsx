@@ -25,7 +25,7 @@ export default async function InboxPage({
       .is("dismissed_at", null)
       .order("created_at", { ascending: false })
       .range(from, from + PAGE_SIZE - 1),
-    // Recently dismissed — the collapsed archive at the bottom of the list.
+    // Recently dismissed - the collapsed archive at the bottom of the list.
     supabase
       .from("notifications")
       .select("id, type, title, body, data, read_at, dismissed_at, created_at")

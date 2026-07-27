@@ -1,8 +1,8 @@
 -- "You're in the running" now fires the moment a user expresses interest, not
--- after the host/algo ranks — one less step (the in-app popup already says this).
+-- after the host/algo ranks - one less step (the in-app popup already says this).
 -- Replaces the shortlist-time trigger from the previous version.
 -- NOTE: at interest time everyone is "in the running"; if a vibe later
--- oversubscribes, some interested people become standby — a "you're on the
+-- oversubscribes, some interested people become standby - a "you're on the
 -- waitlist" nuance can be added later. Idempotent.
 drop trigger if exists vibe_interests_shortlisted_notify on public.vibe_interests;
 drop function if exists public.notify_shortlisted();
@@ -16,7 +16,7 @@ begin
     if v.id is not null and v.status <> 'cancelled' and v.starts_at > now() then
       perform public.notify(new.user_id, 'vibe_shortlisted',
         'You''re in the running for ' || coalesce(v.title, 'a Vibe'),
-        'We''ve got you in the running — we''ll confirm your spot soon.',
+        'We''ve got you in the running - we''ll confirm your spot soon.',
         jsonb_build_object('vibe_id', new.vibe_id));
     end if;
   end if;

@@ -1,6 +1,6 @@
 -- Two vibe-flow fixes.
 -- (1) Late opt-ins no longer stranded: backfill now pulls open spots from BOTH
---     standby AND late 'interested' people (same-city first), not just standby —
+--     standby AND late 'interested' people (same-city first), not just standby -
 --     so someone who clicks "I'm interested" after the rank already ran (common
 --     now that the city fallback RECOMMENDS people who opt in whenever) still gets
 --     pulled into an open spot instead of sitting in limbo.
@@ -50,7 +50,7 @@ begin
     update public.vibe_interests set status='invited', invitation_sent_at=now(),
       invitation_expires_at=public._vibe_confirm_deadline(v.starts_at) where vibe_id=p_vibe and user_id=c.user_id;
     perform public.notify(c.user_id, 'vibe_invitation', 'A spot opened up: ' || v.title,
-            'You''re in — confirm to lock your spot.', jsonb_build_object('vibe_id', p_vibe));
+            'You''re in - confirm to lock your spot.', jsonb_build_object('vibe_id', p_vibe));
     v_added := v_added + 1;
   end loop;
   return v_added;

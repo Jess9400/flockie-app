@@ -1,4 +1,4 @@
--- P0 FIX — Supabase Security Advisor: rls_disabled_in_public on
+-- P0 FIX - Supabase Security Advisor: rls_disabled_in_public on
 -- public.trip_join_requests (flagged 2026-07-06).
 --
 -- Root cause: the table has a correctly-scoped SELECT policy (see
@@ -11,7 +11,7 @@
 --
 -- Writes (request/approve/decline) go through SECURITY DEFINER RPCs that run as
 -- the table owner and bypass RLS, so no write policy is needed and no flow
--- breaks. Use ENABLE, not FORCE — FORCE would apply RLS to those definer
+-- breaks. Use ENABLE, not FORCE - FORCE would apply RLS to those definer
 -- functions too and break them.
 
 -- 1. Helpers (from trip-requests-rls-prepare.sql) --------------------------------
@@ -57,7 +57,7 @@ create policy "join requests readable" on public.trip_join_requests for select t
     or public.can_see_trip_requests(trip_id)
   );
 
--- 3. THE MISSING PIECE — actually enable RLS ------------------------------------
+-- 3. THE MISSING PIECE - actually enable RLS ------------------------------------
 alter table public.trip_join_requests enable row level security;
 
 -- Verify (optional): should return rowsecurity = true.

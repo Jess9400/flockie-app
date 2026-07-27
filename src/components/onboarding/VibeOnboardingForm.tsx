@@ -19,7 +19,7 @@ const GROUP_SIZE_COPY: Record<VibeGroupSize, { emoji: string; title: string; bod
 };
 
 const GOAL_COPY: Record<(typeof VIBE_GOALS)[number], { emoji: string; title: string }> = {
-  crew: { emoji: "🔁", title: "A regular crew — people I’d see again" },
+  crew: { emoji: "🔁", title: "A regular crew - people I’d see again" },
   friends: { emoji: "🎯", title: "One or two friends I really click with" },
   doers: { emoji: "🚀", title: "People who’ll do the stuff I love" },
   out: { emoji: "🌱", title: "A reason to get out more often" },
@@ -49,7 +49,7 @@ export function VibeOnboardingForm({ returnTo }: { returnTo?: string | null }) {
         : !groupSize
           ? "And your ideal group size"
           : !goal
-            ? "Last one — what are you hoping to find?"
+            ? "Last one - what are you hoping to find?"
             : "You’re all set";
 
   async function submit() {
@@ -84,7 +84,7 @@ export function VibeOnboardingForm({ returnTo }: { returnTo?: string | null }) {
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 pb-5 pt-5">
-        <Question number="1" title="What are you always down for?" hint="Pick 3 to 5 — this is what fills your feed.">
+        <Question number="1" title="What are you always down for?" hint="Pick 3 to 5 - this is what fills your feed.">
           <div className="grid grid-cols-2 gap-2">
             {VIBE_ONBOARDING_INTERESTS.map((interest) => {
               const selected = interests.includes(interest.id);

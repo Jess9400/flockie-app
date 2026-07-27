@@ -25,7 +25,7 @@ function mapsSearch(query: string, city: string | null) {
 // "Say hi" by proposing a concrete plan: a category, optionally a place (found
 // via a Google Maps browse link) and a date/time. This records a like carrying
 // the plan; when the person matches back, a buddy_plans row is auto-seeded so
-// they open the chat to "X invited you for coffee at [place], [date] — Accept".
+// they open the chat to "X invited you for coffee at [place], [date] - Accept".
 export default function SayHiButton({
   personId,
   personName,
@@ -177,7 +177,7 @@ export default function SayHiButton({
                     {t("pickSomething")}
                   </p>
 
-                  {/* Step 1 — category */}
+                  {/* Step 1 - category */}
                   <div className="mt-4 flex flex-wrap justify-center gap-2">
                     {CATS.map((c) => (
                       <button
@@ -196,7 +196,7 @@ export default function SayHiButton({
                     ))}
                   </div>
 
-                  {/* Step 2 — place + when (only once a category is picked) */}
+                  {/* Step 2 - place + when (only once a category is picked) */}
                   {cat && catMeta && (
                     <div className="mt-4 space-y-3">
                       <PlaceField

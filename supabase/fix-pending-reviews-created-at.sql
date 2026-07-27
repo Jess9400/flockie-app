@@ -1,6 +1,6 @@
 -- Fix: don't ask to review a match that was created AFTER the activity/trip's
 -- end_date. A brand-new activity match (e.g. from Home "Say hi") whose activity
--- is past-dated was being flagged as "reviewable" the instant it was made — you
+-- is past-dated was being flagged as "reviewable" the instant it was made - you
 -- can't have attended something that ended before you matched.
 --
 -- Adds `m.created_at::date <= t.end_date` to both the pending_reviews() list

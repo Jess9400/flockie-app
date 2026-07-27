@@ -57,7 +57,7 @@ export default async function MyTripsPage({
   const activeTrips = all.filter((t) => !isPast(t));
   const pastTrips = all.filter(isPast);
 
-  // Flocks I asked to join (outgoing) — pending = requested, accepted = joined.
+  // Flocks I asked to join (outgoing) - pending = requested, accepted = joined.
   const { data: myFlockReqRows } = await supabase
     .from("trip_join_requests")
     .select("trip_id, status")
@@ -100,11 +100,11 @@ export default async function MyTripsPage({
   const totalPages = Math.max(1, Math.ceil(activeTrips.length / PAGE_SIZE));
   const pageTrips = activeTrips.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  // Join requests to my trips (host approval) — active trips only.
+  // Join requests to my trips (host approval) - active trips only.
   const activeIds = activeTrips.map((t) => t.id);
   const coHostTrips = new Set<string>();
   const reqByTrip: Record<string, JoinReq[]> = {};
-  // Buddy/Flock chat per trip — the chat hangs off a buddy_match for the trip.
+  // Buddy/Flock chat per trip - the chat hangs off a buddy_match for the trip.
   const allTripIds = all.map((t) => t.id);
   const chatByTrip: Record<string, string> = {};
 
@@ -132,7 +132,7 @@ export default async function MyTripsPage({
   const reqUserIds = Array.from(new Set((jr ?? []).map((r) => r.user_id)));
   const matchIds = (matches ?? []).map((m) => m.id);
 
-  // Vibe-match between me (host) and each requester, so I can gauge fit —
+  // Vibe-match between me (host) and each requester, so I can gauge fit -
   // kicked off alongside the profile + chat lookups below.
   const matchByUser: Record<string, number | null> = {};
   // One RPC for all requesters (was one round-trip per requester).

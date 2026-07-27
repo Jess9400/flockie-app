@@ -182,7 +182,7 @@ export default function ProfileTabs({
           ) : (
             <EmptyCTA
               title="Add your trip vibe"
-              body="How you travel — pace, budget, nightlife and more. Needed to match on trips."
+              body="How you travel - pace, budget, nightlife and more. Needed to match on trips."
               cta="Fill your trip vibe"
               onClick={() => setOpenWizard("trip")}
             />

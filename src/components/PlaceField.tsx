@@ -24,7 +24,7 @@ const CAT_EMOJI: Record<string, string> = {
 };
 
 // Text field with (1) 2-3 quick-pick venue chips for the chosen category and
-// (2) live suggestions as you type — both via /api/places (Google Places when
+// (2) live suggestions as you type - both via /api/places (Google Places when
 // keyed, else free OpenStreetMap). Tapping either fills the name + a real maps
 // URL; free-text still works, and a "browse on Maps" link is the escape hatch.
 export default function PlaceField({

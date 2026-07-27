@@ -1,4 +1,4 @@
-// Hand-drawn squiggle underline for section headings — personality without
+// Hand-drawn squiggle underline for section headings - personality without
 // weight. Inline SVG so it inherits nothing and weighs nothing.
 export default function Squiggle({
   color = "#FF6B4A",

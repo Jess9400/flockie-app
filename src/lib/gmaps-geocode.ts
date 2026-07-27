@@ -2,7 +2,7 @@
 // uses the referrer-restricted NEXT_PUBLIC_GMAPS_KEY (which works there) instead
 // of the server /api/geocode route (whose calls get REQUEST_DENIED).
 //
-// Primary: Places Text Search — the SAME forgiving engine as Google Maps search,
+// Primary: Places Text Search - the SAME forgiving engine as Google Maps search,
 // so messy/partial Indian addresses that the strict Geocoding API (and OSM) can't
 // resolve still return a match. Falls back to the Geocoder if Places is
 // unavailable.
@@ -45,7 +45,7 @@ function pickNew(components: any[] | undefined, types: string[]): string | null 
   return null;
 }
 
-// Places Text Search (new Places API) — matches Google Maps search behaviour.
+// Places Text Search (new Places API) - matches Google Maps search behaviour.
 async function viaPlaces(query: string): Promise<GeocodedPlace | null> {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -118,7 +118,7 @@ export async function geocodeAddress(query: string): Promise<GeocodedPlace | nul
 }
 
 // Geocode a vibe's location robustly. Tries "address, city" first (the city
-// helps when the address is partial), then the address ALONE — so a mismatched
+// helps when the address is partial), then the address ALONE - so a mismatched
 // or leftover city (e.g. a traveller in Thane creating a Bengaluru vibe) can't
 // break the pin: the address itself carries the real place.
 export async function geocodeVibeLocation(
@@ -129,7 +129,7 @@ export async function geocodeVibeLocation(
   const c = city.trim();
   if (!name) return null;
   // An address that already carries an area/street (has a comma) is usually
-  // self-sufficient — look it up ALONE first so a wrong/leftover city can't
+  // self-sufficient - look it up ALONE first so a wrong/leftover city can't
   // skew or block it (a Thane resident creating a Bengaluru vibe). A bare venue
   // name ("Blue Tokai") needs the city to disambiguate, so try that first.
   const hasArea = name.includes(",");

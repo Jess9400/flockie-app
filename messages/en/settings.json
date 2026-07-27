@@ -1,7 +1,7 @@
 {
   "backToProfile": "Profile",
   "title": "Settings",
-  "saveError": "Couldn’t save — check your connection and try again.",
+  "saveError": "Couldn’t save - check your connection and try again.",
   "account": {
     "title": "Account",
     "signOut": "Sign out"
@@ -16,7 +16,7 @@
   },
   "location": {
     "title": "Keep my location current",
-    "description": "Let Flockie find Vibes, trips and people near you — and update your city automatically when you travel, so you never set it by hand."
+    "description": "Let Flockie find Vibes, trips and people near you - and update your city automatically when you travel, so you never set it by hand."
   },
   "discovery": {
     "title": "Open to discovery",
@@ -45,7 +45,7 @@
     "confirmTitle": "Delete your account?",
     "confirmMessage": "This permanently removes your profile, photos, vibe check, and matches. This can’t be undone.",
     "confirmLabel": "Delete account",
-    "mediaError": "Couldn’t remove your media — please try again. ",
+    "mediaError": "Couldn’t remove your media - please try again. ",
     "deleting": "Deleting…",
     "button": "Delete account"
   }

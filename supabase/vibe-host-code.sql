@@ -1,5 +1,5 @@
 -- Host invite code: each vibe gets a code. Sharing it (link or typed in the
--- interest form) confirms the person straight into one of the host's spots —
+-- interest form) confirms the person straight into one of the host's spots -
 -- no algo, no manual approval. Run in the Supabase SQL editor. Safe to re-run.
 
 alter table public.vibes
@@ -31,7 +31,7 @@ begin
   -- A host invite code is an explicit host override: the only real ceiling is the
   -- vibe's total capacity (counting confirmed + live invites). It is NOT limited
   -- by the algo/host-share split, so a code never fails while seats are open
-  -- (the old static host-spots cap rejected joiners — and with algo_share=100 it
+  -- (the old static host-spots cap rejected joiners - and with algo_share=100 it
   -- meant zero host spots, killing the code entirely).
   select count(*) into v_confirmed from public.vibe_interests
     where vibe_id = p_vibe
@@ -48,7 +48,7 @@ begin
 
   insert into public.vibing_chats (vibe_id) values (p_vibe) on conflict (vibe_id) do nothing;
   perform public.notify(auth.uid(), 'vibe_confirmed', 'You''re in for ' || v.title,
-    'You joined with the host''s invite code — Vibing Chat is open.', jsonb_build_object('vibe_id', p_vibe));
+    'You joined with the host''s invite code - Vibing Chat is open.', jsonb_build_object('vibe_id', p_vibe));
   perform public.notify(v.host_id, 'vibe_private_request', 'Someone joined ' || v.title || ' with your code',
     'They''re confirmed in one of your spots.', jsonb_build_object('vibe_id', p_vibe));
 end $$;

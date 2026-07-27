@@ -1,8 +1,8 @@
--- P0 fix: scope the trips SELECT policy (was `using (true)` — every authenticated
+-- P0 fix: scope the trips SELECT policy (was `using (true)` - every authenticated
 -- user could read every trip, including private personal trips/activities:
 -- destinations, dates, budget, pace, group size). Run in the Supabase SQL editor.
 -- Safe to run anytime: all of the app's trip reads are owner / public flock /
--- accepted member / buddy-matched, which this policy still allows — so it does not
+-- accepted member / buddy-matched, which this policy still allows - so it does not
 -- break the deployed app and needs no two-phase rollout.
 
 -- Membership/visibility check. security definer so its internal reads of trips /

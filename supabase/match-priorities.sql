@@ -2,10 +2,10 @@
 -- editor. Safe to re-run.
 --
 -- Two upgrades the matching algo needs to actually differentiate people:
---   1. WEIGHTS  — each user picks the 2-3 things that matter most to them.
+--   1. WEIGHTS  - each user picks the 2-3 things that matter most to them.
 --      Those dimensions count ~2x in THEIR ranking, so a budget-obsessed
 --      traveler and a budget-agnostic one no longer get the same score.
---   2. FILTERS  — the dealbreakers we already collect (same-gender, sober)
+--   2. FILTERS  - the dealbreakers we already collect (same-gender, sober)
 --      now hard-exclude incompatible candidates instead of being dead data.
 -- Also rescales the personality cosine, which structurally lands ~0.7-0.95 for
 -- everyone, so scores spread across a usable range.
@@ -43,7 +43,7 @@ $$;
 grant execute on function public.buddy_hard_block(uuid, uuid) to authenticated;
 
 -- ── 3. Weighted pair score ───────────────────────────────────────────────────
--- Weights are taken from p_a (the viewer) — "what matters to ME when ranking
+-- Weights are taken from p_a (the viewer) - "what matters to ME when ranking
 -- you." A prioritized dimension counts 2x; everything else counts 1x, then the
 -- block is renormalized so the total still sums to 1.
 -- SUPERSEDED: canonical buddy_pair_score is in supabase/vibe-traits.sql (adds
@@ -154,7 +154,7 @@ begin
 
   -- ----- Weighted blend over the components both people have ------------------
   wsum := pers_w + trip_w + act_w;
-  if wsum = 0 then return 50; end if; -- no shared data — neutral
+  if wsum = 0 then return 50; end if; -- no shared data - neutral
   total := coalesce(pers_sim * pers_w, 0) + coalesce(trip_sim * trip_w, 0) + coalesce(act_sim * act_w, 0);
   return round(100 * (total / wsum));
 end $$;
@@ -231,7 +231,7 @@ language sql security definer set search_path = public stable as $$
     and ct.kind = me_t.kind
     and coalesce(ct.visibility, 'private') <> 'public'  -- exclude Flocks from 1:1
     -- shared destination (case/space-insensitive); && uses the GIN index on
-    -- lower_array(destinations) — see supabase/dest-gin-index.sql
+    -- lower_array(destinations) - see supabase/dest-gin-index.sql
     and public.lower_array(ct.destinations) && public.lower_array(me_t.destinations)
     and (greatest(ct.start_date, me_t.start_date) - least(ct.end_date, me_t.end_date)) <= 30
     and cp.onboarding_complete
