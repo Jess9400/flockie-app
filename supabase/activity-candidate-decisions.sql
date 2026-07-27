@@ -133,77 +133,63 @@ as $$
     select *
     from public.profiles
     where id = auth.uid()
+  ),
+  candidates as materialized (
+    select
+      cp.id,
+      cp.display_name,
+      cp.age,
+      cp.photos,
+      cp.video_url,
+      cp.one_liner,
+      cp.home_city,
+      public.buddy_pair_score(auth.uid(), cp.id)::float8 as score
+    from public.profiles cp
+    cross join me_t
+    cross join me_p
+    where cp.id <> auth.uid()
+      and cp.open_to_discovery
+      and cp.onboarding_complete
+      and trim(coalesce(me_p.home_city, '')) <> ''
+      and lower(trim(coalesce(cp.home_city, ''))) = lower(trim(coalesce(me_p.home_city, '')))
+      and not public.buddy_hard_block(auth.uid(), cp.id)
+      and not exists (
+        select 1
+        from public.activity_candidate_decisions d
+        where d.user_id = auth.uid()
+          and d.activity_id = p_trip
+          and d.candidate_id = cp.id
+      )
+      and not exists (
+        select 1
+        from public.buddy_swipes s
+        where s.swiper_id = auth.uid()
+          and s.target_id = cp.id
+      )
+      and not exists (
+        select 1
+        from public.buddy_swipes s
+        where s.swiper_id = cp.id
+          and s.target_id = auth.uid()
+          and not s.liked
+      )
   )
   select
-    cp.id,
-    cp.display_name,
-    cp.age,
-    cp.photos,
-    cp.video_url,
-    cp.one_liner,
+    c.id,
+    c.display_name,
+    c.age,
+    c.photos,
+    c.video_url,
+    c.one_liner,
     null::text as title,
-    array[cp.home_city]::text[] as destinations,
+    array[c.home_city]::text[] as destinations,
     null::date as start_date,
     null::date as end_date,
     null::text[] as trip_type,
-    (
-      100 * (
-        0.5 * (public.buddy_pair_score(auth.uid(), cp.id) / 100.0)
-        + 0.5 * (
-          case
-            when coalesce(array_length(cp.activity_vibe, 1), 0) = 0
-              or coalesce(array_length(me_p.activity_vibe, 1), 0) = 0
-            then 0.5
-            else cardinality(array(
-              select unnest(cp.activity_vibe)
-              intersect
-              select unnest(me_p.activity_vibe)
-            ))::numeric
-            / nullif(cardinality(array(
-              select unnest(cp.activity_vibe)
-              union
-              select unnest(me_p.activity_vibe)
-            )), 0)
-          end
-        )
-      )
-    )::float8 as score
-  from public.profiles cp
-  cross join me_t
-  cross join me_p
-  where cp.id <> auth.uid()
-    and cp.open_to_discovery
-    and cp.onboarding_complete
-    -- Discovery pool = people in YOUR city who are open to discovery, ranked by
-    -- vibe similarity. We match on the swiper's own home_city (me_p) - NOT the
-    -- activity's destination - and we do NOT require the candidate to have posted
-    -- their own activity. You swipe in-city people and invite them to your activity.
-    and trim(coalesce(me_p.home_city, '')) <> ''
-    -- trim() so a stray space can't silently break the city match (case already lower()'d).
-    and lower(trim(coalesce(cp.home_city, ''))) = lower(trim(coalesce(me_p.home_city, '')))
-    and not public.buddy_hard_block(auth.uid(), cp.id)
-    and not exists (
-      select 1
-      from public.activity_candidate_decisions d
-      where d.user_id = auth.uid()
-        and d.activity_id = p_trip
-        and d.candidate_id = cp.id
-    )
-    and not exists (
-      select 1
-      from public.buddy_swipes s
-      where s.swiper_id = auth.uid()
-        and s.target_id = cp.id
-    )
-    -- reciprocity: don't resurface people who already swiped no on the viewer
-    and not exists (
-      select 1
-      from public.buddy_swipes s
-      where s.swiper_id = cp.id
-        and s.target_id = auth.uid()
-        and not s.liked
-    )
-  order by score desc nulls last, cp.id
+    c.score
+  from candidates c
+  where c.score >= 60
+  order by c.score desc nulls last, c.id
   limit p_limit;
 $$;
 grant execute on function public.activity_candidates(uuid, int)

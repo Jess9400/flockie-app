@@ -12,7 +12,7 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 
 | Function / object | Canonical file |
 |---|---|
-| `buddy_pair_score` (direct Vibes-only shared tastes; no legacy quiz/trip fields or duplicate derived categories) | `vibe-traits.sql` |
+| `buddy_pair_score`, matching helpers, self-interest source migration (calibrated onboarding fit plus explicit behavior confidence; no legacy quiz/trip fields) | `vibe-traits.sql` |
 | `buddy_hard_block` | `match-priorities.sql` |
 | `buddy_candidates_trip` (priority-weighted + hard block) | `match-priorities.sql` |
 | `buddy_dest_count` | `buddy-candidates-v2.sql` |
@@ -30,6 +30,7 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | `vibe_display_match`, `vibe_display_match_scores` (card-only calibrated display score) | `vibe-display-match.sql` |
 | `vibe_review_fit` | `vibe-review-preferences.sql` |
 | `vibe_negative_fit`, `mark_/undo_vibe_not_for_me` | `vibe-not-for-me.sql` |
+| `express_interest` (records self-expressed interest separately from algorithm-created rows) | `vibe-express-interest-autoconfirm.sql` |
 | `confirm_vibe` | `ranking.sql` |
 | `expire_invitations`, `decline_vibe` | `expiry.sql` |
 | `vibe_directory`, `vibe_private_logistics`, `public_vibe` | `vibe-location-privacy-prepare.sql` |

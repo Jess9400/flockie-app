@@ -213,3 +213,11 @@ Ran a 4-track audit (auth/signup, matching algo, core flows, build/breakage).
   source of truth.
 - **Minor:** no ESLint config (`next lint` can't run in CI); unauth API hits 307→/login
   instead of 401; Supabase env vars use `!` assertions.
+# Matching V2
+
+- Recalibrated 1:1 match percentages around the required Vibes onboarding.
+- Added semantic credit for closely related interests and activity styles.
+- Added the onboarding goal and adjustable traits to the canonical score.
+- Added confidence-based learning from explicit Vibe choices and reviews.
+- Kept location, availability, safety, and hard dealbreakers as filters.
+- Stopped recommending people with a calibrated score below 60.
