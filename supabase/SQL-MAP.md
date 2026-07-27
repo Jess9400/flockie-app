@@ -44,6 +44,44 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | host RPCs (`notify`, `cancel_vibe`, `update_vibe_when`, commit/remove/appeal) | `host-controls.sql` |
 | Vibes-only onboarding profile fields | `onboarding-v3-vibes-only.sql` |
 
+## July 18–25 additions — audited 2026-07-27
+
+This section records **repository ownership only**. It does not prove that a
+script has run on production; use `DEPLOYMENT.md` to perform the read-only
+production preflight before any SQL is applied.
+
+| Function / object | Canonical file | Dependency / deployment note |
+|---|---|---|
+| `buddy_swipe` (personal Say-hi note; 8 arguments, trailing arguments defaulted) | `say-hi-note.sql` | Supersedes the old 3- and 7-argument versions. |
+| `trip_detail`, `trip_members`, `trip_balances`, `trip_agenda_preview`, trip workspace tables | `trip-workspace.sql` | Base dependency for `club-workspace.sql`. |
+| `trip_board`, `request_join_trip_v2` | `trip-board.sql` | Requires the existing trips and join-request schema. |
+| `activity_feed`, activity join-request RPCs | `activity-join-requests.sql` | Canonical row above remains current. |
+| `my_flock_chats` | `flock-chat-fix.sql` | Includes a one-time backfill for missing flock chats. |
+| `buddy_chat_summaries` (flock cover image) | `flock-chat-cover.sql` | Supersedes older chat-summary variants. |
+| `can_access_chat`, `chat_pins` table and policies | `chat-pins.sql` | Requires the existing chat tables and membership helpers. |
+| Own-message `edited_at` columns and edit/delete policies | `chat-message-edits.sql` | Requires `club_messages` to exist. |
+| `post_workspace_event` | `workspace-events.sql` | Requires the relevant chat tables and membership helpers. |
+| Club workspace tables, `club_balances`, `club_agenda_preview`, `club_gatherings`, Club RSVP table | `club-workspace.sql` | Requires `trip-workspace.sql`; `club_balances` also requires `club_members` below. |
+| `club_members`, `leave_club`, `my_club_chats` (mute-aware) | `club-chat-settings.sql` | Requires `clubs-loop.sql` to have created `club_messages`. This is the current `my_club_chats` definition. |
+| `convert_vibe_to_club`, `set_club_mode`, `club_heartbeat_tick`, `club_messages` table | `clubs-loop.sql` | **Product-sensitive:** schedules an hourly cron and can auto-create Club Vibes and notifications. Never run without explicit approval. |
+
+### Release bundle rule
+
+`run-all.sql` is a **release bundle**, not a canonical source. It currently
+copies these ten canonical files in its internal order: `trip-workspace.sql`,
+`trip-gallery.sql`, `trip-board.sql`, `activity-join-requests.sql`,
+`flock-chat-fix.sql`, `flock-chat-cover.sql`, `club-workspace.sql`,
+`chat-pins.sql`, `chat-message-edits.sql`, and `workspace-events.sql`.
+
+It is not a complete dependency plan: `club-workspace.sql` calls
+`club_members`, which is defined in `club-chat-settings.sql` outside the
+bundle. The production preflight must confirm that `club_members(uuid)` already
+exists before the bundle is run.
+
+Edit and review the canonical file first, then deliberately refresh the bundle
+in the same PR. Never treat a merged bundle as proof that its contents have run
+on production.
+
 ## Tombstoned blocks (`/* SUPERSEDED */`, do not un-wrap)
 
 | File : line | Wrapped-out content | Why superseded → canonical |
