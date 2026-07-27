@@ -383,5 +383,18 @@
     "convertTitle": "¡Esto funcionó! ¿Lo convertimos en club?",
     "convertBody": "La misma gente, un ritmo regular. Convierte esta vibe en un club recurrente.",
     "convertCta": "Crear club"
+  },
+  "attendance": {
+    "title": "Registrar asistencia",
+    "body": "Confirma quién asistió realmente. Esto ayuda a Flockie a aprender de planes reales.",
+    "recorded": "Asistencia registrada",
+    "record": "Registrar {count} asistente",
+    "recordPlural": "Registrar {count} asistentes",
+    "recording": "Registrando...",
+    "confirmTitle": "¿Registrar asistencia?",
+    "confirmBody": "Marca solo a las personas que realmente fueron. Este registro no se puede eliminar aquí.",
+    "confirm": "Registrar asistencia",
+    "cancel": "Cancelar",
+    "error": "No se pudo registrar la asistencia. Inténtalo de nuevo."
   }
 }

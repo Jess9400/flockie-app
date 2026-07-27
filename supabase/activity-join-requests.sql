@@ -18,12 +18,19 @@ create table if not exists public.activity_join_requests (
   level       text,
   note        text,
   created_at  timestamptz default now(),
+  accepted_at timestamptz,
+  declined_at timestamptz,
   primary key (activity_id, user_id)
 );
 alter table public.trips add column if not exists location_name text;
 alter table public.activity_join_requests add column if not exists status text not null default 'pending';
 alter table public.activity_join_requests add column if not exists level text;
 alter table public.activity_join_requests add column if not exists note text;
+alter table public.activity_join_requests add column if not exists accepted_at timestamptz;
+alter table public.activity_join_requests add column if not exists declined_at timestamptz;
+create index if not exists activity_join_requests_user_accepted_idx
+  on public.activity_join_requests (user_id, accepted_at desc)
+  where accepted_at is not null;
 
 alter table public.activity_join_requests enable row level security;
 drop policy if exists "own join requests" on public.activity_join_requests;
@@ -160,7 +167,9 @@ begin
   if not found or t.creator_id <> auth.uid() then raise exception 'not_allowed'; end if;
 
   update public.activity_join_requests
-    set status = case when p_accept then 'accepted' else 'declined' end
+    set status = case when p_accept then 'accepted' else 'declined' end,
+        accepted_at = case when p_accept then now() else accepted_at end,
+        declined_at = case when p_accept then declined_at else now() end
     where activity_id = p_activity and user_id = p_user and status = 'pending';
   if not found then raise exception 'request_not_found'; end if;
 
@@ -213,7 +222,7 @@ begin
       select user_id from public.activity_join_requests
       where activity_id = p_activity and status = 'pending' and user_id <> p_user
     loop
-      update public.activity_join_requests set status = 'declined'
+      update public.activity_join_requests set status = 'declined', declined_at = now()
         where activity_id = p_activity and user_id = r_other.user_id;
       perform public.notify(
         r_other.user_id, 'activity_like',

@@ -383,5 +383,18 @@
     "convertTitle": "This one clicked - make it a club?",
     "convertBody": "Same people, a regular rhythm. Turn this vibe into a recurring club.",
     "convertCta": "Turn into a club"
+  },
+  "attendance": {
+    "title": "Record who came",
+    "body": "Confirm the people who actually attended. This helps Flockie learn from real plans.",
+    "recorded": "Attendance recorded",
+    "record": "Record {count} attendee",
+    "recordPlural": "Record {count} attendees",
+    "recording": "Recording...",
+    "confirmTitle": "Record attendance?",
+    "confirmBody": "Only mark people who actually came. This attendance record cannot be removed here.",
+    "confirm": "Record attendance",
+    "cancel": "Cancel",
+    "error": "Could not record attendance. Please try again."
   }
 }

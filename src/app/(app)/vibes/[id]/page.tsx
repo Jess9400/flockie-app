@@ -10,6 +10,7 @@ import HostVibeShortlist from "@/components/HostVibeShortlist";
 import HostVibePrivateRequests from "@/components/HostVibePrivateRequests";
 import HostVibeMembers from "@/components/HostVibeMembers";
 import ClubAttendancePanel from "@/components/ClubAttendancePanel";
+import VibeAttendancePanel from "@/components/VibeAttendancePanel";
 import VibeSettingsButton from "@/components/VibeSettingsButton";
 import LeaveVibeButton from "@/components/LeaveVibeButton";
 import ShareVibeButton from "@/components/ShareVibeButton";
@@ -289,6 +290,7 @@ export default async function VibeDetailPage({
   const ended = new Date(vibe.ends_at ?? vibe.starts_at) <= new Date();
   const clubId: string | null = hostMeta?.club_id ?? null;
   let recordedClubAttendanceIds: string[] = [];
+  let recordedVibeAttendanceIds: string[] = [];
   if (isHost && ended && clubId) {
     const { data: attendanceRows } = await supabase
       .from("club_attendance")
@@ -296,6 +298,13 @@ export default async function VibeDetailPage({
       .eq("club_id", clubId)
       .eq("vibe_id", vibe.id);
     recordedClubAttendanceIds = (attendanceRows ?? []).map((row) => row.user_id);
+  }
+  if (isHost && ended && !clubId) {
+    const { data: attendanceRows } = await supabase
+      .from("vibe_attendance")
+      .select("user_id")
+      .eq("vibe_id", vibe.id);
+    recordedVibeAttendanceIds = (attendanceRows ?? []).map((row) => row.user_id);
   }
   const canReview = ended && myInterest?.status === "confirmed";
   const directConfirm =
@@ -673,6 +682,14 @@ export default async function VibeDetailPage({
           eventStarted={eventStarted}
           normalRemovalLimit={normalRemovalLimit}
           normalRemovalUsed={normalRemovalCount}
+        />
+      )}
+
+      {isHost && ended && !clubId && (
+        <VibeAttendancePanel
+          vibeId={vibe.id}
+          attendees={allAttendees}
+          recordedIds={recordedVibeAttendanceIds}
         />
       )}
 
