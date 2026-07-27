@@ -66,23 +66,46 @@ export default function ProfileStory({
     <div className="mx-auto max-w-5xl pb-8">
       <section className="overflow-hidden rounded-[30px] border-2 border-ink/15 bg-white shadow-[0_2px_12px_rgba(10,37,69,0.1)]">
         <div className="grid lg:grid-cols-[minmax(0,1fr)_290px]">
-          <div className="p-5 sm:p-7">
+          <div className="p-5 sm:p-7 lg:p-8">
             <div className="flex items-start justify-between gap-3">
-              <div className="flex min-w-0 items-center gap-4">
-                <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-[26px] border-2 border-ink/15 bg-cream sm:h-24 sm:w-24">
+              <div className="flex min-w-0 items-center gap-4 lg:items-stretch lg:gap-7">
+                <div className="relative h-28 w-[88px] shrink-0 overflow-hidden rounded-[22px] border-2 border-ink/15 bg-cream sm:h-32 sm:w-[102px] lg:h-72 lg:w-56 lg:rounded-[28px]">
                   {photo ? (
-                    <Image src={photo} alt="" fill priority sizes="96px" className="object-cover" />
+                    <Image src={photo} alt="" fill priority sizes="(min-width: 1024px) 224px, 102px" className="object-cover" />
                   ) : (
                     <span className="flex h-full items-center justify-center text-3xl">{persona?.emoji ?? "🕊️"}</span>
                   )}
                 </div>
-                <div className="min-w-0">
-                  <h1 className="truncate font-fredoka text-3xl font-bold leading-none text-navy sm:text-4xl">{nameAge}</h1>
+                <div className="min-w-0 lg:flex lg:min-h-72 lg:flex-1 lg:flex-col lg:justify-center">
+                  <h1 className="truncate font-fredoka text-3xl font-bold leading-none text-navy sm:text-4xl lg:text-5xl">{nameAge}</h1>
                   {profile.home_city && (
-                    <p className="mt-2 flex items-center gap-1 text-sm font-bold text-muted">
+                    <p className="mt-2 flex items-center gap-1 text-sm font-bold text-muted lg:text-base">
                       <MapPin size={15} aria-hidden /> {profile.home_city}
                     </p>
                   )}
+                  <div className="mt-5 hidden flex-wrap gap-2 lg:flex">
+                    {persona && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-flockie-blue/12 px-3 py-1.5 text-sm font-extrabold text-navy">
+                        <span>{persona.emoji}</span>
+                        <span>{t(`personas.${persona.label}`)}</span>
+                      </span>
+                    )}
+                    {isOwner && goal && (
+                      <span className="rounded-full border border-flockie-coral/25 bg-flockie-coral/5 px-3 py-1.5 text-sm font-extrabold text-flockie-coral">
+                        {t("hereFor", { goal })}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-5 hidden border-t border-ink/10 pt-4 lg:block">
+                    <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-flockie-coral">{t("lineLabel")}</p>
+                    {profile.bio ? (
+                      <p className="mt-1.5 max-w-2xl text-lg font-extrabold leading-snug text-navy">{profile.bio}</p>
+                    ) : (
+                      <p className="mt-1.5 max-w-2xl text-sm font-semibold leading-relaxed text-muted">
+                        {isOwner ? t("lineEmpty") : t("publicLineEmpty", { name })}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -105,7 +128,7 @@ export default function ProfileStory({
               )}
             </div>
 
-            <div className="mt-5 flex flex-wrap gap-2">
+            <div className="mt-5 flex flex-wrap gap-2 lg:hidden">
               {persona && (
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-flockie-blue/12 px-3 py-1.5 text-sm font-extrabold text-navy">
                   <span>{persona.emoji}</span>
@@ -119,7 +142,7 @@ export default function ProfileStory({
               )}
             </div>
 
-            <div className="mt-5 border-t border-ink/10 pt-4">
+            <div className="mt-5 border-t border-ink/10 pt-4 lg:hidden">
               <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-flockie-coral">{t("lineLabel")}</p>
               {profile.bio ? (
                 <p className="mt-1.5 max-w-2xl text-lg font-extrabold leading-snug text-navy sm:text-xl">{profile.bio}</p>
