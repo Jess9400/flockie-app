@@ -9,7 +9,7 @@ export default function HomeLoading() {
         <SkeletonLine className="mx-auto mt-3 h-5 w-72" />
       </section>
 
-      {/* Find a buddy — people carousel */}
+      {/* Find a buddy - people carousel */}
       <section className="mx-4 mt-8">
         <SkeletonLine className="h-6 w-72" />
         <SkeletonLine className="mt-2 h-4 w-52" />
@@ -27,7 +27,7 @@ export default function HomeLoading() {
         </div>
       </section>
 
-      {/* Happening near you — vibes carousel */}
+      {/* Happening near you - vibes carousel */}
       <section className="mx-4 mt-8 rounded-3xl border-2 border-ink/10 bg-white p-5 sm:p-6">
         <SkeletonLine className="h-6 w-56" />
         <SkeletonLine className="mt-2 h-4 w-64" />
@@ -36,7 +36,7 @@ export default function HomeLoading() {
         </div>
       </section>
 
-      {/* Find a flock — carousel */}
+      {/* Find a flock - carousel */}
       <section className="mx-4 mt-8">
         <SkeletonLine className="h-6 w-40" />
         <SkeletonLine className="mt-2 h-4 w-60" />

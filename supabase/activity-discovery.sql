@@ -89,7 +89,7 @@ grant execute on function public.activity_candidates(uuid, int) to authenticated
 
 -- buddy_swipe + a one-way "likes you" notification for activity discovery.
 -- SUPERSEDED: canonical buddy_swipe is in supabase/buddy-swipe-notify-once.sql
--- (#89 — gates match / activity-like notifications so repeat calls don't spam).
+-- (#89 - gates match / activity-like notifications so repeat calls don't spam).
 -- Wrapped out 2026-06-28; re-running this file must NOT revert that fix.
 /*
 drop function if exists public.buddy_swipe(uuid, boolean);
@@ -133,7 +133,7 @@ begin
       p_target, 'activity_like',
       coalesce(v_liker, 'Someone') || ' wants to do something with you',
       coalesce(v_liker, 'Someone') || ' is in ' || coalesce(v_city, 'your city') ||
-        ' looking for someone to do ' || p_activity_title || ' — your vibes match. Match back to chat.',
+        ' looking for someone to do ' || p_activity_title || ' - your vibes match. Match back to chat.',
       jsonb_build_object('like_from', auth.uid())
     );
   end if;

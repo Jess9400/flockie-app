@@ -13,7 +13,7 @@ function klookUrl(city: string, query?: string) {
   return q ? `https://www.klook.com/search/?query=${encodeURIComponent(q)}` : "https://www.klook.com/";
 }
 
-// Live Travelpayouts programs (project 544482) — tracked smartlinks.
+// Live Travelpayouts programs (project 544482) - tracked smartlinks.
 const KKDAY = "https://kkday.tpo.li/iJK8IZev"; // tours, activities + hotels
 const ECONOMYBOOKINGS = "https://economybookings.tpo.li/JdOiCIeg"; // car rentals
 const AIRHELP = "https://airhelp.tpo.li/2jSsfFpn"; // flight-delay compensation
@@ -29,7 +29,7 @@ export type Plan = {
   guests: number;
 };
 
-// An upcoming Vibe the user is confirmed for — deals context for real plans.
+// An upcoming Vibe the user is confirmed for - deals context for real plans.
 export type VibePlan = {
   id: string;
   title: string;
@@ -247,7 +247,7 @@ export default function DealsSearch({
         {t("travelSection")}
       </h2>
 
-      {/* Stays — the form stays light until a destination is set */}
+      {/* Stays - the form stays light until a destination is set */}
       <div className="rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
         <div className="flex items-center gap-2">
           <Hotel size={20} className="text-flockie-orange" />

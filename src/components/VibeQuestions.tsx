@@ -67,7 +67,7 @@ export default function VibeQuestions({ answers, onChange, oneLinerPrompt }: Pro
         );
       })}
 
-      {/* Trip vibe — max 3 */}
+      {/* Trip vibe - max 3 */}
       <TagGroup
         n={7}
         title={t("forms.questions.tripVibeTitle")}
@@ -78,7 +78,7 @@ export default function VibeQuestions({ answers, onChange, oneLinerPrompt }: Pro
         onToggle={(v) => toggleTag("trip_vibe", v)}
       />
 
-      {/* Travel style — max 3 */}
+      {/* Travel style - max 3 */}
       <TagGroup
         n={8}
         title={t("forms.questions.travelStyleTitle")}
@@ -89,7 +89,7 @@ export default function VibeQuestions({ answers, onChange, oneLinerPrompt }: Pro
         onToggle={(v) => toggleTag("travel_style", v)}
       />
 
-      {/* Dealbreakers — toggle pills */}
+      {/* Dealbreakers - toggle pills */}
       <div>
         <p className="font-nunito text-[15px] font-semibold text-navy">9. {t("forms.questions.hardPrefsTitle")}</p>
         <p className="mb-3 font-nunito text-sm font-normal text-navy/60">

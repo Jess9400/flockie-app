@@ -64,7 +64,7 @@ export function PinnedBanner({ chatId }: { chatId: string }) {
             {pin.author_name ? ` · ${pin.author_name}` : ""}
           </span>
           <span className="block truncate text-[13px] font-semibold text-ink">
-            {isImg ? "📷 —" : pin.content}
+            {isImg ? "📷 -" : pin.content}
           </span>
         </span>
         <button

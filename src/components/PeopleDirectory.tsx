@@ -22,7 +22,7 @@ type Person = {
 type Tab = "find" | "following" | "followers";
 
 // Find people + your follow lists. "People you've met" (matches, shared vibes,
-// clubs) rank first — the graph starts in real rooms.
+// clubs) rank first - the graph starts in real rooms.
 export default function PeopleDirectory({
   meId,
   initialTab,
@@ -40,7 +40,7 @@ export default function PeopleDirectory({
   const [lists, setLists] = useState<Record<string, Person[]>>({});
   const [loading, setLoading] = useState(false);
 
-  // Search (debounced) — Find tab only.
+  // Search (debounced) - Find tab only.
   useEffect(() => {
     if (tab !== "find") return;
     const id = setTimeout(async () => {
@@ -51,7 +51,7 @@ export default function PeopleDirectory({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q, tab]);
 
-  // Follow lists — loaded once per tab visit.
+  // Follow lists - loaded once per tab visit.
   useEffect(() => {
     if (tab === "find" || lists[tab]) return;
     setLoading(true);

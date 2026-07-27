@@ -75,7 +75,7 @@ body {
 
 /* Always-visible slim scrollbar for scrollable panels (e.g. the Chats list
    rail). macOS hides overlay scrollbars by default, which makes a scroll area
-   read as "cut off" — this keeps a subtle track/thumb visible. */
+   read as "cut off" - this keeps a subtle track/thumb visible. */
 .scroll-slim {
   scrollbar-width: thin;
   scrollbar-color: rgba(10, 37, 69, 0.28) rgba(10, 37, 69, 0.07);

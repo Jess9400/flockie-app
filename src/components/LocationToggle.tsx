@@ -40,7 +40,7 @@ export default function LocationToggle({
       try {
         await captureAndStoreLocation();
       } catch {
-        /* ignore — permission denial / no geolocation shouldn't undo the toggle */
+        /* ignore - permission denial / no geolocation shouldn't undo the toggle */
       }
     }
     setBusy(false);

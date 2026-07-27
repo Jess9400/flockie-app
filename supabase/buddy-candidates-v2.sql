@@ -20,12 +20,12 @@ returns int language sql security definer set search_path = public stable as $$
   where t.user_id <> auth.uid() and t.status = 'active' and t.kind = me_t.kind
     and coalesce(t.visibility, 'private') <> 'public'  -- exclude Flocks from 1:1
     -- shared destination (case/space-insensitive); && uses the GIN index on
-    -- lower_array(destinations) — see supabase/dest-gin-index.sql
+    -- lower_array(destinations) - see supabase/dest-gin-index.sql
     and public.lower_array(t.destinations) && public.lower_array(me_t.destinations);
 $$;
 grant execute on function public.buddy_dest_count(text, uuid) to authenticated;
 
--- SUPERSEDED 2026-06-28: older buddy_candidates_trip — flat weights and NO
+-- SUPERSEDED 2026-06-28: older buddy_candidates_trip - flat weights and NO
 -- buddy_hard_block dealbreaker/block filter (could surface hard-blocked users).
 -- Canonical version (priority-weighted + buddy_hard_block) is in
 -- match-priorities.sql, which has its own drops+create. Wrapped (drops INCLUDED)

@@ -61,7 +61,7 @@ export default async function PersonPage({
     incomingLike = !m;
   }
 
-  // Social layer — migration-safe (empty before feed/follows SQL runs).
+  // Social layer - migration-safe (empty before feed/follows SQL runs).
   const [personPostsRes, followingRes, followersRes, viewerFollowRes] = await Promise.all([
     supabase.rpc("user_posts", { p_user: params.id, p_limit: 8 }),
     supabase.from("follows").select("followee_id", { count: "exact", head: true }).eq("follower_id", params.id),

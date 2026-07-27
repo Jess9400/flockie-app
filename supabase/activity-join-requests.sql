@@ -1,5 +1,5 @@
 -- ============================================================================
--- Flockie — Activity Board v2: per-activity join requests with HOST APPROVAL.
+-- Flockie - Activity Board v2: per-activity join requests with HOST APPROVAL.
 -- Run the WHOLE file in the Supabase SQL editor. Idempotent / safe to re-run.
 --
 -- Model (founder spec):
@@ -111,7 +111,7 @@ begin
   returning true into v_new;
 
   if v_new is null then
-    -- already requested — nothing new to notify
+    -- already requested - nothing new to notify
     return jsonb_build_object('requested', true, 'duplicate', true);
   end if;
 
@@ -164,7 +164,7 @@ begin
     where activity_id = p_activity and user_id = p_user and status = 'pending';
   if not found then raise exception 'request_not_found'; end if;
 
-  -- The request is handled — clear its notification off Home/inbox unread.
+  -- The request is handled - clear its notification off Home/inbox unread.
   update public.notifications
      set read_at = coalesce(read_at, now())
    where user_id = auth.uid()
@@ -204,7 +204,7 @@ begin
     jsonb_build_object('chat_id', v_chat, 'activity_id', t.id)
   );
 
-  -- 1:1 activity is now filled: decline the other pending requests, but softly —
+  -- 1:1 activity is now filled: decline the other pending requests, but softly -
   -- tell each the spot filled and nudge them to invite the host to something
   -- else (link to the host's profile Say-hi).
   declare r_other record;
@@ -218,7 +218,7 @@ begin
       perform public.notify(
         r_other.user_id, 'activity_like',
         'The "' || coalesce(t.title, 'activity') || '" spot was filled',
-        'Someone else joined this one — but the host is around. Invite them to something else!',
+        'Someone else joined this one - but the host is around. Invite them to something else!',
         jsonb_build_object('like_from', auth.uid(), 'href', '/people/' || auth.uid())
       );
     end loop;

@@ -31,7 +31,7 @@
   "compatShare": {
     "copied": "Link copied!",
     "defaultLabel": "See your match % with a friend",
-    "shareText": "See how compatible we'd be as travel buddies — take the 60-sec vibe check:",
+    "shareText": "See how compatible we'd be as travel buddies - take the 60-sec vibe check:",
     "shareTitle": "How compatible are we?"
   },
   "confirm": {
@@ -68,7 +68,7 @@
     "title": "Delete {label}?"
   },
   "earlyCity": {
-    "body": "Flockie is just getting started here — which means you get to shape it. Bring a friend or two and you'll have people to explore with in no time.",
+    "body": "Flockie is just getting started here - which means you get to shape it. Bring a friend or two and you'll have people to explore with in no time.",
     "exploreWorld": "Meanwhile, explore around the world",
     "heading": "You're early in {city}",
     "invite": "Invite friends"
@@ -83,7 +83,7 @@
     "completePrefsCompact": "Complete prefs",
     "completePrefsFull": "Complete Travel Preferences",
     "completePrefsTip": "Complete your travel preferences to request to join Flocks",
-    "errTip": "Couldn't send your request — tap to try again",
+    "errTip": "Couldn't send your request - tap to try again",
     "requestToJoin": "Request to join",
     "requested": "Requested",
     "tryAgain": "Try again"
@@ -93,7 +93,7 @@
     "badgeReview": "Review",
     "badgeReviewed": "Reviewed",
     "descBold": "each person individually",
-    "descPrefix": "{dest} — rate ",
+    "descPrefix": "{dest} - rate ",
     "descSuffix": " and leave a short note. It helps great travel buddies stand out.",
     "empty": "No one to review here yet.",
     "flockFallback": "your Flock",
@@ -114,8 +114,8 @@
     "errCredits": "AI image credits are used up for now.",
     "errGeneric": "Couldn't generate a cover.",
     "errNoTitle": "Add a title first so we know what to draw.",
-    "errTooMany": "Too many tries — give it a sec.",
-    "helper": "Makes an illustrated cover from your title — not a photo of people."
+    "errTooMany": "Too many tries - give it a sec.",
+    "helper": "Makes an illustrated cover from your title - not a photo of people."
   },
   "groupGenders": {
     "any": "Everyone",
@@ -126,9 +126,9 @@
     "closed": "Sign-ups for this Vibe are closed.",
     "eyebrow": "You're invited to a Vibe",
     "going": "going",
-    "helperCode": "You have a host invite code — tap to join one of the host's spots, confirmed instantly.",
-    "helperHost": "The host invited you directly — a quick vibe check, then they add you to their spots.",
-    "helperPublic": "Tap interested — a quick vibe check, then the host's algorithm picks the most compatible people.",
+    "helperCode": "You have a host invite code - tap to join one of the host's spots, confirmed instantly.",
+    "helperHost": "The host invited you directly - a quick vibe check, then they add you to their spots.",
+    "helperPublic": "Tap interested - a quick vibe check, then the host's algorithm picks the most compatible people.",
     "hostedBy": "Hosted by {name}",
     "interested": "I'm interested",
     "joinWithCode": "Join with host code",
@@ -181,12 +181,12 @@
   "matchBack": {
     "button": "Match back & chat",
     "errConflict": "You two have conflicting match preferences.",
-    "errFailed": "Couldn't match back — try again.",
+    "errFailed": "Couldn't match back - try again.",
     "prompt": "{name} wants to do something with you 👋",
     "subprompt": "Your vibes match. Match back to open a chat."
   },
   "matchKeyTip": {
-    "explanation": "— how aligned a person or plan is with your vibe. Higher = more your kind of thing.",
+    "explanation": "- how aligned a person or plan is with your vibe. Higher = more your kind of thing.",
     "gotIt": "Got it",
     "isYour": "is your",
     "that": "That",
@@ -214,7 +214,7 @@
     "videoOptional": "Video (optional)"
   },
   "profileProgress": {
-    "complete": "Profile {pct}% complete — finish for better matches."
+    "complete": "Profile {pct}% complete - finish for better matches."
   },
   "profileStats": {
     "activities": "Activities",
@@ -246,12 +246,12 @@
   "revealActions": {
     "checkFriendMatch": "Check if your friend would match your vibe",
     "linkCopied": "Link copied!",
-    "shareText": "See how compatible we'd be — take the 60-sec vibe check:",
+    "shareText": "See how compatible we'd be - take the 60-sec vibe check:",
     "shareTitle": "How compatible are we?",
     "shareYourVibe": "Share your vibe"
   },
   "reviewsBanner": {
-    "cta": "You have {count, plural, one {# review} other {# reviews}} to leave — help others find their people ⭐",
+    "cta": "You have {count, plural, one {# review} other {# reviews}} to leave - help others find their people ⭐",
     "dismiss": "Dismiss review reminder",
     "leaveMany": "Leave them",
     "leaveOne": "Leave it"
@@ -291,7 +291,7 @@
     "done": "Done",
     "heading": "Your vibe is set 🎉",
     "shareMyVibe": "Share my vibe",
-    "shareText": "Found my travel vibe on Flockie — find yours: https://findflockie.com",
+    "shareText": "Found my travel vibe on Flockie - find yours: https://findflockie.com",
     "shareTitle": "My travel vibe",
     "subtext": "Share it and pull your friends in."
   },
@@ -307,7 +307,7 @@
     "nameLabel": "Your name (optional)",
     "namePlaceholder": "So they know who vouched",
     "oneLinerPrompt": "Finish: “On a trip, {who} is the kind of person who…”",
-    "planningBody": "Be honest — they’ll thank you for it. Same questions, but about {who}.",
+    "planningBody": "Be honest - they’ll thank you for it. Same questions, but about {who}.",
     "planningHeading": "Planning a trip with {who}?",
     "sending": "Sending…",
     "thankYouBody": "Your honest take helps {name} find the right travel buddies.",

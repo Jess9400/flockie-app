@@ -1,6 +1,6 @@
 -- One-tap join for POST-MATCHING vibes. Once the algo/host has ranked a vibe
 -- (status 'ranking'/'finalized') and there's still room, a person tapping
--- "I'm interested" is confirmed straight away — no separate invite→confirm step,
+-- "I'm interested" is confirmed straight away - no separate invite→confirm step,
 -- since at that point we're just filling the room. Before matching (status
 -- 'open'/'reviewing') or when full, it falls back to normal soft interest.
 --
@@ -33,7 +33,7 @@ begin
   -- Same-city gate for the ONE-TAP confirm: only auto-confirm people in the
   -- vibe's city (they can actually show up). A different-city person still gets
   -- to express interest (falls through below) and can join via the normal flow
-  -- if they're genuinely travelling there — they're just never silently
+  -- if they're genuinely travelling there - they're just never silently
   -- confirmed into an event they likely can't attend.
   select (p.home_city is not null and lower(p.home_city) = lower(v.city))
     into v_same_city

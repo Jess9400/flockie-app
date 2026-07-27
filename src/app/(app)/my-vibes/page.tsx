@@ -113,9 +113,9 @@ export default async function MyVibesPage({
     confirmed?.forEach((r) => (counts[r.vibe_id] = (counts[r.vibe_id] ?? 0) + 1));
   }
 
-  // "In the running" / "You're going" — Vibes the user is a PARTICIPANT in (not
+  // "In the running" / "You're going" - Vibes the user is a PARTICIPANT in (not
   // hosting). Own rows are readable by RLS; display data comes from
-  // vibe_directory (no GPS, and — unlike browse filters — it includes every status).
+  // vibe_directory (no GPS, and - unlike browse filters - it includes every status).
   const { data: myInterests } = await supabase
     .from("vibe_interests")
     .select("vibe_id, status")
@@ -269,7 +269,7 @@ export default async function MyVibesPage({
     );
   }
 
-  // "You're going" — confirmed, green card with chat + directions inline.
+  // "You're going" - confirmed, green card with chat + directions inline.
   function GoingCard({ v }: { v: JoinedVibe }) {
     const place = [v.area, v.city].filter(Boolean).join(", ");
     return (
@@ -303,7 +303,7 @@ export default async function MyVibesPage({
     );
   }
 
-  // "In the running" — pending, carries the mini-stepper.
+  // "In the running" - pending, carries the mini-stepper.
   function RunningCard({ v }: { v: JoinedVibe }) {
     return (
       <div className={CARD}>

@@ -1,5 +1,5 @@
 -- Vibe ranking: same-city candidates get first dibs on the shortlist.
--- We don't gate events to a city, so out-of-city people can express interest —
+-- We don't gate events to a city, so out-of-city people can express interest -
 -- but a same-city person should always outrank an out-of-city person for a spot,
 -- with match score only breaking ties WITHIN each group. Everything else
 -- (eligibility gate, scoring weights, review-fit, diversity, standby split) is
@@ -30,7 +30,7 @@ begin
             where exists (select 1 from unnest(coalesce(p.trip_vibe,'{}')||coalesce(p.activity_vibe,'{}')) uv
                           where lower(uv) like '%'||lower(t)||'%')), 0.0) end)
       -- Guard EVERY slider: one NULL on either side used to turn the whole score
-      -- NULL, and NULLs sorted FIRST — rank 1 shortlists.
+      -- NULL, and NULLs sorted FIRST - rank 1 shortlists.
       + 0.20 * (case when p.planning is null or h.planning is null
                        or p.pace is null or h.pace is null
                        or p.social_energy is null or h.social_energy is null
@@ -67,6 +67,6 @@ begin
 
   update public.vibes set status='reviewing', shortlisted_at=now(), preview_rejects_used=0 where id=p_vibe and status <> 'cancelled';
   perform public.notify(v.host_id, 'vibe_review_ready', 'Your matched list for '||v.title||' is ready',
-          'Review it — remove up to a few before invites go out, or send them now.', jsonb_build_object('vibe_id', p_vibe));
+          'Review it - remove up to a few before invites go out, or send them now.', jsonb_build_object('vibe_id', p_vibe));
   return jsonb_build_object('shortlisted', v_shortlisted, 'standby', v_standby);
 end $function$;

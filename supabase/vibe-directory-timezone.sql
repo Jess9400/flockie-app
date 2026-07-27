@@ -2,7 +2,7 @@
 -- render each vibe's start time in ITS OWN zone (e.g. a Bangalore vibe reads
 -- "5pm" for every viewer) instead of the runtime zone. Before this, the detail
 -- page (a server component) rendered starts_at in UTC while the card (client)
--- rendered it in the viewer's browser zone — same vibe, two different times.
+-- rendered it in the viewer's browser zone - same vibe, two different times.
 --
 -- `timezone` is appended at the END: `create or replace view` can only add
 -- trailing columns, never reorder/rename existing ones. Column list must match

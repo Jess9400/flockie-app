@@ -68,8 +68,8 @@ begin
 end $$;
 grant execute on function public.decline_join_request(uuid, uuid) to authenticated;
 
--- join requests SELECT policy: SUPERSEDED — do not recreate here.
--- The live, scoped policy is in supabase/trip-requests-rls-enforce.sql (#90 —
+-- join requests SELECT policy: SUPERSEDED - do not recreate here.
+-- The live, scoped policy is in supabase/trip-requests-rls-enforce.sql (#90 -
 -- requester / trip host / co-host / accepted member, via can_see_trip_requests).
 -- The old `using (true)` version (any authed user reads every join request) was
 -- removed 2026-06-28 so re-running this file can't re-open the table.

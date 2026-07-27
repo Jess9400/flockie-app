@@ -7,7 +7,7 @@ import { getSessionUser } from "@/lib/supabase/user";
 import { dfLocale } from "@/lib/date-locale";
 import PostComposer, { type PostAnchor } from "@/components/PostComposer";
 
-// Share a recap — gathers everything the user was actually part of (vibes
+// Share a recap - gathers everything the user was actually part of (vibes
 // hosted/attended, clubs, 1:1 activities) as pickable anchors.
 export default async function NewPostPage() {
   const supabase = await createClient();
@@ -45,7 +45,7 @@ export default async function NewPostPage() {
 
   const anchors: PostAnchor[] = [];
 
-  // Vibes I attended (confirmed) — fetch their details.
+  // Vibes I attended (confirmed) - fetch their details.
   const attendedIds = (myInterests ?? []).map((r) => r.vibe_id as string);
   if (attendedIds.length) {
     const { data: av } = await supabase
@@ -63,7 +63,7 @@ export default async function NewPostPage() {
       anchors.push({ kind: "vibe", id: v.id, title: v.title, sub: `${t("subVibeHosted")} · ${fmt(v.starts_at)} · ${v.city}` });
   });
 
-  // Clubs — mine + memberships.
+  // Clubs - mine + memberships.
   const memberClubIds = (myMemberships ?? []).map((r) => r.club_id as string);
   const clubIds = Array.from(new Set(memberClubIds));
   const clubRows = [...(myClubs ?? [])];
@@ -77,7 +77,7 @@ export default async function NewPostPage() {
   }
   clubRows.forEach((c) => anchors.push({ kind: "club", id: c.id, title: c.title, sub: `${t("subClub")} · ${c.city}` }));
 
-  // 1:1 activities — mine + accepted joins.
+  // 1:1 activities - mine + accepted joins.
   myActs?.forEach((a) =>
     anchors.push({ kind: "activity", id: a.id, title: a.title ?? t("subActivity"), sub: `${t("subActivity")} · ${fmt(a.start_date)} · ${a.destination ?? ""}` })
   );

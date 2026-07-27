@@ -30,7 +30,7 @@
     },
     "flock_created": {
       "title": "{title} is now a Flock",
-      "body": "You and your buddy opened the trip to a group — approve who joins together."
+      "body": "You and your buddy opened the trip to a group - approve who joins together."
     },
     "flock_declined": {
       "title": "Update on {title}",
@@ -54,7 +54,7 @@
     },
     "vibe_confirmed": {
       "title": "You're in for {title}",
-      "body": "You're confirmed — the Vibing Chat is open."
+      "body": "You're confirmed - the Vibing Chat is open."
     },
     "vibe_invitation": {
       "title": "You're invited to {title}",
@@ -66,7 +66,7 @@
     },
     "vibe_review_ready": {
       "title": "Your matched list for {title} is ready",
-      "body": "Review it — remove a few before invites go out, or send them now."
+      "body": "Review it - remove a few before invites go out, or send them now."
     },
     "vibe_review_reminder": {
       "title": "How was {title}?",
@@ -82,19 +82,19 @@
     },
     "vibe_starting_soon": {
       "title": "Your Vibe is tomorrow: {title}",
-      "body": "It kicks off soon — open the chat to coordinate with your group."
+      "body": "It kicks off soon - open the chat to coordinate with your group."
     },
     "unread_messages": {
       "title": "You have new messages",
-      "body": "New messages are waiting — jump back in."
+      "body": "New messages are waiting - jump back in."
     },
     "weekly_digest": {
       "title": "{count, plural, =1 {# new Vibe this week} other {# new Vibes this week}}",
-      "body": "Fresh Vibes picked for you — take a look."
+      "body": "Fresh Vibes picked for you - take a look."
     },
     "vibe_recommendation": {
       "title": "A Vibe you might love",
-      "body": "{title} — a Vibe in your city. Tap to check it out."
+      "body": "{title} - a Vibe in your city. Tap to check it out."
     }
   },
   "groupToday": "Today",

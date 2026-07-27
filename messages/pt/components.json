@@ -31,7 +31,7 @@
   "compatShare": {
     "copied": "Link copiado!",
     "defaultLabel": "Veja seu % de match com um amigo",
-    "shareText": "Veja o quanto seríamos compatíveis como companheiros de viagem — faça o vibe check de 60 seg:",
+    "shareText": "Veja o quanto seríamos compatíveis como companheiros de viagem - faça o vibe check de 60 seg:",
     "shareTitle": "O quanto somos compatíveis?"
   },
   "confirm": {
@@ -68,7 +68,7 @@
     "title": "Excluir {label}?"
   },
   "earlyCity": {
-    "body": "O Flockie está só começando por aqui — o que significa que você pode moldá-lo. Traga um amigo ou dois e logo terá gente para explorar junto.",
+    "body": "O Flockie está só começando por aqui - o que significa que você pode moldá-lo. Traga um amigo ou dois e logo terá gente para explorar junto.",
     "exploreWorld": "Enquanto isso, explore pelo mundo",
     "heading": "Você chegou cedo em {city}",
     "invite": "Convide amigos"
@@ -83,7 +83,7 @@
     "completePrefsCompact": "Completar prefs",
     "completePrefsFull": "Completar Preferências de Viagem",
     "completePrefsTip": "Complete suas preferências de viagem para pedir para entrar nos Flocks",
-    "errTip": "Não foi possível enviar sua solicitação — toque para tentar novamente",
+    "errTip": "Não foi possível enviar sua solicitação - toque para tentar novamente",
     "requestToJoin": "Pedir para entrar",
     "requested": "Solicitado",
     "tryAgain": "Tentar novamente"
@@ -93,7 +93,7 @@
     "badgeReview": "Avaliar",
     "badgeReviewed": "Avaliado",
     "descBold": "cada pessoa individualmente",
-    "descPrefix": "{dest} — avalie ",
+    "descPrefix": "{dest} - avalie ",
     "descSuffix": " e deixe uma nota rápida. Isso ajuda a destacar os melhores companheiros de viagem.",
     "empty": "Ainda não há ninguém para avaliar aqui.",
     "flockFallback": "seu Flock",
@@ -114,8 +114,8 @@
     "errCredits": "Os créditos de imagem com IA acabaram por enquanto.",
     "errGeneric": "Não foi possível gerar a capa.",
     "errNoTitle": "Adicione um título primeiro para sabermos o que desenhar.",
-    "errTooMany": "Muitas tentativas — aguarde um instante.",
-    "helper": "Cria uma capa ilustrada a partir do seu título — não é uma foto de pessoas."
+    "errTooMany": "Muitas tentativas - aguarde um instante.",
+    "helper": "Cria uma capa ilustrada a partir do seu título - não é uma foto de pessoas."
   },
   "groupGenders": {
     "any": "Todos",
@@ -126,9 +126,9 @@
     "closed": "As inscrições para esta Vibe estão encerradas.",
     "eyebrow": "Você foi convidado para uma Vibe",
     "going": "confirmados",
-    "helperCode": "Você tem um código do anfitrião — toque para entrar em um dos lugares dele, confirmado na hora.",
-    "helperHost": "O anfitrião te convidou diretamente — um rápido vibe check e ele te adiciona aos lugares.",
-    "helperPublic": "Toque em interessado — um rápido vibe check e o algoritmo do anfitrião escolhe as pessoas mais compatíveis.",
+    "helperCode": "Você tem um código do anfitrião - toque para entrar em um dos lugares dele, confirmado na hora.",
+    "helperHost": "O anfitrião te convidou diretamente - um rápido vibe check e ele te adiciona aos lugares.",
+    "helperPublic": "Toque em interessado - um rápido vibe check e o algoritmo do anfitrião escolhe as pessoas mais compatíveis.",
     "hostedBy": "Organizado por {name}",
     "interested": "Tenho interesse",
     "joinWithCode": "Entrar com código do anfitrião",
@@ -181,12 +181,12 @@
   "matchBack": {
     "button": "Match back & chat",
     "errConflict": "Vocês dois têm preferências de match conflitantes.",
-    "errFailed": "Não foi possível fazer o match back — tente novamente.",
+    "errFailed": "Não foi possível fazer o match back - tente novamente.",
     "prompt": "{name} quer fazer algo com você 👋",
     "subprompt": "Suas vibes combinam. Faça o match back para abrir um chat."
   },
   "matchKeyTip": {
-    "explanation": "— o quanto uma pessoa ou plano está alinhado com sua vibe. Quanto mais alto, mais é a sua cara.",
+    "explanation": "- o quanto uma pessoa ou plano está alinhado com sua vibe. Quanto mais alto, mais é a sua cara.",
     "gotIt": "Entendi",
     "isYour": "é seu",
     "that": "Esse",
@@ -214,7 +214,7 @@
     "videoOptional": "Vídeo (opcional)"
   },
   "profileProgress": {
-    "complete": "Perfil {pct}% completo — termine para melhores matches."
+    "complete": "Perfil {pct}% completo - termine para melhores matches."
   },
   "profileStats": {
     "activities": "Atividades",
@@ -246,12 +246,12 @@
   "revealActions": {
     "checkFriendMatch": "Será que seu amigo daria match com você?",
     "linkCopied": "Link copiado!",
-    "shareText": "Veja o quanto somos compatíveis — faça o vibe check de 60 seg:",
+    "shareText": "Veja o quanto somos compatíveis - faça o vibe check de 60 seg:",
     "shareTitle": "Quão compatíveis somos?",
     "shareYourVibe": "Compartilhar minha vibe"
   },
   "reviewsBanner": {
-    "cta": "Você tem {count, plural, one {# avaliação} other {# avaliações}} para deixar — ajude outras pessoas a encontrar a turma delas ⭐",
+    "cta": "Você tem {count, plural, one {# avaliação} other {# avaliações}} para deixar - ajude outras pessoas a encontrar a turma delas ⭐",
     "dismiss": "Dispensar lembrete de avaliações",
     "leaveMany": "Deixar",
     "leaveOne": "Deixar"
@@ -291,7 +291,7 @@
     "done": "Pronto",
     "heading": "Sua vibe está pronta 🎉",
     "shareMyVibe": "Compartilhar minha vibe",
-    "shareText": "Encontrei minha vibe de viagem no Flockie — encontre a sua: https://findflockie.com",
+    "shareText": "Encontrei minha vibe de viagem no Flockie - encontre a sua: https://findflockie.com",
     "shareTitle": "Minha vibe de viagem",
     "subtext": "Compartilhe e traga seus amigos."
   },
@@ -307,7 +307,7 @@
     "nameLabel": "Seu nome (opcional)",
     "namePlaceholder": "Para que saibam quem deu o vouch",
     "oneLinerPrompt": "Complete: “Em uma viagem, {who} é o tipo de pessoa que…”",
-    "planningBody": "Seja honesto/a — {who} vai agradecer. As mesmas perguntas, mas sobre {who}.",
+    "planningBody": "Seja honesto/a - {who} vai agradecer. As mesmas perguntas, mas sobre {who}.",
     "planningHeading": "Planejando uma viagem com {who}?",
     "sending": "Enviando…",
     "thankYouBody": "Sua opinião honesta ajuda {name} a encontrar os buddies de viagem certos.",

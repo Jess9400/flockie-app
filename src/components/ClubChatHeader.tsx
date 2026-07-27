@@ -182,7 +182,7 @@ export default function ClubChatHeader({
         </div>
       </div>
 
-      {/* club row — tap to expand info + members */}
+      {/* club row - tap to expand info + members */}
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}

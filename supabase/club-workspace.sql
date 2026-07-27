@@ -52,7 +52,7 @@ create policy "ws delete" on public.trip_agenda for delete to authenticated
       or (club_id is not null and public.is_club_member(club_id)));
 -- (trip_expenses "ws delete" stays payer-only from trip-workspace.sql.)
 
--- 3) Club balances — same net math as trip_balances, roster from club_members.
+-- 3) Club balances - same net math as trip_balances, roster from club_members.
 create or replace function public.club_balances(p_club uuid)
 returns table (user_id uuid, display_name text, photo text, paid numeric, owed numeric, net numeric)
 language sql security definer set search_path = public stable as $$
@@ -83,7 +83,7 @@ language sql security definer set search_path = public stable as $$
 $$;
 grant execute on function public.club_balances(uuid) to authenticated;
 
--- 4) Public schedule preview for the club detail page (members only — clubs are
+-- 4) Public schedule preview for the club detail page (members only - clubs are
 --    invite/request based, so the agenda stays inside the membership).
 create or replace function public.club_agenda_preview(p_club uuid)
 returns table (id uuid, day date, title text, note text)
@@ -96,7 +96,7 @@ language sql security definer set search_path = public stable as $$
 $$;
 grant execute on function public.club_agenda_preview(uuid) to authenticated;
 
--- 5) Scheduled meetings for the club Calendar — the club's own gatherings are
+-- 5) Scheduled meetings for the club Calendar - the club's own gatherings are
 --    vibes with club_id set (heartbeat schedules them). Upcoming first, then
 --    past. Members only.
 create or replace function public.club_gatherings(p_club uuid)
@@ -114,7 +114,7 @@ language sql security definer set search_path = public stable as $$
 $$;
 grant execute on function public.club_gatherings(uuid) to authenticated;
 
--- 6) Gathering RSVPs — each club member checks whether they'll attend a
+-- 6) Gathering RSVPs - each club member checks whether they'll attend a
 --    scheduled meetup (personal, self-only; everyone sees who's going).
 create table if not exists public.club_gathering_rsvps (
   vibe_id uuid not null references public.vibes(id) on delete cascade,

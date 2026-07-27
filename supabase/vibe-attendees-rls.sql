@@ -2,7 +2,7 @@
 -- Run in the Supabase SQL editor. Safe to re-run.
 --
 -- Before this, the "interests read" SELECT policy included an unscoped
--- `or status = 'confirmed'` — any signed-in user could query
+-- `or status = 'confirmed'` - any signed-in user could query
 -- `vibe_interests?user_id=eq.X&status=eq.confirmed` and enumerate ANYONE's
 -- confirmed vibes (raw rows: vibe_id + timestamps), deriving their future
 -- whereabouts across the whole app.
@@ -10,10 +10,10 @@
 -- Fix: the table policy now only allows own rows and the vibe host. The two
 -- legitimate public surfaces move behind SECURITY DEFINER RPCs that expose
 -- only safe, per-vibe data:
---   • vibe_attendees(p_vibe)         — the "Going" strip on the vibe page
+--   • vibe_attendees(p_vibe)         - the "Going" strip on the vibe page
 --                                      (id, display_name, photos via the safe
 --                                      public_profiles view)
---   • vibe_confirmed_counts(p_vibes) — aggregate "X going" counts for vibe
+--   • vibe_confirmed_counts(p_vibes) - aggregate "X going" counts for vibe
 --                                      cards (home / vibes list / my-vibes);
 --                                      no user ids leave the database.
 
@@ -45,7 +45,7 @@ revoke all on function public.vibe_confirmed_counts(uuid[]) from public, anon;
 grant execute on function public.vibe_confirmed_counts(uuid[]) to authenticated;
 
 -- ── scoped SELECT policy: own rows + the vibe host only ────────────────────
--- (Canonical definition — the old broad version in vibes-module.sql is
+-- (Canonical definition - the old broad version in vibes-module.sql is
 -- tombstoned so a re-run there can't re-open the table.)
 drop policy if exists "interests read" on public.vibe_interests;
 create policy "interests read" on public.vibe_interests for select to authenticated

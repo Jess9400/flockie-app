@@ -1,6 +1,6 @@
 -- ============================================================================
 -- Flockie - Pinned messages. One pinned message per chat, across every chat
--- type (1:1, flock, vibe, club) — chat_id spans buddy_chats / vibing_chats /
+-- type (1:1, flock, vibe, club) - chat_id spans buddy_chats / vibing_chats /
 -- clubs, so access is gated by can_access_chat(). Run in the SQL editor.
 -- Idempotent.
 -- ============================================================================

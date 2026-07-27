@@ -1,5 +1,5 @@
 -- ════════════════════════════════════════════════════════════════════════════
--- deploy-v2-2026-07-03.sql  (v2 — fixed vibe_directory column position)
+-- deploy-v2-2026-07-03.sql  (v2 - fixed vibe_directory column position)
 -- Pending prod SQL for the V2 batch + Taisiya's #175. Run the WHOLE file once.
 -- Idempotent. Order matters: dest-gin-index.sql defines lower_array() first.
 -- ════════════════════════════════════════════════════════════════════════════
@@ -13,10 +13,10 @@
 -- Run in the Supabase SQL editor. Safe to re-run.
 --
 -- buddy_dest_count / buddy_candidates_trip test "do these two trips share a
--- destination (case-insensitive)?" via unnest(...) join on lower() — which can't
+-- destination (case-insensitive)?" via unnest(...) join on lower() - which can't
 -- use an index (sequential scan over all active trips). This adds an IMMUTABLE
 -- lowercased-array helper + a GIN index on it, and the two functions are rewritten
--- (in their own files) to use `lower_array(a) && lower_array(b)` — a provably
+-- (in their own files) to use `lower_array(a) && lower_array(b)` - a provably
 -- equivalent array-overlap test the GIN index can serve. Also trims elements, so
 -- "Paris " and "paris" match (same hardening as the home_city fix).
 
@@ -55,12 +55,12 @@ returns int language sql security definer set search_path = public stable as $$
   where t.user_id <> auth.uid() and t.status = 'active' and t.kind = me_t.kind
     and coalesce(t.visibility, 'private') <> 'public'  -- exclude Flocks from 1:1
     -- shared destination (case/space-insensitive); && uses the GIN index on
-    -- lower_array(destinations) — see supabase/dest-gin-index.sql
+    -- lower_array(destinations) - see supabase/dest-gin-index.sql
     and public.lower_array(t.destinations) && public.lower_array(me_t.destinations);
 $$;
 grant execute on function public.buddy_dest_count(text, uuid) to authenticated;
 
--- SUPERSEDED 2026-06-28: older buddy_candidates_trip — flat weights and NO
+-- SUPERSEDED 2026-06-28: older buddy_candidates_trip - flat weights and NO
 -- buddy_hard_block dealbreaker/block filter (could surface hard-blocked users).
 -- Canonical version (priority-weighted + buddy_hard_block) is in
 -- match-priorities.sql, which has its own drops+create. Wrapped (drops INCLUDED)
@@ -136,10 +136,10 @@ grant execute on function public.buddy_candidates_trip(int, text, uuid) to authe
 -- editor. Safe to re-run.
 --
 -- Two upgrades the matching algo needs to actually differentiate people:
---   1. WEIGHTS  — each user picks the 2-3 things that matter most to them.
+--   1. WEIGHTS  - each user picks the 2-3 things that matter most to them.
 --      Those dimensions count ~2x in THEIR ranking, so a budget-obsessed
 --      traveler and a budget-agnostic one no longer get the same score.
---   2. FILTERS  — the dealbreakers we already collect (same-gender, sober)
+--   2. FILTERS  - the dealbreakers we already collect (same-gender, sober)
 --      now hard-exclude incompatible candidates instead of being dead data.
 -- Also rescales the personality cosine, which structurally lands ~0.7-0.95 for
 -- everyone, so scores spread across a usable range.
@@ -177,7 +177,7 @@ $$;
 grant execute on function public.buddy_hard_block(uuid, uuid) to authenticated;
 
 -- ── 3. Weighted pair score ───────────────────────────────────────────────────
--- Weights are taken from p_a (the viewer) — "what matters to ME when ranking
+-- Weights are taken from p_a (the viewer) - "what matters to ME when ranking
 -- you." A prioritized dimension counts 2x; everything else counts 1x, then the
 -- block is renormalized so the total still sums to 1.
 -- SUPERSEDED: canonical buddy_pair_score is in supabase/vibe-traits.sql (adds
@@ -288,7 +288,7 @@ begin
 
   -- ----- Weighted blend over the components both people have ------------------
   wsum := pers_w + trip_w + act_w;
-  if wsum = 0 then return 50; end if; -- no shared data — neutral
+  if wsum = 0 then return 50; end if; -- no shared data - neutral
   total := coalesce(pers_sim * pers_w, 0) + coalesce(trip_sim * trip_w, 0) + coalesce(act_sim * act_w, 0);
   return round(100 * (total / wsum));
 end $$;
@@ -365,7 +365,7 @@ language sql security definer set search_path = public stable as $$
     and ct.kind = me_t.kind
     and coalesce(ct.visibility, 'private') <> 'public'  -- exclude Flocks from 1:1
     -- shared destination (case/space-insensitive); && uses the GIN index on
-    -- lower_array(destinations) — see supabase/dest-gin-index.sql
+    -- lower_array(destinations) - see supabase/dest-gin-index.sql
     and public.lower_array(ct.destinations) && public.lower_array(me_t.destinations)
     and (greatest(ct.start_date, me_t.start_date) - least(ct.end_date, me_t.end_date)) <= 30
     and cp.onboarding_complete
@@ -622,11 +622,11 @@ commit;
 -- vibe_eligible). Safe to re-run.
 --
 -- vibe_match(user, vibe) -> 0-100, how well an open Vibe fits a user's profile:
---   0.35 category fit   — does the Vibe's category match something you do?
---   0.25 vibe-tag fit   — event tags (chill/social/party…) vs your activity vibe
---   0.12 skill fit      — required skill vs your skill in that activity
---   0.13 social fit     — how social the event reads vs your activity-social pref
---   0.15 review fit     — do you tend to recommend Vibes like this? (vibe_review_fit)
+--   0.35 category fit   - does the Vibe's category match something you do?
+--   0.25 vibe-tag fit   - event tags (chill/social/party…) vs your activity vibe
+--   0.12 skill fit      - required skill vs your skill in that activity
+--   0.13 social fit     - how social the event reads vs your activity-social pref
+--   0.15 review fit     - do you tend to recommend Vibes like this? (vibe_review_fit)
 -- Used by both the "X% your vibe" card badge and the "Picked for you" ranking.
 -- The review-fit term (2026-07-02) was ported from the tombstoned copy in
 -- vibe-review-preferences.sql; the other four weights were rescaled from
@@ -645,7 +645,7 @@ begin
   select * into v from public.vibes where id = p_vibe;
   if v.id is null then return null; end if;
 
-  -- category / activity fit — best match of the user's activities against ANY of
+  -- category / activity fit - best match of the user's activities against ANY of
   -- the Vibe's categories (multi-select), falling back to the single primary
   -- `category` for older vibes. 'other' is dropped as it carries no signal.
   v_cats := array(
@@ -800,7 +800,7 @@ begin
       perform public.notify(
         m.user_id, 'vibe_starting_soon',
         'Your Vibe is tomorrow: ' || r.title,
-        'It kicks off soon — open the chat to coordinate with your group.',
+        'It kicks off soon - open the chat to coordinate with your group.',
         jsonb_build_object('vibe_id', r.id, 'href', '/vibes/' || r.id || '/chat'));
     end loop;
     update public.vibes set starting_soon_reminded_at = now() where id = r.id;
@@ -820,7 +820,7 @@ select cron.schedule('flockie-vibe-tomorrow', '0 * * * *', $$ select public.send
 -- emailed via the existing notifications trigger (unread_messages is in the
 -- EMAILABLE map). Run in the Supabase SQL editor. Safe to re-run.
 --
--- THROTTLE / ANTI-SPAM DESIGN (deliberately conservative — under-notify rather
+-- THROTTLE / ANTI-SPAM DESIGN (deliberately conservative - under-notify rather
 -- than spam a live conversation):
 --   1. Unread is measured against chat_reads.last_read_at (the per-(user,chat)
 --      read cursor written by mark_chat_read). Messages the user sent are never
@@ -833,7 +833,7 @@ select cron.schedule('flockie-vibe-tomorrow', '0 * * * *', $$ select public.send
 --      would have seen the badge, so we skip them.
 --   4. Hard dedupe: skip if ANY unread_messages notification for that
 --      (user, chat) was created in the last 4 hours. So a chat can nudge a given
---      user at most once every 4h no matter how many messages arrive — never
+--      user at most once every 4h no matter how many messages arrive - never
 --      per-message.
 -- Membership: vibe chats -> host + confirmed attendees; buddy chats -> both
 -- sides of the match. chat_reads.chat_id spans both chat tables.
@@ -908,7 +908,7 @@ begin
       case when r.is_vibe then 'New messages in ' || coalesce(r.vibe_title, 'your Vibe')
            else 'You have new messages' end,
       'You have ' || r.n_unread || ' unread message'
-        || case when r.n_unread = 1 then '' else 's' end || ' waiting — jump back in.',
+        || case when r.n_unread = 1 then '' else 's' end || ' waiting - jump back in.',
       jsonb_build_object(
         'chat_id', r.chat_id,
         'href', case when r.is_vibe then '/vibes/' || r.vibe_id || '/chat'
@@ -932,8 +932,8 @@ select cron.schedule('flockie-unread-messages', '*/15 * * * *', $$ select public
 --
 -- OPT-OUT: there is no separate marketing-consent flag in `profiles` today, so
 -- we gate on the two existing switches:
---   * email_notifications  — the email opt-out honoured by /api/email/notify.
---   * notifications_enabled — the master in-app switch enforced by notify().
+--   * email_notifications  - the email opt-out honoured by /api/email/notify.
+--   * notifications_enabled - the master in-app switch enforced by notify().
 -- Users with EITHER turned off get neither the in-app card nor the email. When a
 -- dedicated marketing opt-in is added later, AND it into the WHERE below.
 --
@@ -959,7 +959,7 @@ begin
       )
   loop
     -- Top upcoming open Vibes in the user's city this week that they don't host,
-    -- haven't engaged with, and aren't excluded from — ranked by vibe_match.
+    -- haven't engaged with, and aren't excluded from - ranked by vibe_match.
     -- (Mirrors recommended_vibes(), but keyed to u.id instead of auth.uid().)
     select array_agg(t.title order by t.rn), max(t.rn)
       into titles, n
@@ -995,7 +995,7 @@ begin
   end loop;
 end $$;
 
--- Thursdays 15:00 UTC (late-morning US / evening EU — a "plan your week" nudge).
+-- Thursdays 15:00 UTC (late-morning US / evening EU - a "plan your week" nudge).
 do $$ begin perform cron.unschedule('flockie-weekly-digest'); exception when others then null; end $$;
 select cron.schedule('flockie-weekly-digest', '0 15 * * 4', $$ select public.send_weekly_digest(); $$);
 

@@ -23,7 +23,7 @@ export default function ShareVibeButton({
         await navigator.share({ title: t("share.shareTitle"), url });
         return;
       } catch {
-        // user cancelled or unsupported — fall through to copy
+        // user cancelled or unsupported - fall through to copy
       }
     }
     try {
@@ -33,7 +33,7 @@ export default function ShareVibeButton({
     } catch {}
   }
 
-  // Coral "Share to fill" pill — the primary action on a hosting card while
+  // Coral "Share to fill" pill - the primary action on a hosting card while
   // seats are still open (My Vibes).
   if (fill) {
     return (

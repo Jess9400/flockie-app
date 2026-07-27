@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !serviceKey) {
-    console.warn("[email] missing Supabase service env — cannot look up recipient");
+    console.warn("[email] missing Supabase service env - cannot look up recipient");
     return NextResponse.json({ ok: true, skipped: "no-service-key" });
   }
   const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
   if (prof?.email_notifications === false) {
     return NextResponse.json({ ok: true, skipped: "opted-out" });
   }
-  // Separate (migration-safe) query — `locale` is added by user-locale.sql.
+  // Separate (migration-safe) query - `locale` is added by user-locale.sql.
   // Kept apart so this route still works BEFORE that migration runs on prod;
   // buildEmail defaults to English when it's null/missing.
   const { data: loc } = await admin
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
   if (!to) return NextResponse.json({ ok: true, skipped: "no-email" });
 
   // 3b. Enrich the confirmed email AND the 6h final reminder with the details a
-  // confirmed guest needs — title, day/time, the exact location, and a Google
+  // confirmed guest needs - title, day/time, the exact location, and a Google
   // Maps link. Both go only to confirmed attendees, so the exact venue is fine.
   // Without a stored timezone we show the DATE only and leave the exact time to
   // the chat rather than risk a wrong hour in a server-rendered (UTC) email.
@@ -84,9 +84,9 @@ export async function POST(req: Request) {
           }).format(new Date(v.starts_at as string))
         : "";
       // Confirmed guests get the exact venue, so include a Google Maps link.
-      // ALWAYS pin by coordinates when we have them — `?query=lat,lng` drops an
+      // ALWAYS pin by coordinates when we have them - `?query=lat,lng` drops an
       // exact pin. Without coords, search the VENUE NAME + city (same fallback
-      // the vibe page and chat use — resolves to the venue, unlike a raw messy
+      // the vibe page and chat use - resolves to the venue, unlike a raw messy
       // address). City-only is the last resort so the link is never dead.
       const mapUrl =
         v.location_lat != null && v.location_lng != null

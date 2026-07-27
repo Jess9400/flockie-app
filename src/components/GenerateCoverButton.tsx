@@ -5,7 +5,7 @@ import { Sparkles } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslations } from "next-intl";
 
-// "Generate a cover" — asks the AI Gateway for a stylized cover image, uploads
+// "Generate a cover" - asks the AI Gateway for a stylized cover image, uploads
 // the result to the avatars bucket (same place uploaded covers go), and hands
 // back the public URL. Used in the Create flows when a host has no photo.
 export default function GenerateCoverButton({

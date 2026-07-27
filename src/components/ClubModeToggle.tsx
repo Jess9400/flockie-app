@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 
-// Host control: who keeps the club meeting — the host, or Flockie's automatic
+// Host control: who keeps the club meeting - the host, or Flockie's automatic
 // heartbeat (schedules the next gathering on cadence, same time same place).
 export default function ClubModeToggle({
   clubId,

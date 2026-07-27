@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
-// Secondary in-page tab bar — used to nest one section inside another (e.g. My
+// Secondary in-page tab bar - used to nest one section inside another (e.g. My
 // Vibes inside Vibes, Deals inside My Plans) without a top-level nav entry.
 // A tab flagged `soon` renders disabled with a "Soon" badge (feature parked).
 export default function PageTabs({

@@ -1,10 +1,10 @@
 -- ============================================================================
--- Flockie Feed — review auto-posts + join CTA on upcoming-vibe posts.
+-- Flockie Feed - review auto-posts + join CTA on upcoming-vibe posts.
 -- Run AFTER feed.sql + follows.sql. Idempotent / safe to re-run.
 --
 -- 1. A positive vibe review WITH text auto-becomes a feed post (anchored to
 --    the vibe, authored by the reviewer, badged as a review). Event reviews
---    only — person-to-person reviews stay private feedback.
+--    only - person-to-person reviews stay private feedback.
 -- 2. feed_posts/user_posts now return the anchored vibe's start time, so the
 --    UI can put a "Join this vibe" CTA on posts about upcoming vibes.
 -- ============================================================================

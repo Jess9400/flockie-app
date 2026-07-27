@@ -265,7 +265,7 @@
     "trip": {
       "title": "Vibe de viagem",
       "finish": "Salvar vibe de viagem",
-      "evolvedToast": "Sua vibe evoluiu — agora você é {name} {emoji}",
+      "evolvedToast": "Sua vibe evoluiu - agora você é {name} {emoji}",
       "pace": "Seu ritmo natural de viagem?",
       "budget": "Sua vibe de orçamento numa viagem?",
       "socialTravel": "Com quem você mais quer viajar?",
@@ -279,16 +279,16 @@
       "prioritiesLabel": "Quando a gente fizer seu match, o que mais importa?",
       "prioritiesHint": "Escolha até {max}.",
       "countriesLabel": "Quantos países você já visitou?",
-      "countriesHint": "Opcional — aparece nos seus cards de viagem como credencial de viajante.",
+      "countriesHint": "Opcional - aparece nos seus cards de viagem como credencial de viajante.",
       "languagesLabel": "Idiomas que você fala",
-      "languagesHint": "Opcional — ajuda os buddies a saberem que vocês vão se comunicar."
+      "languagesHint": "Opcional - ajuda os buddies a saberem que vocês vão se comunicar."
     },
     "activity": {
       "title": "Vibe de evento",
       "finish": "Salvar vibe de evento",
-      "evolvedToast": "Sua vibe evoluiu — agora você é {name} {emoji}",
+      "evolvedToast": "Sua vibe evoluiu - agora você é {name} {emoji}",
       "activitiesLabel": "O que você faz de verdade?",
-      "activitiesHint": "Suas favoritas — não precisa escolher tudo.",
+      "activitiesHint": "Suas favoritas - não precisa escolher tudo.",
       "motivationLabel": "O que te tira de casa?",
       "motivationHint": "O que você realmente busca quando vai a um rolê local.",
       "social": "Tamanho de grupo ideal para um encontro?",

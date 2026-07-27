@@ -134,7 +134,7 @@ export default function InterestButton({
     const { data, error } = await supabase.rpc("express_interest", { p_vibe: vibeId });
     setBusy(false);
     if (error) {
-      // Eligibility is enforced server-side too — translate the raw violation
+      // Eligibility is enforced server-side too - translate the raw violation
       // (pre-check skipped/raced) into the same friendly message.
       const ineligible =
         error.code === "42501" || /row-level security|not eligible/i.test(error.message);

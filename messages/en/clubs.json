@@ -3,7 +3,7 @@
     "back": "Clubs",
     "eyebrow": "CLUBS · FORMING",
     "title": "Start a Club",
-    "intro": "For people who want to do the same kind of thing again — not just meet once.",
+    "intro": "For people who want to do the same kind of thing again - not just meet once.",
     "howItWorksTitle": "Start small. Build for real.",
     "howItWorksBody": "You begin as the founding host. Invite a few people, run a gathering, then regular membership grows from people who actually show up.",
     "nameLabel": "What should the Club be called?",
@@ -76,7 +76,7 @@
     "privacyTitle": "Built through real gatherings",
     "privacyBody": "Flockie does not show a Club roster or exact location here. Founders and regulars are earned through real participation.",
     "clubChat": "Club chat",
-    "clubChatSub": "The persistent room — plans, jokes, everything between gatherings.",
+    "clubChatSub": "The persistent room - plans, jokes, everything between gatherings.",
     "openChat": "Open"
   },
   "founders": {
@@ -99,7 +99,7 @@
   "invite": {
     "eyebrow": "FOUNDING MEMBER INVITATION",
     "title": "Help shape {club}",
-    "body": "You’ve been invited to join the founding group. Founders help set the tone early — joining is your choice.",
+    "body": "You’ve been invited to join the founding group. Founders help set the tone early - joining is your choice.",
     "location": "{city}",
     "cadenceWeekly": "Weekly gatherings",
     "cadenceBiweekly": "Gatherings every two weeks",
@@ -138,7 +138,7 @@
   "directory": {
     "eyebrow": "COMMUNITIES THAT COME BACK",
     "title": "Clubs",
-    "intro": "Small recurring communities, built through real gatherings — not a follower count.",
+    "intro": "Small recurring communities, built through real gatherings - not a follower count.",
     "cityLabel": "City",
     "cityPlaceholder": "Dubai",
     "search": "See Clubs",
@@ -155,11 +155,11 @@
     "view": "View Club",
     "emptyTitle": "No Clubs in {city} yet",
     "emptyEverywhere": "No Clubs yet",
-    "emptyBody": "Start one around something you would genuinely like to keep doing. It begins as Forming — no fake members needed."
+    "emptyBody": "Start one around something you would genuinely like to keep doing. It begins as Forming - no fake members needed."
   },
   "attendance": {
     "title": "Record who came",
-    "body": "Confirm the people who actually attended this gathering. This does not make anyone a Club member — it only makes them eligible to request it.",
+    "body": "Confirm the people who actually attended this gathering. This does not make anyone a Club member - it only makes them eligible to request it.",
     "empty": "No confirmed attendees to record.",
     "recorded": "Attendance recorded",
     "record": "Record {count} attendee",
@@ -195,7 +195,7 @@
   },
   "convert": {
     "heading": "Turn it into a club",
-    "subtitle": "\"{title}\" becomes the club's first gathering — the people who came are already in the story.",
+    "subtitle": "\"{title}\" becomes the club's first gathering - the people who came are already in the story.",
     "nameLabel": "Club name",
     "cadenceLabel": "How often do you meet?",
     "cadence": {
@@ -204,7 +204,7 @@
       "monthly": "Monthly"
     },
     "inviteLabel": "Invite founding members",
-    "inviteHint": "Everyone who attended — untick anyone you'd rather not invite.",
+    "inviteHint": "Everyone who attended - untick anyone you'd rather not invite.",
     "invited": "Invited",
     "skip": "Skip",
     "creating": "Creating…",
@@ -220,12 +220,12 @@
     "modeHost": "I'll run it",
     "modeHostSub": "You schedule each gathering yourself",
     "modeAuto": "Flockie keeps it going",
-    "modeAutoSub": "Next gathering auto-scheduled on your cadence — same time, same place",
+    "modeAutoSub": "Next gathering auto-scheduled on your cadence - same time, same place",
     "detailChat": "Club chat"
   },
   "chat": {
     "heading": "Club chat",
-    "empty": "No messages yet — say hi to the club 👋",
+    "empty": "No messages yet - say hi to the club 👋",
     "placeholder": "Message the club…",
     "send": "Send",
     "edited": "edited"
@@ -239,7 +239,7 @@
     "membersCount": "{count} members",
     "mute": "Mute club",
     "unmute": "Unmute club",
-    "muted": "Muted — no more pings from this club",
+    "muted": "Muted - no more pings from this club",
     "unmuted": "Unmuted",
     "mutedBadge": "muted",
     "report": "Report club",
@@ -247,7 +247,7 @@
     "reportMsg": "Tell us what's wrong and we'll review it.",
     "reportPlaceholder": "What's the issue? (optional)",
     "reportCta": "Report",
-    "reported": "Reported — thank you.",
+    "reported": "Reported - thank you.",
     "leave": "Leave club",
     "leaving": "Leaving…",
     "leaveTitle": "Leave {title}?",

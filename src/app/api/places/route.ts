@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 // before the paid NEXT_PUBLIC_GMAPS_KEY is funded. Returns {name, address, url}.
 //
 // Crucially we GEOCODE the city to coordinates first and bound the venue search
-// to that area — a plain "coffee in Thane" text search on the free tier happily
+// to that area - a plain "coffee in Thane" text search on the free tier happily
 // returns cafés in York, England. Coordinates + a bounding box keep it local.
 
 type Place = { name: string; address: string | null; url: string };
@@ -77,7 +77,7 @@ export async function GET(req: Request) {
     p_window_seconds: 3600,
   });
   if (allowed === false)
-    return NextResponse.json({ error: "Too many requests — slow down." }, { status: 429 });
+    return NextResponse.json({ error: "Too many requests - slow down." }, { status: 429 });
 
   const hint = CATEGORY_HINT[category] ?? "";
   const key = process.env.GEOCODING_KEY || process.env.NEXT_PUBLIC_GMAPS_KEY;
@@ -128,7 +128,7 @@ export async function GET(req: Request) {
 
     // Free fallback: OSM Nominatim, STRICTLY bounded to the city's box. We only
     // run it when we have the city centre, and we never widen to a global search
-    // — a name-only match happily returns a café in York for "coffee in Thane",
+    // - a name-only match happily returns a café in York for "coffee in Thane",
     // which is worse than showing nothing. If OSM has no local POIs (common for
     // many Indian cities), we return empty and lean on the typed search + the
     // "Browse on Maps" link. Real coverage here comes from the Google key.

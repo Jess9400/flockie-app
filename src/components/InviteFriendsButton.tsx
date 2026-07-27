@@ -33,7 +33,7 @@ export default function InviteFriendsButton({
         await navigator.share({ title: t("shareTitle"), text, url });
         return;
       } catch {
-        // cancelled / unsupported — fall through to copy
+        // cancelled / unsupported - fall through to copy
       }
     }
     try {

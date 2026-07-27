@@ -1,5 +1,5 @@
 // Read-only "fingerprint" visualization for a 1-5 vibe-check dimension.
-// Used on the profile view page (Fix 3). No bordered container — whitespace only.
+// Used on the profile view page (Fix 3). No bordered container - whitespace only.
 
 export default function FingerprintBar({
   title,

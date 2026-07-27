@@ -61,7 +61,7 @@ function isBlockedUrl(url: URL): boolean {
   if (host.includes(":")) {
     // IPv6 literal: block loopback/unspecified, ULA fc00::/7, link-local fe80::/10.
     if (host === "::" || host === "::1" || /^(fc|fd|fe[89ab])/i.test(host)) return true;
-    // v4-mapped/compat (::ffff:127.0.0.1 or ::ffff:7f00:1) — block the mapped range wholesale.
+    // v4-mapped/compat (::ffff:127.0.0.1 or ::ffff:7f00:1) - block the mapped range wholesale.
     if (/(^|:)ffff:/i.test(host)) return true;
     return false;
   }
@@ -102,7 +102,7 @@ export async function GET(req: Request) {
   try {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 5000);
-    // Follow redirects manually (up to 3 hops), re-validating every Location —
+    // Follow redirects manually (up to 3 hops), re-validating every Location -
     // otherwise a public URL could 302 to http://169.254.169.254 and bypass the
     // blocklist above.
     let current = parsed;

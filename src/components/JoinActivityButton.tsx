@@ -8,7 +8,7 @@ import { useEsc } from "@/lib/use-esc";
 import { SKILL_SCALE } from "@/lib/vibe-check";
 
 // "I'm in" on someone's posted activity. Asks (optionally) for the joiner's
-// level + a short note, then calls request_join_activity — the creator gets a
+// level + a short note, then calls request_join_activity - the creator gets a
 // rich notification (age · gender · level · match % · note) so they accept
 // with the right expectations.
 export default function JoinActivityButton({

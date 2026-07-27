@@ -5,7 +5,7 @@
   "create": "Create",
   "subtitle": "Vibes you’re hosting and the ones you’ve joined.",
   "inTheRunning": "In the running",
-  "inTheRunningHelp": "Vibes you’ve joined — we’ll let you know as the host picks their group.",
+  "inTheRunningHelp": "Vibes you’ve joined - we’ll let you know as the host picks their group.",
   "hosting": "Hosting",
   "emptyHosting": "You haven’t hosted an upcoming Vibe. Create your first one.",
   "shareToFill": "Share to fill your room faster 🚀",
@@ -26,7 +26,7 @@
     "confirmed": "Confirmed"
   },
   "youreGoing": "You’re going",
-  "youreGoingHelp": "Confirmed — you’re in. Open one to see the details and chat.",
+  "youreGoingHelp": "Confirmed - you’re in. Open one to see the details and chat.",
   "seatsFilled": "{filled} of {capacity} seats filled",
   "openChat": "Open chat",
   "directions": "Directions",

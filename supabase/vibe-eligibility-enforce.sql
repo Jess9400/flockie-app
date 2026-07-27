@@ -4,11 +4,11 @@
 -- Safe to re-run.
 --
 -- Before this, gender_pref / age_min / age_max were only enforced by the cold
--- same-city fallback (and even there the age filter had been lost) — the main
+-- same-city fallback (and even there the age filter had been lost) - the main
 -- funnel (interest button → _rank_vibe_core shortlist → recommended_vibes)
 -- ignored them entirely, so e.g. men could be shortlisted for women-only vibes.
 --
--- vibe_eligible(user, vibe) — does the user's profile satisfy the vibe's
+-- vibe_eligible(user, vibe) - does the user's profile satisfy the vibe's
 -- gender_pref / age_min / age_max?
 --   * no prefs set (or gender_pref = 'any')  -> eligible
 --   * gender_pref set, gender unknown        -> NOT eligible (the host explicitly

@@ -139,7 +139,7 @@ export default function CityAutocomplete({
                 role="option"
                 aria-selected={active}
                 // onPointerDown (not onClick) so it fires before the input's
-                // blur on BOTH mouse and touch — iOS taps often skip the
+                // blur on BOTH mouse and touch - iOS taps often skip the
                 // synthesized mousedown, which made suggestions untappable.
                 onPointerDown={(event) => {
                   event.preventDefault();

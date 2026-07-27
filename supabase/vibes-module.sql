@@ -1,4 +1,4 @@
--- Flockie — Vibe Buddy / "Create a Vibe" module. Run in Supabase SQL Editor.
+-- Flockie - Vibe Buddy / "Create a Vibe" module. Run in Supabase SQL Editor.
 -- Safe to re-run.
 
 -- ───────────────────────────── vibes (events) ─────────────────────────────
@@ -184,7 +184,7 @@ create policy "pins host write" on public.vibe_pins for all to authenticated
   using (auth.uid() = (select host_id from public.vibes v where v.id = vibe_id))
   with check (auth.uid() = (select host_id from public.vibes v where v.id = vibe_id));
 
--- interests SELECT policy: SUPERSEDED — do not recreate here.
+-- interests SELECT policy: SUPERSEDED - do not recreate here.
 -- The live, scoped policy is in supabase/vibe-attendees-rls.sql (own rows +
 -- vibe host only; attendee avatars and "going" counts go through the
 -- vibe_attendees / vibe_confirmed_counts SECURITY DEFINER RPCs instead).
@@ -195,12 +195,12 @@ create policy "pins host write" on public.vibe_pins for all to authenticated
 -- status (shortlisted/invited/confirmed/standby) is set exclusively by the
 -- SECURITY DEFINER RPCs (rank_vibe, host_commit_matching, confirm_vibe, …), which
 -- bypass RLS. Without the status check, a user could directly POST/PATCH their row
--- to 'confirmed' and bypass the invite/matching/capacity flow — unlocking exact
+-- to 'confirmed' and bypass the invite/matching/capacity flow - unlocking exact
 -- GPS (vibe_private_logistics) and the vibe chat with no host approval.
 -- SUPERSEDED: canonical "interests self insert"/"interests self update" policies
 -- are in supabase/vibe-interests-status-lock.sql (live; status-locked, and INSERT
 -- now also enforces the host's gender/age prefs via vibe_eligible). Wrapped out
--- 2026-07-02 — repo-only, no DB change. ("interests self delete" below stays active.)
+-- 2026-07-02 - repo-only, no DB change. ("interests self delete" below stays active.)
 /*
 drop policy if exists "interests self insert" on public.vibe_interests;
 create policy "interests self insert" on public.vibe_interests for insert to authenticated

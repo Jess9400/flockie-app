@@ -3,7 +3,7 @@
 -- (_rank_vibe_core now filters through vibe_eligible). Safe to re-run.
 --
 -- Capacity is split: the algo fills its share; the host fills the rest via a
--- private link (joiners still do the activity vibe-check, but skip ranking — the
+-- private link (joiners still do the activity vibe-check, but skip ranking - the
 -- host accepts them manually). A `source` tag keeps the two tracks from colliding.
 
 alter table public.vibe_interests
@@ -58,7 +58,7 @@ begin
             where exists (select 1 from unnest(coalesce(p.trip_vibe,'{}')||coalesce(p.activity_vibe,'{}')) uv
                           where lower(uv) like '%'||lower(t)||'%')), 0.0) end)
       -- Guard EVERY slider (not just planning): one NULL on either side used to
-      -- turn the whole score NULL, and NULLs sorted FIRST — rank 1 shortlists.
+      -- turn the whole score NULL, and NULLs sorted FIRST - rank 1 shortlists.
       + 0.20 * (case when p.planning is null or h.planning is null
                        or p.pace is null or h.pace is null
                        or p.social_energy is null or h.social_energy is null
@@ -89,7 +89,7 @@ begin
 
   update public.vibes set status='reviewing', shortlisted_at=now(), preview_rejects_used=0 where id=p_vibe and status <> 'cancelled';
   perform public.notify(v.host_id, 'vibe_review_ready', 'Your matched list for '||v.title||' is ready',
-          'Review it — remove up to a few before invites go out, or send them now.', jsonb_build_object('vibe_id', p_vibe));
+          'Review it - remove up to a few before invites go out, or send them now.', jsonb_build_object('vibe_id', p_vibe));
   return jsonb_build_object('shortlisted', v_shortlisted, 'standby', v_standby);
 end $$;
 grant execute on function public._rank_vibe_core(uuid) to authenticated;
@@ -109,7 +109,7 @@ begin
     update public.vibe_interests set status='invited', invitation_sent_at=now(),
       invitation_expires_at=public._vibe_confirm_deadline(v.starts_at) where vibe_id=p_vibe and user_id=c.user_id;
     perform public.notify(c.user_id, 'vibe_invitation', 'A spot opened up: ' || v.title,
-            'You''re in — confirm to lock your spot.', jsonb_build_object('vibe_id', p_vibe));
+            'You''re in - confirm to lock your spot.', jsonb_build_object('vibe_id', p_vibe));
     v_added := v_added + 1;
   end loop;
   return v_added;
@@ -117,7 +117,7 @@ end $$;
 grant execute on function public.backfill_vibe(uuid) to authenticated;
 
 -- SUPERSEDED: canonical invite_city_fallback is in supabase/vibe-auto-matching.sql
--- (live; has the #77 starts_at>now guard). Wrapped out 2026-06-28 — repo-only.
+-- (live; has the #77 starts_at>now guard). Wrapped out 2026-06-28 - repo-only.
 -- (The _rank_vibe_core + backfill_vibe above remain the canonical/live versions.)
 /*
 create or replace function public.invite_city_fallback(p_vibe uuid)
@@ -153,7 +153,7 @@ begin
       values (p_vibe, c.id, 'invited', 'algo', c.score, now(), public._vibe_confirm_deadline(v.starts_at))
       on conflict (vibe_id, user_id) do nothing;
     perform public.notify(c.id, 'vibe_invitation', 'A Vibe in ' || v.city || ' you might love: ' || v.title,
-            'There''s a spot for you — confirm to join.', jsonb_build_object('vibe_id', p_vibe));
+            'There''s a spot for you - confirm to join.', jsonb_build_object('vibe_id', p_vibe));
     v_added := v_added + 1;
   end loop;
   return v_added;
@@ -191,7 +191,7 @@ begin
   if v_status is null or v_status <> 'requested' then raise exception 'no pending request from this person'; end if;
 
   -- Gate on overall capacity (confirmed + live invites), not the host-share
-  -- sub-cap — accepting a request is an explicit host decision, so it should
+  -- sub-cap - accepting a request is an explicit host decision, so it should
   -- succeed whenever the room genuinely has an open seat.
   select count(*) into v_private_held from public.vibe_interests
     where vibe_id=p_vibe
@@ -202,7 +202,7 @@ begin
     invitation_sent_at=now(), invitation_expires_at=public._vibe_confirm_deadline(v.starts_at)
     where vibe_id=p_vibe and user_id=p_user;
   perform public.notify(p_user, 'vibe_invitation', 'You''re invited to '||v.title,
-          'The host added you directly — confirm to lock your spot.', jsonb_build_object('vibe_id', p_vibe));
+          'The host added you directly - confirm to lock your spot.', jsonb_build_object('vibe_id', p_vibe));
 end $$;
 grant execute on function public.host_accept_private(uuid, uuid) to authenticated;
 
@@ -216,7 +216,7 @@ begin
   select status into v_status from public.vibe_interests where vibe_id=p_vibe and user_id=p_user;
   if v_status is null or v_status <> 'requested' then raise exception 'no pending request'; end if;
   update public.vibe_interests set status='declined' where vibe_id=p_vibe and user_id=p_user;
-  perform public.notify(p_user, 'vibe_declined', v.title||' — not this time',
+  perform public.notify(p_user, 'vibe_declined', v.title||' - not this time',
           'The host went a different way for their direct spots.', jsonb_build_object('vibe_id', p_vibe));
 end $$;
 grant execute on function public.host_reject_private(uuid, uuid) to authenticated;

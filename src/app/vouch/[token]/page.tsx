@@ -1,6 +1,6 @@
 import VouchForm from "@/components/VouchForm";
 
-// Public friend-vouch page — no login required.
+// Public friend-vouch page - no login required.
 export default function VouchPage({ params }: { params: { token: string } }) {
   return (
     <main className="mx-auto min-h-screen max-w-md px-5 py-8">

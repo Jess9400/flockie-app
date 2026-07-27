@@ -43,7 +43,7 @@ export default function DeleteAccountButton() {
     setBusy(true);
     setErr(null);
 
-    // Purge the user's photos + intro video FIRST — the DB delete_my_account
+    // Purge the user's photos + intro video FIRST - the DB delete_my_account
     // RPC can't reach storage, and public bucket URLs would otherwise stay live
     // forever. If this fails we stop and don't delete the account, so a retry
     // converges (no orphaned media, no half-deleted account).

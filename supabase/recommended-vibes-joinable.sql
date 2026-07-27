@@ -1,6 +1,6 @@
 -- "Picked for you" now recommends still-joinable vibes, not just 'open':
 --   * include reviewing/ranking/finalized (a vibe stays joinable after matching)
---   * but ONLY while it still has room (confirmed < capacity) — never push a full vibe
+--   * but ONLY while it still has room (confirmed < capacity) - never push a full vibe
 -- Everything else identical to live: eligibility gate, city, already-in/interested
 -- exclusion (any status), not-for-me, match scoring. Idempotent.
 create or replace function public.recommended_vibes(p_limit integer default 6)
@@ -28,7 +28,7 @@ as $function$
       select 1 from public.vibe_feedback vf
       where vf.vibe_id = v.id and vf.user_id = m.id and vf.signal = 'not_for_me'
     )
-    -- only while there's still room — don't recommend a full vibe
+    -- only while there's still room - don't recommend a full vibe
     and (select count(*) from public.vibe_interests vi2
          where vi2.vibe_id = v.id and vi2.status = 'confirmed') < v.capacity
     -- never recommend a vibe whose host prefs (gender/age) exclude the viewer

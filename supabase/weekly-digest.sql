@@ -6,8 +6,8 @@
 --
 -- OPT-OUT: there is no separate marketing-consent flag in `profiles` today, so
 -- we gate on the two existing switches:
---   * email_notifications  — the email opt-out honoured by /api/email/notify.
---   * notifications_enabled — the master in-app switch enforced by notify().
+--   * email_notifications  - the email opt-out honoured by /api/email/notify.
+--   * notifications_enabled - the master in-app switch enforced by notify().
 -- Users with EITHER turned off get neither the in-app card nor the email. When a
 -- dedicated marketing opt-in is added later, AND it into the WHERE below.
 --
@@ -33,7 +33,7 @@ begin
       )
   loop
     -- Top upcoming open Vibes in the user's city this week that they don't host,
-    -- haven't engaged with, and aren't excluded from — ranked by vibe_match.
+    -- haven't engaged with, and aren't excluded from - ranked by vibe_match.
     -- (Mirrors recommended_vibes(), but keyed to u.id instead of auth.uid().)
     select array_agg(t.title order by t.rn), max(t.rn)
       into titles, n
@@ -69,6 +69,6 @@ begin
   end loop;
 end $$;
 
--- Thursdays 15:00 UTC (late-morning US / evening EU — a "plan your week" nudge).
+-- Thursdays 15:00 UTC (late-morning US / evening EU - a "plan your week" nudge).
 do $$ begin perform cron.unschedule('flockie-weekly-digest'); exception when others then null; end $$;
 select cron.schedule('flockie-weekly-digest', '0 15 * * 4', $$ select public.send_weekly_digest(); $$);

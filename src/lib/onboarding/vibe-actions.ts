@@ -70,7 +70,7 @@ export async function getVibeProgress(): Promise<{
       (question) => !answers[question.id]
     ),
     isComplete: Boolean(profile?.vibe_completed_at),
-    // An old result with no completed flag means a retake in progress —
+    // An old result with no completed flag means a retake in progress -
     // the quiz UI locks its exit until the run is finished.
     isRetake: Boolean(profile?.archetype) && !profile?.vibe_completed_at,
   };

@@ -35,7 +35,7 @@ export default async function VibeDetailPage({
   const supabase = await createClient();
   const t = await getTranslations("vibes");
   const locale = await getLocale();
-  // The vibe lookup only needs params.id — fetch it alongside the user.
+  // The vibe lookup only needs params.id - fetch it alongside the user.
   const [user, { data: vibe }] = await Promise.all([
     getSessionUser(),
     supabase.from("vibe_directory").select("*").eq("id", params.id).maybeSingle(),
@@ -60,7 +60,7 @@ export default async function VibeDetailPage({
   // Full multi-select categories (falls back to the single `category` in render).
   const vibeCategories = ((vibe.categories as string[] | null) ?? []).filter(Boolean);
 
-  // These reads only depend on the vibe row and the viewer — fetch together.
+  // These reads only depend on the vibe row and the viewer - fetch together.
   // (attendees via RPC since vibe_interests is no longer broadly readable;
   // see supabase/vibe-attendees-rls.sql)
   const [
@@ -264,7 +264,7 @@ export default async function VibeDetailPage({
   const rules = (vibe.dealbreaker_rules ?? {}) as Record<string, boolean>;
   const activeRules = DEALBREAKER_RULES.filter((r) => rules[r.key]);
 
-  // Vibe reviews (the event) — aggregate into weighted %. (fetched above)
+  // Vibe reviews (the event) - aggregate into weighted %. (fetched above)
   const reviews = reviewRows ?? [];
   const reviewCount = reviews.length;
   const recommendPct = reviewCount
@@ -539,7 +539,7 @@ export default async function VibeDetailPage({
         </a>
       )}
 
-      {/* confirmed attendees — tap any to view their profile */}
+      {/* confirmed attendees - tap any to view their profile */}
       {showAttendeeDetails && confirmedCount > 0 && (
         <div className="mt-5">
           <p className="text-sm font-bold">

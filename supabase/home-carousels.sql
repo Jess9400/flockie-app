@@ -17,7 +17,7 @@
 -- Thinness valve: when the fresh pool (never swiped/decided) has fewer than 6
 -- people, top the carousel back up to 6 with people the viewer previously
 -- PASSED on in activity decisions (liked = false), ordered after the fresh
--- pool — never with hard-blocked people or anyone the viewer buddy-swiped.
+-- pool - never with hard-blocked people or anyone the viewer buddy-swiped.
 drop function if exists public.city_people(int);
 create function public.city_people(p_limit int default 12)
 returns table (

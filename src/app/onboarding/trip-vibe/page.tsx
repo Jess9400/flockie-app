@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import TripVibeForm from "@/components/TripVibeForm";
 
 // "Confirm my vibe" trip step. After saving, continue to the activity form only
-// if it's still empty — otherwise go to the profile (and pop the share popup).
+// if it's still empty - otherwise go to the profile (and pop the share popup).
 export default async function OnboardingTripVibePage() {
   const supabase = await createClient();
   const {

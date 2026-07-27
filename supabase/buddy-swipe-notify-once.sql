@@ -3,7 +3,7 @@
 --
 -- Before: every buddy_swipe(target, true, …) on an already-matched pair re-fired
 -- "It's a match!" to both users, and every repeat like re-fired the activity-like
--- notification — a spam vector (a client could loop the RPC to flood someone).
+-- notification - a spam vector (a client could loop the RPC to flood someone).
 -- After: the match notification fires only when the chat row is newly created,
 -- and the activity-like notification fires only on a fresh like (new swipe row).
 -- Behavior, matching, and the returned shape are otherwise unchanged.
@@ -63,7 +63,7 @@ begin
       p_target, 'activity_like',
       coalesce(v_liker, 'Someone') || ' wants to do something with you',
       coalesce(v_liker, 'Someone') || ' is in ' || coalesce(v_city, 'your city') ||
-        ' looking for someone to do ' || p_activity_title || ' — your vibes match. Match back to chat.',
+        ' looking for someone to do ' || p_activity_title || ' - your vibes match. Match back to chat.',
       jsonb_build_object('like_from', auth.uid())
     );
   end if;

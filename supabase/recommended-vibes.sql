@@ -3,11 +3,11 @@
 -- vibe_eligible). Safe to re-run.
 --
 -- vibe_match(user, vibe) -> 0-100, how well an open Vibe fits a user's profile:
---   0.35 category fit   — does the Vibe's category match something you do?
---   0.25 vibe-tag fit   — event tags (chill/social/party…) vs your activity vibe
---   0.12 skill fit      — required skill vs your skill in that activity
---   0.13 social fit     — how social the event reads vs your activity-social pref
---   0.15 review fit     — do you tend to recommend Vibes like this? (vibe_review_fit)
+--   0.35 category fit   - does the Vibe's category match something you do?
+--   0.25 vibe-tag fit   - event tags (chill/social/party…) vs your activity vibe
+--   0.12 skill fit      - required skill vs your skill in that activity
+--   0.13 social fit     - how social the event reads vs your activity-social pref
+--   0.15 review fit     - do you tend to recommend Vibes like this? (vibe_review_fit)
 -- Used by both the "X% your vibe" card badge and the "Picked for you" ranking.
 -- The review-fit term (2026-07-02) was ported from the tombstoned copy in
 -- vibe-review-preferences.sql; the other four weights were rescaled from
@@ -26,7 +26,7 @@ begin
   select * into v from public.vibes where id = p_vibe;
   if v.id is null then return null; end if;
 
-  -- category / activity fit — best match of the user's activities against ANY of
+  -- category / activity fit - best match of the user's activities against ANY of
   -- the Vibe's categories (multi-select), falling back to the single primary
   -- `category` for older vibes. 'other' is dropped as it carries no signal.
   v_cats := array(

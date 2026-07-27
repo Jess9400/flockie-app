@@ -22,7 +22,7 @@ export default async function SettingsPage() {
     .eq("id", user!.id)
     .maybeSingle();
 
-  // Separate (migration-safe) queries — columns added by later migrations.
+  // Separate (migration-safe) queries - columns added by later migrations.
   const { data: loc } = await supabase
     .from("profiles")
     .select("location_tracking_enabled")

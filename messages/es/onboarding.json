@@ -13,11 +13,11 @@
     "firstNamePlaceholder": "Tu nombre",
     "fromGoogle": "de Google",
     "birthday": "Cumpleaños",
-    "birthdayHelp": "Mantiene tu edad exacta — solo se muestra el número.",
+    "birthdayHelp": "Mantiene tu edad exacta - solo se muestra el número.",
     "gender": "Género",
     "city": "Tu ciudad ahora mismo",
     "cityPlaceholder": "ej. Lisboa",
-    "cityHelp": "Define quién tienes cerca — actualízala cuando quieras.",
+    "cityHelp": "Define quién tienes cerca - actualízala cuando quieras.",
     "genders": {
       "woman": "Mujer",
       "man": "Hombre",
@@ -53,7 +53,7 @@
     "questions": {
       "qmood": {
         "mechanicLabel": "Toca una",
-        "text": "Sin pensarlo mucho — ¿cuál te atrae?",
+        "text": "Sin pensarlo mucho - ¿cuál te atrae?",
         "options": [
           "Grupo pequeño, buena conversación",
           "Ruidoso, con energía, hasta tarde",
@@ -101,7 +101,7 @@
   "reveal": {
     "confident": "≈{percent}% de certeza",
     "earlyRead": "· lectura inicial, 5 respuestas",
-    "secondLean": "También podrías tirar para {emoji} {name} — con unas señales más lo confirmamos.",
+    "secondLean": "También podrías tirar para {emoji} {name} - con unas señales más lo confirmamos.",
     "sections": {
       "wired": "Cómo estás cableado",
       "matching": "Qué significa esto para tus matches",
@@ -128,11 +128,11 @@
     "archetypes": {
       "culture": {
         "description": "Vas a fondo, no a lo ancho. Estás en el museo antes de que abra y en el lugar local después de que cierra.",
-        "insight": "No solo visitas lugares — de verdad los conoces. Te emparejamos con alguien que siga ese ritmo, no con quien quiera apurarte."
+        "insight": "No solo visitas lugares - de verdad los conoces. Te emparejamos con alguien que siga ese ritmo, no con quien quiera apurarte."
       },
       "social": {
         "description": "Viniste por una cosa y te quedaste por la gente. Para el segundo día ya sabes el nombre de todos.",
-        "insight": "Una sala llena de desconocidos no te asusta — es prácticamente una invitación. Mantendremos tu feed lleno de gente y planes, no solo lugares."
+        "insight": "Una sala llena de desconocidos no te asusta - es prácticamente una invitación. Mantendremos tu feed lleno de gente y planes, no solo lugares."
       },
       "night": {
         "description": "Las cosas se revelan de noche y tú lo sabes. Las mañanas son para recuperarte.",
@@ -155,12 +155,12 @@
   "completeCard": {
     "completeTitle": "Tu vibe está completo 🎉",
     "almostTitle": "Ya casi lo tienes",
-    "completeBody": "Las tres piezas están listas — tus matches son lo más precisos posible.",
+    "completeBody": "Las tres piezas están listas - tus matches son lo más precisos posible.",
     "almostBody": "Cada pieza hace tus matches más precisos. Agrégalas ahora, o se irán llenando mientras viajas y te unes a cosas.",
     "travelTitle": "Vibe de viaje",
-    "travelDesc": "Ritmo, presupuesto, cómo viajas — afina los matches de viaje",
+    "travelDesc": "Ritmo, presupuesto, cómo viajas - afina los matches de viaje",
     "eventTitle": "Vibe de evento",
-    "eventDesc": "Qué buscas en una salida, tamaño del grupo — afina los planes locales",
+    "eventDesc": "Qué buscas en una salida, tamaño del grupo - afina los planes locales",
     "seeReading": "Ver tu lectura completa →",
     "unlockTitle": "Tu lectura completa se desbloquea al 100%",
     "unlockBody": "Termina las tres para tener la lectura completa de quién eres.",
@@ -173,7 +173,7 @@
     "friendFallback": "tu amigo",
     "takeCheck": "Haz el vibe check de 60 seg",
     "signupHint": "Regístrate con Google, responde unas preguntas y ve tu puntaje.",
-    "ownLink": "Este es tu propio enlace — compártelo con amigos para ver tu % de match.",
+    "ownLink": "Este es tu propio enlace - compártelo con amigos para ver tu % de match.",
     "takeCheckReveal": "Haz el vibe check de 60 seg para revelar tu puntaje",
     "resultGreat": "Tú y {name} son un gran match 🎉",
     "resultCompatible": "Tú y {name} son compatibles 🎉",

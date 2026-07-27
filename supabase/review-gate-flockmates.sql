@@ -1,4 +1,4 @@
--- Let you review people you actually shared something with — not just matched
+-- Let you review people you actually shared something with - not just matched
 -- travel buddies, but anyone in the same flock (joined via accepted requests).
 -- Run in the Supabase SQL editor. Safe to re-run.
 

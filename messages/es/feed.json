@@ -9,9 +9,9 @@
   "composer": {
     "back": "Inicio",
     "heading": "Comparte un momento",
-    "subtitle": "Un resumen de algo que pasó — o un aviso de lo que viene.",
+    "subtitle": "Un resumen de algo que pasó - o un aviso de lo que viene.",
     "stepAnchor": "1 · ¿De qué se trata?",
-    "noAnchors": "Aún no hay nada que publicar — únete primero a una vibe, un club o una actividad, y luego cuenta la historia.",
+    "noAnchors": "Aún no hay nada que publicar - únete primero a una vibe, un club o una actividad, y luego cuenta la historia.",
     "stepBody": "2 · Di algo",
     "bodyPlaceholder": "¿Qué tal estuvo? ¿O qué debería saber la gente antes de que pase?",
     "stepPhotos": "3 · Fotos (hasta 4)",
@@ -20,7 +20,7 @@
     "posting": "Publicando…",
     "cta": "Publicar",
     "ctaDisabled": "Primero elige de qué se trata",
-    "anchorNote": "Sin publicaciones sueltas — cada publicación está anclada a una vibe, club o actividad real.",
+    "anchorNote": "Sin publicaciones sueltas - cada publicación está anclada a una vibe, club o actividad real.",
     "subVibe": "Vibe a la que fuiste",
     "subVibeHosted": "Vibe que organizaste",
     "subClub": "Tu club",
@@ -46,7 +46,7 @@
   "people": {
     "back": "Perfil",
     "heading": "Gente",
-    "subtitle": "Tu gente — y gente nueva de salas reales de tu ciudad.",
+    "subtitle": "Tu gente - y gente nueva de salas reales de tu ciudad.",
     "tab": {
       "find": "Encontrar",
       "following": "Siguiendo",
@@ -56,9 +56,9 @@
     "metBadge": "conocido",
     "metHeading": "Gente que has conocido",
     "cityHeading": "También en tu ciudad",
-    "emptyFind": "No se encontró a nadie — prueba otro nombre.",
-    "emptyFollowing": "Aún no sigues a nadie — empieza con gente que has conocido.",
-    "emptyFollowers": "Aún sin seguidores — publica un resumen y saluda por la ciudad."
+    "emptyFind": "No se encontró a nadie - prueba otro nombre.",
+    "emptyFollowing": "Aún no sigues a nadie - empieza con gente que has conocido.",
+    "emptyFollowers": "Aún sin seguidores - publica un resumen y saluda por la ciudad."
   },
   "deletePost": "Eliminar publicación",
   "report": {
@@ -66,10 +66,10 @@
     "message": "Cuéntanos qué pasa y lo revisaremos.",
     "placeholder": "¿Cuál es el problema? (opcional)",
     "cta": "Denunciar",
-    "done": "Denunciado — gracias, lo revisaremos."
+    "done": "Denunciado - gracias, lo revisaremos."
   },
   "reviewBadge": "reseña",
-  "joinVibeCta": "Está por venir — únete",
+  "joinVibeCta": "Está por venir - únete",
   "menu": {
     "aria": "Opciones",
     "edit": "Editar publicación",

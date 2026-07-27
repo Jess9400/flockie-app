@@ -1,4 +1,4 @@
-# Session changelog — home redesign + bug fixes
+# Session changelog - home redesign + bug fixes
 
 Worked on the home page (intent-first redesign), the "Say hi → activity" flow,
 several bug fixes, and a matching-cron correctness fix. All PRs below are merged
@@ -6,16 +6,16 @@ to `main` and deployed to production unless noted.
 
 ## Cofounder PRs we merged (her work, shipped as-is)
 
-- **#64** — Clarify reveal CTA after signup
-- **#63** — Phase-1 latency cleanup (parallel Supabase reads on Home/Vibes + an index file)
-- **#27** — "Vibe matching reminders" — **left UNMERGED** intentionally
+- **#64** - Clarify reveal CTA after signup
+- **#63** - Phase-1 latency cleanup (parallel Supabase reads on Home/Vibes + an index file)
+- **#27** - "Vibe matching reminders" - **left UNMERGED** intentionally
 
 ## Our changes (merged → production)
 
 | PR  | Summary | Needs SQL run? |
 |-----|---------|----------------|
-| #65 | pg_trgm city index — corrects #63's unusable `lower(city)` btree | Yes — `home-carousels.sql` / trgm |
-| #66 | Stop "Review this Vibe" prompting after you've already reviewed | Yes — `public-profile-events.sql` |
+| #65 | pg_trgm city index - corrects #63's unusable `lower(city)` btree | Yes - `home-carousels.sql` / trgm |
+| #66 | Stop "Review this Vibe" prompting after you've already reviewed | Yes - `public-profile-events.sql` |
 | #67 | Intent-first home redesign | No |
 | #68 | Empty-state CTAs, compact filters, vibe-check call-out | No |
 | #69 | Remove match-people button; compact flock request button | No |
@@ -26,12 +26,12 @@ to `main` and deployed to production unless noted.
 | #74 | Flock join-request match %; fixed invisible category tag | No |
 | #75 | Portal Say hi modal (flicker fix) | No |
 | #76 | Trip matching gates on `trip_prefs` (no more /profile bounce) | No |
-| #77 | Stop matching/notifying for already-started Vibes | **Yes** — `vibe-auto-matching.sql` |
+| #77 | Stop matching/notifying for already-started Vibes | **Yes** - `vibe-auto-matching.sql` |
 
 ### Pending SQL migrations to run on Supabase
-- `supabase/home-carousels.sql` — #65 trgm index + `city_people` / `home_flocks` RPCs
-- `supabase/public-profile-events.sql` — #66 `reviewed` flag
-- `supabase/vibe-auto-matching.sql` — #77 (re-run the 3 changed functions:
+- `supabase/home-carousels.sql` - #65 trgm index + `city_people` / `home_flocks` RPCs
+- `supabase/public-profile-events.sql` - #66 `reviewed` flag
+- `supabase/vibe-auto-matching.sql` - #77 (re-run the 3 changed functions:
   `invite_city_fallback`, `auto_rank_due_vibes`, `autofill_open_vibes`)
 - (#63 indexes already run)
 
@@ -51,17 +51,17 @@ to `main` and deployed to production unless noted.
 - **Review CTA after reviewing** (#66): profile events list never knew if you'd
   reviewed; now returns a `reviewed` flag and shows "Edit your review".
 
-## City-fallback behavior (not a bug — for reference)
+## City-fallback behavior (not a bug - for reference)
 
 `invite_city_fallback` only invites people whose `home_city` matches the Vibe's
 city, who've done the activity vibe-check, when the room is short of capacity and
-within 48h of the signup deadline (or in ranking). It is strictly **same-city** —
+within 48h of the signup deadline (or in ranking). It is strictly **same-city** -
 it never pulls people from other cities.
 
 ## What we touched from cofounder (`stayavl-collab`) work
 
 Determined by git authorship. Note: the **matching engine is mostly Jess's own
-work** — the city-fallback / auto-run logic in `vibe-auto-matching.sql` are Jess's
+work** - the city-fallback / auto-run logic in `vibe-auto-matching.sql` are Jess's
 commits; `stayavl-collab` only contributed the "Not for me" signal there.
 
 | File | Our change (PR) | Her footprint |
@@ -78,24 +78,24 @@ commits; `stayavl-collab` only contributed the "Not for me" signal there.
 `MatchKeyTip`, `home-carousels.sql`, `performance-indexes-trgm.sql`).
 
 Highest overlap with her work: the **home page redesign** and **matching/gate
-changes (#76, #77)** — worth a sync with her since those are shared surfaces.
+changes (#76, #77)** - worth a sync with her since those are shared surfaces.
 
 ---
 
-# Session 2 (2026-06-27 / 06-28) — audit follow-up: security, matching cleanup, P1
+# Session 2 (2026-06-27 / 06-28) - audit follow-up: security, matching cleanup, P1
 
 Drove the audit findings to resolution. All PRs merged to `main`.
 
-## P0 security — ALL CLOSED
-- **#87** (cofounder) — Profile privacy/RLS. `profiles` base table locked to owner-only;
+## P0 security - ALL CLOSED
+- **#87** (cofounder) - Profile privacy/RLS. `profiles` base table locked to owner-only;
   cross-user reads go through a `security_barrier` definer view `public_profiles`
-  (safe fields only — no GPS/`location`, no raw sliders/dealbreakers); socials gated
+  (safe fields only - no GPS/`location`, no raw sliders/dealbreakers); socials gated
   by `social_visibility`. Two-phase rollout (prepare → deploy → enforce).
-- **#88** (cofounder) — Vibe location privacy. Exact venue/coords private; public
+- **#88** (cofounder) - Vibe location privacy. Exact venue/coords private; public
   browsing via `vibe_directory` (country/city/area); exact logistics only for host +
   confirmed attendees. Two-phase rollout.
-- **#89** — `buddy_swipe` notifies once (gated to newly-created chat / fresh like).
-- **#90** — `trip_join_requests` SELECT scoped (requester / host / co-host / accepted
+- **#89** - `buddy_swipe` notifies once (gated to newly-created chat / fresh like).
+- **#90** - `trip_join_requests` SELECT scoped (requester / host / co-host / accepted
   member); flocks "going" count moved to a definer RPC `flock_going_counts`.
 
 ## Option B profiles (cofounder #84/#85)
@@ -106,7 +106,7 @@ Drove the audit findings to resolution. All PRs merged to `main`.
 - `activity_candidate_decisions` (contextual pass/like); excludes handled people from
   `city_people` + `activity_candidates`; SwipeDeck error handling; honest empty states.
 
-## Matching engine — single source of truth (#94–#98, repo-only unless noted)
+## Matching engine - single source of truth (#94–#98, repo-only unless noted)
 The live functions were dumped from prod (the canonical) and all non-live duplicate
 definitions were neutralized so re-running any file can't downgrade the engine.
 Canonical files:
@@ -119,29 +119,29 @@ Canonical files:
 - `match-weights.sql` emptied (was the dangerous downgrade: dumb buddy_pair_score +
   mute-bypassing rank_vibe).
 - **#98** also added a regex guard to the `activity_skills::int` cast in `_rank_vibe_core`
-  and `vibe_match` (skips non-numeric values instead of aborting scoring) — the one
+  and `vibe_match` (skips non-numeric values instead of aborting scoring) - the one
   prod-touching change; applied + verified against the live dump.
 - Note: the audit's "standby double-notify" was a non-issue (live ranking uses a
   shortlist→host-review flow). `_all-pending.sql` still has stale copies but
-  self-converges (last-write-wins) — harmless, optional cleanup.
+  self-converges (last-write-wins) - harmless, optional cleanup.
 
 ## P1 / UX (#91–#93)
-- Portaled the remaining modals (InterestButton / ProfilePeek / ActivityVibePopup) —
+- Portaled the remaining modals (InterestButton / ProfilePeek / ActivityVibePopup) -
   same flicker-trap class as the SayHi fix (#91).
 - Match-% standardized to coral; `prefers-reduced-motion` disables the ping dots;
   `backfill-prefs-flags.sql` fixes the legacy-user matching dead end (#92).
 - Modal a11y (role/aria-modal + Esc-to-close via `useEsc`) + larger tap targets (#93).
 
 ## Run-on-Supabase checklist (SQL not auto-applied by deploys)
-- ✅ #87 prepare + enforce, #88 prepare + enforce, #89, #90 prepare + enforce — run.
-- ✅ #98 `::int` guard (`vibe-v2-private-link.sql` + `recommended-vibes.sql`) — run + verified.
+- ✅ #87 prepare + enforce, #88 prepare + enforce, #89, #90 prepare + enforce - run.
+- ✅ #98 `::int` guard (`vibe-v2-private-link.sql` + `recommended-vibes.sql`) - run + verified.
 - Verify the rest with: `city_people`/`home_flocks` exist (home-carousels.sql);
   `public_profile_events` contains `reviewed` (public-profile-events.sql);
   `select count(*) from profiles where coalesce(trip_prefs_complete,false)=false and planning is not null` = 0 (backfill-prefs-flags.sql).
-- Matching cleanup PRs #94–#97 are **repo-only — no SQL to run.**
+- Matching cleanup PRs #94–#97 are **repo-only - no SQL to run.**
 
 ## Deferred (optional)
-- Brand **contrast** (white on `flockie-blue` fails WCAG) — pending the color decision.
+- Brand **contrast** (white on `flockie-blue` fails WCAG) - pending the color decision.
 - `_all-pending.sql` monolith dedup (self-converges; low priority).
 
 ## Security hardening (#100–#103)
@@ -149,25 +149,25 @@ Driven by the "vibe-coded apps" security checklist + a Supabase Security Advisor
 
 | PR | Summary | Needs SQL run? |
 |----|---------|----------------|
-| #100 | Trips RLS (`can_see_trip` helper, scoped `trips readable` — replaced `using(true)`); per-user rate limiting (`rate_limit_hit` RPC) + auth-gate on `geocode` / `reverse-geocode` | **Yes** — `trips-rls.sql`, `rate-limits.sql` |
+| #100 | Trips RLS (`can_see_trip` helper, scoped `trips readable` - replaced `using(true)`); per-user rate limiting (`rate_limit_hit` RPC) + auth-gate on `geocode` / `reverse-geocode` | **Yes** - `trips-rls.sql`, `rate-limits.sql` |
 | #101 | Tombstone the stale `using(true)` join-requests policy (canonical scoped one is in `trip-requests-rls-enforce.sql` #90) | No (repo-only) |
-| #102 | `og` route SSRF hardening + auth + rate limit; generic `generate-cover` error; **WITH CHECK** on 3 UPDATE policies; DO-NOT-RUN header on `_all-pending.sql` | **Yes** — `security-hardening.sql` |
-| #103 | Advisor cleanup: pin `set_updated_at` search_path; revoke EXECUTE from all client roles on 9 internal cron/trigger/`notify` functions | **Yes** — `advisor-cleanup.sql` |
+| #102 | `og` route SSRF hardening + auth + rate limit; generic `generate-cover` error; **WITH CHECK** on 3 UPDATE policies; DO-NOT-RUN header on `_all-pending.sql` | **Yes** - `security-hardening.sql` |
+| #103 | Advisor cleanup: pin `set_updated_at` search_path; revoke EXECUTE from all client roles on 9 internal cron/trigger/`notify` functions | **Yes** - `advisor-cleanup.sql` |
 
-### Supabase Security Advisor — triage (2026-06-28)
+### Supabase Security Advisor - triage (2026-06-28)
 Scan returned **0 errors, all WARN**. Outcome:
 - **Fixed** (`advisor-cleanup.sql`): `function_search_path_mutable` on `set_updated_at`;
-  the 9 internal-only functions (5 cron jobs, 3 triggers, `notify`) — revoked from
+  the 9 internal-only functions (5 cron jobs, 3 triggers, `notify`) - revoked from
   `public, anon, authenticated` (verified none are client-called) to clear them from
   both the 0028 (anon) and 0029 (authenticated) lists.
-- **Dismiss — working as intended:** the ~95 `authenticated…executable` (0029) rows
+- **Dismiss - working as intended:** the ~95 `authenticated…executable` (0029) rows
   are the app's RPC surface, each gated on `auth.uid()`. The leftover `anon…executable`
   (0028) rows fail safe (`auth.uid()` is null inside); a blanket anon-revoke was rejected
   because the public routes (`/vouch`, `/invite`, `/compat`, `/join`) legitimately need
   `get_vouch_subject` / `submit_vouch` / `public_vibe` / `compat_*` / referral RPCs.
-- **Dismiss — managed:** `postgis` / `pg_trgm` `extension_in_public` + `st_estimatedextent`
+- **Dismiss - managed:** `postgis` / `pg_trgm` `extension_in_public` + `st_estimatedextent`
   (PostGIS-owned; moving breaks dependencies).
-- **No action — Pro-only:** `auth_leaked_password_protection` is a paid-plan toggle, and
+- **No action - Pro-only:** `auth_leaked_password_protection` is a paid-plan toggle, and
   signup is Google-only anyway. Revisit if email/password login is added.
 
 ## Full audit + P0 fix (2026-06-28)
@@ -175,10 +175,10 @@ Ran a 4-track audit (auth/signup, matching algo, core flows, build/breakage).
 
 | PR | Summary | Needs SQL run? |
 |----|---------|----------------|
-| #105 | **P0** — lock `vibe_interests` self-write to `status='interested'` | **Yes** — `vibe-interests-status-lock.sql` ✅ run on prod 2026-06-28 |
+| #105 | **P0** - lock `vibe_interests` self-write to `status='interested'` | **Yes** - `vibe-interests-status-lock.sql` ✅ run on prod 2026-06-28 |
 
 - **P0 (fixed, #105):** the `vibe_interests` INSERT/UPDATE RLS only checked `user_id =
-  auth.uid()` — status unconstrained. Any authed user could directly set their row to
+  auth.uid()` - status unconstrained. Any authed user could directly set their row to
   `status='confirmed'` for any vibe, bypassing invite/matching/capacity and unlocking
   exact GPS (`vibe_private_logistics`) + vibe chat (`is_vibe_member`). Audit query
   confirmed **no exploitation** (only confirmed/null-invitation rows were legit
@@ -190,19 +190,19 @@ Ran a 4-track audit (auth/signup, matching algo, core flows, build/breakage).
 - **Verified LIVE on prod** (via `pg_get_functiondef`): `autofill_open_vibes` /
   `auto_rank_due_vibes` / `invite_city_fallback` carry the #77 time guards;
   `vibe_match` carries the #98 `::int` guard. (Resolves the earlier "vibe-auto-matching
-  not run?" uncertainty — the guarded versions are deployed.)
+  not run?" uncertainty - the guarded versions are deployed.)
 
 ### Audit follow-ups
-- **✅ Matching re-run downgrade hazards (repo-only) — DONE.** Comment-wrapped the
+- **✅ Matching re-run downgrade hazards (repo-only) - DONE.** Comment-wrapped the
   non-canonical *active* duplicate defs so re-running these files can't downgrade the
-  live engine: `autofill_open_vibes` (`host-controls.sql` — function block-wrapped, its
+  live engine: `autofill_open_vibes` (`host-controls.sql` - function block-wrapped, its
   cron line-commented because the `*/10` cron expr would close a `/* */` block; and
   `vibe-v2-preview-reject.sql`), `vibe_match` (`vibe-not-for-me.sql`,
-  `vibe-review-preferences.sql` — leaving their canonical `vibe_negative_fit` /
-  `vibe_review_fit` active), `buddy_candidates_trip` (`buddy-candidates-v2.sql` — drops
+  `vibe-review-preferences.sql` - leaving their canonical `vibe_negative_fit` /
+  `vibe_review_fit` active), `buddy_candidates_trip` (`buddy-candidates-v2.sql` - drops
   included in the wrap; canonical is `match-priorities.sql`), `recommended_vibes`
   (`vibe-location-privacy-prepare.sql`). Canonical copies untouched; verified balanced
-  via a comment-lexer pass. No prod SQL — repo-only.
+  via a comment-lexer pass. No prod SQL - repo-only.
 - **Onboarding soft-gated:** hard redirect runs only at login callback; a user who abandons
   onboarding can navigate directly to `/home`. If hard enforcement is wanted, gate in
   `(app)/layout.tsx`. (Product decision.)

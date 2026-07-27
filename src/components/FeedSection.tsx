@@ -37,7 +37,7 @@ const ANCHOR_STYLE: Record<string, string> = {
   club: "bg-flockie-blue/10 text-flockie-blue",
   activity: "bg-onboarding-green/10 text-onboarding-green",
 };
-// Each card carries its anchor's color — a tinted border + avatar ring, so the
+// Each card carries its anchor's color - a tinted border + avatar ring, so the
 // feed reads coral/blue/green instead of a wall of white.
 const CARD_TINT: Record<string, string> = {
   vibe: "border-flockie-coral/30",

@@ -76,7 +76,7 @@
     "privacyTitle": "Construído em encontros reais",
     "privacyBody": "A Flockie não mostra uma lista de membros nem o local exato aqui. Fundadores e regulares são conquistados com participação real.",
     "clubChat": "Chat do club",
-    "clubChatSub": "A sala permanente — planos, piadas, tudo entre as reuniões.",
+    "clubChatSub": "A sala permanente - planos, piadas, tudo entre as reuniões.",
     "openChat": "Abrir"
   },
   "founders": {
@@ -138,7 +138,7 @@
   "directory": {
     "eyebrow": "COMUNIDADES QUE VOLTAM",
     "title": "Clubs",
-    "intro": "Pequenas comunidades recorrentes, construídas em encontros reais — não em número de seguidores.",
+    "intro": "Pequenas comunidades recorrentes, construídas em encontros reais - não em número de seguidores.",
     "cityLabel": "Cidade",
     "cityPlaceholder": "Dubai",
     "search": "Ver Clubs",
@@ -195,7 +195,7 @@
   },
   "convert": {
     "heading": "Transforme em um club",
-    "subtitle": "\"{title}\" vira a primeira reunião do club — quem foi já faz parte da história.",
+    "subtitle": "\"{title}\" vira a primeira reunião do club - quem foi já faz parte da história.",
     "nameLabel": "Nome do club",
     "cadenceLabel": "Com que frequência vocês se encontram?",
     "cadence": {
@@ -204,7 +204,7 @@
       "monthly": "Mensal"
     },
     "inviteLabel": "Convide membros fundadores",
-    "inviteHint": "Todos que participaram — desmarque quem preferir não convidar.",
+    "inviteHint": "Todos que participaram - desmarque quem preferir não convidar.",
     "invited": "Convidado",
     "skip": "Pular",
     "creating": "Criando…",
@@ -220,12 +220,12 @@
     "modeHost": "Eu cuido",
     "modeHostSub": "Você agenda cada reunião",
     "modeAuto": "Flockie mantém",
-    "modeAutoSub": "Próxima reunião auto-agendada no seu ritmo — mesmo lugar, mesma hora",
+    "modeAutoSub": "Próxima reunião auto-agendada no seu ritmo - mesmo lugar, mesma hora",
     "detailChat": "Chat do club"
   },
   "chat": {
     "heading": "Chat do club",
-    "empty": "Sem mensagens ainda — diga oi para o club 👋",
+    "empty": "Sem mensagens ainda - diga oi para o club 👋",
     "placeholder": "Mensagem para o club…",
     "send": "Enviar",
     "edited": "editado"
@@ -239,7 +239,7 @@
     "membersCount": "{count} membros",
     "mute": "Silenciar club",
     "unmute": "Reativar club",
-    "muted": "Silenciado — sem mais avisos deste club",
+    "muted": "Silenciado - sem mais avisos deste club",
     "unmuted": "Reativado",
     "mutedBadge": "silenciado",
     "report": "Denunciar club",
@@ -247,7 +247,7 @@
     "reportMsg": "Conte o que há de errado e vamos revisar.",
     "reportPlaceholder": "Qual é o problema? (opcional)",
     "reportCta": "Denunciar",
-    "reported": "Denunciado — obrigado.",
+    "reported": "Denunciado - obrigado.",
     "leave": "Sair do club",
     "leaving": "Saindo…",
     "leaveTitle": "Sair de {title}?",

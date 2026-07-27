@@ -3,7 +3,7 @@
 -- emailed via the existing notifications trigger (unread_messages is in the
 -- EMAILABLE map). Run in the Supabase SQL editor. Safe to re-run.
 --
--- THROTTLE / ANTI-SPAM DESIGN (deliberately conservative — under-notify rather
+-- THROTTLE / ANTI-SPAM DESIGN (deliberately conservative - under-notify rather
 -- than spam a live conversation):
 --   1. Unread is measured against chat_reads.last_read_at (the per-(user,chat)
 --      read cursor written by mark_chat_read). Messages the user sent are never
@@ -16,7 +16,7 @@
 --      would have seen the badge, so we skip them.
 --   4. ONE nudge per unread batch: once we've notified about the current
 --      unread messages we stay silent until a NEW message arrives after that
---      nudge — never a repeat reminder for the same unread state. On top of
+--      nudge - never a repeat reminder for the same unread state. On top of
 --      that, max one nudge per (user, chat) per 4 hours.
 -- Membership: vibe chats -> host + confirmed attendees; buddy chats -> both
 -- sides of the match. chat_reads.chat_id spans both chat tables.
@@ -79,7 +79,7 @@ begin
     where au.latest_unread < now() - interval '15 minutes'          -- chat went quiet
       and u.last_sign_in_at < now() - interval '1 hour'             -- recipient is away
       -- ONE nudge per unread batch: if we already notified AFTER the newest
-      -- unread message, everything unread has been announced — stay silent
+      -- unread message, everything unread has been announced - stay silent
       -- until something NEW arrives. (Prevents the every-4h repeat forever
       -- when the recipient simply never opens the chat.)
       and not exists (
@@ -102,7 +102,7 @@ begin
       case when r.is_vibe then 'New messages in ' || coalesce(r.vibe_title, 'your Vibe')
            else 'You have new messages' end,
       'You have ' || r.n_unread || ' unread message'
-        || case when r.n_unread = 1 then '' else 's' end || ' waiting — jump back in.',
+        || case when r.n_unread = 1 then '' else 's' end || ' waiting - jump back in.',
       jsonb_build_object(
         'chat_id', r.chat_id,
         'href', case when r.is_vibe then '/vibes/' || r.vibe_id || '/chat'

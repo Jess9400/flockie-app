@@ -18,7 +18,7 @@ export default function SafetyPage() {
       <div className="rounded-2xl border-2 border-flockie-orange/30 bg-flockie-orange/10 p-4 text-sm">
         <p className="font-bold text-ink">Your judgment is your most important safety tool.</p>
         <p className="mt-1">
-          Flockie connects people — we don&rsquo;t organize, supervise, or vet members beyond basic
+          Flockie connects people - we don&rsquo;t organize, supervise, or vet members beyond basic
           checks, and during beta fewer safety guardrails exist than will in the future. The advice
           below is practical, not legal advice. If you&rsquo;re ever in immediate danger, contact
           local emergency services first.
@@ -30,7 +30,7 @@ export default function SafetyPage() {
           <li>Tell a trusted friend or family member where you&rsquo;re going and who with.</li>
           <li>Share your live location with someone you trust for the first meeting.</li>
           <li>
-            Have a short video or voice chat first if you can — it&rsquo;s a good way to confirm
+            Have a short video or voice chat first if you can - it&rsquo;s a good way to confirm
             someone is who they say they are.
           </li>
           <li>
@@ -43,12 +43,12 @@ export default function SafetyPage() {
 
       <Section heading="When you meet">
         <ul className="list-disc space-y-1 pl-5">
-          <li>Meet first in a public, populated place — a café, a busy trailhead, a group setting.</li>
+          <li>Meet first in a public, populated place - a café, a busy trailhead, a group setting.</li>
           <li>Stay in control of your own transport, drinks, and belongings.</li>
           <li>Don&rsquo;t share your home address or exact location until you trust someone.</li>
           <li>
             Trust your instincts. If something feels wrong, you don&rsquo;t owe anyone an
-            explanation — leave.
+            explanation - leave.
           </li>
           <li>Check in with your trusted contact during and after the meeting.</li>
         </ul>
@@ -63,7 +63,7 @@ export default function SafetyPage() {
           <li>Be wary of sob stories, investment tips, crypto offers, or urgent requests for help.</li>
           <li>
             Book travel and activities through official providers. Deals in the Deals tab are run by
-            third parties under their own terms — review them before paying.
+            third parties under their own terms - review them before paying.
           </li>
           <li>If someone pressures you about money, stop talking to them and report them.</li>
         </ul>
@@ -75,7 +75,7 @@ export default function SafetyPage() {
             Vibe hosts are other members, not licensed guides or instructors. Activities like
             surfing, hiking, climbing, or drinking carry real risk.
           </li>
-          <li>Know your own skill, fitness, and limits — and the conditions and equipment needed.</li>
+          <li>Know your own skill, fitness, and limits - and the conditions and equipment needed.</li>
           <li>Arrange your own travel and medical insurance and keep emergency contacts handy.</li>
           <li>For longer trips, agree on plans, costs, and expectations in writing beforehand.</li>
           <li>You can leave any trip or activity at any time if you feel unsafe.</li>
@@ -97,7 +97,7 @@ export default function SafetyPage() {
           </li>
           <li>
             Report unsafe behavior, harassment, scams, or fake accounts to us at {email}. Include
-            names, screenshots, and any details you can — it helps us act faster.
+            names, screenshots, and any details you can - it helps us act faster.
           </li>
           <li>
             You can also report or block a member from their profile. We may suspend or remove

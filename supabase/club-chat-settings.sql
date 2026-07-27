@@ -1,5 +1,5 @@
 -- ============================================================================
--- Flockie Clubs — chat header settings: members list, leave, mute-aware
+-- Flockie Clubs - chat header settings: members list, leave, mute-aware
 -- badge + heartbeat. Run AFTER clubs-loop.sql. Idempotent / safe to re-run.
 -- ============================================================================
 
@@ -23,7 +23,7 @@ language sql security definer set search_path = public stable as $$
 $$;
 grant execute on function public.club_members(uuid) to authenticated;
 
--- Leave the club (members only — the host closes it instead).
+-- Leave the club (members only - the host closes it instead).
 create or replace function public.leave_club(p_club uuid)
 returns void language plpgsql security definer set search_path = public as $$
 begin

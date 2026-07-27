@@ -38,7 +38,7 @@ export const viewport: Viewport = {
   themeColor: "#F7F3EE",
   width: "device-width",
   initialScale: 1,
-  // No maximumScale — blocking pinch-zoom fails WCAG 1.4.4 and hurts the
+  // No maximumScale - blocking pinch-zoom fails WCAG 1.4.4 and hurts the
   // small-text screens (11px meta / dense grids) most.
   viewportFit: "cover",
 };

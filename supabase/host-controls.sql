@@ -53,10 +53,10 @@ grant execute on function public.update_vibe_when(uuid, timestamptz, timestamptz
 
 -- SUPERSEDED: canonical backfill_vibe is in supabase/vibe-v2-private-link.sql and
 -- the live rank_vibe is the thin wrapper in supabase/vibe-auto-matching.sql.
--- These older copies are wrapped out 2026-06-28 — repo-only, no DB change.
+-- These older copies are wrapped out 2026-06-28 - repo-only, no DB change.
 -- (notify / cancel_vibe / update_vibe_when above and host RPCs below stay active.)
 /*
--- 4) Backfill from standby (now via notify) — keeps filling open spots by score
+-- 4) Backfill from standby (now via notify) - keeps filling open spots by score
 create or replace function public.backfill_vibe(p_vibe uuid)
 returns int language plpgsql security definer set search_path = public as $$
 declare v public.vibes; v_confirmed int; v_active int; v_remaining int; v_added int := 0; c record;
@@ -75,14 +75,14 @@ begin
     update public.vibe_interests set status='invited', invitation_sent_at=now(),
       invitation_expires_at=now()+interval '24 hours' where vibe_id=p_vibe and user_id=c.user_id;
     perform public.notify(c.user_id, 'vibe_invitation', 'A spot opened up: ' || v.title,
-            'You''re in — confirm within 24 hours.', jsonb_build_object('vibe_id', p_vibe));
+            'You''re in - confirm within 24 hours.', jsonb_build_object('vibe_id', p_vibe));
     v_added := v_added + 1;
   end loop;
   return v_added;
 end $$;
 grant execute on function public.backfill_vibe(uuid) to authenticated;
 
--- 5) rank_vibe — score interested, invite up to capacity, standby rest, then top up
+-- 5) rank_vibe - score interested, invite up to capacity, standby rest, then top up
 create or replace function public.rank_vibe(p_vibe uuid)
 returns jsonb language plpgsql security definer set search_path = public as $$
 declare v public.vibes; v_confirmed int; v_active int; v_remaining int; v_invited int := 0; v_standby int := 0; c record; rnk int := 0;
@@ -361,7 +361,7 @@ begin
   perform public.notify(
     auth.uid(),
     'vibe_removal_appeal',
-    'Thanks — we got your note',
+    'Thanks - we got your note',
     'We''ll review what happened. You won''t be placed back into this Vibe automatically.',
     jsonb_build_object('vibe_id', p_vibe)
   );
@@ -403,7 +403,7 @@ begin
   end loop;
 end $$;
 */
--- cron also superseded — the live flockie-autofill is scheduled in
+-- cron also superseded - the live flockie-autofill is scheduled in
 -- vibe-auto-matching.sql. (Line-commented, NOT block-commented: the cron
 -- expression contains a slash-star sequence that would close a /* */ block.)
 -- do $$ begin perform cron.unschedule('flockie-autofill'); exception when others then null; end $$;

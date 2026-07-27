@@ -12,7 +12,7 @@ alter table public.vibes
 
 -- SUPERSEDED: canonical _rank_vibe_core is in supabase/vibe-v2-private-link.sql
 -- (the live version; this copy lacks the source<>'private' filter). Wrapped out
--- 2026-06-28 — repo-only, no DB change.
+-- 2026-06-28 - repo-only, no DB change.
 /*
 -- ── Matching now produces a SHORTLIST for host review (no invites yet) ───────
 create or replace function public._rank_vibe_core(p_vibe uuid)
@@ -65,7 +65,7 @@ begin
   update public.vibes set status='reviewing', shortlisted_at=now(), preview_rejects_used=0
     where id=p_vibe and status <> 'cancelled';
   perform public.notify(v.host_id, 'vibe_review_ready', 'Your matched list for '||v.title||' is ready',
-          'Review it — remove up to a few before invites go out, or send them now.',
+          'Review it - remove up to a few before invites go out, or send them now.',
           jsonb_build_object('vibe_id', p_vibe));
   return jsonb_build_object('shortlisted', v_shortlisted, 'standby', v_standby);
 end $$;

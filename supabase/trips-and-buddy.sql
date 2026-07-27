@@ -2,11 +2,11 @@
 --
 -- ⚠️⚠️ DO NOT RE-RUN THIS WHOLE FILE ON A HARDENED DATABASE. ⚠️⚠️
 -- It historically re-created a `using (true)` "trips readable" SELECT policy
--- (any authed user could read every trip, including private personal trips —
+-- (any authed user could read every trip, including private personal trips -
 -- destinations, dates, budget). That policy is now TOMBSTONED below and the
 -- live, scoped version lives in supabase/trips-rls.sql (via can_see_trip).
 -- Re-running the unwrapped file would REVERT that RLS hardening. If you need a
--- specific object from here, run only that statement — not the file.
+-- specific object from here, run only that statement - not the file.
 
 -- Base swipe/match tables (safe if already created earlier)
 create table if not exists public.buddy_swipes (
@@ -57,7 +57,7 @@ create index if not exists trips_dest_idx on public.trips (lower(destination));
 create index if not exists trips_user_idx on public.trips (user_id, status, created_at desc);
 
 alter table public.trips enable row level security;
--- trips SELECT policy: SUPERSEDED — do not recreate here.
+-- trips SELECT policy: SUPERSEDED - do not recreate here.
 -- The live, scoped policy is in supabase/trips-rls.sql ("trips readable" via
 -- can_see_trip: owner / co-host / public flock / accepted member / buddy match).
 -- The old `using (true)` version (any authed user reads every trip, including

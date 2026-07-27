@@ -1,5 +1,5 @@
 -- ============================================================================
--- Flockie — pending prod migrations, bundled (2026-07-18).
+-- Flockie - pending prod migrations, bundled (2026-07-18).
 -- Idempotent and safe to re-run. Paste the WHOLE file into the Supabase SQL
 -- editor and Run once. Re-running fixes any half-applied earlier attempt
 -- (e.g. respond_buddy_plan / set_plan_met that failed on a `pgsql` typo).
@@ -130,7 +130,7 @@ grant execute on function public.buddy_hard_block(uuid, uuid) to authenticated;
 
 
 -- ── 4) Invite-with-a-plan from the Home Say Hi card ─────────────────────────
--- (from buddy-swipe-plans.sql — stashes the plan on the swipe + seeds it on match)
+-- (from buddy-swipe-plans.sql - stashes the plan on the swipe + seeds it on match)
 -- 1) Stash the proposed plan on the swipe row.
 alter table public.buddy_swipes add column if not exists plan_category   text;
 alter table public.buddy_swipes add column if not exists plan_place_name text;
@@ -252,7 +252,7 @@ begin
       coalesce(v_liker, 'Someone') || ' is in ' || coalesce(v_city, 'your city') ||
         ' looking for someone to do ' ||
         coalesce(nullif(p_activity_title, ''), v_cat, 'something') ||
-        ' — your vibes match. Match back to chat.',
+        ' - your vibes match. Match back to chat.',
       jsonb_build_object('like_from', auth.uid())
     );
   end if;

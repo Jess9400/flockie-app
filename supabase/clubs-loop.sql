@@ -1,21 +1,21 @@
 -- ============================================================================
--- Flockie Clubs — THE LOOP (built on Taisiya's clubs foundation).
+-- Flockie Clubs - THE LOOP (built on Taisiya's clubs foundation).
 -- Run AFTER: clubs-foundation.sql, club-detail-access.sql,
 -- club-founder-invites.sql, club-heartbeat.sql, club-membership-decisions.sql.
 -- Idempotent / safe to re-run.
 --
 -- Adds the plan's MVP floor on top of the foundation (docs/communities-plan.md):
---   1. convert_vibe_to_club  — "Turn this into a club?" for a vibe that went
+--   1. convert_vibe_to_club  - "Turn this into a club?" for a vibe that went
 --      well: club born ACTIVE from proven chemistry, attendees credited with
 --      real attendance, host picks founding invitees.
---   2. Automatic heartbeat   — hourly cron. flockie_assisted clubs get their
---      next gathering auto-scheduled ("same time, same place — you in?");
+--   2. Automatic heartbeat   - hourly cron. flockie_assisted clubs get their
+--      next gathering auto-scheduled ("same time, same place - you in?");
 --      host_run clubs get the graceful handoff escalation (nudge → offer →
 --      auto-switch to flockie_assisted so the group survives).
---   3. Post-attendance join prompt — recorded attendance for a non-member
---      notifies them: "you were there — want to join?"
---   4. set_club_mode         — host toggles host_run <-> flockie_assisted.
---   5. Club chat             — persistent club room (club_messages).
+--   3. Post-attendance join prompt - recorded attendance for a non-member
+--      notifies them: "you were there - want to join?"
+--   4. set_club_mode         - host toggles host_run <-> flockie_assisted.
+--   5. Club chat             - persistent club room (club_messages).
 -- ============================================================================
 
 -- ── Heartbeat bookkeeping columns ───────────────────────────────────────────
@@ -112,7 +112,7 @@ begin
     perform public.notify(
       new.user_id, 'club_join_prompt',
       'Join ' || coalesce(v_title, 'this club') || '?',
-      'You were at their last gathering. Members get every next one — want in?',
+      'You were at their last gathering. Members get every next one - want in?',
       jsonb_build_object('club_id', new.club_id, 'href', '/clubs/' || new.club_id)
     );
   end if;
@@ -270,7 +270,7 @@ $$;
 do $$ begin perform cron.unschedule('flockie-club-heartbeat'); exception when others then null; end $$;
 select cron.schedule('flockie-club-heartbeat', '15 * * * *', $$ select public.club_heartbeat_tick(); $$);
 
--- ── 5) Club chat — the persistent room ──────────────────────────────────────
+-- ── 5) Club chat - the persistent room ──────────────────────────────────────
 create table if not exists public.club_messages (
   id uuid primary key default gen_random_uuid(),
   club_id uuid not null references public.clubs(id) on delete cascade,

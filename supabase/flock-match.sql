@@ -1,9 +1,9 @@
 -- Match % between a browsing user and an open group trip (Find a Flock).
 -- Run the whole file in the Supabase SQL editor. Safe to re-run.
---   0.35 activity fit  — trip_type vs your trip-vibe / activity-vibe
---   0.20 budget fit    — trip budget vs your budget
---   0.20 pace fit      — trip pace vs your pace
---   0.25 vibe fit      — slider closeness with the trip host
+--   0.35 activity fit  - trip_type vs your trip-vibe / activity-vibe
+--   0.20 budget fit    - trip budget vs your budget
+--   0.20 pace fit      - trip pace vs your pace
+--   0.25 vibe fit      - slider closeness with the trip host
 
 create or replace function public.flock_match(p_user uuid, p_trip uuid)
 returns int language plpgsql security definer set search_path = public stable as $$

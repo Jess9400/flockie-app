@@ -14,7 +14,7 @@ export default function FlockRequestButton({
   tripId: string;
   requested: boolean;
   compact?: boolean;
-  // When explicitly false, joining is gated on the Trip form — show a link to it
+  // When explicitly false, joining is gated on the Trip form - show a link to it
   // instead of the request button (request_join_trip would otherwise reject).
   tripPrefsDone?: boolean;
 }) {

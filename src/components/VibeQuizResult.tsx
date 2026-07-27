@@ -26,7 +26,7 @@ export default function VibeQuizResult({
           <ArchetypeBadge archetypeKey={archetypeKey} size={68} variant="ring" />
         </div>
         <p className="mb-1.5 text-[10.5px] font-extrabold uppercase tracking-widest text-white/70">
-          Your vibe — early read
+          Your vibe - early read
         </p>
         <h2 className="mb-2.5 text-[24px] font-black leading-tight text-white">{archetype.name}</h2>
         <p className="max-w-[300px] text-[12.5px] font-medium leading-relaxed text-white/90">

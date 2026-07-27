@@ -1,4 +1,4 @@
--- P0 fix (phase 1 of 2): scope trip_join_requests reads. ADDITIVE — safe, and
+-- P0 fix (phase 1 of 2): scope trip_join_requests reads. ADDITIVE - safe, and
 -- changes no existing policy. Run in the Supabase SQL editor BEFORE merging the
 -- flocks-page change. Phase 2 (trip-requests-rls-enforce.sql) tightens the policy
 -- after deploy.

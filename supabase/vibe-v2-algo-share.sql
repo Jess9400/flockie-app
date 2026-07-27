@@ -2,7 +2,7 @@
 -- Run AFTER vibe-v2-preview-reject.sql. Safe to re-run.
 --
 -- algo_share = how much of capacity the algorithm fills. The remaining spots are
--- the host's (to fill via private link — separate feature). If the host hasn't
+-- the host's (to fill via private link - separate feature). If the host hasn't
 -- filled them by 12h before the event, the algo rolls back and fills the room.
 
 alter table public.vibes
@@ -20,7 +20,7 @@ $$;
 
 -- SUPERSEDED: canonical _rank_vibe_core + backfill_vibe are in
 -- supabase/vibe-v2-private-link.sql (live). These algo-share variants (using
--- _vibe_algo_budget) are not live. Wrapped out 2026-06-28 — repo-only, no DB change.
+-- _vibe_algo_budget) are not live. Wrapped out 2026-06-28 - repo-only, no DB change.
 /*
 -- ── Shortlist sizing now respects the algo share ─────────────────────────────
 create or replace function public._rank_vibe_core(p_vibe uuid)
@@ -71,7 +71,7 @@ begin
 
   update public.vibes set status='reviewing', shortlisted_at=now(), preview_rejects_used=0 where id=p_vibe and status <> 'cancelled';
   perform public.notify(v.host_id, 'vibe_review_ready', 'Your matched list for '||v.title||' is ready',
-          'Review it — remove up to a few before invites go out, or send them now.', jsonb_build_object('vibe_id', p_vibe));
+          'Review it - remove up to a few before invites go out, or send them now.', jsonb_build_object('vibe_id', p_vibe));
   return jsonb_build_object('shortlisted', v_shortlisted, 'standby', v_standby);
 end $$;
 grant execute on function public._rank_vibe_core(uuid) to authenticated;
@@ -97,7 +97,7 @@ begin
       invitation_expires_at=public._vibe_confirm_deadline(v.starts_at)
       where vibe_id=p_vibe and user_id=c.user_id;
     perform public.notify(c.user_id, 'vibe_invitation', 'A spot opened up: ' || v.title,
-            'You''re in — confirm to lock your spot.', jsonb_build_object('vibe_id', p_vibe));
+            'You''re in - confirm to lock your spot.', jsonb_build_object('vibe_id', p_vibe));
     v_added := v_added + 1;
   end loop;
   return v_added;
@@ -106,7 +106,7 @@ grant execute on function public.backfill_vibe(uuid) to authenticated;
 */
 
 -- SUPERSEDED: canonical invite_city_fallback is in supabase/vibe-auto-matching.sql
--- (live; has the #77 starts_at>now guard). Wrapped out 2026-06-28 — repo-only.
+-- (live; has the #77 starts_at>now guard). Wrapped out 2026-06-28 - repo-only.
 /*
 -- ── Same-city fallback respects the algo budget ─────────────────────────────
 create or replace function public.invite_city_fallback(p_vibe uuid)
@@ -150,7 +150,7 @@ begin
       values (p_vibe, c.id, 'invited', c.score, now(), public._vibe_confirm_deadline(v.starts_at))
       on conflict (vibe_id, user_id) do nothing;
     perform public.notify(c.id, 'vibe_invitation', 'A Vibe in ' || v.city || ' you might love: ' || v.title,
-            'There''s a spot for you — confirm to join.', jsonb_build_object('vibe_id', p_vibe));
+            'There''s a spot for you - confirm to join.', jsonb_build_object('vibe_id', p_vibe));
     v_added := v_added + 1;
   end loop;
   return v_added;

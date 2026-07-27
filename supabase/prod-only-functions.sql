@@ -1,24 +1,24 @@
--- Prod-only objects — schema-drift capture (2026-07-02).
+-- Prod-only objects - schema-drift capture (2026-07-02).
 --
--- These objects EXISTED on production but had NO definition in the repo — the
+-- These objects EXISTED on production but had NO definition in the repo - the
 -- same drift class that previously hid the `trip_join_requests using (true)`
 -- hole. Captured 2026-07-02 by dumping them from prod (pg_get_functiondef /
 -- information_schema / pg_constraint / pg_policies) and transcribing here.
 --
--- ⚠️ They ALREADY EXIST on prod — you do NOT need to re-run this file there.
+-- ⚠️ They ALREADY EXIST on prod - you do NOT need to re-run this file there.
 -- Its purpose is (a) code review and (b) making a fresh database reproducible.
 -- For a fresh DB, run this AFTER the core schema (it references profiles, vibes,
 -- vibing_chats, vibing_messages, and is_vibe_member).
 --
--- Security review (2026-07-02) — all clean:
---   • set_my_location   — writes profiles.location for auth.uid() ONLY; sp pinned.
---   • accept_terms      — stamps auth.uid() only; coalesce() won't overwrite an
+-- Security review (2026-07-02) - all clean:
+--   • set_my_location   - writes profiles.location for auth.uid() ONLY; sp pinned.
+--   • accept_terms      - stamps auth.uid() only; coalesce() won't overwrite an
 --                         earlier consent time.
---   • get_or_create_chat— gates on is_vibe_member before returning/creating.
---   • vibe_chat_summaries— filters `where is_vibe_member(c.vibe_id)`; only the
+--   • get_or_create_chat- gates on is_vibe_member before returning/creating.
+--   • vibe_chat_summaries- filters `where is_vibe_member(c.vibe_id)`; only the
 --                         caller's chats are returned.
---   • chat_reads        — RLS on; policy scoped to user_id = auth.uid().
--- Note: profiles.location (exact GPS) is written here but never exposed — the
+--   • chat_reads        - RLS on; policy scoped to user_id = auth.uid().
+-- Note: profiles.location (exact GPS) is written here but never exposed - the
 -- profiles SELECT policy is owner-only and public_profiles excludes location.
 
 -- ── chat_reads: per-(user,chat) read cursor (written by mark_chat_read) ──────
@@ -28,7 +28,7 @@ create table if not exists public.chat_reads (
   last_read_at timestamptz not null default now(),
   primary key (user_id, chat_id)
 );
--- (Prod has no FK on chat_id — it spans vibing_chats/buddy_chats — so none here.)
+-- (Prod has no FK on chat_id - it spans vibing_chats/buddy_chats - so none here.)
 
 alter table public.chat_reads enable row level security;
 drop policy if exists "own reads" on public.chat_reads;
@@ -84,7 +84,7 @@ AS $function$
 $function$;
 
 -- ── vibe_chat_summaries: the caller's vibe chats + unread counts ────────────
--- (The RETURNS TABLE tail — last_at / unread — was reconstructed from the body,
+-- (The RETURNS TABLE tail - last_at / unread - was reconstructed from the body,
 --  since the prod dump was truncated in the viewer.)
 CREATE OR REPLACE FUNCTION public.vibe_chat_summaries()
  RETURNS TABLE(vibe_id uuid, chat_id uuid, title text, photo text, starts_at timestamptz, last_at timestamptz, unread int)

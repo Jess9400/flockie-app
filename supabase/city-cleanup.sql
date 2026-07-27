@@ -8,7 +8,7 @@ set home_city = initcap(trim(home_city))
 where home_city is not null
   and home_city <> initcap(trim(home_city));
 
--- Manual typo fixes — extend as you spot them. Example from current data:
+-- Manual typo fixes - extend as you spot them. Example from current data:
 --   update public.profiles set home_city = 'Dubai'
 --     where lower(trim(home_city)) in ('duabi', 'dubay', 'dubi');
 

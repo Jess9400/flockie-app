@@ -70,7 +70,7 @@ export default function TripVibeForm({
   // Trimmed to ONE page with the 5 questions that still matter (founder call
   // 2026-07-25): pace, budget, planning, trip vibe, dealbreakers. Dealbreakers
   // stay because buddy_hard_block reads the same-gender preference; the rest is
-  // trip-planning context only — Vibes-only scoring never reads it.
+  // trip-planning context only - Vibes-only scoring never reads it.
   const pages = [
     {
       title: "",
@@ -93,7 +93,7 @@ export default function TripVibeForm({
           hint: t("forms.trip.dealbreakersHint"),
           options: DEALBREAKERS.map((v) => ({ value: v, label: has(`dealbreakers.${v}`) ? t(`dealbreakers.${v}`) : v })),
         },
-        // Traveler cred — optional, shown on your trip-board cards.
+        // Traveler cred - optional, shown on your trip-board cards.
         {
           type: "text" as const,
           key: "countries_visited",

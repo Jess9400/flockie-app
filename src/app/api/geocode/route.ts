@@ -93,7 +93,7 @@ export async function GET(req: Request) {
     p_max: 60,
     p_window_seconds: 3600,
   });
-  if (allowed === false) return NextResponse.json({ error: "Too many requests — slow down." }, { status: 429 });
+  if (allowed === false) return NextResponse.json({ error: "Too many requests - slow down." }, { status: 429 });
 
   // Prefer a dedicated server key, but fall back to the Google Maps key the app
   // already ships (its Geocoding is enabled per env comment). Without a Google
@@ -125,7 +125,7 @@ export async function GET(req: Request) {
       }
     }
 
-    // Fall back to OpenStreetMap when Google produced nothing — no key, no
+    // Fall back to OpenStreetMap when Google produced nothing - no key, no
     // result, or REQUEST_DENIED from a referrer-restricted key. This restores
     // the old behaviour so a restricted Google key can't kill all geocoding.
     if (!result) {

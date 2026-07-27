@@ -137,7 +137,7 @@ export default function AppShell({
     }
     load();
     // Listen for ALL changes to THIS user's notifications (insert = new, update =
-    // read/dismiss so the badge drops live) — keyed on userId only, so it loads
+    // read/dismiss so the badge drops live) - keyed on userId only, so it loads
     // once per session and the channel persists across navigation instead of
     // re-fetching + re-subscribing on every page click.
     const channel = supabase
@@ -151,7 +151,7 @@ export default function AppShell({
     return () => { active = false; supabase.removeChannel(channel); };
   }, [userId]);
 
-  // Total unread chat messages — powers the Chats nav badge (sidebar + mobile
+  // Total unread chat messages - powers the Chats nav badge (sidebar + mobile
   // tab). Sourced from the same unified feed as the list so the count always
   // agrees with the rows. Refetched on navigation (so it drops after a thread
   // marks itself read) and on any new message.
@@ -162,7 +162,7 @@ export default function AppShell({
       const d = (await res.json()) as { unreadTotal?: number };
       setChatUnread(d.unreadTotal ?? 0);
     } catch {
-      /* transient — keep last known count */
+      /* transient - keep last known count */
     }
   }, []);
 
@@ -294,7 +294,7 @@ export default function AppShell({
         {NavList}
       </aside>
 
-      {/* Drawer (mobile/tablet — and desktop on chat surfaces via ☰). */}
+      {/* Drawer (mobile/tablet - and desktop on chat surfaces via ☰). */}
       {open && (
         <>
           <div
@@ -325,7 +325,7 @@ export default function AppShell({
           }`}
         >
           <aside className="hidden w-[320px] shrink-0 flex-col border-r border-ink/12 bg-cream lg:flex">
-            {/* Back to Home (nav lives there) — sits above the chat list. */}
+            {/* Back to Home (nav lives there) - sits above the chat list. */}
             <Link
               href="/home"
               className="flex items-center gap-1.5 px-3 pt-3 text-sm font-bold text-ink/55 hover:text-ink"

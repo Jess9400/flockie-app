@@ -27,7 +27,7 @@ returns boolean language sql security definer set search_path = public stable as
 $$;
 grant execute on function public.is_trip_member(uuid) to authenticated;
 
--- Photo gallery column (a few photos beyond the cover) — needed by trip_detail.
+-- Photo gallery column (a few photos beyond the cover) - needed by trip_detail.
 alter table public.trips add column if not exists gallery text[] not null default '{}';
 
 -- ── Detail for a single 1:1 trip (private trips aren't RLS-readable) ─────────
@@ -79,7 +79,7 @@ $$;
 grant execute on function public.trip_members(uuid) to authenticated;
 
 -- ============================================================================
--- WORKSPACE TABLES — one per trip, member-gated. All keyed on trip_id.
+-- WORKSPACE TABLES - one per trip, member-gated. All keyed on trip_id.
 -- ============================================================================
 
 -- Checklist (to-dos, optionally assigned) --------------------------------------
@@ -108,7 +108,7 @@ create table if not exists public.trip_agenda (
 );
 create index if not exists trip_agenda_trip_idx on public.trip_agenda (trip_id, day, created_at);
 
--- Expenses ledger (WHO PAID WHAT — no payments, settle outside the app) --------
+-- Expenses ledger (WHO PAID WHAT - no payments, settle outside the app) --------
 create table if not exists public.trip_expenses (
   id uuid primary key default gen_random_uuid(),
   trip_id uuid not null references public.trips(id) on delete cascade,
@@ -335,7 +335,7 @@ NOTIFY pgrst, 'reload schema';
 --      Activity address + join requests + accept auto-declines the rest
 -- ============================================================================
 -- ============================================================================
--- Flockie — Activity Board v2: per-activity join requests with HOST APPROVAL.
+-- Flockie - Activity Board v2: per-activity join requests with HOST APPROVAL.
 -- Run the WHOLE file in the Supabase SQL editor. Idempotent / safe to re-run.
 --
 -- Model (founder spec):
@@ -447,7 +447,7 @@ begin
   returning true into v_new;
 
   if v_new is null then
-    -- already requested — nothing new to notify
+    -- already requested - nothing new to notify
     return jsonb_build_object('requested', true, 'duplicate', true);
   end if;
 
@@ -500,7 +500,7 @@ begin
     where activity_id = p_activity and user_id = p_user and status = 'pending';
   if not found then raise exception 'request_not_found'; end if;
 
-  -- The request is handled — clear its notification off Home/inbox unread.
+  -- The request is handled - clear its notification off Home/inbox unread.
   update public.notifications
      set read_at = coalesce(read_at, now())
    where user_id = auth.uid()
@@ -540,7 +540,7 @@ begin
     jsonb_build_object('chat_id', v_chat, 'activity_id', t.id)
   );
 
-  -- 1:1 activity is now filled: decline the other pending requests, but softly —
+  -- 1:1 activity is now filled: decline the other pending requests, but softly -
   -- tell each the spot filled and nudge them to invite the host to something
   -- else (link to the host's profile Say-hi).
   declare r_other record;
@@ -554,7 +554,7 @@ begin
       perform public.notify(
         r_other.user_id, 'activity_like',
         'The "' || coalesce(t.title, 'activity') || '" spot was filled',
-        'Someone else joined this one — but the host is around. Invite them to something else!',
+        'Someone else joined this one - but the host is around. Invite them to something else!',
         jsonb_build_object('like_from', auth.uid(), 'href', '/people/' || auth.uid())
       );
     end loop;
@@ -785,7 +785,7 @@ create policy "ws delete" on public.trip_agenda for delete to authenticated
       or (club_id is not null and public.is_club_member(club_id)));
 -- (trip_expenses "ws delete" stays payer-only from trip-workspace.sql.)
 
--- 3) Club balances — same net math as trip_balances, roster from club_members.
+-- 3) Club balances - same net math as trip_balances, roster from club_members.
 create or replace function public.club_balances(p_club uuid)
 returns table (user_id uuid, display_name text, photo text, paid numeric, owed numeric, net numeric)
 language sql security definer set search_path = public stable as $$
@@ -816,7 +816,7 @@ language sql security definer set search_path = public stable as $$
 $$;
 grant execute on function public.club_balances(uuid) to authenticated;
 
--- 4) Public schedule preview for the club detail page (members only — clubs are
+-- 4) Public schedule preview for the club detail page (members only - clubs are
 --    invite/request based, so the agenda stays inside the membership).
 create or replace function public.club_agenda_preview(p_club uuid)
 returns table (id uuid, day date, title text, note text)
@@ -829,7 +829,7 @@ language sql security definer set search_path = public stable as $$
 $$;
 grant execute on function public.club_agenda_preview(uuid) to authenticated;
 
--- 5) Scheduled meetings for the club Calendar — the club's own gatherings are
+-- 5) Scheduled meetings for the club Calendar - the club's own gatherings are
 --    vibes with club_id set (heartbeat schedules them). Upcoming first, then
 --    past. Members only.
 create or replace function public.club_gatherings(p_club uuid)
@@ -847,7 +847,7 @@ language sql security definer set search_path = public stable as $$
 $$;
 grant execute on function public.club_gatherings(uuid) to authenticated;
 
--- 6) Gathering RSVPs — each club member checks whether they'll attend a
+-- 6) Gathering RSVPs - each club member checks whether they'll attend a
 --    scheduled meetup (personal, self-only; everyone sees who's going).
 create table if not exists public.club_gathering_rsvps (
   vibe_id uuid not null references public.vibes(id) on delete cascade,
@@ -884,7 +884,7 @@ notify pgrst, 'reload schema';
 -- ============================================================================
 -- ============================================================================
 -- Flockie - Pinned messages. One pinned message per chat, across every chat
--- type (1:1, flock, vibe, club) — chat_id spans buddy_chats / vibing_chats /
+-- type (1:1, flock, vibe, club) - chat_id spans buddy_chats / vibing_chats /
 -- clubs, so access is gated by can_access_chat(). Run in the SQL editor.
 -- Idempotent.
 -- ============================================================================
@@ -1010,4 +1010,3 @@ $$;
 grant execute on function public.post_workspace_event(text, uuid, text) to authenticated;
 
 notify pgrst, 'reload schema';
-

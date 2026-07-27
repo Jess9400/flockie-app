@@ -1,4 +1,4 @@
--- SUPERSEDED — do not run. (Intentionally a no-op.)
+-- SUPERSEDED - do not run. (Intentionally a no-op.)
 --
 -- This file used to (re)define buddy_pair_score, rank_vibe, and vibe_cosine.
 -- Those definitions are NOT what runs in production, and re-running them would
@@ -6,7 +6,7 @@
 --   * its buddy_pair_score lacked priority weighting and the newer traits
 --     (social_style / activity_motivation / initiator);
 --   * its rank_vibe wrote to public.notifications directly, bypassing
---     public.notify() — i.e. ignoring mute / notifications_enabled.
+--     public.notify() - i.e. ignoring mute / notifications_enabled.
 --
 -- The production-verified definitions (dumped from prod 2026-06-28) are the
 -- source of truth. buddy_pair_score lives in supabase/vibe-traits.sql; the

@@ -6,7 +6,7 @@
 --
 -- Before this, the INSERT/UPDATE policies only checked `user_id = auth.uid()`, so
 -- any signed-in user could directly POST/PATCH their own interest row to
--- status='confirmed' for ANY vibe — bypassing the invite/matching/capacity flow
+-- status='confirmed' for ANY vibe - bypassing the invite/matching/capacity flow
 -- and unlocking exact GPS (public.vibe_private_logistics) + the vibe chat
 -- (public.is_vibe_member) with no host approval.
 --
@@ -15,7 +15,7 @@
 -- so this change breaks nothing legitimate.
 
 -- Eligibility (2026-07-02): entering the funnel also requires satisfying the
--- host's gender/age preferences (vibe_eligible — see vibe-eligibility-enforce.sql).
+-- host's gender/age preferences (vibe_eligible - see vibe-eligibility-enforce.sql).
 -- The client shows a friendly message via a pre-check (InterestButton).
 drop policy if exists "interests self insert" on public.vibe_interests;
 create policy "interests self insert" on public.vibe_interests for insert to authenticated
@@ -26,7 +26,7 @@ drop policy if exists "interests self update" on public.vibe_interests;
 create policy "interests self update" on public.vibe_interests for update to authenticated
   using (user_id = auth.uid()) with check (user_id = auth.uid() and status = 'interested');
 
--- OPTIONAL audit — find rows whose status was self-elevated WITHOUT a matching
+-- OPTIONAL audit - find rows whose status was self-elevated WITHOUT a matching
 -- invitation timestamp (i.e. set outside the RPC flow). Review before deleting.
 -- select vi.* from public.vibe_interests vi
 --   where vi.status = 'confirmed' and vi.invitation_sent_at is null;

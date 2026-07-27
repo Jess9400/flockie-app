@@ -4,7 +4,7 @@
   "tabDeals": "Ofertas",
   "heading": "Minhas atividades",
   "new": "Nova",
-  "subtitle": "Coisas 1:1 para fazer na sua cidade — gerencie suas atividades publicadas.",
+  "subtitle": "Coisas 1:1 para fazer na sua cidade - gerencie suas atividades publicadas.",
   "badge": "Atividade",
   "statusCancelled": "Cancelada",
   "statusCompleted": "Concluída",
@@ -15,11 +15,11 @@
   "joined": {
     "heading": "Atividades que você entrou",
     "fallbackTitle": "Atividade",
-    "with": "Confirmado — com {name}",
+    "with": "Confirmado - com {name}",
     "waiting": "Esperando {name} aceitar",
     "openChat": "Abrir chat",
     "pending": "Solicitado",
-    "planSent": "Plano enviado — esperando {name} aceitar",
+    "planSent": "Plano enviado - esperando {name} aceitar",
     "requestedHeading": "Atividades solicitadas"
   },
   "requests": {

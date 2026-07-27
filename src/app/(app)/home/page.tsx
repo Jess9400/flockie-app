@@ -102,7 +102,7 @@ export default async function HomePage({
   const user = await getSessionUser();
   const nowIso = new Date().toISOString();
   // Server-side translations (locale from the NEXT_LOCALE cookie) for the
-  // internationalized home header — see messages/*.json `common` namespace.
+  // internationalized home header - see messages/*.json `common` namespace.
   const t = await getTranslations("common");
   const th = await getTranslations("home");
   const locale = await getLocale();
@@ -161,7 +161,7 @@ export default async function HomePage({
     .limit(15);
   if (hiddenVibeIds.length) allQuery = allQuery.not("id", "in", `(${hiddenVibeIds.join(",")})`);
 
-  // Count of vibes in the user's city over the next week — for the hero line.
+  // Count of vibes in the user's city over the next week - for the hero line.
   const weekIso = new Date(Date.now() + 7 * 864e5).toISOString();
   let cityWeekQuery = supabase
     .from("vibe_directory")
@@ -209,11 +209,11 @@ export default async function HomePage({
     supabase.from("vibe_interests").select("vibe_id").eq("user_id", user!.id).eq("status", "confirmed"),
     // Vibe reviews I've already left, to exclude them.
     supabase.from("vibe_reviews").select("vibe_id").eq("reviewer_id", user!.id),
-    // 1:1 activities posted by others in the city — mixed into the near-you
+    // 1:1 activities posted by others in the city - mixed into the near-you
     // carousel. Migration-safe: errors (RPC not on prod yet) → empty.
     supabase.rpc("activity_feed", { p_limit: 4 }),
     // Actionable notifications (someone wants to join your activity / trip /
-    // flock) — surfaced on Home so requests aren't missed in the inbox.
+    // flock) - surfaced on Home so requests aren't missed in the inbox.
     supabase
       .from("notifications")
       .select("id, type, title, body, data")
@@ -223,7 +223,7 @@ export default async function HomePage({
       .in("type", ["activity_like", "trip_join_request", "club_founder_invite", "club_join_prompt", "club_heartbeat"])
       .order("created_at", { ascending: false })
       .limit(4),
-    // The city feed — anchored recaps. Migration-safe: RPC missing → empty.
+    // The city feed - anchored recaps. Migration-safe: RPC missing → empty.
     supabase.rpc("feed_posts", { p_limit: 20 }),
   ]);
   type ActivityFeedRow = {
@@ -395,7 +395,7 @@ export default async function HomePage({
     );
   };
 
-  // 1:1 activity cell — SAME anatomy as the home VibeCard (image on top with
+  // 1:1 activity cell - SAME anatomy as the home VibeCard (image on top with
   // a badge overlay, title, coral date, location, match pill, full-width CTA)
   // so the near-you rail reads as one consistent card family.
   const activityCell = (a: (typeof nearActivities)[number], i = 0) => (
@@ -668,7 +668,7 @@ export default async function HomePage({
 
       {/* ── Happening near you (same city + filters) ────────────────────── */}
       <section className="relative mx-4 mt-8 overflow-hidden rounded-3xl bg-flockie-blue p-5 text-white shadow-[0_16px_32px_-10px_rgba(77,168,218,0.55)] sm:p-6">
-        {/* Crisp confetti — small sharp dots/sparkles in the corners, kept away
+        {/* Crisp confetti - small sharp dots/sparkles in the corners, kept away
             from the text and cards. */}
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
           <span className="absolute right-8 top-5 h-2 w-2 rounded-full bg-white/40" />
@@ -710,7 +710,7 @@ export default async function HomePage({
       {/* ── The feed: recaps of real vibes, clubs & activities. Same-width
           panel as the near-you box, with its own internal scroll. ── */}
       <section className="relative mx-4 mt-8 overflow-hidden rounded-3xl border border-ink/10 bg-cream p-5 shadow-[0_2px_12px_rgba(10,37,69,0.07)] sm:p-6">
-        {/* Crisp confetti — same accent language as the blue near-you panel. */}
+        {/* Crisp confetti - same accent language as the blue near-you panel. */}
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
           <span className="absolute right-7 top-4 text-sm text-flockie-coral/60">✦</span>
           <span className="absolute right-16 top-9 h-2 w-2 rounded-full bg-flockie-blue/50" />

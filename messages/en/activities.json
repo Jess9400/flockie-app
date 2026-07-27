@@ -4,7 +4,7 @@
   "tabDeals": "Deals",
   "heading": "My Activities",
   "new": "New",
-  "subtitle": "1:1 things to do in your city — manage your activity posts.",
+  "subtitle": "1:1 things to do in your city - manage your activity posts.",
   "badge": "Activity",
   "statusCancelled": "Cancelled",
   "statusCompleted": "Completed",
@@ -15,11 +15,11 @@
   "joined": {
     "heading": "Activities you joined",
     "fallbackTitle": "Activity",
-    "with": "You're on — with {name}",
+    "with": "You're on - with {name}",
     "waiting": "Waiting for {name} to accept",
     "openChat": "Open chat",
     "pending": "Requested",
-    "planSent": "Plan sent — waiting for {name} to accept",
+    "planSent": "Plan sent - waiting for {name} to accept",
     "requestedHeading": "Activities requested"
   },
   "requests": {

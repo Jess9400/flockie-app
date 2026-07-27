@@ -121,7 +121,7 @@ export default async function VibesPage({
   const ids = list.map((v) => v.id);
   const hostIds = Array.from(new Set(list.map((v) => v.host_id)));
 
-  // hosts, confirmed counts, my statuses — separate queries (no fragile embeds)
+  // hosts, confirmed counts, my statuses - separate queries (no fragile embeds)
   const hosts: Record<string, { display_name: string | null; photos: string[] | null }> = {};
   const counts: Record<string, number> = {};
   const mine: Record<string, InterestStatus> = {};
@@ -186,7 +186,7 @@ export default async function VibesPage({
       <p className="mt-3 max-w-xl text-sm font-medium text-muted">
         {t.rich("list.intro", { b: (chunks) => <span className="font-bold">{chunks}</span> })}
       </p>
-      {/* One search bar — matches vibes, categories and cities — with the
+      {/* One search bar - matches vibes, categories and cities - with the
           filter controls tucked inside it. */}
       <VibeSearch q={q}>
         {!isPast && (
@@ -206,7 +206,7 @@ export default async function VibesPage({
         )}
       </VibeSearch>
 
-      {/* Upcoming / Past — below the bar. */}
+      {/* Upcoming / Past - below the bar. */}
       <div className="mt-4 inline-flex shrink-0 gap-1 rounded-full border border-ink/15 p-1 text-sm font-bold">
         <Link
           href="/vibes"
@@ -259,7 +259,7 @@ export default async function VibesPage({
         </>
       )}
 
-      {/* Quick link to your own vibes — same bottom-row pattern as Buddy/Trips. */}
+      {/* Quick link to your own vibes - same bottom-row pattern as Buddy/Trips. */}
       <Link
         href="/my-vibes"
         className="mb-6 mt-6 flex items-center justify-between rounded-2xl border border-ink/15 bg-white px-4 py-3 text-sm font-bold text-ink shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5"

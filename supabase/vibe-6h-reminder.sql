@@ -28,7 +28,7 @@ begin
       perform public.notify(
         m.user_id, 'vibe_final_reminder',
         'Your Vibe starts soon: ' || r.title,
-        'It starts in a few hours — here''s the address and directions.',
+        'It starts in a few hours - here''s the address and directions.',
         jsonb_build_object('vibe_id', r.id, 'href', '/vibes/' || r.id || '/chat'));
     end loop;
     update public.vibes set final_reminded_at = now() where id = r.id;

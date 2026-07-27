@@ -5,8 +5,8 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 
 **Rules:**
 - Never un-wrap a `/* SUPERSEDED */` block. If you need its behavior, port it into the canonical file.
-- When two files define the same function, the **canonical** file below wins — edit only there.
-- After editing any canonical function, it must also be **run on prod** (SQL editor) — merged ≠ deployed.
+- When two files define the same function, the **canonical** file below wins - edit only there.
+- After editing any canonical function, it must also be **run on prod** (SQL editor) - merged ≠ deployed.
 
 ## Canonical (live) definitions
 
@@ -77,38 +77,38 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 
 ## Do-not-run files
 
-- **`_all-pending.sql`** — historical pre-hardening snapshot. Re-running would revert the
+- **`_all-pending.sql`** - historical pre-hardening snapshot. Re-running would revert the
   RLS lockdowns (e.g. `trip_join_requests using (true)`). Loud header at line 1. Keep as history only.
-- **`match-weights.sql`** — intentionally emptied to a no-op.
+- **`match-weights.sql`** - intentionally emptied to a no-op.
 
-## Re-run hazards — DEFUSED 2026-07-02
+## Re-run hazards - DEFUSED 2026-07-02
 
-- ✅ **`buddy-matching.sql:27-100`** — legacy `buddy_city_count` / `buddy_candidates` / 2-arg
+- ✅ **`buddy-matching.sql:27-100`** - legacy `buddy_city_count` / `buddy_candidates` / 2-arg
   `buddy_swipe` are now wrapped in a `/* SUPERSEDED */` block. Drops for all three are in
   `legacy-buddy-cleanup.sql` and `deploy-2026-07-02.sql` (verified: all live `buddy_swipe`
   callers pass 3 args; only `buddy_candidates_trip` is used). → `match-priorities.sql` /
   `buddy-swipe-notify-once.sql`
-- ✅ **`trips-and-buddy.sql:53`** — the `using (true)` "trips readable" policy is tombstoned
+- ✅ **`trips-and-buddy.sql:53`** - the `using (true)` "trips readable" policy is tombstoned
   and the file header is now a loud DO-NOT-RE-RUN warning. Live scoped policy (via
-  `can_see_trip`) is in `trips-rls.sql` — no prod SQL needed, it's already correct.
+  `can_see_trip`) is in `trips-rls.sql` - no prod SQL needed, it's already correct.
 
 ## Deploy bundles
 
-- **`deploy-2026-07-02.sql`** — point-in-time prod script for the tombstone-followup batch:
+- **`deploy-2026-07-02.sql`** - point-in-time prod script for the tombstone-followup batch:
   updated `vibe_match` (review-fit), `invite_city_fallback` (eligibility+guard), and the
-  legacy buddy drops. Idempotent. Snapshots of the canonical bodies — if you edit the
+  legacy buddy drops. Idempotent. Snapshots of the canonical bodies - if you edit the
   canonical files later, this bundle is stale (re-generate or just run the canonical files).
 
-## Schema drift — CAPTURED 2026-07-02
+## Schema drift - CAPTURED 2026-07-02
 
 ✅ The previously prod-only objects are now transcribed from prod into
 **`prod-only-functions.sql`** (dumped via `pg_get_functiondef` / `information_schema`
-/ `pg_constraint` / `pg_policies`). Security-reviewed — all correctly scoped:
-- `set_my_location` — writes `profiles.location` for `auth.uid()` only
-- `get_or_create_chat` — gates on `is_vibe_member`
-- `accept_terms` — stamps `auth.uid()` only (coalesce, won't overwrite)
-- `vibe_chat_summaries` — filters `where is_vibe_member(c.vibe_id)`
-- `chat_reads` table — RLS on, policy `user_id = auth.uid()`
+/ `pg_constraint` / `pg_policies`). Security-reviewed - all correctly scoped:
+- `set_my_location` - writes `profiles.location` for `auth.uid()` only
+- `get_or_create_chat` - gates on `is_vibe_member`
+- `accept_terms` - stamps `auth.uid()` only (coalesce, won't overwrite)
+- `vibe_chat_summaries` - filters `where is_vibe_member(c.vibe_id)`
+- `chat_reads` table - RLS on, policy `user_id = auth.uid()`
 
 They already exist on prod (no re-run needed); the file exists for review + fresh-DB
 reproducibility. One reconstruction: `vibe_chat_summaries`'s RETURNS TABLE tail

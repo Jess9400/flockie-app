@@ -113,7 +113,7 @@ export default function BuddyChatRoom({
         }
       )
       .on(
-        // DELETE payloads only carry the primary key, so no chat filter — we drop
+        // DELETE payloads only carry the primary key, so no chat filter - we drop
         // the row locally only if we already have it.
         "postgres_changes",
         { event: "DELETE", schema: "public", table: "buddy_messages" },
@@ -193,7 +193,7 @@ export default function BuddyChatRoom({
   }
   if (tripEndIso) {
     const daysAfter = -hoursUntil(tripEndIso) / 24;
-    // Only ask for a review once there's been actual contact — never on a
+    // Only ask for a review once there's been actual contact - never on a
     // brand-new match whose activity happens to be past-dated.
     if (daysAfter >= 2 && messages.length > 0) {
       prompts.push({
@@ -205,7 +205,7 @@ export default function BuddyChatRoom({
   }
 
   // Hide the system plan-status lines ("📅 proposed a plan", "✅ accepted the
-  // plan", "↩️ passed on the plan") — the plan card already conveys all of this,
+  // plan", "↩️ passed on the plan") - the plan card already conveys all of this,
   // so echoing them as chat messages just reads as clutter.
   const PLAN_SYSTEM = ["📅 proposed a plan", "✅ accepted the plan", "↩️ passed on the plan"];
   const visibleMessages = messages.filter(
@@ -241,7 +241,7 @@ export default function BuddyChatRoom({
       <PinnedBanner chatId={chatId} />
 
       <div className="min-h-0 flex-1 space-y-1 overflow-y-auto py-4">
-        {/* Algo icebreaker — suppressed when a plan card is carrying the intro
+        {/* Algo icebreaker - suppressed when a plan card is carrying the intro
             so we never show two "here's your match" blocks at once. */}
         {icebreaker && (
         <div className="mx-auto my-3 max-w-[92%] rounded-2xl border-2 border-flockie-blue bg-cream p-4">

@@ -18,11 +18,11 @@
 -- Safe to re-run.
 --
 -- Before this, gender_pref / age_min / age_max were only enforced by the cold
--- same-city fallback (and even there the age filter had been lost) — the main
+-- same-city fallback (and even there the age filter had been lost) - the main
 -- funnel (interest button → _rank_vibe_core shortlist → recommended_vibes)
 -- ignored them entirely, so e.g. men could be shortlisted for women-only vibes.
 --
--- vibe_eligible(user, vibe) — does the user's profile satisfy the vibe's
+-- vibe_eligible(user, vibe) - does the user's profile satisfy the vibe's
 -- gender_pref / age_min / age_max?
 --   * no prefs set (or gender_pref = 'any')  -> eligible
 --   * gender_pref set, gender unknown        -> NOT eligible (the host explicitly
@@ -59,7 +59,7 @@ grant execute on function public.vibe_eligible(uuid, uuid) to authenticated;
 -- Run in the Supabase SQL editor. Safe to re-run.
 --
 -- Before this, the "interests read" SELECT policy included an unscoped
--- `or status = 'confirmed'` — any signed-in user could query
+-- `or status = 'confirmed'` - any signed-in user could query
 -- `vibe_interests?user_id=eq.X&status=eq.confirmed` and enumerate ANYONE's
 -- confirmed vibes (raw rows: vibe_id + timestamps), deriving their future
 -- whereabouts across the whole app.
@@ -67,10 +67,10 @@ grant execute on function public.vibe_eligible(uuid, uuid) to authenticated;
 -- Fix: the table policy now only allows own rows and the vibe host. The two
 -- legitimate public surfaces move behind SECURITY DEFINER RPCs that expose
 -- only safe, per-vibe data:
---   • vibe_attendees(p_vibe)         — the "Going" strip on the vibe page
+--   • vibe_attendees(p_vibe)         - the "Going" strip on the vibe page
 --                                      (id, display_name, photos via the safe
 --                                      public_profiles view)
---   • vibe_confirmed_counts(p_vibes) — aggregate "X going" counts for vibe
+--   • vibe_confirmed_counts(p_vibes) - aggregate "X going" counts for vibe
 --                                      cards (home / vibes list / my-vibes);
 --                                      no user ids leave the database.
 
@@ -102,7 +102,7 @@ revoke all on function public.vibe_confirmed_counts(uuid[]) from public, anon;
 grant execute on function public.vibe_confirmed_counts(uuid[]) to authenticated;
 
 -- ── scoped SELECT policy: own rows + the vibe host only ────────────────────
--- (Canonical definition — the old broad version in vibes-module.sql is
+-- (Canonical definition - the old broad version in vibes-module.sql is
 -- tombstoned so a re-run there can't re-open the table.)
 drop policy if exists "interests read" on public.vibe_interests;
 create policy "interests read" on public.vibe_interests for select to authenticated
@@ -145,7 +145,7 @@ create policy "see incoming swipes" on public.buddy_swipes
 -- Cleanup (2026-07-02): drop the legacy buddy-matching functions from
 -- supabase/buddy-matching.sql. Run in the Supabase SQL editor. Safe to re-run.
 --
--- These were the original flat-weight deck — no hard-block filtering, still
+-- These were the original flat-weight deck - no hard-block filtering, still
 -- granted to authenticated, and unused by the client. Canonical replacements:
 --   • buddy_candidates_trip            (supabase/match-priorities.sql)
 --   • buddy_swipe(uuid, boolean, text) (supabase/buddy-swipe-notify-once.sql)
@@ -166,7 +166,7 @@ drop function if exists public.buddy_swipe(uuid, boolean);
 --
 -- The Flock group chat is a buddy_chat hung off a buddy_match whose trip_a/trip_b
 -- points at the flock trip. Flocks *converted from a buddy pair* already have
--- that match+chat, but Flocks *created directly* (Create a Flock) never do — so
+-- that match+chat, but Flocks *created directly* (Create a Flock) never do - so
 -- respond_join_request accepted the member but no chat existed. This:
 --   1) re-creates respond_join_request to SEED the group chat on first approval,
 --   2) backfills a chat for already-accepted flocks that are missing one.
@@ -239,7 +239,7 @@ begin
   -- chat_id in the payload so the inbox can deep-link straight into the chat
   -- (/my-trips only lists trips the viewer hosts, so it was a dead end here).
   perform public.notify(p_user, 'flock_approved', 'You''re in! ' || v_dest,
-    'Your request to join was approved — say hi in the group chat.',
+    'Your request to join was approved - say hi in the group chat.',
     jsonb_build_object('trip_id', p_trip, 'chat_id', v_chat));
 end $$;
 grant execute on function public.respond_join_request(uuid, uuid, boolean) to authenticated;
@@ -349,8 +349,8 @@ begin
 end $$;
 grant execute on function public.decline_join_request(uuid, uuid) to authenticated;
 
--- join requests SELECT policy: SUPERSEDED — do not recreate here.
--- The live, scoped policy is in supabase/trip-requests-rls-enforce.sql (#90 —
+-- join requests SELECT policy: SUPERSEDED - do not recreate here.
+-- The live, scoped policy is in supabase/trip-requests-rls-enforce.sql (#90 -
 -- requester / trip host / co-host / accepted member, via can_see_trip_requests).
 -- The old `using (true)` version (any authed user reads every join request) was
 -- removed 2026-06-28 so re-running this file can't re-open the table.
@@ -364,10 +364,10 @@ grant execute on function public.decline_join_request(uuid, uuid) to authenticat
 -- editor. Safe to re-run.
 --
 -- Two upgrades the matching algo needs to actually differentiate people:
---   1. WEIGHTS  — each user picks the 2-3 things that matter most to them.
+--   1. WEIGHTS  - each user picks the 2-3 things that matter most to them.
 --      Those dimensions count ~2x in THEIR ranking, so a budget-obsessed
 --      traveler and a budget-agnostic one no longer get the same score.
---   2. FILTERS  — the dealbreakers we already collect (same-gender, sober)
+--   2. FILTERS  - the dealbreakers we already collect (same-gender, sober)
 --      now hard-exclude incompatible candidates instead of being dead data.
 -- Also rescales the personality cosine, which structurally lands ~0.7-0.95 for
 -- everyone, so scores spread across a usable range.
@@ -405,7 +405,7 @@ $$;
 grant execute on function public.buddy_hard_block(uuid, uuid) to authenticated;
 
 -- ── 3. Weighted pair score ───────────────────────────────────────────────────
--- Weights are taken from p_a (the viewer) — "what matters to ME when ranking
+-- Weights are taken from p_a (the viewer) - "what matters to ME when ranking
 -- you." A prioritized dimension counts 2x; everything else counts 1x, then the
 -- block is renormalized so the total still sums to 1.
 -- SUPERSEDED: canonical buddy_pair_score is in supabase/vibe-traits.sql (adds
@@ -516,7 +516,7 @@ begin
 
   -- ----- Weighted blend over the components both people have ------------------
   wsum := pers_w + trip_w + act_w;
-  if wsum = 0 then return 50; end if; -- no shared data — neutral
+  if wsum = 0 then return 50; end if; -- no shared data - neutral
   total := coalesce(pers_sim * pers_w, 0) + coalesce(trip_sim * trip_w, 0) + coalesce(act_sim * act_w, 0);
   return round(100 * (total / wsum));
 end $$;
@@ -846,8 +846,8 @@ as $$
     and cp.open_to_discovery
     and cp.onboarding_complete
     -- Discovery pool = people in YOUR city who are open to discovery, ranked by
-    -- vibe similarity. We match on the swiper's own home_city (me_p) — NOT the
-    -- activity's destination — and we do NOT require the candidate to have posted
+    -- vibe similarity. We match on the swiper's own home_city (me_p) - NOT the
+    -- activity's destination - and we do NOT require the candidate to have posted
     -- their own activity. You swipe in-city people and invite them to your activity.
     and coalesce(me_p.home_city, '') <> ''
     and lower(coalesce(cp.home_city, '')) = lower(me_p.home_city)
@@ -946,7 +946,7 @@ grant execute on function public.city_people(int) to authenticated;
 --
 -- Before: every buddy_swipe(target, true, …) on an already-matched pair re-fired
 -- "It's a match!" to both users, and every repeat like re-fired the activity-like
--- notification — a spam vector (a client could loop the RPC to flood someone).
+-- notification - a spam vector (a client could loop the RPC to flood someone).
 -- After: the match notification fires only when the chat row is newly created,
 -- and the activity-like notification fires only on a fresh like (new swipe row).
 -- Behavior, matching, and the returned shape are otherwise unchanged.
@@ -1006,7 +1006,7 @@ begin
       p_target, 'activity_like',
       coalesce(v_liker, 'Someone') || ' wants to do something with you',
       coalesce(v_liker, 'Someone') || ' is in ' || coalesce(v_city, 'your city') ||
-        ' looking for someone to do ' || p_activity_title || ' — your vibes match. Match back to chat.',
+        ' looking for someone to do ' || p_activity_title || ' - your vibes match. Match back to chat.',
       jsonb_build_object('like_from', auth.uid())
     );
   end if;
@@ -1038,7 +1038,7 @@ grant execute on function public.buddy_swipe(uuid, boolean, text) to authenticat
 -- Thinness valve: when the fresh pool (never swiped/decided) has fewer than 6
 -- people, top the carousel back up to 6 with people the viewer previously
 -- PASSED on in activity decisions (liked = false), ordered after the fresh
--- pool — never with hard-blocked people or anyone the viewer buddy-swiped.
+-- pool - never with hard-blocked people or anyone the viewer buddy-swiped.
 create or replace function public.city_people(p_limit int default 12)
 returns table (
   id uuid, display_name text, age int, photos text[], one_liner text,
@@ -1187,7 +1187,7 @@ create index if not exists profiles_home_city_lower_idx
 -- (_rank_vibe_core now filters through vibe_eligible). Safe to re-run.
 --
 -- Capacity is split: the algo fills its share; the host fills the rest via a
--- private link (joiners still do the activity vibe-check, but skip ranking — the
+-- private link (joiners still do the activity vibe-check, but skip ranking - the
 -- host accepts them manually). A `source` tag keeps the two tracks from colliding.
 
 alter table public.vibe_interests
@@ -1242,7 +1242,7 @@ begin
             where exists (select 1 from unnest(coalesce(p.trip_vibe,'{}')||coalesce(p.activity_vibe,'{}')) uv
                           where lower(uv) like '%'||lower(t)||'%')), 0.0) end)
       -- Guard EVERY slider (not just planning): one NULL on either side used to
-      -- turn the whole score NULL, and NULLs sorted FIRST — rank 1 shortlists.
+      -- turn the whole score NULL, and NULLs sorted FIRST - rank 1 shortlists.
       + 0.20 * (case when p.planning is null or h.planning is null
                        or p.pace is null or h.pace is null
                        or p.social_energy is null or h.social_energy is null
@@ -1273,7 +1273,7 @@ begin
 
   update public.vibes set status='reviewing', shortlisted_at=now(), preview_rejects_used=0 where id=p_vibe and status <> 'cancelled';
   perform public.notify(v.host_id, 'vibe_review_ready', 'Your matched list for '||v.title||' is ready',
-          'Review it — remove up to a few before invites go out, or send them now.', jsonb_build_object('vibe_id', p_vibe));
+          'Review it - remove up to a few before invites go out, or send them now.', jsonb_build_object('vibe_id', p_vibe));
   return jsonb_build_object('shortlisted', v_shortlisted, 'standby', v_standby);
 end $$;
 grant execute on function public._rank_vibe_core(uuid) to authenticated;
@@ -1293,7 +1293,7 @@ begin
     update public.vibe_interests set status='invited', invitation_sent_at=now(),
       invitation_expires_at=public._vibe_confirm_deadline(v.starts_at) where vibe_id=p_vibe and user_id=c.user_id;
     perform public.notify(c.user_id, 'vibe_invitation', 'A spot opened up: ' || v.title,
-            'You''re in — confirm to lock your spot.', jsonb_build_object('vibe_id', p_vibe));
+            'You''re in - confirm to lock your spot.', jsonb_build_object('vibe_id', p_vibe));
     v_added := v_added + 1;
   end loop;
   return v_added;
@@ -1301,7 +1301,7 @@ end $$;
 grant execute on function public.backfill_vibe(uuid) to authenticated;
 
 -- SUPERSEDED: canonical invite_city_fallback is in supabase/vibe-auto-matching.sql
--- (live; has the #77 starts_at>now guard). Wrapped out 2026-06-28 — repo-only.
+-- (live; has the #77 starts_at>now guard). Wrapped out 2026-06-28 - repo-only.
 -- (The _rank_vibe_core + backfill_vibe above remain the canonical/live versions.)
 /*
 create or replace function public.invite_city_fallback(p_vibe uuid)
@@ -1337,7 +1337,7 @@ begin
       values (p_vibe, c.id, 'invited', 'algo', c.score, now(), public._vibe_confirm_deadline(v.starts_at))
       on conflict (vibe_id, user_id) do nothing;
     perform public.notify(c.id, 'vibe_invitation', 'A Vibe in ' || v.city || ' you might love: ' || v.title,
-            'There''s a spot for you — confirm to join.', jsonb_build_object('vibe_id', p_vibe));
+            'There''s a spot for you - confirm to join.', jsonb_build_object('vibe_id', p_vibe));
     v_added := v_added + 1;
   end loop;
   return v_added;
@@ -1375,7 +1375,7 @@ begin
   if v_status is null or v_status <> 'requested' then raise exception 'no pending request from this person'; end if;
 
   -- Gate on overall capacity (confirmed + live invites), not the host-share
-  -- sub-cap — accepting a request is an explicit host decision, so it should
+  -- sub-cap - accepting a request is an explicit host decision, so it should
   -- succeed whenever the room genuinely has an open seat.
   select count(*) into v_private_held from public.vibe_interests
     where vibe_id=p_vibe
@@ -1386,7 +1386,7 @@ begin
     invitation_sent_at=now(), invitation_expires_at=public._vibe_confirm_deadline(v.starts_at)
     where vibe_id=p_vibe and user_id=p_user;
   perform public.notify(p_user, 'vibe_invitation', 'You''re invited to '||v.title,
-          'The host added you directly — confirm to lock your spot.', jsonb_build_object('vibe_id', p_vibe));
+          'The host added you directly - confirm to lock your spot.', jsonb_build_object('vibe_id', p_vibe));
 end $$;
 grant execute on function public.host_accept_private(uuid, uuid) to authenticated;
 
@@ -1400,7 +1400,7 @@ begin
   select status into v_status from public.vibe_interests where vibe_id=p_vibe and user_id=p_user;
   if v_status is null or v_status <> 'requested' then raise exception 'no pending request'; end if;
   update public.vibe_interests set status='declined' where vibe_id=p_vibe and user_id=p_user;
-  perform public.notify(p_user, 'vibe_declined', v.title||' — not this time',
+  perform public.notify(p_user, 'vibe_declined', v.title||' - not this time',
           'The host went a different way for their direct spots.', jsonb_build_object('vibe_id', p_vibe));
 end $$;
 grant execute on function public.host_reject_private(uuid, uuid) to authenticated;
@@ -1440,7 +1440,7 @@ returns timestamptz language sql immutable set search_path = public as $$
 $$;
 
 -- SUPERSEDED: canonical backfill_vibe is in supabase/vibe-v2-private-link.sql
--- (live; uses _vibe_algo_remaining). Wrapped out 2026-06-28 — repo-only.
+-- (live; uses _vibe_algo_remaining). Wrapped out 2026-06-28 - repo-only.
 /*
 -- ── Backfill open spots from standby (uses the dynamic confirm window) ───────
 create or replace function public.backfill_vibe(p_vibe uuid)
@@ -1462,7 +1462,7 @@ begin
       invitation_expires_at=public._vibe_confirm_deadline(v.starts_at)
       where vibe_id=p_vibe and user_id=c.user_id;
     perform public.notify(c.user_id, 'vibe_invitation', 'A spot opened up: ' || v.title,
-            'You''re in — confirm to lock your spot.', jsonb_build_object('vibe_id', p_vibe));
+            'You''re in - confirm to lock your spot.', jsonb_build_object('vibe_id', p_vibe));
     v_added := v_added + 1;
   end loop;
   return v_added;
@@ -1486,7 +1486,7 @@ begin
   -- Same remaining-spots helper as _rank_vibe_core: shortlisted/invited/confirmed
   -- holds and the host's private share are all accounted for inside
   -- _vibe_algo_remaining. Then subtract everyone still WAITING in the funnel
-  -- (interested/requested/standby — they'll be ranked / host-reviewed), so cold
+  -- (interested/requested/standby - they'll be ranked / host-reviewed), so cold
   -- candidates never displace genuinely-interested people when this runs early.
   select count(*) into v_pool from public.vibe_interests
     where vibe_id = p_vibe and status in ('interested','requested','standby');
@@ -1519,7 +1519,7 @@ begin
       values (p_vibe, c.id, 'shortlisted', 'algo', c.score)
       on conflict (vibe_id, user_id) do nothing;
     perform public.notify(c.id, 'vibe_shortlisted', 'A Vibe in ' || v.city || ' you might love: ' || v.title,
-            'You''re in the running — we''ll notify you if a spot is yours.', jsonb_build_object('vibe_id', p_vibe));
+            'You''re in the running - we''ll notify you if a spot is yours.', jsonb_build_object('vibe_id', p_vibe));
     v_added := v_added + 1;
   end loop;
   return v_added;
@@ -1528,9 +1528,9 @@ grant execute on function public.invite_city_fallback(uuid) to authenticated;
 
 -- SUPERSEDED: canonical _rank_vibe_core is in supabase/vibe-v2-private-link.sql
 -- (live shortlist→host-review flow). This older copy auto-invited. Wrapped out
--- 2026-06-28 — repo-only. (The rank_vibe wrapper below stays active.)
+-- 2026-06-28 - repo-only. (The rank_vibe wrapper below stays active.)
 /*
--- ── Core ranking (NO auth gate — callable by host RPC and by the scheduler) ─
+-- ── Core ranking (NO auth gate - callable by host RPC and by the scheduler) ─
 create or replace function public._rank_vibe_core(p_vibe uuid)
 returns jsonb language plpgsql security definer set search_path = public as $$
 declare v public.vibes; v_confirmed int; v_active int; v_remaining int; v_invited int := 0; v_standby int := 0; c record; rnk int := 0;
@@ -1577,7 +1577,7 @@ begin
       update public.vibe_interests set status='standby', match_score=c.score
         where vibe_id=p_vibe and user_id=c.user_id;
       perform public.notify(c.user_id, 'vibe_standby', v.title||' is filling up',
-              'You''re on standby — we''ll bump you in if a spot opens.', jsonb_build_object('vibe_id', p_vibe));
+              'You''re on standby - we''ll bump you in if a spot opens.', jsonb_build_object('vibe_id', p_vibe));
       v_standby := v_standby + 1;
     end if;
   end loop;
@@ -1654,11 +1654,11 @@ select cron.schedule('flockie-autofill', '*/10 * * * *', $$ select public.autofi
 -- vibe_eligible). Safe to re-run.
 --
 -- vibe_match(user, vibe) -> 0-100, how well an open Vibe fits a user's profile:
---   0.35 category fit   — does the Vibe's category match something you do?
---   0.25 vibe-tag fit   — event tags (chill/social/party…) vs your activity vibe
---   0.12 skill fit      — required skill vs your skill in that activity
---   0.13 social fit     — how social the event reads vs your activity-social pref
---   0.15 review fit     — do you tend to recommend Vibes like this? (vibe_review_fit)
+--   0.35 category fit   - does the Vibe's category match something you do?
+--   0.25 vibe-tag fit   - event tags (chill/social/party…) vs your activity vibe
+--   0.12 skill fit      - required skill vs your skill in that activity
+--   0.13 social fit     - how social the event reads vs your activity-social pref
+--   0.15 review fit     - do you tend to recommend Vibes like this? (vibe_review_fit)
 -- Used by both the "X% your vibe" card badge and the "Picked for you" ranking.
 -- The review-fit term (2026-07-02) was ported from the tombstoned copy in
 -- vibe-review-preferences.sql; the other four weights were rescaled from
@@ -1799,7 +1799,7 @@ grant execute on function public.recommended_vibes(int) to authenticated;
 --
 -- Before this, the INSERT/UPDATE policies only checked `user_id = auth.uid()`, so
 -- any signed-in user could directly POST/PATCH their own interest row to
--- status='confirmed' for ANY vibe — bypassing the invite/matching/capacity flow
+-- status='confirmed' for ANY vibe - bypassing the invite/matching/capacity flow
 -- and unlocking exact GPS (public.vibe_private_logistics) + the vibe chat
 -- (public.is_vibe_member) with no host approval.
 --
@@ -1808,7 +1808,7 @@ grant execute on function public.recommended_vibes(int) to authenticated;
 -- so this change breaks nothing legitimate.
 
 -- Eligibility (2026-07-02): entering the funnel also requires satisfying the
--- host's gender/age preferences (vibe_eligible — see vibe-eligibility-enforce.sql).
+-- host's gender/age preferences (vibe_eligible - see vibe-eligibility-enforce.sql).
 -- The client shows a friendly message via a pre-check (InterestButton).
 drop policy if exists "interests self insert" on public.vibe_interests;
 create policy "interests self insert" on public.vibe_interests for insert to authenticated
@@ -1819,7 +1819,7 @@ drop policy if exists "interests self update" on public.vibe_interests;
 create policy "interests self update" on public.vibe_interests for update to authenticated
   using (user_id = auth.uid()) with check (user_id = auth.uid() and status = 'interested');
 
--- OPTIONAL audit — find rows whose status was self-elevated WITHOUT a matching
+-- OPTIONAL audit - find rows whose status was self-elevated WITHOUT a matching
 -- invitation timestamp (i.e. set outside the RPC flow). Review before deleting.
 -- select vi.* from public.vibe_interests vi
 --   where vi.status = 'confirmed' and vi.invitation_sent_at is null;

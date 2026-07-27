@@ -1,4 +1,4 @@
--- Flockie Clubs — host membership decision
+-- Flockie Clubs - host membership decision
 -- Run after clubs-foundation.sql. Safe to re-run.
 
 create or replace function public.decline_club_membership(p_club uuid, p_user uuid)

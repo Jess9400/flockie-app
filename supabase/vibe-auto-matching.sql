@@ -28,7 +28,7 @@ returns timestamptz language sql immutable set search_path = public as $$
 $$;
 
 -- SUPERSEDED: canonical backfill_vibe is in supabase/vibe-v2-private-link.sql
--- (live; uses _vibe_algo_remaining). Wrapped out 2026-06-28 — repo-only.
+-- (live; uses _vibe_algo_remaining). Wrapped out 2026-06-28 - repo-only.
 /*
 -- ── Backfill open spots from standby (uses the dynamic confirm window) ───────
 create or replace function public.backfill_vibe(p_vibe uuid)
@@ -50,7 +50,7 @@ begin
       invitation_expires_at=public._vibe_confirm_deadline(v.starts_at)
       where vibe_id=p_vibe and user_id=c.user_id;
     perform public.notify(c.user_id, 'vibe_invitation', 'A spot opened up: ' || v.title,
-            'You''re in — confirm to lock your spot.', jsonb_build_object('vibe_id', p_vibe));
+            'You''re in - confirm to lock your spot.', jsonb_build_object('vibe_id', p_vibe));
     v_added := v_added + 1;
   end loop;
   return v_added;
@@ -74,7 +74,7 @@ begin
   -- Same remaining-spots helper as _rank_vibe_core: shortlisted/invited/confirmed
   -- holds and the host's private share are all accounted for inside
   -- _vibe_algo_remaining. Then subtract everyone still WAITING in the funnel
-  -- (interested/requested/standby — they'll be ranked / host-reviewed), so cold
+  -- (interested/requested/standby - they'll be ranked / host-reviewed), so cold
   -- candidates never displace genuinely-interested people when this runs early.
   select count(*) into v_pool from public.vibe_interests
     where vibe_id = p_vibe and status in ('interested','requested','standby');
@@ -107,7 +107,7 @@ begin
       values (p_vibe, c.id, 'shortlisted', 'algo', c.score)
       on conflict (vibe_id, user_id) do nothing;
     perform public.notify(c.id, 'vibe_shortlisted', 'A Vibe in ' || v.city || ' you might love: ' || v.title,
-            'You''re in the running — we''ll notify you if a spot is yours.', jsonb_build_object('vibe_id', p_vibe));
+            'You''re in the running - we''ll notify you if a spot is yours.', jsonb_build_object('vibe_id', p_vibe));
     v_added := v_added + 1;
   end loop;
   return v_added;
@@ -116,9 +116,9 @@ grant execute on function public.invite_city_fallback(uuid) to authenticated;
 
 -- SUPERSEDED: canonical _rank_vibe_core is in supabase/vibe-v2-private-link.sql
 -- (live shortlist→host-review flow). This older copy auto-invited. Wrapped out
--- 2026-06-28 — repo-only. (The rank_vibe wrapper below stays active.)
+-- 2026-06-28 - repo-only. (The rank_vibe wrapper below stays active.)
 /*
--- ── Core ranking (NO auth gate — callable by host RPC and by the scheduler) ─
+-- ── Core ranking (NO auth gate - callable by host RPC and by the scheduler) ─
 create or replace function public._rank_vibe_core(p_vibe uuid)
 returns jsonb language plpgsql security definer set search_path = public as $$
 declare v public.vibes; v_confirmed int; v_active int; v_remaining int; v_invited int := 0; v_standby int := 0; c record; rnk int := 0;
@@ -165,7 +165,7 @@ begin
       update public.vibe_interests set status='standby', match_score=c.score
         where vibe_id=p_vibe and user_id=c.user_id;
       perform public.notify(c.user_id, 'vibe_standby', v.title||' is filling up',
-              'You''re on standby — we''ll bump you in if a spot opens.', jsonb_build_object('vibe_id', p_vibe));
+              'You''re on standby - we''ll bump you in if a spot opens.', jsonb_build_object('vibe_id', p_vibe));
       v_standby := v_standby + 1;
     end if;
   end loop;

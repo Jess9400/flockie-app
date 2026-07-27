@@ -175,8 +175,8 @@ as $$
     and cp.open_to_discovery
     and cp.onboarding_complete
     -- Discovery pool = people in YOUR city who are open to discovery, ranked by
-    -- vibe similarity. We match on the swiper's own home_city (me_p) — NOT the
-    -- activity's destination — and we do NOT require the candidate to have posted
+    -- vibe similarity. We match on the swiper's own home_city (me_p) - NOT the
+    -- activity's destination - and we do NOT require the candidate to have posted
     -- their own activity. You swipe in-city people and invite them to your activity.
     and trim(coalesce(me_p.home_city, '')) <> ''
     -- trim() so a stray space can't silently break the city match (case already lower()'d).

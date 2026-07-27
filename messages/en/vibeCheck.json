@@ -265,7 +265,7 @@
     "trip": {
       "title": "Travel vibe",
       "finish": "Save travel vibe",
-      "evolvedToast": "Your vibe evolved — you're now {name} {emoji}",
+      "evolvedToast": "Your vibe evolved - you're now {name} {emoji}",
       "pace": "Your natural trip pace?",
       "budget": "Your budget vibe on a trip?",
       "socialTravel": "Who do you most want to travel with?",
@@ -279,16 +279,16 @@
       "prioritiesLabel": "When we match you, what matters most?",
       "prioritiesHint": "Pick up to {max}.",
       "countriesLabel": "How many countries have you visited?",
-      "countriesHint": "Optional — shows on your trip cards as travel cred.",
+      "countriesHint": "Optional - shows on your trip cards as travel cred.",
       "languagesLabel": "Languages you speak",
-      "languagesHint": "Optional — helps buddies know you can communicate."
+      "languagesHint": "Optional - helps buddies know you can communicate."
     },
     "activity": {
       "title": "Event vibe",
       "finish": "Save event vibe",
-      "evolvedToast": "Your vibe evolved — you're now {name} {emoji}",
+      "evolvedToast": "Your vibe evolved - you're now {name} {emoji}",
       "activitiesLabel": "What do you actually do?",
-      "activitiesHint": "Your top few — no need to pick everything.",
+      "activitiesHint": "Your top few - no need to pick everything.",
       "motivationLabel": "What pulls you out of the house?",
       "motivationHint": "The thing you're really after when you go to a local plan.",
       "social": "Ideal group size for a meetup?",

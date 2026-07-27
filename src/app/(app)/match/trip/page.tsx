@@ -78,14 +78,14 @@ export default async function TripPage({
   const showCapGate = isNew && !showReviewGate && atCap;
 
   // Vibe-form gate: a trip/flock needs the Trip vibe; an activity needs the
-  // Activity vibe. Migration-safe — if the flag columns don't exist yet, the
+  // Activity vibe. Migration-safe - if the flag columns don't exist yet, the
   // query errors and we degrade open (no gate), so nothing breaks pre-migration.
   const { data: prefs, error: prefsErr } = await supabase
     .from("profiles")
     .select("trip_prefs_complete, activity_prefs_complete")
     .eq("id", user!.id)
     .maybeSingle();
-  // Trips keep a TRIMMED one-page prefs form (5 questions — pace, budget,
+  // Trips keep a TRIMMED one-page prefs form (5 questions - pace, budget,
   // planning, trip vibe, dealbreakers). It doesn't feed scoring (Vibes-only
   // since #244/#261) but dealbreakers feed buddy_hard_block. Activities gate on
   // the new vibe check only for pre-v3 profiles.

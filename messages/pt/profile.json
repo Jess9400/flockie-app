@@ -44,7 +44,7 @@
     "vibeBody": "Seus interesses e controles ajudam o Flockie a encontrar planos que combinam com você.",
     "adjustVibe": "Ajustar meu Vibe",
     "kindWordsTitle": "Palavras gentis",
-    "kindWordsSubtitle": "Escritas após um match verificado no Flockie — sem notas públicas.",
+    "kindWordsSubtitle": "Escritas após um match verificado no Flockie - sem notas públicas.",
     "kindWordsEmpty": "Quando alguém com quem você deu match deixar uma mensagem gentil, ela aparecerá aqui. Sem notas ou médias no seu perfil.",
     "verifiedConnection": "Match verificado no Flockie",
     "photosHeading": "Fotos",
@@ -91,7 +91,7 @@
   "reviewerFallback": "Um flockie",
   "form": {
     "photosTitle": "Fotos e vídeo",
-    "photosSubtitle": "Pelo menos uma foto. Sua primeira foto é a principal — arraste para reordenar.",
+    "photosSubtitle": "Pelo menos uma foto. Sua primeira foto é a principal - arraste para reordenar.",
     "aboutTitle": "Sobre você",
     "name": "Nome",
     "namePlaceholder": "Seu primeiro nome",
@@ -176,10 +176,10 @@
     "matchSetupNote": "Preferências flexíveis melhoram o ranking. Pontos inegociáveis filtram de forma rígida. Interesse, Não é para mim, respostas a convites, presença e avaliações também ensinam o algoritmo.",
     "redoConfirm": {
       "title": "Refazer sua Vibe quiz?",
-      "message": "Você vai responder o quiz inteiro de novo a partir da pergunta 1 — não dá para salvar pela metade. Sua vibe atual continua ativa até você terminar.",
+      "message": "Você vai responder o quiz inteiro de novo a partir da pergunta 1 - não dá para salvar pela metade. Sua vibe atual continua ativa até você terminar.",
       "confirmLabel": "Começar o quiz"
     },
-    "redoError": "Não foi possível reiniciar o quiz — tente de novo.",
+    "redoError": "Não foi possível reiniciar o quiz - tente de novo.",
     "visibility": {
       "title": "Resumo de visibilidade",
       "description": "Estas regras são aplicadas pela camada de privacidade do perfil.",
@@ -212,7 +212,7 @@
       "description": "Feedback verificado de interações concluídas no Flockie.",
       "showLess": "Ver menos",
       "seeAllCount": "Ver todas as {count}",
-      "empty": "Ainda não há avaliações — elas aparecem depois que você viaja com alguém, faz uma atividade ou compartilha um Flock.",
+      "empty": "Ainda não há avaliações - elas aparecem depois que você viaja com alguém, faz uma atividade ou compartilha um Flock.",
       "verified": "Interação verificada"
     },
     "roles": {
@@ -260,7 +260,7 @@
   },
   "reviews": {
     "title": "Avaliações",
-    "empty": "Ainda não há avaliações — elas aparecem depois que você viaja com alguém, faz uma atividade ou compartilha um Flock."
+    "empty": "Ainda não há avaliações - elas aparecem depois que você viaja com alguém, faz uma atividade ou compartilha um Flock."
   },
   "events": {
     "vibes": "Vibes",

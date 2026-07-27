@@ -101,14 +101,14 @@ export async function getChatList(
     supabase.rpc("buddy_chat_summaries"),
     supabase.rpc("vibe_chat_summaries"),
     supabase.rpc("my_flock_chats"),
-    // Club rooms — migration-safe (RPC missing on prod → no club rows).
+    // Club rooms - migration-safe (RPC missing on prod → no club rows).
     supabase.rpc("my_club_chats"),
   ]);
   const clubList: ClubSummary[] = clubsRes.error ? [] : ((clubsRes.data ?? []) as ClubSummary[]);
   const buddyList = (buddies ?? []) as BuddySummary[];
   const vibeList = (vibes ?? []) as VibeSummary[];
 
-  // Flock group chats I've joined — append if not already surfaced as a buddy row.
+  // Flock group chats I've joined - append if not already surfaced as a buddy row.
   (flockChats ?? []).forEach((fc: { chat_id: string; name: string | null; photo: string | null }) => {
     if (!buddyList.some((b) => b.chat_id === fc.chat_id)) {
       buddyList.push({ chat_id: fc.chat_id, name: fc.name, photo: fc.photo, unread: 0, kind: "flock" });
@@ -218,7 +218,7 @@ export async function getChatList(
     };
   });
 
-  // Unread float to top, then most recent first — one stream, no tabs.
+  // Unread float to top, then most recent first - one stream, no tabs.
   const rows = [...buddyRows, ...vibeRows, ...clubRows].sort((a, b) => {
     const ua = a.unread > 0 ? 1 : 0;
     const ub = b.unread > 0 ? 1 : 0;

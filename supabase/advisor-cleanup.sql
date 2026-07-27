@@ -10,14 +10,14 @@
 --      with no chance of breaking a flow. They still run fine: cron runs as the
 --      job owner, triggers fire as the table owner, and notify() is only ever
 --      called from inside other SECURITY DEFINER functions (which execute as the
---      function owner, not the caller — so the caller never needs EXECUTE).
+--      function owner, not the caller - so the caller never needs EXECUTE).
 --
--- NOT touched here (intentional — see CHANGES / advisor triage):
---   • The ~80 authenticated-callable RPCs (0029) — that IS the app's API surface,
+-- NOT touched here (intentional - see CHANGES / advisor triage):
+--   • The ~80 authenticated-callable RPCs (0029) - that IS the app's API surface,
 --     each gated internally on auth.uid(). "Intentional" per the linter's own note.
---   • get_vouch_subject / submit_vouch / public_vibe — genuinely need anon
+--   • get_vouch_subject / submit_vouch / public_vibe - genuinely need anon
 --     (the /vouch and /invite pages are public, logged-out routes).
---   • postgis / pg_trgm extension_in_public and st_estimatedextent — managed by
+--   • postgis / pg_trgm extension_in_public and st_estimatedextent - managed by
 --     the PostGIS extension; moving them is high-risk and low-value.
 
 -- 1. Pin search_path on the updated_at trigger function.

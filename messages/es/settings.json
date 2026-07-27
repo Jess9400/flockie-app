@@ -1,7 +1,7 @@
 {
   "backToProfile": "Perfil",
   "title": "Ajustes",
-  "saveError": "No se pudo guardar — revisa tu conexión e inténtalo de nuevo.",
+  "saveError": "No se pudo guardar - revisa tu conexión e inténtalo de nuevo.",
   "account": {
     "title": "Cuenta",
     "signOut": "Cerrar sesión"
@@ -16,7 +16,7 @@
   },
   "location": {
     "title": "Mantener mi ubicación actualizada",
-    "description": "Deja que Flockie encuentre Vibes, viajes y personas cerca de ti — y actualiza tu ciudad automáticamente cuando viajas, para que nunca la pongas a mano."
+    "description": "Deja que Flockie encuentre Vibes, viajes y personas cerca de ti - y actualiza tu ciudad automáticamente cuando viajas, para que nunca la pongas a mano."
   },
   "discovery": {
     "title": "Abierto a que te descubran",
@@ -45,7 +45,7 @@
     "confirmTitle": "¿Eliminar tu cuenta?",
     "confirmMessage": "Esto elimina de forma permanente tu perfil, fotos, vibe check y matches. No se puede deshacer.",
     "confirmLabel": "Eliminar cuenta",
-    "mediaError": "No se pudieron eliminar tus archivos — inténtalo de nuevo. ",
+    "mediaError": "No se pudieron eliminar tus archivos - inténtalo de nuevo. ",
     "deleting": "Eliminando…",
     "button": "Eliminar cuenta"
   }

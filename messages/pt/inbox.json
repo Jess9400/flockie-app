@@ -30,7 +30,7 @@
     },
     "flock_created": {
       "title": "{title} agora é um Flock",
-      "body": "Você e seu buddy abriram a viagem para um grupo — aprovem juntos quem entra."
+      "body": "Você e seu buddy abriram a viagem para um grupo - aprovem juntos quem entra."
     },
     "flock_declined": {
       "title": "Novidade sobre {title}",
@@ -54,7 +54,7 @@
     },
     "vibe_confirmed": {
       "title": "Você está confirmado para {title}",
-      "body": "Você está confirmado — o Vibing Chat já está aberto."
+      "body": "Você está confirmado - o Vibing Chat já está aberto."
     },
     "vibe_invitation": {
       "title": "Você foi convidado para {title}",
@@ -82,15 +82,15 @@
     },
     "vibe_starting_soon": {
       "title": "Sua Vibe é amanhã: {title}",
-      "body": "Começa em breve — abra o chat para combinar com o seu grupo."
+      "body": "Começa em breve - abra o chat para combinar com o seu grupo."
     },
     "unread_messages": {
       "title": "Você tem mensagens novas",
-      "body": "Há mensagens novas esperando — volte para a conversa."
+      "body": "Há mensagens novas esperando - volte para a conversa."
     },
     "weekly_digest": {
       "title": "{count, plural, =1 {# Vibe nova esta semana} other {# Vibes novas esta semana}}",
-      "body": "Vibes novas escolhidas para você — dê uma olhada."
+      "body": "Vibes novas escolhidas para você - dê uma olhada."
     },
     "vibe_recommendation": {
       "title": "Uma Vibe que você pode curtir",
