@@ -7,6 +7,9 @@
 - **Next stacked PR** collects private passive Vibe behavior in shadow mode.
   It does not change ranking or displayed percentages. After merge, run
   `supabase/vibe-behavior-shadow.sql`.
+- **Following stacked PR** adds SQL-editor-only diagnostics for passive and
+  explicit behavior coverage. It does not change ranking or displayed
+  percentages. After merge, run `supabase/vibe-behavior-diagnostics.sql`.
 
 Worked on the home page (intent-first redesign), the "Say hi → activity" flow,
 several bug fixes, and a matching-cron correctness fix. All PRs below are merged
