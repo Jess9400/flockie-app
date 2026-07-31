@@ -307,8 +307,9 @@ export default async function VibeDetailPage({
     recordedVibeAttendanceIds = (attendanceRows ?? []).map((row) => row.user_id);
   }
   const canReview = ended && myInterest?.status === "confirmed";
+  // TEMP (2026-07-31): same-city guard removed so people from surrounding
+  // cities can one-tap join; restore `!differentCity &&` to re-enable.
   const directConfirm =
-    !differentCity &&
     ["ranking", "finalized"].includes(vibe.status) &&
     confirmedCount < vibe.capacity &&
     new Date(vibe.starts_at) > new Date();

@@ -39,8 +39,11 @@ begin
     into v_same_city
     from public.profiles p where p.id = auth.uid();
 
-  -- Post-matching fast path: ranked + genuine room + same city → confirm directly.
-  if v.status in ('ranking','finalized') and coalesce(v_same_city, false) then
+  -- TEMP (2026-07-31): same-city gate disabled — small-city event draws people
+  -- from surrounding cities, so anyone can one-tap join post-matching. To
+  -- restore, add `and coalesce(v_same_city, false)` back to the condition below.
+  -- Post-matching fast path: ranked + genuine room → confirm directly.
+  if v.status in ('ranking','finalized') then
     select count(*) into v_held from public.vibe_interests
       where vibe_id = p_vibe
         and (status='confirmed'

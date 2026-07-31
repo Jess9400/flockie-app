@@ -60,8 +60,8 @@ export default async function InvitePage({
   const hostCode = searchParams.code?.trim() || "";
   // Once matching has run (ranking/finalized) and there's still room, tapping
   // through confirms instantly on the vibe page - so the CTA reads "Join now"
-  // to match. (Same-city is enforced server-side there; this public page can't
-  // know the viewer's city, so it shows the optimistic label.)
+  // to match. (Same-city guard TEMP-disabled 2026-07-31 — anyone can one-tap
+  // join post-matching; see vibe-express-interest-autoconfirm.sql.)
   const directConfirm =
     ["ranking", "finalized"].includes(v.status) &&
     v.confirmed_count < v.capacity &&
