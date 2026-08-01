@@ -117,8 +117,14 @@ begin
 end $$;
 
 -- ── (2) Lock down every authenticated-only RPC ──────────────────────────────
--- Selection: explicit `authenticated=` entry in the ACL (our grant convention)
--- and no explicit `anon=` entry (those are meant to be public: public_vibe...).
+-- v2 (2026-08-01): v1 filtered on "no explicit anon= ACL entry", but SUPABASE
+-- DEFAULT PRIVILEGES explicitly grant every new function to anon/authenticated/
+-- service_role - so EVERY function carried an anon= entry, the v1 loop matched
+-- nothing, and its verify query false-passed with 0 rows (live anon probes
+-- still executed the RPCs). Correct selection: every non-extension routine in
+-- public except the deliberate anon allowlist. authenticated/service_role keep
+-- their own explicit ACL entries, so nothing breaks for logged-in users or
+-- server routes.
 do $$
 declare f record;
 begin
@@ -127,18 +133,26 @@ begin
     from pg_proc p
     join pg_namespace n on n.oid = p.pronamespace
     where n.nspname = 'public'
-      and p.proacl::text like '%authenticated=%'
-      and p.proacl::text not like '%anon=%'
+      -- extension-owned functions (PostGIS etc.) manage their own ACLs
+      and not exists (select 1 from pg_depend d where d.objid = p.oid and d.deptype = 'e')
+      -- deliberately anon-facing (invite links, referral/vouch/compat pages)
+      and p.proname not in ('public_vibe','referral_target','compat_target','get_vouch_subject')
+      and has_function_privilege('anon', p.oid, 'execute')
   loop
-    execute format('revoke execute on function %s from public, anon', f.sig);
-    execute format('grant execute on function %s to service_role', f.sig);
+    execute format('revoke execute on routine %s from public, anon', f.sig);
   end loop;
 end $$;
 
--- Verify afterwards (should return 0 rows):
+-- New functions created by postgres (the SQL editor) no longer default to
+-- anon/PUBLIC execute; the Supabase defaults for authenticated/service_role
+-- stay. Intentionally-public RPCs now need an explicit `grant ... to anon`.
+alter default privileges for role postgres revoke execute on functions from anon;
+alter default privileges for role postgres revoke execute on functions from public;
+
+-- Verify afterwards (should return 0 rows; non-zero BEFORE the fix):
 --   select p.oid::regprocedure
 --   from pg_proc p join pg_namespace n on n.oid = p.pronamespace
 --   where n.nspname = 'public'
---     and p.proacl::text like '%authenticated=%'
---     and p.proacl::text not like '%anon=%'
+--     and not exists (select 1 from pg_depend d where d.objid = p.oid and d.deptype = 'e')
+--     and p.proname not in ('public_vibe','referral_target','compat_target','get_vouch_subject')
 --     and has_function_privilege('anon', p.oid, 'execute');
