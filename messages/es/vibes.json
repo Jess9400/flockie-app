@@ -317,7 +317,10 @@
     "area": "Zona",
     "country": "País",
     "saveAddress": "Guardar dirección y avisar a todos",
-    "addressUpdated": "Dirección actualizada - se avisó a todos los que están dentro."
+    "addressUpdated": "Dirección actualizada - se avisó a todos los que están dentro.",
+    "description": "Descripción",
+    "saveDescription": "Actualizar descripción",
+    "descriptionUpdated": "Descripción actualizada."
   },
   "share": {
     "shareTitle": "Únete a mi Vibe en Flockie",

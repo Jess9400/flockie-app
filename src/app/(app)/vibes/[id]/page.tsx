@@ -359,6 +359,7 @@ export default async function VibeDetailPage({
             locationName={privateLogistics?.location_name ?? null}
             locationLat={privateLogistics?.location_lat ?? null}
             locationLng={privateLogistics?.location_lng ?? null}
+            description={vibe.description ?? ""}
           />
         ) : (
           myInterest?.status === "confirmed" && <LeaveVibeButton vibeId={vibe.id} />

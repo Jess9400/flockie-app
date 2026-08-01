@@ -30,6 +30,7 @@ export default function VibeSettingsButton({
   locationName,
   locationLat,
   locationLng,
+  description,
 }: {
   vibeId: string;
   startsAt: string;
@@ -42,6 +43,7 @@ export default function VibeSettingsButton({
   locationName: string | null;
   locationLat: number | null;
   locationLng: number | null;
+  description: string;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -61,6 +63,7 @@ export default function VibeSettingsButton({
   const [locLng, setLocLng] = useState<number | null>(locationLng);
   const [pinning, setPinning] = useState(false);
   const [pinMsg, setPinMsg] = useState<string | null>(null);
+  const [desc, setDesc] = useState(description);
 
   function setDeadlineBefore(hours: number) {
     if (!starts) return;
@@ -178,6 +181,20 @@ export default function VibeSettingsButton({
     router.refresh();
   }
 
+  async function saveDescription() {
+    if (!desc.trim()) return;
+    setBusy(true);
+    setMsg(null);
+    const { error } = await supabase.rpc("update_vibe_description", {
+      p_vibe: vibeId,
+      p_description: desc.trim(),
+    });
+    setBusy(false);
+    if (error) return setMsg(error.message);
+    setMsg(t("settings.descriptionUpdated"));
+    router.refresh();
+  }
+
   async function del() {
     if (!confirm(t("settings.cancelConfirm"))) return;
     setBusy(true);
@@ -280,6 +297,26 @@ export default function VibeSettingsButton({
                   className="mt-2 w-full rounded-full border border-ink/15 bg-white py-2.5 font-bold text-ink shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
                 >
                   {t("settings.saveSpots")}
+                </button>
+              </div>
+
+              <div className="border-t-2 border-ink/10 pt-4">
+                <label className="block text-sm font-bold">
+                  {t("settings.description")}
+                  <textarea
+                    value={desc}
+                    onChange={(e) => setDesc(e.target.value)}
+                    rows={4}
+                    maxLength={4000}
+                    className={`${fieldCls} resize-y`}
+                  />
+                </label>
+                <button
+                  onClick={saveDescription}
+                  disabled={busy || !desc.trim() || desc.trim() === description.trim()}
+                  className="mt-2 w-full rounded-full border border-ink/15 bg-white py-2.5 font-bold text-ink shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
+                >
+                  {t("settings.saveDescription")}
                 </button>
               </div>
 

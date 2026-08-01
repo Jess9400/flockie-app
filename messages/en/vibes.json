@@ -317,7 +317,10 @@
     "area": "Area",
     "country": "Country",
     "saveAddress": "Save address & notify everyone",
-    "addressUpdated": "Address updated - everyone in was notified."
+    "addressUpdated": "Address updated - everyone in was notified.",
+    "description": "Description",
+    "saveDescription": "Update description",
+    "descriptionUpdated": "Description updated."
   },
   "share": {
     "shareTitle": "Join my Vibe on Flockie",

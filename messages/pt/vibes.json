@@ -317,7 +317,10 @@
     "area": "Bairro",
     "country": "País",
     "saveAddress": "Salvar endereço e avisar todo mundo",
-    "addressUpdated": "Endereço atualizado - todo mundo que está dentro foi avisado."
+    "addressUpdated": "Endereço atualizado - todo mundo que está dentro foi avisado.",
+    "description": "Descrição",
+    "saveDescription": "Atualizar descrição",
+    "descriptionUpdated": "Descrição atualizada."
   },
   "share": {
     "shareTitle": "Entre na minha Vibe no Flockie",
