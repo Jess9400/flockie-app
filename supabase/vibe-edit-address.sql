@@ -19,7 +19,7 @@ declare v public.vibes; r record;
 begin
   select * into v from public.vibes where id = p_vibe;
   if v.id is null then raise exception 'not found'; end if;
-  if v.host_id <> auth.uid() then raise exception 'only the host'; end if;
+  if v.host_id is distinct from auth.uid() then raise exception 'only the host'; end if;
   if v.status = 'cancelled' then raise exception 'vibe is cancelled'; end if;
   if coalesce(trim(p_city), '') = '' then raise exception 'city is required'; end if;
 
@@ -40,3 +40,4 @@ begin
   end loop;
 end $$;
 grant execute on function public.update_vibe_where(uuid, text, float8, float8, text, text, text) to authenticated;
+revoke execute on function public.update_vibe_where(uuid, text, float8, float8, text, text, text) from public, anon;

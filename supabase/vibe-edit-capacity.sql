@@ -12,7 +12,7 @@ declare v public.vibes; v_confirmed int;
 begin
   select * into v from public.vibes where id = p_vibe for update;
   if v.id is null then raise exception 'vibe not found'; end if;
-  if v.host_id <> auth.uid() then raise exception 'only the host can edit spots'; end if;
+  if v.host_id is distinct from auth.uid() then raise exception 'only the host can edit spots'; end if;
   if v.status = 'cancelled' then raise exception 'vibe is cancelled'; end if;
   if p_capacity < 2 or p_capacity > 100 then
     raise exception 'spots must be between 2 and 100';

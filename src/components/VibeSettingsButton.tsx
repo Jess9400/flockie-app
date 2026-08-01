@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Settings, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { geocodeVibeLocation } from "@/lib/gmaps-geocode";
+import { geocodeVibeLocation, type GeocodedPlace } from "@/lib/gmaps-geocode";
 
 function toLocalInput(iso?: string | null) {
   if (!iso) return "";
@@ -60,6 +60,7 @@ export default function VibeSettingsButton({
   const [locLat, setLocLat] = useState<number | null>(locationLat);
   const [locLng, setLocLng] = useState<number | null>(locationLng);
   const [pinning, setPinning] = useState(false);
+  const [pinMsg, setPinMsg] = useState<string | null>(null);
 
   function setDeadlineBefore(hours: number) {
     if (!starts) return;
@@ -102,16 +103,33 @@ export default function VibeSettingsButton({
     setLocName(value);
     setLocLat(null);
     setLocLng(null);
+    setPinMsg(null);
+  }
+
+  // Browser Places first (best at messy venue names); when it yields nothing
+  // (e.g. Maps key absent or blocked), the server /api/geocode route takes
+  // over - it carries its own Google/OSM fallback chain.
+  async function lookupPlace(name: string, cityHint: string): Promise<GeocodedPlace | null> {
+    const viaSdk = await geocodeVibeLocation(name, cityHint).catch(() => null);
+    if (viaSdk) return viaSdk;
+    try {
+      const q = cityHint.trim() ? `${name}, ${cityHint}` : name;
+      const res = await fetch(`/api/geocode?q=${encodeURIComponent(q)}`);
+      if (!res.ok) return null;
+      return (await res.json()) as GeocodedPlace;
+    } catch {
+      return null;
+    }
   }
 
   async function findPin() {
     if (!locName.trim()) return;
     setPinning(true);
-    setMsg(null);
+    setPinMsg(null);
     try {
-      const place = await geocodeVibeLocation(locName, locCity);
+      const place = await lookupPlace(locName, locCity);
       if (!place) {
-        setMsg(t("settings.pinNotFound"));
+        setPinMsg(t("settings.pinNotFound"));
         return;
       }
       setLocLat(place.lat);
@@ -120,9 +138,9 @@ export default function VibeSettingsButton({
       if (place.city) setLocCity(place.city);
       if (place.area && !locArea.trim()) setLocArea(place.area);
       if (place.country && !locCountry.trim()) setLocCountry(place.country);
-      setMsg(t("settings.pinFound"));
+      setPinMsg(t("settings.pinFound"));
     } catch {
-      setMsg(t("settings.pinNotFound"));
+      setPinMsg(t("settings.pinNotFound"));
     } finally {
       setPinning(false);
     }
@@ -137,13 +155,11 @@ export default function VibeSettingsButton({
     let lat = locLat;
     let lng = locLng;
     if (lat == null && locName.trim()) {
-      try {
-        const place = await geocodeVibeLocation(locName, locCity);
-        if (place) {
-          lat = place.lat;
-          lng = place.lng;
-        }
-      } catch {}
+      const place = await lookupPlace(locName, locCity);
+      if (place) {
+        lat = place.lat;
+        lng = place.lng;
+      }
     }
     const { error } = await supabase.rpc("update_vibe_where", {
       p_vibe: vibeId,
@@ -289,8 +305,12 @@ export default function VibeSettingsButton({
                     </button>
                   </div>
                 </label>
-                {locLat != null && (
-                  <p className="mt-1 text-xs font-medium text-muted">{t("settings.pinSet")}</p>
+                {pinMsg ? (
+                  <p className="mt-1 text-xs font-bold text-flockie-blue">{pinMsg}</p>
+                ) : (
+                  locLat != null && (
+                    <p className="mt-1 text-xs font-medium text-muted">{t("settings.pinSet")}</p>
+                  )
                 )}
                 <div className="mt-2 grid grid-cols-2 gap-2">
                   <label className="block text-sm font-bold">

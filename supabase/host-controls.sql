@@ -21,7 +21,9 @@ declare v public.vibes; r record;
 begin
   select * into v from public.vibes where id = p_vibe;
   if v.id is null then raise exception 'not found'; end if;
-  if v.host_id <> auth.uid() then raise exception 'only the host'; end if;
+  -- `is distinct from`, NOT `<>`: with a NULL auth.uid() (anon) `<>` yields
+  -- NULL and the guard silently passes. See rpc-anon-lockdown.sql.
+  if v.host_id is distinct from auth.uid() then raise exception 'only the host'; end if;
   update public.vibes set status = 'cancelled' where id = p_vibe;
   for r in select user_id from public.vibe_interests
            where vibe_id = p_vibe and status in ('invited','confirmed','standby') loop
@@ -38,7 +40,7 @@ declare v public.vibes; r record;
 begin
   select * into v from public.vibes where id = p_vibe;
   if v.id is null then raise exception 'not found'; end if;
-  if v.host_id <> auth.uid() then raise exception 'only the host'; end if;
+  if v.host_id is distinct from auth.uid() then raise exception 'only the host'; end if;
   update public.vibes
     set starts_at = p_starts, ends_at = p_ends,
         signup_deadline = coalesce(p_deadline, signup_deadline)
