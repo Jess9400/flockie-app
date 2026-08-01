@@ -304,7 +304,20 @@
     "spots": "Vagas",
     "spotsHelp": "Vagas totais desta Vibe. Você não pode definir abaixo do número já confirmado. Ao adicionar vagas, elas são preenchidas na hora.",
     "saveSpots": "Atualizar vagas",
-    "spotsUpdated": "Vagas atualizadas."
+    "spotsUpdated": "Vagas atualizadas.",
+    "address": "Endereço",
+    "addressHelp": "O local exato é compartilhado apenas com quem está confirmado; cidade e bairro são públicos.",
+    "exactLocation": "Local exato",
+    "exactLocationPlaceholder": "Nome do lugar ou endereço completo",
+    "findPin": "Localizar pin",
+    "pinSet": "Pin no mapa definido - quem está confirmado recebe um link do Google Maps.",
+    "pinFound": "Pin encontrado - detalhes do endereço preenchidos.",
+    "pinNotFound": "Não foi possível localizar esse endereço - será salvo sem pin no mapa.",
+    "city": "Cidade",
+    "area": "Bairro",
+    "country": "País",
+    "saveAddress": "Salvar endereço e avisar todo mundo",
+    "addressUpdated": "Endereço atualizado - todo mundo que está dentro foi avisado."
   },
   "share": {
     "shareTitle": "Entre na minha Vibe no Flockie",

@@ -304,7 +304,20 @@
     "spots": "Spots",
     "spotsHelp": "Total seats for this Vibe. You can’t set it below the number already confirmed. Adding spots fills them right away.",
     "saveSpots": "Update spots",
-    "spotsUpdated": "Spots updated."
+    "spotsUpdated": "Spots updated.",
+    "address": "Address",
+    "addressHelp": "The exact spot is shared only with confirmed people; city and area are public.",
+    "exactLocation": "Exact location",
+    "exactLocationPlaceholder": "Venue name or full address",
+    "findPin": "Find pin",
+    "pinSet": "Map pin set - confirmed people get a Google Maps link.",
+    "pinFound": "Pin found - address details filled in.",
+    "pinNotFound": "Couldn't pin that address - it will save without a map pin.",
+    "city": "City",
+    "area": "Area",
+    "country": "Country",
+    "saveAddress": "Save address & notify everyone",
+    "addressUpdated": "Address updated - everyone in was notified."
   },
   "share": {
     "shareTitle": "Join my Vibe on Flockie",

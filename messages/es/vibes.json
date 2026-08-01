@@ -304,7 +304,20 @@
     "spots": "Cupos",
     "spotsHelp": "Cupos totales de esta Vibe. No puedes ponerlo por debajo de los ya confirmados. Al agregar cupos se llenan enseguida.",
     "saveSpots": "Actualizar cupos",
-    "spotsUpdated": "Cupos actualizados."
+    "spotsUpdated": "Cupos actualizados.",
+    "address": "Dirección",
+    "addressHelp": "El lugar exacto solo se comparte con quienes están confirmados; la ciudad y la zona son públicas.",
+    "exactLocation": "Lugar exacto",
+    "exactLocationPlaceholder": "Nombre del lugar o dirección completa",
+    "findPin": "Buscar pin",
+    "pinSet": "Pin en el mapa listo - quienes están confirmados reciben un enlace de Google Maps.",
+    "pinFound": "Pin encontrado - detalles de la dirección completados.",
+    "pinNotFound": "No pudimos ubicar esa dirección - se guardará sin pin en el mapa.",
+    "city": "Ciudad",
+    "area": "Zona",
+    "country": "País",
+    "saveAddress": "Guardar dirección y avisar a todos",
+    "addressUpdated": "Dirección actualizada - se avisó a todos los que están dentro."
   },
   "share": {
     "shareTitle": "Únete a mi Vibe en Flockie",

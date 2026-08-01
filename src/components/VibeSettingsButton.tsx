@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Settings, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { geocodeVibeLocation } from "@/lib/gmaps-geocode";
 
 function toLocalInput(iso?: string | null) {
   if (!iso) return "";
@@ -15,19 +16,32 @@ function toLocalInput(iso?: string | null) {
 const DEADLINE_PRESETS = [48, 24, 6];
 
 // Gear button (top-right of the Vibe info) that opens a Manage sheet: edit
-// date/time (with relative signup-deadline presets) and cancel the Vibe.
+// date/time (with relative signup-deadline presets), spots, address, and
+// cancel the Vibe.
 export default function VibeSettingsButton({
   vibeId,
   startsAt,
   endsAt,
   signupDeadline,
   capacity,
+  city,
+  area,
+  country,
+  locationName,
+  locationLat,
+  locationLng,
 }: {
   vibeId: string;
   startsAt: string;
   endsAt: string | null;
   signupDeadline: string;
   capacity: number;
+  city: string;
+  area: string | null;
+  country: string | null;
+  locationName: string | null;
+  locationLat: number | null;
+  locationLng: number | null;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -39,6 +53,13 @@ export default function VibeSettingsButton({
   const [ends, setEnds] = useState(toLocalInput(endsAt));
   const [deadline, setDeadline] = useState(toLocalInput(signupDeadline));
   const [spots, setSpots] = useState(capacity);
+  const [locName, setLocName] = useState(locationName ?? "");
+  const [locCity, setLocCity] = useState(city);
+  const [locArea, setLocArea] = useState(area ?? "");
+  const [locCountry, setLocCountry] = useState(country ?? "");
+  const [locLat, setLocLat] = useState<number | null>(locationLat);
+  const [locLng, setLocLng] = useState<number | null>(locationLng);
+  const [pinning, setPinning] = useState(false);
 
   function setDeadlineBefore(hours: number) {
     if (!starts) return;
@@ -72,6 +93,72 @@ export default function VibeSettingsButton({
     setBusy(false);
     if (error) return setMsg(error.message);
     setMsg(t("settings.spotsUpdated"));
+    router.refresh();
+  }
+
+  // Re-pin when the exact location text changed; the old pin is for the old
+  // address. Same engine as the create form (Places, browser-side).
+  function onLocNameChange(value: string) {
+    setLocName(value);
+    setLocLat(null);
+    setLocLng(null);
+  }
+
+  async function findPin() {
+    if (!locName.trim()) return;
+    setPinning(true);
+    setMsg(null);
+    try {
+      const place = await geocodeVibeLocation(locName, locCity);
+      if (!place) {
+        setMsg(t("settings.pinNotFound"));
+        return;
+      }
+      setLocLat(place.lat);
+      setLocLng(place.lng);
+      // City/area/country come from the VENUE, like on creation.
+      if (place.city) setLocCity(place.city);
+      if (place.area && !locArea.trim()) setLocArea(place.area);
+      if (place.country && !locCountry.trim()) setLocCountry(place.country);
+      setMsg(t("settings.pinFound"));
+    } catch {
+      setMsg(t("settings.pinNotFound"));
+    } finally {
+      setPinning(false);
+    }
+  }
+
+  async function saveAddress() {
+    if (!locCity.trim()) return;
+    setBusy(true);
+    setMsg(null);
+    // Text edited but never pinned: try a silent geocode so the map link stays
+    // right; on failure save without coords (map falls back to the city).
+    let lat = locLat;
+    let lng = locLng;
+    if (lat == null && locName.trim()) {
+      try {
+        const place = await geocodeVibeLocation(locName, locCity);
+        if (place) {
+          lat = place.lat;
+          lng = place.lng;
+        }
+      } catch {}
+    }
+    const { error } = await supabase.rpc("update_vibe_where", {
+      p_vibe: vibeId,
+      p_location_name: locName.trim() || null,
+      p_lat: lat,
+      p_lng: lng,
+      p_city: locCity.trim(),
+      p_area: locArea.trim() || null,
+      p_country: locCountry.trim() || null,
+    });
+    setBusy(false);
+    if (error) return setMsg(error.message);
+    setLocLat(lat);
+    setLocLng(lng);
+    setMsg(t("settings.addressUpdated"));
     router.refresh();
   }
 
@@ -177,6 +264,54 @@ export default function VibeSettingsButton({
                   className="mt-2 w-full rounded-full border border-ink/15 bg-white py-2.5 font-bold text-ink shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
                 >
                   {t("settings.saveSpots")}
+                </button>
+              </div>
+
+              <div className="border-t-2 border-ink/10 pt-4">
+                <p className="text-sm font-bold">{t("settings.address")}</p>
+                <p className="mt-1 text-xs font-medium text-muted">{t("settings.addressHelp")}</p>
+                <label className="mt-2 block text-sm font-bold">
+                  {t("settings.exactLocation")}
+                  <div className="mt-1 flex gap-2">
+                    <input
+                      value={locName}
+                      onChange={(e) => onLocNameChange(e.target.value)}
+                      placeholder={t("settings.exactLocationPlaceholder")}
+                      className="w-full rounded-xl border border-ink/25 px-3 py-2 font-medium outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={findPin}
+                      disabled={pinning || busy || !locName.trim()}
+                      className="shrink-0 rounded-xl border border-ink/15 bg-white px-3 py-2 text-xs font-bold text-ink disabled:opacity-50"
+                    >
+                      {pinning ? "…" : t("settings.findPin")}
+                    </button>
+                  </div>
+                </label>
+                {locLat != null && (
+                  <p className="mt-1 text-xs font-medium text-muted">{t("settings.pinSet")}</p>
+                )}
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  <label className="block text-sm font-bold">
+                    {t("settings.city")}
+                    <input value={locCity} onChange={(e) => setLocCity(e.target.value)} className={fieldCls} />
+                  </label>
+                  <label className="block text-sm font-bold">
+                    {t("settings.area")}
+                    <input value={locArea} onChange={(e) => setLocArea(e.target.value)} className={fieldCls} />
+                  </label>
+                </div>
+                <label className="mt-2 block text-sm font-bold">
+                  {t("settings.country")}
+                  <input value={locCountry} onChange={(e) => setLocCountry(e.target.value)} className={fieldCls} />
+                </label>
+                <button
+                  onClick={saveAddress}
+                  disabled={busy || !locCity.trim()}
+                  className="mt-2 w-full rounded-full border border-ink/15 bg-white py-2.5 font-bold text-ink shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
+                >
+                  {t("settings.saveAddress")}
                 </button>
               </div>
 

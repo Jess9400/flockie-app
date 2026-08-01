@@ -353,6 +353,12 @@ export default async function VibeDetailPage({
             endsAt={vibe.ends_at}
             signupDeadline={vibe.signup_deadline}
             capacity={vibe.capacity}
+            city={vibe.city}
+            area={vibe.area ?? null}
+            country={vibe.country ?? null}
+            locationName={privateLogistics?.location_name ?? null}
+            locationLat={privateLogistics?.location_lat ?? null}
+            locationLng={privateLogistics?.location_lng ?? null}
           />
         ) : (
           myInterest?.status === "confirmed" && <LeaveVibeButton vibeId={vibe.id} />
