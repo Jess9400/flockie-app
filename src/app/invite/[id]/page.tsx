@@ -58,14 +58,16 @@ export default async function InvitePage({
   if (!v) notFound();
   const viaHost = searchParams.via === "host";
   const hostCode = searchParams.code?.trim() || "";
+  const eventHasStarted = new Date(v.starts_at) <= new Date();
+  const publicSignupOpen = v.status !== "cancelled" && !eventHasStarted;
   // Once matching has run (ranking/finalized) and there's still room, tapping
   // through confirms instantly on the vibe page - so the CTA reads "Join now"
-  // to match. (Same-city guard TEMP-disabled 2026-07-31 — anyone can one-tap
+  // to match. (Same-city guard TEMP-disabled 2026-07-31: anyone can one-tap
   // join post-matching; see vibe-express-interest-autoconfirm.sql.)
   const directConfirm =
     ["ranking", "finalized"].includes(v.status) &&
     v.confirmed_count < v.capacity &&
-    new Date(v.starts_at) > new Date();
+    !eventHasStarted;
   const approximateLocation =
     formatApproximateVibeLocation(v) || t("invite.locationFallback");
 
@@ -140,8 +142,7 @@ export default async function InvitePage({
             >
               {t("invite.requestToJoin")}
             </Link>
-          ) : ["open", "reviewing", "ranking", "finalized"].includes(v.status) &&
-            new Date(v.starts_at) > new Date() ? (
+          ) : publicSignupOpen ? (
             <Link
               href={`/vibes/${v.id}?interested=1`}
               className="mt-6 block rounded-full border border-navy/15 bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
