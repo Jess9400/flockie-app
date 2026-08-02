@@ -6,6 +6,11 @@ import { useTranslations, useLocale } from "next-intl";
 import { intlLocale } from "@/lib/date-locale";
 import { createClient } from "@/lib/supabase/client";
 import { geocodeVibeLocation } from "@/lib/gmaps-geocode";
+import {
+  eventTimeZoneFromCoordinates,
+  formatDateTimeInputInTimeZone,
+  zonedDateTimeToIso,
+} from "@/lib/vibe-timezone";
 import ShareVibeButton from "@/components/ShareVibeButton";
 import GenerateCoverButton from "@/components/GenerateCoverButton";
 import {
@@ -128,6 +133,8 @@ export default function CreateVibeForm({
   const [locationName, setLocationName] = useState(clone?.locationName ?? "");
   const [locationLat, setLocationLat] = useState<number | null>(null);
   const [locationLng, setLocationLng] = useState<number | null>(null);
+  const [eventTimeZone, setEventTimeZone] = useState<string | null>(null);
+  const [presetDeadlineAt, setPresetDeadlineAt] = useState<string | null>(null);
   const [resolvedLocation, setResolvedLocation] = useState<ResolvedLocation | null>(null);
   const [resolvingLocation, setResolvingLocation] = useState(false);
   const [locationMsg, setLocationMsg] = useState<string | null>(null);
@@ -207,8 +214,20 @@ export default function CreateVibeForm({
     setLocationName(value);
     setLocationLat(null);
     setLocationLng(null);
+    setEventTimeZone(null);
     setResolvedLocation(null);
     setLocationMsg(null);
+  }
+
+  function setEventLocation(lat: number, lng: number) {
+    const timeZone = eventTimeZoneFromCoordinates(lat, lng);
+    setLocationLat(lat);
+    setLocationLng(lng);
+    setEventTimeZone(timeZone);
+    if (timeZone && presetDeadlineAt) {
+      setDeadline(formatDateTimeInputInTimeZone(new Date(presetDeadlineAt), timeZone));
+    }
+    return timeZone;
   }
 
   async function findExactLocation() {
@@ -226,8 +245,7 @@ export default function CreateVibeForm({
         return;
       }
       setResolvedLocation(place);
-      setLocationLat(place.lat);
-      setLocationLng(place.lng);
+      setEventLocation(place.lat, place.lng);
       // The city/area come from the VENUE, not the host's profile - so a vibe in
       // another city gets the right public city automatically.
       if (place.city) setCity(place.city);
@@ -244,8 +262,7 @@ export default function CreateVibeForm({
   function useResolvedLocation() {
     if (!resolvedLocation) return;
     setLocationName(resolvedLocation.label);
-    setLocationLat(resolvedLocation.lat);
-    setLocationLng(resolvedLocation.lng);
+    setEventLocation(resolvedLocation.lat, resolvedLocation.lng);
     if (resolvedLocation.city) setCity(resolvedLocation.city);
     if (resolvedLocation.area) setArea(resolvedLocation.area);
     if (resolvedLocation.country) setCountry(resolvedLocation.country);
@@ -291,8 +308,10 @@ export default function CreateVibeForm({
 
   function setWindow(hours: number) {
     setInterestWindow(hours);
-    const d = new Date(Date.now() + hours * 3600 * 1000);
-    setDeadline(new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16));
+    const deadlineAt = new Date(Date.now() + hours * 3600 * 1000);
+    const fallbackTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone ?? "UTC";
+    setPresetDeadlineAt(deadlineAt.toISOString());
+    setDeadline(formatDateTimeInputInTimeZone(deadlineAt, eventTimeZone ?? fallbackTimeZone));
   }
 
   async function submit(e: React.FormEvent) {
@@ -311,10 +330,7 @@ export default function CreateVibeForm({
     if (tags.length === 0) {
       return setErr(t("create.errTagRequired"));
     }
-    if (new Date(deadline) >= new Date(startsAt)) {
-      return setErr(t("create.errDeadlineBeforeStart"));
-    }
-    if (new Date(endsAt) <= new Date(startsAt)) {
+    if (endsAt <= startsAt) {
       return setErr(t("create.errEndAfterStart"));
     }
     if (!language) {
@@ -326,11 +342,7 @@ export default function CreateVibeForm({
 
     setSaving(true);
 
-    // Always capture coordinates so every vibe gets an exact map pin - even if
-    // the host never tapped "find exact location". Geocode from the typed
-    // location + city; on any failure just save without coords (the map link
-    // then falls back to the city). We keep the host's typed location_name as-is
-    // (the pin comes from lat/lng now, not the text).
+    // Always capture coordinates so the saved time reflects the event location.
     let coordLat = locationLat;
     let coordLng = locationLng;
     if ((coordLat == null || coordLng == null) && locationName.trim()) {
@@ -341,8 +353,28 @@ export default function CreateVibeForm({
           coordLng = place.lng;
         }
       } catch {
-        // ignore - save the vibe without coords
+        // The validation below explains why the location needs a clear map pin.
       }
+    }
+
+    const timeZone =
+      eventTimeZone ??
+      (coordLat != null && coordLng != null ? eventTimeZoneFromCoordinates(coordLat, coordLng) : null);
+    if (!timeZone) {
+      setSaving(false);
+      return setErr(t("create.errLocationTimeZone"));
+    }
+
+    const startsAtIso = zonedDateTimeToIso(startsAt, timeZone);
+    const endsAtIso = zonedDateTimeToIso(endsAt, timeZone);
+    const deadlineIso = presetDeadlineAt ?? zonedDateTimeToIso(deadline, timeZone);
+    if (!startsAtIso || !endsAtIso || !deadlineIso) {
+      setSaving(false);
+      return setErr(t("create.errInvalidLocalTime"));
+    }
+    if (new Date(deadlineIso) >= new Date(startsAtIso)) {
+      setSaving(false);
+      return setErr(t("create.errDeadlineBeforeStart"));
     }
 
     // Make sure a profile row exists (FK target) before creating the vibe.
@@ -366,12 +398,10 @@ export default function CreateVibeForm({
         location_lat: coordLat,
         location_lng: coordLng,
         activity_url: activityUrl.trim() || null,
-        starts_at: new Date(startsAt).toISOString(),
-        ends_at: endsAt ? new Date(endsAt).toISOString() : null,
-        signup_deadline: new Date(deadline).toISOString(),
-        // The tz the host entered the time in - pairs with starts_at (a UTC
-        // instant) so we can render the correct local wall-clock time everywhere.
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        starts_at: startsAtIso,
+        ends_at: endsAtIso,
+        signup_deadline: deadlineIso,
+        timezone: timeZone,
         capacity,
         gender_pref: genderPref,
         algo_share: algoShare,
@@ -600,6 +630,7 @@ export default function CreateVibeForm({
               aria-label={t("create.startTimeAria")}
             />
           </div>
+          <p className="mt-1 text-xs font-medium text-muted">{t("create.eventTimeZoneHelp")}</p>
         </Field>
         <Field label={t("create.fieldDuration")}>
           <div className="flex flex-wrap gap-2">
@@ -677,6 +708,7 @@ export default function CreateVibeForm({
             value={deadline}
             onChange={(e) => {
               setInterestWindow(null);
+              setPresetDeadlineAt(null);
               setDeadline(e.target.value);
             }}
           />
