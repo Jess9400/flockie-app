@@ -140,7 +140,10 @@ export default async function VibeDetailPage({
     photos: string[] | null;
   }[];
   const confirmedCount = allAttendees.length;
-  const attendees = allAttendees.slice(0, 8);
+  // Show EVERYONE confirmed (was sliced to 8, which hid people with no way to
+  // reach them). The "+N more" pill below now only covers the rare case where
+  // someone confirmed has no readable profile row.
+  const attendees = allAttendees;
   const displayMatch = vibeMatches[vibe.id];
 
   const eventStarted = new Date(vibe.starts_at) <= new Date();
