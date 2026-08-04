@@ -65,6 +65,20 @@ export default async function NewVibePage({
     }
   }
 
+  // The host's own clubs feed the optional "part of your Club" picker, so a
+  // gathering scheduled from the plain Create button can still land in the
+  // club (no picker when already arriving via a club page's ?club= link).
+  let myClubs: { id: string; title: string }[] = [];
+  if (!club) {
+    const { data: owned } = await supabase
+      .from("clubs")
+      .select("id, title")
+      .eq("owner_id", user!.id)
+      .in("status", ["forming", "active"])
+      .order("created_at", { ascending: false });
+    myClubs = owned ?? [];
+  }
+
   // Activity vibe gate (migration-safe: degrade open if column missing).
   const { data: prefs, error: prefsErr } = await supabase
     .from("profiles")
@@ -100,6 +114,7 @@ export default async function NewVibePage({
           defaultTitle={searchParams.title ?? ""}
           clone={clone}
           clubId={club?.id}
+          myClubs={myClubs}
         />
       </div>
     </main>

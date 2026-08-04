@@ -175,7 +175,10 @@
     "errPhotoUpload": "Falló la subida de la foto.",
     "exactLocationPinned": "📍 Ubicación exacta fijada",
     "scheduleGathering": "Programar encuentro",
-    "backToClub": "Volver al club"
+    "backToClub": "Volver al club",
+    "fieldClub": "¿Parte de tu Club? (opcional)",
+    "clubNone": "No es parte de un Club",
+    "clubHelp": "Los encuentros vinculados a un Club cuentan asistencia para él, y los asistentes reciben invitación para unirse al Club."
   },
   "interest": {
     "ineligible": "Este vibe tiene preferencias que no incluyen tu perfil.",
@@ -323,7 +326,12 @@
     "addressUpdated": "Dirección actualizada - se avisó a todos los que están dentro.",
     "description": "Descripción",
     "saveDescription": "Actualizar descripción",
-    "descriptionUpdated": "Descripción actualizada."
+    "descriptionUpdated": "Descripción actualizada.",
+    "club": "Club",
+    "clubHelp": "Vincula esta Vibe a tu Club: la asistencia cuenta para el Club y los asistentes que aún no son miembros reciben invitación para unirse.",
+    "clubPick": "Elige un Club…",
+    "attachClub": "Vincular al Club",
+    "clubAttached": "Vinculada - esta Vibe ahora cuenta para tu Club."
   },
   "share": {
     "shareTitle": "Únete a mi Vibe en Flockie",

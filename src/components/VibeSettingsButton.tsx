@@ -31,6 +31,8 @@ export default function VibeSettingsButton({
   locationLng,
   description,
   timezone,
+  vibeClubId,
+  clubOptions,
 }: {
   vibeId: string;
   startsAt: string;
@@ -45,6 +47,10 @@ export default function VibeSettingsButton({
   locationLng: number | null;
   description: string;
   timezone: string | null;
+  // Attach-to-club: the vibe's current club (null = standalone) and the
+  // host's own clubs it could be attached to.
+  vibeClubId: string | null;
+  clubOptions: { id: string; title: string }[];
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -71,6 +77,8 @@ export default function VibeSettingsButton({
   const [pinning, setPinning] = useState(false);
   const [pinMsg, setPinMsg] = useState<string | null>(null);
   const [desc, setDesc] = useState(description);
+  const [attachClub, setAttachClub] = useState("");
+  const [attachedClub, setAttachedClub] = useState<string | null>(vibeClubId);
 
   function setDeadlineBefore(hours: number) {
     const startsIso = zonedDateTimeToIso(starts, tz);
@@ -194,6 +202,21 @@ export default function VibeSettingsButton({
     setBusy(false);
     if (error) return setMsg(error.message);
     setMsg(t("settings.descriptionUpdated"));
+    router.refresh();
+  }
+
+  async function saveAttachClub() {
+    if (!attachClub) return;
+    setBusy(true);
+    setMsg(null);
+    const { error } = await supabase.rpc("attach_vibe_to_club", {
+      p_vibe: vibeId,
+      p_club: attachClub,
+    });
+    setBusy(false);
+    if (error) return setMsg(error.message);
+    setAttachedClub(attachClub);
+    setMsg(t("settings.clubAttached"));
     router.refresh();
   }
 
@@ -376,6 +399,32 @@ export default function VibeSettingsButton({
                   {t("settings.saveAddress")}
                 </button>
               </div>
+
+              {!attachedClub && clubOptions.length > 0 && (
+                <div className="border-t-2 border-ink/10 pt-4">
+                  <p className="text-sm font-bold">{t("settings.club")}</p>
+                  <p className="mt-1 text-xs font-medium text-muted">{t("settings.clubHelp")}</p>
+                  <select
+                    value={attachClub}
+                    onChange={(e) => setAttachClub(e.target.value)}
+                    className={fieldCls}
+                  >
+                    <option value="">{t("settings.clubPick")}</option>
+                    {clubOptions.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.title}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={saveAttachClub}
+                    disabled={busy || !attachClub}
+                    className="mt-2 w-full rounded-full border border-ink/15 bg-white py-2.5 font-bold text-ink shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
+                  >
+                    {t("settings.attachClub")}
+                  </button>
+                </div>
+              )}
 
               <button
                 onClick={del}

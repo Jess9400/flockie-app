@@ -88,6 +88,7 @@ export default function CreateVibeForm({
   defaultTitle = "",
   clone,
   clubId,
+  myClubs = [],
 }: {
   userId: string;
   defaultCity: string;
@@ -95,6 +96,9 @@ export default function CreateVibeForm({
   defaultTitle?: string;
   clone?: VibeClone;
   clubId?: string;
+  // The host's own clubs, for the optional "part of your Club" picker shown
+  // when the form was NOT opened from a club page (clubId absent).
+  myClubs?: { id: string; title: string }[];
 }) {
   const supabase = createClient();
   const t = useTranslations("vibes");
@@ -127,6 +131,9 @@ export default function CreateVibeForm({
   const [durationOption, setDurationOption] = useState<number | "custom">(120);
   const [customDurationMinutes, setCustomDurationMinutes] = useState(90);
   const [deadline, setDeadline] = useState("");
+  const [selectedClub, setSelectedClub] = useState("");
+  // Club-page entry (clubId prop) wins; otherwise the picker's choice.
+  const effectiveClub = clubId ?? (selectedClub || null);
   const [country, setCountry] = useState(clone?.country ?? "");
   const [city, setCity] = useState(clone?.city ?? defaultCity ?? "");
   const [area, setArea] = useState(clone?.area ?? "");
@@ -415,7 +422,7 @@ export default function CreateVibeForm({
         dealbreaker_rules: rules,
         diversity_floor_enabled: diversity,
         status: "open",
-        club_id: clubId ?? null,
+        club_id: effectiveClub,
       })
       .select("id")
       .single();
@@ -423,11 +430,11 @@ export default function CreateVibeForm({
 
     if (error) return setErr(error.message);
     // Announce a newly scheduled gathering into the club chat.
-    if (clubId) {
+    if (effectiveClub) {
       supabase
         .rpc("post_workspace_event", {
           p_kind: "club",
-          p_id: clubId,
+          p_id: effectiveClub,
           p_text: tCal("eventScheduled", { title: title.trim() || tCal("gatheringFallback") }),
         })
         .then(() => {});
@@ -480,6 +487,24 @@ export default function CreateVibeForm({
             placeholder={t("create.titlePlaceholder")}
           />
         </Field>
+
+        {!clubId && myClubs.length > 0 && (
+          <Field label={t("create.fieldClub")}>
+            <select
+              className={inputCls}
+              value={selectedClub}
+              onChange={(e) => setSelectedClub(e.target.value)}
+            >
+              <option value="">{t("create.clubNone")}</option>
+              {myClubs.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.title}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs font-medium text-muted">{t("create.clubHelp")}</p>
+          </Field>
+        )}
 
         <Field label={t("create.fieldPhotos")}>
           <div className="flex flex-wrap justify-center gap-2">

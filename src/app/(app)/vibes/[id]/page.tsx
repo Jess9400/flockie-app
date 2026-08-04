@@ -310,6 +310,18 @@ export default async function VibeDetailPage({
     recordedVibeAttendanceIds = (attendanceRows ?? []).map((row) => row.user_id);
   }
   const canReview = ended && myInterest?.status === "confirmed";
+  // Attach-to-club options for the Manage sheet: the host's own open clubs,
+  // only relevant while the vibe is standalone.
+  let hostClubs: { id: string; title: string }[] = [];
+  if (isHost && !clubId) {
+    const { data: owned } = await supabase
+      .from("clubs")
+      .select("id, title")
+      .eq("owner_id", user!.id)
+      .in("status", ["forming", "active"])
+      .order("created_at", { ascending: false });
+    hostClubs = owned ?? [];
+  }
   // TEMP (2026-07-31): same-city guard removed so people from surrounding
   // cities can one-tap join; restore `!differentCity &&` to re-enable.
   const directConfirm =
@@ -364,6 +376,8 @@ export default async function VibeDetailPage({
             locationLng={privateLogistics?.location_lng ?? null}
             description={vibe.description ?? ""}
             timezone={(vibe as { timezone?: string | null }).timezone ?? null}
+            vibeClubId={clubId}
+            clubOptions={hostClubs}
           />
         ) : (
           myInterest?.status === "confirmed" && <LeaveVibeButton vibeId={vibe.id} />

@@ -175,7 +175,10 @@
     "errPhotoUpload": "Photo upload failed.",
     "exactLocationPinned": "📍 Exact location pinned",
     "scheduleGathering": "Schedule gathering",
-    "backToClub": "Back to club"
+    "backToClub": "Back to club",
+    "fieldClub": "Part of your Club? (optional)",
+    "clubNone": "Not part of a Club",
+    "clubHelp": "Gatherings linked to a Club count attendance for it, and attendees get invited to join the Club."
   },
   "interest": {
     "ineligible": "This vibe has preferences that don’t include your profile.",
@@ -323,7 +326,12 @@
     "addressUpdated": "Address updated - everyone in was notified.",
     "description": "Description",
     "saveDescription": "Update description",
-    "descriptionUpdated": "Description updated."
+    "descriptionUpdated": "Description updated.",
+    "club": "Club",
+    "clubHelp": "Attach this Vibe to your Club: attendance counts for the Club and attendees who aren't members yet get invited to join it.",
+    "clubPick": "Pick a Club…",
+    "attachClub": "Attach to Club",
+    "clubAttached": "Attached - this Vibe now counts for your Club."
   },
   "share": {
     "shareTitle": "Join my Vibe on Flockie",
