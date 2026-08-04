@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { intlLocale } from "@/lib/date-locale";
 import { createClient } from "@/lib/supabase/client";
-import { geocodeVibeLocation } from "@/lib/gmaps-geocode";
+import { lookupVibePlace } from "@/lib/vibe-place";
 import {
   eventTimeZoneFromCoordinates,
   formatDateTimeInputInTimeZone,
@@ -235,10 +235,10 @@ export default function CreateVibeForm({
     setResolvingLocation(true);
     setLocationMsg(null);
     try {
-      // Geocode in the browser with the Maps key (works with the referrer
-      // restriction, unlike the server route) - same engine as Google Maps.
-      // Robust to a mismatched city (address alone is tried as a fallback).
-      const place = await geocodeVibeLocation(locationName, city);
+      // Browser Places first (same engine as Google Maps, robust to a
+      // mismatched city), with a server /api/geocode fallback so a missing
+      // browser Maps key can't block pinning - see lookupVibePlace.
+      const place = await lookupVibePlace(locationName, city);
       if (!place) {
         setResolvedLocation(null);
         setLocationMsg(t("create.locationMsgNoPin"));
@@ -347,7 +347,7 @@ export default function CreateVibeForm({
     let coordLng = locationLng;
     if ((coordLat == null || coordLng == null) && locationName.trim()) {
       try {
-        const place = await geocodeVibeLocation(locationName, city);
+        const place = await lookupVibePlace(locationName, city);
         if (place) {
           coordLat = place.lat;
           coordLng = place.lng;

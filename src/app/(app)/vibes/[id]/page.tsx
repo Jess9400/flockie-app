@@ -360,6 +360,7 @@ export default async function VibeDetailPage({
             locationLat={privateLogistics?.location_lat ?? null}
             locationLng={privateLogistics?.location_lng ?? null}
             description={vibe.description ?? ""}
+            timezone={(vibe as { timezone?: string | null }).timezone ?? null}
           />
         ) : (
           myInterest?.status === "confirmed" && <LeaveVibeButton vibeId={vibe.id} />

@@ -5,13 +5,12 @@ import { useRouter } from "next/navigation";
 import { Settings, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { geocodeVibeLocation, type GeocodedPlace } from "@/lib/gmaps-geocode";
-
-function toLocalInput(iso?: string | null) {
-  if (!iso) return "";
-  const d = new Date(iso);
-  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-}
+import { lookupVibePlace } from "@/lib/vibe-place";
+import {
+  eventTimeZoneFromCoordinates,
+  formatDateTimeInputInTimeZone,
+  zonedDateTimeToIso,
+} from "@/lib/vibe-timezone";
 
 const DEADLINE_PRESETS = [48, 24, 6];
 
@@ -31,6 +30,7 @@ export default function VibeSettingsButton({
   locationLat,
   locationLng,
   description,
+  timezone,
 }: {
   vibeId: string;
   startsAt: string;
@@ -44,16 +44,23 @@ export default function VibeSettingsButton({
   locationLat: number | null;
   locationLng: number | null;
   description: string;
+  timezone: string | null;
 }) {
   const router = useRouter();
   const supabase = createClient();
   const t = useTranslations("vibes");
+  // Times are edited as EVENT-LOCAL wall clock (the vibe's stored timezone),
+  // never the host's device zone - a host on VPN/travel would otherwise shift
+  // the real instant while the label looks right (mirrors CreateVibeForm).
+  const tz = timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone ?? "UTC";
+  const toInput = (iso?: string | null) =>
+    iso ? formatDateTimeInputInTimeZone(new Date(iso), tz) : "";
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
-  const [starts, setStarts] = useState(toLocalInput(startsAt));
-  const [ends, setEnds] = useState(toLocalInput(endsAt));
-  const [deadline, setDeadline] = useState(toLocalInput(signupDeadline));
+  const [starts, setStarts] = useState(toInput(startsAt));
+  const [ends, setEnds] = useState(toInput(endsAt));
+  const [deadline, setDeadline] = useState(toInput(signupDeadline));
   const [spots, setSpots] = useState(capacity);
   const [locName, setLocName] = useState(locationName ?? "");
   const [locCity, setLocCity] = useState(city);
@@ -66,20 +73,27 @@ export default function VibeSettingsButton({
   const [desc, setDesc] = useState(description);
 
   function setDeadlineBefore(hours: number) {
-    if (!starts) return;
-    const d = new Date(new Date(starts).getTime() - hours * 3600 * 1000);
-    setDeadline(toLocalInput(d.toISOString()));
+    const startsIso = zonedDateTimeToIso(starts, tz);
+    if (!startsIso) return;
+    const d = new Date(new Date(startsIso).getTime() - hours * 3600 * 1000);
+    setDeadline(formatDateTimeInputInTimeZone(d, tz));
   }
 
   async function saveDates() {
     if (!starts) return;
+    const startsIso = zonedDateTimeToIso(starts, tz);
+    const endsIso = ends ? zonedDateTimeToIso(ends, tz) : null;
+    const deadlineIso = deadline ? zonedDateTimeToIso(deadline, tz) : null;
+    if (!startsIso || (ends && !endsIso) || (deadline && !deadlineIso)) {
+      return setMsg(t("create.errInvalidLocalTime"));
+    }
     setBusy(true);
     setMsg(null);
     const { error } = await supabase.rpc("update_vibe_when", {
       p_vibe: vibeId,
-      p_starts: new Date(starts).toISOString(),
-      p_ends: ends ? new Date(ends).toISOString() : null,
-      p_deadline: deadline ? new Date(deadline).toISOString() : null,
+      p_starts: startsIso,
+      p_ends: endsIso,
+      p_deadline: deadlineIso,
     });
     setBusy(false);
     if (error) return setMsg(error.message);
@@ -109,28 +123,12 @@ export default function VibeSettingsButton({
     setPinMsg(null);
   }
 
-  // Browser Places first (best at messy venue names); when it yields nothing
-  // (e.g. Maps key absent or blocked), the server /api/geocode route takes
-  // over - it carries its own Google/OSM fallback chain.
-  async function lookupPlace(name: string, cityHint: string): Promise<GeocodedPlace | null> {
-    const viaSdk = await geocodeVibeLocation(name, cityHint).catch(() => null);
-    if (viaSdk) return viaSdk;
-    try {
-      const q = cityHint.trim() ? `${name}, ${cityHint}` : name;
-      const res = await fetch(`/api/geocode?q=${encodeURIComponent(q)}`);
-      if (!res.ok) return null;
-      return (await res.json()) as GeocodedPlace;
-    } catch {
-      return null;
-    }
-  }
-
   async function findPin() {
     if (!locName.trim()) return;
     setPinning(true);
     setPinMsg(null);
     try {
-      const place = await lookupPlace(locName, locCity);
+      const place = await lookupVibePlace(locName, locCity);
       if (!place) {
         setPinMsg(t("settings.pinNotFound"));
         return;
@@ -158,12 +156,15 @@ export default function VibeSettingsButton({
     let lat = locLat;
     let lng = locLng;
     if (lat == null && locName.trim()) {
-      const place = await lookupPlace(locName, locCity);
+      const place = await lookupVibePlace(locName, locCity);
       if (place) {
         lat = place.lat;
         lng = place.lng;
       }
     }
+    // A moved pin can mean a new timezone (the Almaty-vs-Rio bug): send the
+    // zone of the new coordinates; null keeps the stored one.
+    const newTz = lat != null && lng != null ? eventTimeZoneFromCoordinates(lat, lng) : null;
     const { error } = await supabase.rpc("update_vibe_where", {
       p_vibe: vibeId,
       p_location_name: locName.trim() || null,
@@ -172,6 +173,7 @@ export default function VibeSettingsButton({
       p_city: locCity.trim(),
       p_area: locArea.trim() || null,
       p_country: locCountry.trim() || null,
+      p_timezone: newTz,
     });
     setBusy(false);
     if (error) return setMsg(error.message);
@@ -239,6 +241,9 @@ export default function VibeSettingsButton({
               <label className="block text-sm font-bold">
                 {t("settings.starts")}
                 <input type="datetime-local" value={starts} onChange={(e) => setStarts(e.target.value)} className={fieldCls} />
+                <span className="mt-1 block text-xs font-medium text-muted">
+                  {t("create.eventTimeZoneHelp")}
+                </span>
               </label>
               <label className="block text-sm font-bold">
                 {t("settings.endsOptional")}

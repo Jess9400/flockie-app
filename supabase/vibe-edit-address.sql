@@ -2,8 +2,16 @@
 -- update_vibe_where updates the exact location (private: shared only with
 -- confirmed people via vibe_private_logistics) plus the public city/area/
 -- country, and notifies everyone already in (invited/confirmed) - mirroring
--- update_vibe_when's "New time" flow. Run in the Supabase SQL editor.
--- Safe to re-run.
+-- update_vibe_when's "New time" flow.
+--
+-- v2 (2026-08-04): + p_timezone. A moved pin can mean a new IANA zone (PR #273
+-- derives it from the pinned coordinates at creation; the edit path sends the
+-- same). null keeps the stored zone. NOTE starts_at is NOT shifted: the stored
+-- instant stays, only the wall-clock label changes - the host should re-check
+-- the time after a cross-zone move. Run in the Supabase SQL editor. Safe to
+-- re-run.
+
+drop function if exists public.update_vibe_where(uuid, text, float8, float8, text, text, text);
 
 create or replace function public.update_vibe_where(
   p_vibe uuid,
@@ -12,7 +20,8 @@ create or replace function public.update_vibe_where(
   p_lng float8,
   p_city text,
   p_area text,
-  p_country text
+  p_country text,
+  p_timezone text default null
 )
 returns void language plpgsql security definer set search_path = public as $$
 declare v public.vibes; r record;
@@ -29,7 +38,8 @@ begin
         location_lng  = p_lng,
         city          = trim(p_city),
         area          = nullif(trim(coalesce(p_area, '')), ''),
-        country       = nullif(trim(coalesce(p_country, '')), '')
+        country       = nullif(trim(coalesce(p_country, '')), ''),
+        timezone      = coalesce(nullif(trim(coalesce(p_timezone, '')), ''), timezone)
     where id = p_vibe;
 
   for r in select user_id from public.vibe_interests
@@ -39,5 +49,5 @@ begin
             jsonb_build_object('vibe_id', p_vibe));
   end loop;
 end $$;
-grant execute on function public.update_vibe_where(uuid, text, float8, float8, text, text, text) to authenticated;
-revoke execute on function public.update_vibe_where(uuid, text, float8, float8, text, text, text) from public, anon;
+grant execute on function public.update_vibe_where(uuid, text, float8, float8, text, text, text, text) to authenticated;
+revoke execute on function public.update_vibe_where(uuid, text, float8, float8, text, text, text, text) from public, anon;
