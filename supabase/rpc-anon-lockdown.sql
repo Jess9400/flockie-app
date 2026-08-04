@@ -135,8 +135,10 @@ begin
     where n.nspname = 'public'
       -- extension-owned functions (PostGIS etc.) manage their own ACLs
       and not exists (select 1 from pg_depend d where d.objid = p.oid and d.deptype = 'e')
-      -- deliberately anon-facing (invite links, referral/vouch/compat pages)
-      and p.proname not in ('public_vibe','referral_target','compat_target','get_vouch_subject')
+      -- deliberately anon-facing (invite links, referral/vouch/compat pages).
+      -- submit_vouch added 2026-08-04: the original run missed it and broke
+      -- the logged-out vouch page (restored in rpc-lockdown-followup.sql).
+      and p.proname not in ('public_vibe','referral_target','compat_target','get_vouch_subject','submit_vouch')
       and has_function_privilege('anon', p.oid, 'execute')
   loop
     execute format('revoke execute on routine %s from public, anon', f.sig);

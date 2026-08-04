@@ -11,14 +11,14 @@ begin
     'is_owner', v_owner,
     'vibes', (
       select coalesce(jsonb_agg(x order by x.starts_at desc), '[]'::jsonb) from (
-        select v.id, v.title, (v.photos)[1] as photo, v.starts_at,
+        select v.id, v.title, (v.photos)[1] as photo, v.starts_at, v.timezone,
                'host'::text as role, (coalesce(v.ends_at, v.starts_at) <= now()) as past,
                false as reviewed
         from public.vibes v
         where v.host_id = p_user and v.status <> 'cancelled'
           and (v_owner or coalesce(v.ends_at, v.starts_at) <= now())
         union all
-        select v.id, v.title, (v.photos)[1] as photo, v.starts_at,
+        select v.id, v.title, (v.photos)[1] as photo, v.starts_at, v.timezone,
                'going'::text as role, (coalesce(v.ends_at, v.starts_at) <= now()) as past,
                case when v_owner then exists(
                  select 1 from public.vibe_reviews r

@@ -6,7 +6,7 @@ import { Star } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { formatVibeWhen } from "@/lib/vibes";
 
-type VibeEvt = { id: string; title: string; photo: string | null; starts_at: string; role: string; past: boolean; reviewed?: boolean };
+type VibeEvt = { id: string; title: string; photo: string | null; starts_at: string; timezone?: string | null; role: string; past: boolean; reviewed?: boolean };
 type TripEvt = {
   id: string;
   destination?: string | null;
@@ -119,7 +119,7 @@ export default function ProfileEvents({ data, isOwner }: { data: EventsData; isO
               photo={v.photo}
               emoji="🎟️"
               title={v.title}
-              sub={formatVibeWhen(v.starts_at, locale)}
+              sub={formatVibeWhen(v.starts_at, locale, v.timezone ?? undefined)}
               role={v.role === "host" ? t("events.host") : t("events.going")}
               past={v.past}
               href={`/vibes/${v.id}`}

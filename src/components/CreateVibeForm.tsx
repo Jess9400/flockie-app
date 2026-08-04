@@ -282,9 +282,17 @@ export default function CreateVibeForm({
 
   function applyEndTime(nextStartsAt: string, nextDurationMinutes = activeDurationMinutes()) {
     if (!nextStartsAt || nextDurationMinutes <= 0) return;
-    const start = new Date(nextStartsAt);
-    if (Number.isNaN(start.getTime())) return;
-    setEndsAt(toLocalDateTimeInput(new Date(start.getTime() + nextDurationMinutes * 60 * 1000)));
+    // Pure wall-clock arithmetic via Date.UTC. Parsing with device-local
+    // `new Date()` would let a DST jump in the HOST's zone (not the event's)
+    // warp the stored duration - both times are event-zone wall clock here.
+    const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(nextStartsAt);
+    if (!m) return;
+    const [y, mo, d, h, mi] = m.slice(1).map(Number);
+    const end = new Date(Date.UTC(y, mo - 1, d, h, mi) + nextDurationMinutes * 60 * 1000);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    setEndsAt(
+      `${end.getUTCFullYear()}-${pad(end.getUTCMonth() + 1)}-${pad(end.getUTCDate())}T${pad(end.getUTCHours())}:${pad(end.getUTCMinutes())}`
+    );
   }
 
   function onStartDateChange(value: string) {

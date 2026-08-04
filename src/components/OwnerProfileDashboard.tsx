@@ -547,7 +547,7 @@ function buildUpcoming(events?: EventsData, locale = "en"): UpcomingItem[] {
       .map((item, index) => ({
         key: `vibe-${item.id}-${index}`,
         title: item.title,
-        subtitle: formatVibeWhen(item.starts_at, locale),
+        subtitle: formatVibeWhen(item.starts_at, locale, item.timezone ?? undefined),
         role: item.role === "host" ? "host" : "going",
         photo: item.photo,
         emoji: "🎟️",

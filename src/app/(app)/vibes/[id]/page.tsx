@@ -141,8 +141,7 @@ export default async function VibeDetailPage({
   }[];
   const confirmedCount = allAttendees.length;
   // Show EVERYONE confirmed (was sliced to 8, which hid people with no way to
-  // reach them). The "+N more" pill below now only covers the rare case where
-  // someone confirmed has no readable profile row.
+  // reach them).
   const attendees = allAttendees;
   const displayMatch = vibeMatches[vibe.id];
 
@@ -605,11 +604,6 @@ export default async function VibeDetailPage({
                 <span className="text-xs font-bold">{a.display_name || t("detail.attendeeFallback")}</span>
               </Link>
             ))}
-            {confirmedCount > attendees.length && (
-              <span className="flex items-center rounded-full bg-cream px-3 py-1 text-xs font-bold text-muted">
-                {t("detail.moreAttendees", { count: confirmedCount - attendees.length })}
-              </span>
-            )}
           </div>
         </div>
       )}

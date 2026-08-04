@@ -172,7 +172,7 @@ export default function ProfileStory({
                   <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-flockie-coral">{t("rightNow")}</p>
                   <h2 className="mt-2 font-fredoka text-2xl font-bold leading-tight text-navy">{upcomingVibe.title}</h2>
                   <p className="mt-2 flex items-center gap-1.5 text-sm font-bold text-muted">
-                    <CalendarDays size={15} aria-hidden /> {formatVibeWhen(upcomingVibe.starts_at, locale)}
+                    <CalendarDays size={15} aria-hidden /> {formatVibeWhen(upcomingVibe.starts_at, locale, upcomingVibe.timezone ?? undefined)}
                   </p>
                   <Link href={`/vibes/${upcomingVibe.id}`} className="mt-5 inline-flex items-center gap-1 text-sm font-extrabold text-flockie-coral">
                     {t("viewPlan")} <ArrowRight size={15} />
@@ -230,7 +230,7 @@ export default function ProfileStory({
                 </div>
                 <div className="p-4">
                   <p className="truncate text-base font-extrabold text-navy">{vibe.title}</p>
-                  <p className="mt-1 text-sm font-semibold text-muted">{formatVibeWhen(vibe.starts_at, locale)}</p>
+                  <p className="mt-1 text-sm font-semibold text-muted">{formatVibeWhen(vibe.starts_at, locale, vibe.timezone ?? undefined)}</p>
                 </div>
               </Link>
             ))}

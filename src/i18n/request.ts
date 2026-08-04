@@ -62,8 +62,9 @@ function matchAcceptLanguage(header: string | null): Locale | null {
     .split(",")
     .map((part) => {
       const [tag, ...params] = part.trim().split(";");
-      const q = params.map((p) => p.trim()).find((p) => p.startsWith("q="));
-      return { tag: tag.toLowerCase(), q: q ? parseFloat(q.slice(2)) || 0 : 1 };
+      const q = params.map((p) => p.trim().toLowerCase()).find((p) => p.startsWith("q="));
+      const qNum = q ? parseFloat(q.slice(2)) : 1;
+      return { tag: tag.trim().toLowerCase(), q: Number.isFinite(qNum) ? qNum : 1 };
     })
     .sort((a, b) => b.q - a.q);
   for (const { tag, q } of ranges) {

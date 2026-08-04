@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Settings, X } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -58,7 +58,11 @@ export default function VibeSettingsButton({
   // Times are edited as EVENT-LOCAL wall clock (the vibe's stored timezone),
   // never the host's device zone - a host on VPN/travel would otherwise shift
   // the real instant while the label looks right (mirrors CreateVibeForm).
-  const tz = timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone ?? "UTC";
+  // tzOverride covers the gap between an address save that changed the zone
+  // and the refreshed prop arriving.
+  const [tzOverride, setTzOverride] = useState<string | null>(null);
+  const tz =
+    tzOverride ?? timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone ?? "UTC";
   const toInput = (iso?: string | null) =>
     iso ? formatDateTimeInputInTimeZone(new Date(iso), tz) : "";
   const [open, setOpen] = useState(false);
@@ -67,6 +71,19 @@ export default function VibeSettingsButton({
   const [starts, setStarts] = useState(toInput(startsAt));
   const [ends, setEnds] = useState(toInput(endsAt));
   const [deadline, setDeadline] = useState(toInput(signupDeadline));
+
+  // The wall-clock strings are only meaningful IN a zone. When the zone (or
+  // the underlying instants) change - e.g. the address save moved the pin to
+  // another timezone - reformat them, or an untouched "Save & notify" would
+  // reinterpret old-zone wall clock in the new zone and shift the real
+  // instant (the Almaty-class bug).
+  useEffect(() => {
+    setStarts(startsAt ? formatDateTimeInputInTimeZone(new Date(startsAt), tz) : "");
+    setEnds(endsAt ? formatDateTimeInputInTimeZone(new Date(endsAt), tz) : "");
+    setDeadline(
+      signupDeadline ? formatDateTimeInputInTimeZone(new Date(signupDeadline), tz) : ""
+    );
+  }, [tz, startsAt, endsAt, signupDeadline]);
   const [spots, setSpots] = useState(capacity);
   const [locName, setLocName] = useState(locationName ?? "");
   const [locCity, setLocCity] = useState(city);
@@ -187,6 +204,7 @@ export default function VibeSettingsButton({
     if (error) return setMsg(error.message);
     setLocLat(lat);
     setLocLng(lng);
+    if (newTz) setTzOverride(newTz); // re-anchors the time inputs immediately
     setMsg(t("settings.addressUpdated"));
     router.refresh();
   }
