@@ -12,6 +12,7 @@ type HostVibeMember = {
   display_name: string | null;
   photos: string[] | null;
   status: "invited" | "confirmed";
+  attendance_confirmed_at?: string | null;
 };
 
 type Props = {
@@ -122,7 +123,11 @@ export default function HostVibeMembers({
               <div className="min-w-0">
                 <p className="truncate text-sm font-extrabold">{member.display_name || t("host.attendeeFallback")}</p>
                 <p className="text-[11px] font-bold text-muted">
-                  {member.status === "confirmed" ? t("host.statusGoing") : t("host.statusInvited")}
+                  {member.status === "confirmed"
+                    ? member.attendance_confirmed_at
+                      ? t("host.statusRsvped")
+                      : t("host.statusGoing")
+                    : t("host.statusInvited")}
                 </p>
               </div>
             </div>

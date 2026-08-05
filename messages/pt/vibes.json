@@ -72,7 +72,11 @@
     "reRun": "Repetir Vibe",
     "differentCity": "Atenção - esta Vibe é em <hl>{city}</hl>, não na sua cidade. Você ainda pode participar se for estar lá.",
     "suggestionsHeading": "Vibes que combinam mais com você",
-    "suggestionsSubtitle": "Este já lotou - aqui está o que combina mais com o sua Vibe."
+    "suggestionsSubtitle": "Este já lotou - aqui está o que combina mais com o sua Vibe.",
+    "rsvpTitle": "Você está dentro! 🎉",
+    "rsvpBody": "Sua vaga está garantida - não precisa fazer mais nada. Confirmar que você vai ajuda o anfitrião a organizar o encontro (opcional).",
+    "rsvpButton": "Eu vou ✓",
+    "rsvpDone": "Presença confirmada - até lá!"
   },
   "create": {
     "back": "Voltar",
@@ -292,7 +296,8 @@
     "pendingRequests": "Solicitações pendentes",
     "add": "Adicionar",
     "autoSendShort": "Os convites são enviados sozinhos uns 30 min após o match - ou envie agora.",
-    "autoSendPlanned": "Os convites são enviados sozinhos em umas 6 horas - ou envie agora."
+    "autoSendPlanned": "Os convites são enviados sozinhos em umas 6 horas - ou envie agora.",
+    "statusRsvped": "Vai ✓ presença confirmada"
   },
   "settings": {
     "manageVibeAria": "Gerenciar Vibe",

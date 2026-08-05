@@ -72,7 +72,11 @@
     "reRun": "Re-run Vibe",
     "differentCity": "Heads up - this Vibe is in <hl>{city}</hl>, not your home city. You can still join if you’ll be there.",
     "suggestionsHeading": "Vibes that match you more",
-    "suggestionsSubtitle": "This one filled up - here’s what fits your vibe better."
+    "suggestionsSubtitle": "This one filled up - here’s what fits your vibe better.",
+    "rsvpTitle": "You're in! 🎉",
+    "rsvpBody": "Your spot is locked - no need to do anything else. Confirming you'll be there helps the host plan the meet-up (optional).",
+    "rsvpButton": "I'll be there ✓",
+    "rsvpDone": "Attendance confirmed - see you there!"
   },
   "create": {
     "back": "Back",
@@ -292,7 +296,8 @@
     "pendingRequests": "Pending requests",
     "add": "Add",
     "autoSendShort": "Invites auto-send about 30 min after matching - or send them now.",
-    "autoSendPlanned": "Invites auto-send within about 6 hours - or send them now."
+    "autoSendPlanned": "Invites auto-send within about 6 hours - or send them now.",
+    "statusRsvped": "Going ✓ confirmed attendance"
   },
   "settings": {
     "manageVibeAria": "Manage Vibe",

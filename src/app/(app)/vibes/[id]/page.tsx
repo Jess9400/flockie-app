@@ -9,6 +9,7 @@ import HostVibeControls from "@/components/HostVibeControls";
 import HostVibeShortlist from "@/components/HostVibeShortlist";
 import HostVibePrivateRequests from "@/components/HostVibePrivateRequests";
 import HostVibeMembers from "@/components/HostVibeMembers";
+import RsvpBanner from "@/components/RsvpBanner";
 import ClubAttendancePanel from "@/components/ClubAttendancePanel";
 import VibeAttendancePanel from "@/components/VibeAttendancePanel";
 import VibeSettingsButton from "@/components/VibeSettingsButton";
@@ -87,7 +88,7 @@ export default async function VibeDetailPage({
       .maybeSingle(),
     supabase
       .from("vibe_interests")
-      .select("status, invitation_expires_at")
+      .select("status, invitation_expires_at, attendance_confirmed_at")
       .eq("vibe_id", params.id)
       .eq("user_id", user!.id)
       .maybeSingle(),
@@ -170,6 +171,7 @@ export default async function VibeDetailPage({
     display_name: string | null;
     photos: string[] | null;
     status: "invited" | "confirmed";
+    attendance_confirmed_at: string | null;
   }[] = [];
   let normalRemovalCount = 0;
   const normalRemovalLimit = Math.min(3, Math.max(1, Math.floor(vibe.capacity * 0.2)));
@@ -203,7 +205,7 @@ export default async function VibeDetailPage({
           : Promise.resolve({ data: null }),
         supabase
           .from("vibe_interests")
-          .select("user_id, status")
+          .select("user_id, status, attendance_confirmed_at")
           .eq("vibe_id", params.id)
           .in("status", ["invited", "confirmed"]),
         supabase
@@ -253,14 +255,18 @@ export default async function VibeDetailPage({
       }));
     }
     if (memberIds.length) {
-      const statusByUser = new Map(
-        (memberRows ?? []).map((r) => [r.user_id, r.status as "invited" | "confirmed"])
+      const rowByUser = new Map(
+        (memberRows ?? []).map((r) => [
+          r.user_id,
+          r as { status: "invited" | "confirmed"; attendance_confirmed_at: string | null },
+        ])
       );
       hostMembers = (profiles ?? []).map((profile) => ({
         id: profile.id,
         display_name: profile.display_name,
         photos: profile.photos,
-        status: statusByUser.get(profile.id) ?? "invited",
+        status: rowByUser.get(profile.id)?.status ?? "invited",
+        attendance_confirmed_at: rowByUser.get(profile.id)?.attendance_confirmed_at ?? null,
       }));
     }
   }
@@ -479,6 +485,13 @@ export default async function VibeDetailPage({
           </p>
         </div>
       </section>
+
+      {!isHost && myInterest?.status === "confirmed" && !ended && vibe.status !== "cancelled" && (
+        <RsvpBanner
+          vibeId={vibe.id}
+          initialRsvped={!!(myInterest as { attendance_confirmed_at?: string | null }).attendance_confirmed_at}
+        />
+      )}
 
       {!isHost && (
         <section className="mt-5">
