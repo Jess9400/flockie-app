@@ -11,11 +11,12 @@ import { getProfileStoryReviews } from "@/lib/profile-story-reviews";
 import ProfileSocialStrip from "@/components/ProfileSocialStrip";
 import FeedSection, { type FeedPost } from "@/components/FeedSection";
 
-export default async function PersonPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function PersonPage(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = await createClient();
   const t = await getTranslations("profile");
   const tFeed = await getTranslations("feed");

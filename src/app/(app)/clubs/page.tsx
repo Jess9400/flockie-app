@@ -25,7 +25,8 @@ const CARD_BACKGROUNDS = [
   "from-[#b9d7b5] via-[#8fc48a] to-[#62a55f]",
 ];
 
-export default async function ClubsPage({ searchParams }: { searchParams: { city?: string } }) {
+export default async function ClubsPage(props: { searchParams: Promise<{ city?: string }> }) {
+  const searchParams = await props.searchParams;
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("clubs.directory");

@@ -22,11 +22,12 @@ function isVibeTraits(value: unknown): value is VibeTraits {
   );
 }
 
-export default async function VibeRevealPage({
-  searchParams,
-}: {
-  searchParams: { returnTo?: string };
-}) {
+export default async function VibeRevealPage(
+  props: {
+    searchParams: Promise<{ returnTo?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const returnTo = safeRedirectPath(searchParams.returnTo, "");
   const supabase = await createClient();
   const {

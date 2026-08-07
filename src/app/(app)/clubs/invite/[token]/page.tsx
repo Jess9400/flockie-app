@@ -15,7 +15,8 @@ type FounderInviteDetail = {
   expires_at: string;
 };
 
-export default async function ClubFounderInvitePage({ params }: { params: { token: string } }) {
+export default async function ClubFounderInvitePage(props: { params: Promise<{ token: string }> }) {
+  const params = await props.params;
   const supabase = await createClient();
   const t = await getTranslations("clubs.invite");
   const { data } = await supabase.rpc("club_founder_invite_detail", { p_token: params.token }).maybeSingle();

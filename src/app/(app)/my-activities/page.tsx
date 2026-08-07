@@ -23,11 +23,12 @@ type ActivityRow = {
   cover_photo: string | null;
 };
 
-export default async function MyActivitiesPage({
-  searchParams,
-}: {
-  searchParams: { page?: string };
-}) {
+export default async function MyActivitiesPage(
+  props: {
+    searchParams: Promise<{ page?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("activities");

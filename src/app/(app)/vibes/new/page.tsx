@@ -7,11 +7,12 @@ import { getSessionUser } from "@/lib/supabase/user";
 import CreateVibeForm from "@/components/CreateVibeForm";
 import ActivityVibeForm from "@/components/ActivityVibeForm";
 
-export default async function NewVibePage({
-  searchParams,
-}: {
-    searchParams: { activity?: string; city?: string; title?: string; from?: string; club?: string };
-}) {
+export default async function NewVibePage(
+  props: {
+      searchParams: Promise<{ activity?: string; city?: string; title?: string; from?: string; club?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("vibes");

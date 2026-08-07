@@ -6,11 +6,12 @@ import Pagination from "@/components/Pagination";
 
 const PAGE_SIZE = 20;
 
-export default async function InboxPage({
-  searchParams,
-}: {
-  searchParams: { page?: string };
-}) {
+export default async function InboxPage(
+  props: {
+    searchParams: Promise<{ page?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("inbox");

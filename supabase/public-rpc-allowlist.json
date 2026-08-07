@@ -1,0 +1,29 @@
+{
+  "functions": [
+    {
+      "name": "compat_target",
+      "reason": "Public compatibility links need a minimal profile target before sign-in.",
+      "owner": "Flockie product"
+    },
+    {
+      "name": "get_vouch_subject",
+      "reason": "Public vouch links need the subject needed to render the form.",
+      "owner": "Flockie product"
+    },
+    {
+      "name": "public_vibe",
+      "reason": "Public Vibe share links need the safe public event view before sign-in.",
+      "owner": "Flockie product"
+    },
+    {
+      "name": "referral_target",
+      "reason": "Public referral links need a minimal inviter target before sign-in.",
+      "owner": "Flockie product"
+    },
+    {
+      "name": "submit_vouch",
+      "reason": "Recipients of a public vouch link must be able to submit the form without an account.",
+      "owner": "Flockie product"
+    }
+  ]
+}

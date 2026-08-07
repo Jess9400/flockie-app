@@ -40,7 +40,8 @@ type Member = { id: string; display_name: string | null; photo: string | null; a
 // Full page for a 1:1 trip - everything the board card can't hold: full
 // description, budget/style, the roster of who's going, and (for members) the
 // planning workspace. A Flock has its own page at /flocks/[tripId].
-export default async function TripDetailPage({ params }: { params: { id: string } }) {
+export default async function TripDetailPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("trips");

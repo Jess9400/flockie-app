@@ -9,12 +9,18 @@ export const maxDuration = 60;
 // auto-routed). Imagen 4 Fast - cheaper (~$0.02/image), great for stylized
 // poster covers. Swap this slug if the gateway model list changes.
 const IMAGE_MODEL = "google/imagen-4.0-fast-generate-001";
+const MAX_REQUEST_BYTES = 16 * 1024;
 
 // Generate a decorative, illustrated cover for a Vibe/Trip/Activity. This is
 // deliberately stylized poster art - NOT photoreal people - so it's never used
 // to fake a person's identity. Requires AI Gateway to be enabled on the Vercel
 // project (OIDC token) or AI_GATEWAY_API_KEY to be set.
 export async function POST(req: Request) {
+  const contentLength = Number(req.headers.get("content-length"));
+  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {
+    return NextResponse.json({ error: "Request is too large" }, { status: 413 });
+  }
+
   const supabase = await createClient();
   const {
     data: { user },

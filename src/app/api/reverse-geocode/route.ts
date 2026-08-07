@@ -8,7 +8,18 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const lat = searchParams.get("lat");
   const lng = searchParams.get("lng");
-  if (!lat || !lng || isNaN(+lat) || isNaN(+lng)) {
+  const latitude = Number(lat);
+  const longitude = Number(lng);
+  if (
+    !lat ||
+    !lng ||
+    !Number.isFinite(latitude) ||
+    !Number.isFinite(longitude) ||
+    latitude < -90 ||
+    latitude > 90 ||
+    longitude < -180 ||
+    longitude > 180
+  ) {
     return NextResponse.json({ error: "bad coords" }, { status: 400 });
   }
 
@@ -54,7 +65,7 @@ export async function GET(req: Request) {
       city = a.city || a.town || a.village || a.municipality || a.county || a.state || null;
     }
 
-    return NextResponse.json({ city }, { headers: { "cache-control": "public, max-age=86400" } });
+    return NextResponse.json({ city }, { headers: { "cache-control": "private, no-store" } });
   } catch {
     return NextResponse.json({ city: null }, { status: 200 });
   }

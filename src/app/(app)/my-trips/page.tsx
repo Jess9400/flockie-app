@@ -26,11 +26,12 @@ type TripRow = {
   cover_photo: string | null;
 };
 
-export default async function MyTripsPage({
-  searchParams,
-}: {
-  searchParams: { page?: string };
-}) {
+export default async function MyTripsPage(
+  props: {
+    searchParams: Promise<{ page?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = await createClient();
   const user = await getSessionUser();
   const tr = await getTranslations("trips");

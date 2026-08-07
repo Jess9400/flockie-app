@@ -11,11 +11,12 @@ import ActivityVibeForm from "@/components/ActivityVibeForm";
 
 type Pending = { buddy_id: string; display_name: string | null; photo: string | null; destination: string | null };
 
-export default async function TripPage({
-  searchParams,
-}: {
-  searchParams: { id?: string; kind?: string };
-}) {
+export default async function TripPage(
+  props: {
+    searchParams: Promise<{ id?: string; kind?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("match.create");

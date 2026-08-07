@@ -3,11 +3,12 @@ import { ProfileForm } from "@/components/onboarding/ProfileForm";
 import { getOnboardingProfileDefaults } from "@/lib/onboarding/profile-actions";
 import { safeRedirectPath, withReturnTo } from "@/lib/redirects";
 
-export default async function OnboardingProfilePage({
-  searchParams,
-}: {
-  searchParams: { returnTo?: string };
-}) {
+export default async function OnboardingProfilePage(
+  props: {
+    searchParams: Promise<{ returnTo?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const returnTo = safeRedirectPath(searchParams.returnTo, "");
   const defaults = await getOnboardingProfileDefaults();
   if (defaults.vibeComplete) {

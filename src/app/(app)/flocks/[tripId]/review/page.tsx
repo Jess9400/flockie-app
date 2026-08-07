@@ -6,7 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 
 type Target = { user_id: string; display_name: string | null; photo: string | null; reviewed: boolean };
 
-export default async function FlockReviewPage({ params }: { params: { tripId: string } }) {
+export default async function FlockReviewPage(props: { params: Promise<{ tripId: string }> }) {
+  const params = await props.params;
   const t = await getTranslations("components");
   const supabase = await createClient();
 

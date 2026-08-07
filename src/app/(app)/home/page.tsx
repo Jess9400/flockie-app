@@ -93,11 +93,12 @@ async function loadHostsAndCounts(
   return { hosts, counts };
 }
 
-export default async function HomePage({
-  searchParams,
-}: {
-  searchParams: { when?: string };
-}) {
+export default async function HomePage(
+  props: {
+    searchParams: Promise<{ when?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = await createClient();
   const user = await getSessionUser();
   const nowIso = new Date().toISOString();
@@ -409,7 +410,7 @@ export default async function HomePage({
         <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-cream">
           {a.cover_photo ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={a.cover_photo} alt="" className="h-full w-full object-cover" />
+            (<img src={a.cover_photo} alt="" className="h-full w-full object-cover" />)
           ) : (
             <div className="flex h-full items-center justify-center text-4xl">🤝</div>
           )}
@@ -432,7 +433,7 @@ export default async function HomePage({
           <div className="mt-2 flex items-center gap-2">
             {a.photo ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={a.photo} alt="" className="h-5 w-5 shrink-0 rounded-full object-cover" />
+              (<img src={a.photo} alt="" className="h-5 w-5 shrink-0 rounded-full object-cover" />)
             ) : (
               <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-flockie-blue text-[9px] font-bold text-white">
                 {(a.display_name ?? "?")[0]?.toUpperCase()}
