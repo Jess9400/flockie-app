@@ -7,7 +7,8 @@ import { getSessionUser } from "@/lib/supabase/user";
 import ConvertVibeToClub, { type ConvertAttendee } from "@/components/ConvertVibeToClub";
 
 // "Turn this into a club?" - host-only conversion screen for an ended vibe.
-export default async function FromVibePage({ params }: { params: { vibeId: string } }) {
+export default async function FromVibePage(props: { params: Promise<{ vibeId: string }> }) {
+  const params = await props.params;
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("clubs.convert");

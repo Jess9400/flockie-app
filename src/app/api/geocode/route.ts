@@ -74,6 +74,9 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const q = searchParams.get("q")?.trim();
   if (!q) return NextResponse.json({ error: "missing query" }, { status: 400 });
+  if (q.length > 500) {
+    return NextResponse.json({ error: "query is too long" }, { status: 400 });
+  }
 
   // Pasted addresses often repeat the neighbourhood and trail a comma, which
   // makes geocoders (esp. OSM) fail to lock onto one place. De-duplicate the
@@ -148,7 +151,7 @@ export async function GET(req: Request) {
     }
 
     if (!result) return NextResponse.json({ error: "not found" }, { status: 404 });
-    return NextResponse.json(result, { headers: { "cache-control": "public, max-age=86400" } });
+    return NextResponse.json(result, { headers: { "cache-control": "private, no-store" } });
   } catch {
     return NextResponse.json({ error: "geocode failed" }, { status: 500 });
   }

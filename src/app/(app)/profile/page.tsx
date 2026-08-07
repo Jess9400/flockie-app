@@ -9,11 +9,12 @@ import { getProfileStoryReviews } from "@/lib/profile-story-reviews";
 import ProfileSocialStrip from "@/components/ProfileSocialStrip";
 import FeedSection, { type FeedPost } from "@/components/FeedSection";
 
-export default async function ProfilePage({
-  searchParams,
-}: {
-  searchParams: { compat?: string; returnTo?: string };
-}) {
+export default async function ProfilePage(
+  props: {
+    searchParams: Promise<{ compat?: string; returnTo?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const returnTo =
     safeRedirectPath(searchParams.returnTo, "") ||
     (searchParams.compat ? `/compat/${searchParams.compat}` : undefined);

@@ -22,11 +22,12 @@ async function getReferralTarget(inviterId: string): Promise<ReferralTarget | nu
   return (data?.[0] as ReferralTarget) ?? null;
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { inviterId: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ inviterId: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const target = await getReferralTarget(params.inviterId);
   const name = target?.name?.split(" ")[0] || "A friend";
 
@@ -41,7 +42,8 @@ export async function generateMetadata({
   };
 }
 
-export default async function JoinPage({ params }: { params: { inviterId: string } }) {
+export default async function JoinPage(props: { params: Promise<{ inviterId: string }> }) {
+  const params = await props.params;
   const [t, target] = await Promise.all([
     getTranslations("components"),
     getReferralTarget(params.inviterId),

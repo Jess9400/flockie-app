@@ -28,7 +28,8 @@ type ClubDetail = {
   last_completed_vibe_title: string | null;
 };
 
-export default async function ClubPage({ params }: { params: { id: string } }) {
+export default async function ClubPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const supabase = await createClient();
   const t = await getTranslations("clubs.detail");
   const { data } = await supabase.rpc("club_detail", { p_club: params.id }).maybeSingle();

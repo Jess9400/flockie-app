@@ -5,11 +5,12 @@ import { safeRedirectPath } from "@/lib/redirects";
 
 // "Confirm my vibe" activity step. In the short Vibe-invite path (quick=1) we
 // return to the Vibe afterwards; otherwise back to the profile.
-export default async function OnboardingActivityVibePage({
-  searchParams,
-}: {
-  searchParams: { returnTo?: string; quick?: string };
-}) {
+export default async function OnboardingActivityVibePage(
+  props: {
+    searchParams: Promise<{ returnTo?: string; quick?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = await createClient();
   const {
     data: { user },

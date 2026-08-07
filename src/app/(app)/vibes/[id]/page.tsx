@@ -28,13 +28,14 @@ import {
 import { formatApproximateVibeLocation } from "@/lib/vibe-location";
 import { loadVibeMatch, type VibeDisplayMatch } from "@/lib/vibe-stats";
 
-export default async function VibeDetailPage({
-  params,
-  searchParams,
-}: {
-  params: { id: string };
-  searchParams: { interested?: string; request?: string; code?: string };
-}) {
+export default async function VibeDetailPage(
+  props: {
+    params: Promise<{ id: string }>;
+    searchParams: Promise<{ interested?: string; request?: string; code?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const supabase = await createClient();
   const t = await getTranslations("vibes");
   const locale = await getLocale();

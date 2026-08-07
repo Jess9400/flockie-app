@@ -6,11 +6,12 @@ import { getSessionUser } from "@/lib/supabase/user";
 import PeopleDirectory from "@/components/PeopleDirectory";
 
 // Find people + Following/Followers lists. Met-in-person ranks first.
-export default async function PeoplePage({
-  searchParams,
-}: {
-  searchParams: { tab?: string };
-}) {
+export default async function PeoplePage(
+  props: {
+    searchParams: Promise<{ tab?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("feed.people");

@@ -11,11 +11,12 @@ import FlockJoinRequests, { type JoinReq } from "@/components/FlockJoinRequests"
 import BuddyPlan, { type BuddyPlanData } from "@/components/BuddyPlan";
 import { type PeekData } from "@/components/ProfilePeek";
 
-export default async function BuddyChatPage({
-  params,
-}: {
-  params: { chatId: string };
-}) {
+export default async function BuddyChatPage(
+  props: {
+    params: Promise<{ chatId: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = await createClient();
   const t = await getTranslations("buddies");
   const locale = await getLocale();
@@ -258,7 +259,7 @@ export default async function BuddyChatPage({
   }
   type WsMember = { id: string; display_name: string | null; photo: string | null };
   let wsMembers: WsMember[] = [];
-  let wsCity = ""; let wsStart: string | null = null; let wsEnd: string | null = null;
+  let wsCity = "";let wsStart: string | null = null;let wsEnd: string | null = null;
   if (workspaceTripId) {
     const { data: wm } = await supabase.rpc("trip_members", { p_trip: workspaceTripId });
     wsMembers = (wm ?? []) as WsMember[];

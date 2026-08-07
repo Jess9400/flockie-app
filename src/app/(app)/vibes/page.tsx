@@ -13,18 +13,19 @@ import { VIBE_CATEGORIES, type InterestStatus } from "@/lib/vibes";
 
 const PAGE_SIZE = 6;
 
-export default async function VibesPage({
-  searchParams,
-}: {
-  searchParams: {
-    q?: string;
-    city?: string;
-    page?: string;
-    when?: string;
-    view?: string;
-    category?: string | string[];
-  };
-}) {
+export default async function VibesPage(
+  props: {
+    searchParams: Promise<{
+      q?: string;
+      city?: string;
+      page?: string;
+      when?: string;
+      view?: string;
+      category?: string | string[];
+    }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = await createClient();
   const t = await getTranslations("vibes");
   const q = searchParams.q?.trim() ?? "";

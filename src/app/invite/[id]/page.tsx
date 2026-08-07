@@ -33,7 +33,8 @@ async function getVibe(id: string): Promise<PublicVibe | null> {
   return (data?.[0] as PublicVibe) ?? null;
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const v = await getVibe(params.id);
   if (!v) return { title: "Vibe · Flockie" };
   return {
@@ -47,13 +48,14 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   };
 }
 
-export default async function InvitePage({
-  params,
-  searchParams,
-}: {
-  params: { id: string };
-  searchParams: { via?: string; code?: string };
-}) {
+export default async function InvitePage(
+  props: {
+    params: Promise<{ id: string }>;
+    searchParams: Promise<{ via?: string; code?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const [t, v, locale] = await Promise.all([getTranslations("components"), getVibe(params.id), getLocale()]);
   if (!v) notFound();
   const viaHost = searchParams.via === "host";

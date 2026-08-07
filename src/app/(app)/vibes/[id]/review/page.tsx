@@ -6,11 +6,12 @@ import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import VibeReviewForm from "@/components/VibeReviewForm";
 
-export default async function VibeReviewPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function VibeReviewPage(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("review");

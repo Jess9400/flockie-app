@@ -54,11 +54,12 @@ type JoinedVibe = {
   status: string;
 };
 
-export default async function MyVibesPage({
-  searchParams,
-}: {
-  searchParams: { page?: string; ppage?: string };
-}) {
+export default async function MyVibesPage(
+  props: {
+    searchParams: Promise<{ page?: string; ppage?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("myVibes");

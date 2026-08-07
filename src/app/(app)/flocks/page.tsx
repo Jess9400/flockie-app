@@ -43,11 +43,12 @@ type BoardRow = {
 
 // The Trip Board: solo trips (1:1) and Flocks (group) in one browsable list -
 // trip-first cards, the creator as context, "Ask to join" with a note.
-export default async function TripBoardPage({
-  searchParams,
-}: {
-  searchParams: { page?: string; q?: string; continent?: string | string[]; gender?: string; size?: string; language?: string | string[]; kind?: string };
-}) {
+export default async function TripBoardPage(
+  props: {
+    searchParams: Promise<{ page?: string; q?: string; continent?: string | string[]; gender?: string; size?: string; language?: string | string[]; kind?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = await createClient();
   const user = await getSessionUser();
   void user;

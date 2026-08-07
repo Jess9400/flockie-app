@@ -3,11 +3,12 @@ import { VibeOnboardingForm } from "@/components/onboarding/VibeOnboardingForm";
 import { safeRedirectPath, withReturnTo } from "@/lib/redirects";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function VibeCheckPage({
-  searchParams,
-}: {
-  searchParams: { returnTo?: string };
-}) {
+export default async function VibeCheckPage(
+  props: {
+    searchParams: Promise<{ returnTo?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const returnTo = safeRedirectPath(searchParams.returnTo, "");
   const supabase = await createClient();
   const {

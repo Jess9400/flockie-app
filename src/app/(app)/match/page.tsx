@@ -12,11 +12,12 @@ import { loadUserRatings } from "@/lib/vibe-stats";
 
 const MIN_PROFILES = 10;
 
-export default async function MatchPage({
-  searchParams,
-}: {
-  searchParams: { mode?: string; trip?: string; view?: string; q?: string };
-}) {
+export default async function MatchPage(
+  props: {
+    searchParams: Promise<{ mode?: string; trip?: string; view?: string; q?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("match.find");

@@ -1,7 +1,8 @@
 import VouchForm from "@/components/VouchForm";
 
 // Public friend-vouch page - no login required.
-export default function VouchPage({ params }: { params: { token: string } }) {
+export default async function VouchPage(props: { params: Promise<{ token: string }> }) {
+  const params = await props.params;
   return (
     <main className="mx-auto min-h-screen max-w-md px-5 py-8">
       <div className="mb-6 flex items-center gap-2">

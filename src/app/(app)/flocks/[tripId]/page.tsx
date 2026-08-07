@@ -32,11 +32,12 @@ async function Unavailable() {
   );
 }
 
-export default async function FlockDetailPage({
-  params,
-}: {
-  params: { tripId: string };
-}) {
+export default async function FlockDetailPage(
+  props: {
+    params: Promise<{ tripId: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = await createClient();
   const user = await getSessionUser();
   const tr = await getTranslations("flocks");

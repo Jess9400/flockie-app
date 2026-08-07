@@ -7,7 +7,8 @@ import WorkspacePanels from "@/components/WorkspacePanels";
 
 // The club's persistent room. Members + host only (RLS enforces it too - the
 // message query returns nothing for outsiders, and we bounce them back).
-export default async function ClubChatPage({ params }: { params: { id: string } }) {
+export default async function ClubChatPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const supabase = await createClient();
   const user = await getSessionUser();
 

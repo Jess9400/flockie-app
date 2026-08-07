@@ -1,9 +1,18 @@
 import { NextResponse } from "next/server";
+import { timingSafeEqual } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import { buildEmail, type NotifRecord } from "@/lib/email/templates";
 import { sendEmail } from "@/lib/email/send";
 
 export const runtime = "nodejs";
+const MAX_WEBHOOK_BYTES = 64 * 1024;
+
+function hasValidWebhookSecret(value: string | null, expected: string | undefined) {
+  if (!value || !expected) return false;
+  const received = Buffer.from(value);
+  const secret = Buffer.from(expected);
+  return received.length === secret.length && timingSafeEqual(received, secret);
+}
 
 // Supabase Database Webhook target: fires on INSERT into public.notifications.
 // Configure in Supabase → Database → Webhooks with an `x-webhook-secret` header
@@ -12,7 +21,11 @@ export const runtime = "nodejs";
 export async function POST(req: Request) {
   // 1. Authenticate the webhook.
   const secret = process.env.EMAIL_WEBHOOK_SECRET;
-  if (!secret || req.headers.get("x-webhook-secret") !== secret) {
+  const contentLength = Number(req.headers.get("content-length"));
+  if (Number.isFinite(contentLength) && contentLength > MAX_WEBHOOK_BYTES) {
+    return NextResponse.json({ error: "payload too large" }, { status: 413 });
+  }
+  if (!hasValidWebhookSecret(req.headers.get("x-webhook-secret"), secret)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 

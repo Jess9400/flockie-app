@@ -6,7 +6,8 @@ import CompatShareButton from "@/components/CompatShareButton";
 
 type Target = { id: string; name: string | null; photo: string | null };
 
-export default async function CompatPage({ params }: { params: { id: string } }) {
+export default async function CompatPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const tr = await getTranslations("onboarding.compat");
   const supabase = await createClient();
   const {

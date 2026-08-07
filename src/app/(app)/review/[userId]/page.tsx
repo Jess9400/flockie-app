@@ -6,11 +6,12 @@ import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import ReviewForm from "@/components/ReviewForm";
 
-export default async function ReviewPage({
-  params,
-}: {
-  params: { userId: string };
-}) {
+export default async function ReviewPage(
+  props: {
+    params: Promise<{ userId: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("review");

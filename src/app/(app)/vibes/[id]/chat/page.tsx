@@ -6,11 +6,12 @@ import { getSessionUser } from "@/lib/supabase/user";
 import ChatRoom from "@/components/ChatRoom";
 import VibeChatHeader, { type ChatMember } from "@/components/VibeChatHeader";
 
-export default async function VibeChatPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function VibeChatPage(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = await createClient();
   const t = await getTranslations("buddies");
   const user = await getSessionUser();
