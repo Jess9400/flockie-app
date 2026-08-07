@@ -26,7 +26,10 @@ const contentSecurityPolicy = [
   "media-src 'self' blob: https://*.supabase.co",
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com",
+  // maps.googleapis.com: the Maps JS SDK script tag injected by
+  // src/lib/gmaps-geocode.ts (venue pinning) and BrandedMap - without it the
+  // CSP silently kills browser-side Places geocoding.
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com https://maps.googleapis.com",
   `connect-src ${connectSources}`,
   "frame-src https://maps.google.com",
   "manifest-src 'self'",
