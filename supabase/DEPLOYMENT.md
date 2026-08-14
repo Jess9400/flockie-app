@@ -51,6 +51,15 @@ order by p.proname, arguments;
 Save the result with the release notes. This tells us whether production has
 the expected function signatures before a script replaces anything.
 
+## Current releases
+
+Per-release detail now lives in dated records under `supabase/releases/`;
+this list only tracks what is approved and pending or recently applied.
+
+- 2026-08-14 `club-moderators.sql` - club moderator role; see
+  `supabase/releases/2026-08-14-club-moderators.md` for preflight, verify,
+  and rollback. Pending production run.
+
 ## 4. Apply only an approved release
 
 Run the approved source or bundle once in the Supabase SQL editor, then wait
