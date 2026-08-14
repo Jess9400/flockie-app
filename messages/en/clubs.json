@@ -272,5 +272,13 @@
     "attendedLabel": "Past meetup",
     "eventGoing": "{name} is going to {title}",
     "eventScheduled": "New gathering scheduled: {title}"
+  },
+  "moderators": {
+    "title": "Moderators",
+    "subtitle": "Trusted members who can approve new members and record attendance - so the club runs even when you're away.",
+    "promote": "Make moderator",
+    "demote": "Remove moderator",
+    "moderatorBadge": "Moderator",
+    "memberFallback": "Member"
   }
 }

@@ -272,5 +272,13 @@
     "attendedLabel": "Encontro passado",
     "eventGoing": "{name} vai a {title}",
     "eventScheduled": "Novo encontro agendado: {title}"
+  },
+  "moderators": {
+    "title": "Moderadores",
+    "subtitle": "Membros de confiança que podem aprovar novos membros e registrar presença - para o club funcionar mesmo quando você não estiver.",
+    "promote": "Tornar moderador",
+    "demote": "Remover moderador",
+    "moderatorBadge": "Moderador",
+    "memberFallback": "Membro"
   }
 }

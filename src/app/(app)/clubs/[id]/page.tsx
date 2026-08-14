@@ -8,6 +8,7 @@ import ClubInviteAccept from "@/components/ClubInviteAccept";
 import ClubModeToggle from "@/components/ClubModeToggle";
 import ClubMembershipRequest from "@/components/ClubMembershipRequest";
 import ClubMembershipRequests from "@/components/ClubMembershipRequests";
+import ClubModeratorsPanel from "@/components/ClubModeratorsPanel";
 
 type ClubDetail = {
   id: string;
@@ -79,8 +80,31 @@ export default async function ClubPage(props: { params: Promise<{ id: string }> 
         .in("status", ["active", "accepted"])
         .order("created_at", { ascending: false })
     : { data: [] as FounderInvite[] };
-  let membershipRequests: { id: string; display_name: string | null; photos: string[] | null }[] = [];
+  // Moderators run the club day-to-day alongside the host (approve requests,
+  // record attendance) - see supabase/club-moderators.sql.
+  let isModerator = false;
+  if (!club.is_host && ["founding", "regular"].includes(club.membership_status ?? "")) {
+    const { data: myRow } = await supabase
+      .from("club_memberships")
+      .select("role")
+      .eq("club_id", club.id)
+      .eq("user_id", (await supabase.auth.getUser()).data.user?.id ?? "")
+      .maybeSingle();
+    isModerator = myRow?.role === "moderator";
+  }
+  const canManage = club.is_host || isModerator;
+
+  // Host-only: active roster for the promote-to-moderator panel.
+  let rosterMembers: { id: string; display_name: string | null; photo: string | null; role: string }[] = [];
   if (club.is_host) {
+    const { data: roster } = await supabase.rpc("club_members", { p_club: club.id });
+    rosterMembers = (
+      (roster ?? []) as { id: string; display_name: string | null; photo: string | null; role: string }[]
+    ).filter((member) => member.role !== "host");
+  }
+
+  let membershipRequests: { id: string; display_name: string | null; photos: string[] | null }[] = [];
+  if (canManage) {
     const { data: requestRows } = await supabase
       .from("club_memberships")
       .select("user_id")
@@ -170,7 +194,9 @@ export default async function ClubPage(props: { params: Promise<{ id: string }> 
         </Link>
       )}
 
-      {club.is_host && <ClubMembershipRequests clubId={club.id} requests={membershipRequests} />}
+      {canManage && <ClubMembershipRequests clubId={club.id} requests={membershipRequests} />}
+
+      {club.is_host && <ClubModeratorsPanel clubId={club.id} members={rosterMembers} />}
 
       {club.is_host && operatingMode && (
         <ClubModeToggle clubId={club.id} mode={operatingMode} />

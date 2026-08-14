@@ -21,7 +21,8 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | `activity_candidate_decide` | `activity-candidate-decisions.sql` |
 | `activity_feed`, activity join-request RPCs | `activity-join-requests.sql` |
 | `city_people` (shared-taste reasons), `home_flocks` | `home-carousels.sql` |
-| `_rank_vibe_core`, `backfill_vibe` | `vibe-v2-private-link.sql` |
+| `_rank_vibe_core` | `vibe-v2-private-link.sql` |
+| `backfill_vibe`, `commit_vibe_matching`, `leave_vibe`, `host_invite_interest`, `host_make_room_invite_interest`, `_auto_confirm_member`, `confirm_attendance` (auto-confirm flow, 2026-08-05) | `vibe-auto-confirm-invites.sql` |
 | `rank_vibe` (thin auth wrapper) | `vibe-auto-matching.sql` |
 | `invite_city_fallback` (#77 `starts_at > now()` guard) | `vibe-auto-matching.sql` |
 | `autofill_open_vibes`, `auto_rank_due_vibes` + crons | `vibe-auto-matching.sql` |
@@ -43,7 +44,7 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | `club_detail` (safe Club detail; no roster or exact location) | `club-detail-access.sql` |
 | Founding member invite links and acceptance RPCs | `club-founder-invites.sql` |
 | `set_club_status` (activate, pause, close) | `club-heartbeat.sql` |
-| `decline_club_membership` | `club-membership-decisions.sql` |
+| `is_club_moderator`, `is_club_manager`, `set_club_member_role`, `approve_club_membership`, `decline_club_membership`, `record_club_attendance`, memberships/attendance read policies (moderators, 2026-08-14) | `club-moderators.sql` |
 | `trip_join_requests` SELECT policy (`can_see_trip_requests`) | `trip-requests-rls-enforce.sql` |
 | host RPCs (`notify`, `cancel_vibe`, `update_vibe_when`, commit/remove/appeal) | `host-controls.sql` |
 | Vibes-only onboarding profile fields | `onboarding-v3-vibes-only.sql` |
