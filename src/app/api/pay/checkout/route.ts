@@ -47,7 +47,10 @@ export async function POST(req: Request) {
   const payment = created as { payment_id: string; amount_cents: number; currency: string };
 
   const origin = new URL(req.url).origin;
-  const res = await fetch("https://api.nowpayments.io/v1/invoice", {
+  // Point at https://api-sandbox.nowpayments.io via env to test with the
+  // sandbox account's keys before going live.
+  const apiBase = process.env.NOWPAYMENTS_API_BASE ?? "https://api.nowpayments.io";
+  const res = await fetch(`${apiBase}/v1/invoice`, {
     method: "POST",
     headers: { "x-api-key": apiKey, "Content-Type": "application/json" },
     body: JSON.stringify({
