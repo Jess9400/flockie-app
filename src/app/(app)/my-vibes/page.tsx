@@ -71,6 +71,7 @@ export default async function MyVibesPage(
     { href: "/my-activities", label: ta("tabActivities") },
     { href: "/deals", label: ta("tabDeals") },
     { href: "/my-trips", label: ta("tabTrips") },
+    { href: "/my-clubs", label: t("tabClubs") },
   ];
 
   const { data: vibes } = await supabase

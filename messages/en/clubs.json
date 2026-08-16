@@ -298,5 +298,13 @@
     "deleteConfirm": "Remove this from the club media?",
     "deleteAria": "Remove",
     "fileFallback": "File"
+  },
+  "mine": {
+    "title": "My Clubs",
+    "subtitle": "Clubs you host or belong to.",
+    "hostBadge": "Host",
+    "emptyTitle": "No clubs yet",
+    "emptyBody": "Join a club through its gatherings, or start your own around something you'd love to repeat.",
+    "explore": "Explore clubs"
   }
 }

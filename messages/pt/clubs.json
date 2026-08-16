@@ -298,5 +298,13 @@
     "deleteConfirm": "Remover da mídia do club?",
     "deleteAria": "Remover",
     "fileFallback": "Arquivo"
+  },
+  "mine": {
+    "title": "Meus Clubs",
+    "subtitle": "Clubs que você organiza ou dos quais participa.",
+    "hostBadge": "Anfitrião",
+    "emptyTitle": "Nenhum club ainda",
+    "emptyBody": "Entre em um club pelos encontros, ou crie o seu em torno de algo que você adoraria repetir.",
+    "explore": "Explorar clubs"
   }
 }

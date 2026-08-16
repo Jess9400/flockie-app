@@ -36,6 +36,7 @@ function sectionFor(pathname: string): string {
       return "trips-hub";
     case "/my-trips":
     case "/my-activities":
+    case "/my-clubs":
       return "trips";
     case "/deals":
       return "deals";

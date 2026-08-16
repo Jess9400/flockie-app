@@ -298,5 +298,13 @@
     "deleteConfirm": "¿Quitar de la multimedia del club?",
     "deleteAria": "Quitar",
     "fileFallback": "Archivo"
+  },
+  "mine": {
+    "title": "Mis Clubs",
+    "subtitle": "Clubs que organizas o de los que participas.",
+    "hostBadge": "Anfitrión",
+    "emptyTitle": "Aún no hay clubs",
+    "emptyBody": "Únete a un club a través de sus encuentros, o crea el tuyo en torno a algo que te encantaría repetir.",
+    "explore": "Explorar clubs"
   }
 }
