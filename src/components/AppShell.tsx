@@ -78,6 +78,11 @@ const PRIMARY_NAV: NavItem[] = [
   { href: "/deals", labelKey: "deals", icon: Tag, sections: ["deals"] },
   // Trips hub (find a trip buddy + flocks): under construction - admin only.
   { href: "/trips", labelKey: "trips", icon: Plane, sections: ["trips-hub"], soon: true },
+];
+
+// The personal block sits BELOW the divider with Profile - "you" surfaces,
+// distinct from discovery above (founder call 2026-08-16).
+const PERSONAL_NAV: NavItem[] = [
   // My Plans owns everything "yours": My Vibes, activities, trips, clubs.
   { href: "/my-vibes", labelKey: "myTrips", icon: Map, sections: ["trips", "my-vibes"] },
   { href: "/chats", labelKey: "chats", icon: MessageCircle, sections: ["chats"] },
@@ -203,42 +208,45 @@ export default function AppShell({
     }`;
   }
 
+  const renderNavItem = (item: NavItem) => {
+    const Icon = item.icon;
+    if (item.soon && !isAdmin) {
+      return (
+        <span key={item.href} aria-disabled="true" className={SOON_ROW_CLS}>
+          <Icon size={18} />
+          <span className="flex-1">{t(item.labelKey)}</span>
+          <span className="rounded-full bg-white px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-ink/40">
+            {tcm("soon")}
+          </span>
+        </span>
+      );
+    }
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        onClick={() => setOpen(false)}
+        className={navItemCls(item.sections.includes(section))}
+      >
+        <Icon size={18} />
+        <span className="flex-1">{t(item.labelKey)}</span>
+        {item.href === "/chats" && chatUnread > 0 && (
+          <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-flockie-coral px-1.5 text-[11px] font-extrabold text-white">
+            {chatUnread > 9 ? "9+" : chatUnread}
+          </span>
+        )}
+      </Link>
+    );
+  };
+
   const NavList = (
     <nav className="flex h-full flex-col gap-1">
-      {PRIMARY_NAV.map((item) => {
-        const Icon = item.icon;
-        if (item.soon && !isAdmin) {
-          return (
-            <span key={item.href} aria-disabled="true" className={SOON_ROW_CLS}>
-              <Icon size={18} />
-              <span className="flex-1">{t(item.labelKey)}</span>
-              <span className="rounded-full bg-white px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-ink/40">
-                {tcm("soon")}
-              </span>
-            </span>
-          );
-        }
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={() => setOpen(false)}
-            className={navItemCls(item.sections.includes(section))}
-          >
-            <Icon size={18} />
-            <span className="flex-1">{t(item.labelKey)}</span>
-            {item.href === "/chats" && chatUnread > 0 && (
-              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-flockie-coral px-1.5 text-[11px] font-extrabold text-white">
-                {chatUnread > 9 ? "9+" : chatUnread}
-              </span>
-            )}
-          </Link>
-        );
-      })}
+      {PRIMARY_NAV.map(renderNavItem)}
       <div className="my-2 border-t-2 border-navy/10" />
       <Link href="/profile" onClick={() => setOpen(false)} className={navItemCls(section === "profile")}>
         <User size={18} /> <span className="flex-1">{t("profile")}</span>
       </Link>
+      {PERSONAL_NAV.map(renderNavItem)}
     </nav>
   );
 
