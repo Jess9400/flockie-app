@@ -123,11 +123,11 @@ begin
     where club_id = pay.club_id and user_id = pay.user_id and status in ('founding', 'regular')
     returning paid_until into v_until;
     perform public.notify(pay.user_id, 'club_socio',
-      'You''re a socio of ' || v_title,
+      'Your ' || v_title || ' membership is active',
       'Payment received - your membership is active until ' || to_char(v_until, 'DD Mon YYYY') || '.',
       jsonb_build_object('href', '/clubs/' || pay.club_id));
     perform public.notify(v_host, 'club_socio_payment',
-      'New socio payment in ' || v_title,
+      'New membership payment in ' || v_title,
       coalesce((select display_name from public.profiles where id = pay.user_id), 'A member')
         || ' paid for ' || coalesce(pay.months, 1) || ' month(s).',
       jsonb_build_object('href', '/clubs/' || pay.club_id));

@@ -76,8 +76,8 @@ begin
   perform public.notify(
     p_user,
     'club_socio',
-    'You''re a socio of ' || v_title,
-    'Your membership is active until ' || to_char(v_until, 'DD Mon YYYY') || '. Thanks for keeping the club alive.',
+    'Your ' || v_title || ' membership is active',
+    'Active until ' || to_char(v_until, 'DD Mon YYYY') || '. Thanks for keeping the club alive.',
     jsonb_build_object('href', '/clubs/' || p_club)
   );
   return jsonb_build_object('tier', 'paid', 'paid_until', v_until);

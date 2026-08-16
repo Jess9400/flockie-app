@@ -69,9 +69,11 @@ this list only tracks what is approved and pending or recently applied.
   rail-agnostic); see `supabase/releases/2026-08-16-club-store.md`. Requires
   `club-moderators.sql`. Pending production run.
 - 2026-08-16 `club-payments.sql` - payments foundation + NowPayments
-  settlement (service-role-only settle RPC); see
-  `supabase/releases/2026-08-16-club-payments.md`. Requires `club-socio-tier.sql`
-  and `club-store.sql`. Pending production run.
+  settlement; see `supabase/releases/2026-08-16-club-payments.md`. Applied to
+  production 2026-08-16 (probe-verified) and ACTIVATED (env keys live).
+- 2026-08-17 RE-RUN `club-socio-tier.sql` + `club-payments.sql` - copy only:
+  paid tier renamed Socio -> Member in notification texts (founder call).
+  Idempotent re-runs, no schema change.
 
 ## 4. Apply only an approved release
 

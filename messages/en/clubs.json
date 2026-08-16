@@ -301,8 +301,8 @@
     "deleteConfirm": "Remove this from the club media?",
     "deleteAria": "Remove",
     "fileFallback": "File",
-    "paidOnlyToggle": "Socios only",
-    "paidOnlyBadge": "Socios"
+    "paidOnlyToggle": "Paid members only",
+    "paidOnlyBadge": "Members"
   },
   "mine": {
     "title": "My Clubs",
@@ -313,27 +313,27 @@
     "explore": "Explore clubs"
   },
   "socio": {
-    "title": "Socio tier",
-    "subtitle": "A paid monthly membership for the club. Members pay you directly (Pix, cash, any link) - mark it here and the app enforces the perks. No money passes through Flockie.",
+    "title": "Membership",
+    "subtitle": "A paid monthly membership for the club. Members pay you directly or in-app - mark it here (or let checkout do it) and the app enforces the perks. No money passes through Flockie on manual payments.",
     "priceLabel": "Monthly price",
-    "pricePlaceholder": "e.g. 29.90 (empty = no paid tier)",
+    "pricePlaceholder": "e.g. 29.90 (empty = no paid membership)",
     "currencyLabel": "Currency",
-    "perksLabel": "What socios get",
+    "perksLabel": "What paid members get",
     "perksPlaceholder": "e.g. free entry to gatherings, exclusive content, the monthly kit…",
-    "saveOffer": "Save socio offer",
-    "offerSaved": "Socio offer saved.",
+    "saveOffer": "Save membership offer",
+    "offerSaved": "Membership offer saved.",
     "errPrice": "Enter a valid price.",
     "membersHeading": "Members",
     "memberFallback": "Member",
-    "activeUntil": "Socio until {date}",
-    "freeTier": "Free member",
+    "activeUntil": "Member until {date}",
+    "freeTier": "Free",
     "markPaid": "Mark paid (1 month)",
     "extendMonth": "+1 month",
     "setFree": "Set free",
-    "memberTitle": "Socio membership",
+    "memberTitle": "Membership",
     "memberPrice": "{currency} {price} / month",
-    "memberActive": "Socio until {date}",
-    "memberHow": "To become a socio, pay the host directly (Pix or in person) - they'll activate your membership here."
+    "memberActive": "Member until {date}",
+    "memberHow": "To become a paid member, pay in-app or directly to the host - they'll activate your membership here."
   },
   "store": {
     "title": "Club store",

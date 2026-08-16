@@ -301,8 +301,8 @@
     "deleteConfirm": "Remover da mídia do club?",
     "deleteAria": "Remover",
     "fileFallback": "Arquivo",
-    "paidOnlyToggle": "Só para sócios",
-    "paidOnlyBadge": "Sócios"
+    "paidOnlyToggle": "Só membros pagantes",
+    "paidOnlyBadge": "Membros"
   },
   "mine": {
     "title": "Meus Clubs",
@@ -313,27 +313,27 @@
     "explore": "Explorar clubs"
   },
   "socio": {
-    "title": "Plano Sócio",
-    "subtitle": "Uma mensalidade paga para o club. Os membros pagam direto para você (Pix, dinheiro, link) - marque aqui e o app garante os benefícios. Nenhum dinheiro passa pelo Flockie.",
+    "title": "Plano de Membro",
+    "subtitle": "Uma mensalidade paga para o club. Os membros pagam direto para você ou pelo app - marque aqui (ou o checkout marca sozinho) e o app garante os benefícios. Nos pagamentos manuais, nenhum dinheiro passa pelo Flockie.",
     "priceLabel": "Mensalidade",
     "pricePlaceholder": "ex.: 29,90 (vazio = sem plano pago)",
     "currencyLabel": "Moeda",
-    "perksLabel": "O que os sócios ganham",
+    "perksLabel": "O que os membros pagantes ganham",
     "perksPlaceholder": "ex.: entrada livre nos encontros, conteúdo exclusivo, o kit do mês…",
-    "saveOffer": "Salvar plano Sócio",
-    "offerSaved": "Plano Sócio salvo.",
+    "saveOffer": "Salvar plano de membro",
+    "offerSaved": "Plano de membro salvo.",
     "errPrice": "Informe um valor válido.",
     "membersHeading": "Membros",
     "memberFallback": "Membro",
-    "activeUntil": "Sócio até {date}",
-    "freeTier": "Membro gratuito",
+    "activeUntil": "Membro até {date}",
+    "freeTier": "Gratuito",
     "markPaid": "Marcar pago (1 mês)",
     "extendMonth": "+1 mês",
     "setFree": "Tornar gratuito",
-    "memberTitle": "Plano Sócio",
+    "memberTitle": "Plano de Membro",
     "memberPrice": "{currency} {price} / mês",
-    "memberActive": "Sócio até {date}",
-    "memberHow": "Para virar sócio, pague direto para o anfitrião (Pix ou pessoalmente) - ele ativa sua mensalidade aqui."
+    "memberActive": "Membro até {date}",
+    "memberHow": "Para virar membro pagante, pague pelo app ou direto ao anfitrião - ele ativa sua mensalidade aqui."
   },
   "store": {
     "title": "Lojinha do club",
