@@ -32,8 +32,6 @@ export default function ClubModeratorsPanel({
   const [busyId, setBusyId] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
-  if (members.length === 0) return null;
-
   async function setRole(userId: string, role: "member" | "moderator") {
     setBusyId(userId);
     setErr(null);
@@ -52,6 +50,12 @@ export default function ClubModeratorsPanel({
     <section className="mt-5 rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
       <h2 className="text-lg font-black text-ink">🛡️ {t("title")}</h2>
       <p className="mt-0.5 text-sm font-medium text-muted">{t("subtitle")}</p>
+
+      {members.length === 0 && (
+        <p className="mt-3 rounded-2xl bg-cream p-3 text-sm font-medium text-muted">
+          {t("empty")}
+        </p>
+      )}
 
       <div className="mt-3 space-y-2">
         {members.map((member) => {

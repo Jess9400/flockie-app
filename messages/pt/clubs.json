@@ -279,6 +279,7 @@
     "promote": "Tornar moderador",
     "demote": "Remover moderador",
     "moderatorBadge": "Moderador",
-    "memberFallback": "Membro"
+    "memberFallback": "Membro",
+    "empty": "Ainda não há membros ativos. As pessoas aparecem aqui quando aceitam o convite ou quando você aprova o pedido delas - aí você pode torná-las moderadoras."
   }
 }

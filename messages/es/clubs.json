@@ -279,6 +279,7 @@
     "promote": "Hacer moderador",
     "demote": "Quitar moderador",
     "moderatorBadge": "Moderador",
-    "memberFallback": "Miembro"
+    "memberFallback": "Miembro",
+    "empty": "Aún no hay miembros activos. Las personas aparecen aquí cuando aceptan su invitación o cuando apruebas su solicitud - entonces puedes hacerlas moderadoras."
   }
 }

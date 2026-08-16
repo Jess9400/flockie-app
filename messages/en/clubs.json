@@ -279,6 +279,7 @@
     "promote": "Make moderator",
     "demote": "Remove moderator",
     "moderatorBadge": "Moderator",
-    "memberFallback": "Member"
+    "memberFallback": "Member",
+    "empty": "No active members yet. People show up here once they accept their invite or you approve their request - then you can make them moderators."
   }
 }
