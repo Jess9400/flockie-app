@@ -128,6 +128,45 @@ export async function GET(req: Request) {
       }
     }
 
+    // Places Text Search - the engine that actually resolves VENUE NAMES
+    // ("Padaria Imperial"), which the Geocoding API and OSM both miss. The key
+    // is referer-restricted to our own domain, and this is our own server
+    // acting for our own app, so we declare that referer explicitly.
+    if (!result && key) {
+      const res = await fetch("https://places.googleapis.com/v1/places:searchText", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Goog-Api-Key": key,
+          "X-Goog-FieldMask":
+            "places.location,places.formattedAddress,places.displayName,places.addressComponents",
+          Referer: "https://app.findflockie.com/",
+        },
+        body: JSON.stringify({ textQuery: cleanQ, maxResultCount: 1 }),
+      });
+      const data = await res.json();
+      const place = data.places?.[0];
+      const loc = place?.location;
+      if (loc && typeof loc.latitude === "number" && typeof loc.longitude === "number") {
+        const comps = (place.addressComponents ?? []).map(
+          (c: { longText?: string; types?: string[] }) => ({
+            long_name: c.longText,
+            types: c.types,
+          })
+        );
+        result = {
+          label: place.formattedAddress ?? place.displayName?.text ?? cleanQ,
+          lat: loc.latitude,
+          lng: loc.longitude,
+          city: pickGoogleCity(comps),
+          area: pickGoogleArea(comps),
+          country: pickGoogleComponent(comps, ["country"]),
+        };
+      } else if (data.error) {
+        console.warn("[geocode] Places status:", data.error.status ?? "", data.error.message ?? "");
+      }
+    }
+
     // Fall back to OpenStreetMap when Google produced nothing - no key, no
     // result, or REQUEST_DENIED from a referrer-restricted key. This restores
     // the old behaviour so a restricted Google key can't kill all geocoding.
