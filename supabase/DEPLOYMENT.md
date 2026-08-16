@@ -57,8 +57,11 @@ Per-release detail now lives in dated records under `supabase/releases/`;
 this list only tracks what is approved and pending or recently applied.
 
 - 2026-08-14 `club-moderators.sql` - club moderator role; see
-  `supabase/releases/2026-08-14-club-moderators.md` for preflight, verify,
-  and rollback. Pending production run.
+  `supabase/releases/2026-08-14-club-moderators.md`. Applied to production
+  2026-08-14 (probe-verified).
+- 2026-08-16 `club-media.sql` - private club media bucket + gallery table and
+  storage policies; see `supabase/releases/2026-08-16-club-media.md`. Requires
+  `club-moderators.sql`. Pending production run.
 
 ## 4. Apply only an approved release
 

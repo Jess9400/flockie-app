@@ -77,7 +77,10 @@
     "privacyBody": "A Flockie não mostra uma lista de membros nem o local exato aqui. Fundadores e regulares são conquistados com participação real.",
     "clubChat": "Chat do club",
     "clubChatSub": "A sala permanente - planos, piadas, tudo entre as reuniões.",
-    "openChat": "Abrir"
+    "openChat": "Abrir",
+    "mediaCard": "Mídia do club",
+    "mediaCardSub": "Fotos, vídeos e arquivos do club",
+    "openMedia": "Abrir"
   },
   "founders": {
     "title": "Convidar membros fundadores",
@@ -281,5 +284,18 @@
     "moderatorBadge": "Moderador",
     "memberFallback": "Membro",
     "empty": "Ainda não há membros ativos. As pessoas aparecem aqui quando aceitam o convite ou quando você aprova o pedido delas - aí você pode torná-las moderadoras."
+  },
+  "media": {
+    "title": "Mídia do club",
+    "subtitleManager": "Fotos, vídeos e arquivos deste club. Apenas o anfitrião e os moderadores podem adicionar ou remover; todos os membros podem ver e baixar.",
+    "subtitleMember": "Fotos, vídeos e arquivos compartilhados pelo anfitrião e moderadores do club.",
+    "upload": "Enviar",
+    "uploading": "Enviando…",
+    "emptyManager": "Nada por aqui ainda. Envie fotos dos encontros, a playlist do club, um PDF com as regras - tudo que o club deve guardar.",
+    "emptyMember": "Nada por aqui ainda - o anfitrião e os moderadores vão compartilhar fotos e arquivos do club neste espaço.",
+    "errTooLarge": "{name} passa do limite de 50 MB.",
+    "deleteConfirm": "Remover da mídia do club?",
+    "deleteAria": "Remover",
+    "fileFallback": "Arquivo"
   }
 }

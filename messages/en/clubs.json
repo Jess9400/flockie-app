@@ -77,7 +77,10 @@
     "privacyBody": "Flockie does not show a Club roster or exact location here. Founders and regulars are earned through real participation.",
     "clubChat": "Club chat",
     "clubChatSub": "The persistent room - plans, jokes, everything between gatherings.",
-    "openChat": "Open"
+    "openChat": "Open",
+    "mediaCard": "Club media",
+    "mediaCardSub": "Photos, videos & files from the club",
+    "openMedia": "Open"
   },
   "founders": {
     "title": "Invite founding members",
@@ -281,5 +284,18 @@
     "moderatorBadge": "Moderator",
     "memberFallback": "Member",
     "empty": "No active members yet. People show up here once they accept their invite or you approve their request - then you can make them moderators."
+  },
+  "media": {
+    "title": "Club media",
+    "subtitleManager": "Photos, videos, and files for this club. Only the host and moderators can add or remove; every member can view and download.",
+    "subtitleMember": "Photos, videos, and files shared by the club's host and moderators.",
+    "upload": "Upload",
+    "uploading": "Uploading…",
+    "emptyManager": "Nothing here yet. Upload photos from your gatherings, the club playlist, a PDF with house rules - anything the club should keep.",
+    "emptyMember": "Nothing here yet - the host and moderators will share club photos and files in this space.",
+    "errTooLarge": "{name} is over the 50 MB limit.",
+    "deleteConfirm": "Remove this from the club media?",
+    "deleteAria": "Remove",
+    "fileFallback": "File"
   }
 }

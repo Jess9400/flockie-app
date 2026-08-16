@@ -194,6 +194,19 @@ export default async function ClubPage(props: { params: Promise<{ id: string }> 
         </Link>
       )}
 
+      {(club.is_host || ["founding", "regular"].includes(club.membership_status ?? "")) && (
+        <Link
+          href={`/clubs/${club.id}/media`}
+          className="mt-5 flex items-center justify-between rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5 sm:p-6"
+        >
+          <div>
+            <h2 className="text-lg font-black text-ink">📁 {t("mediaCard")}</h2>
+            <p className="mt-0.5 text-sm font-medium text-muted">{t("mediaCardSub")}</p>
+          </div>
+          <span className="rounded-full bg-flockie-blue px-4 py-2 text-sm font-bold text-white">{t("openMedia")}</span>
+        </Link>
+      )}
+
       {canManage && <ClubMembershipRequests clubId={club.id} requests={membershipRequests} />}
 
       {club.is_host && <ClubModeratorsPanel clubId={club.id} members={rosterMembers} />}
