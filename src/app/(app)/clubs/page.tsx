@@ -35,9 +35,20 @@ export default async function ClubsPage(props: { searchParams: Promise<{ city?: 
     .select("home_city")
     .eq("id", user!.id)
     .maybeSingle();
-  const city = searchParams.city?.trim() || profile?.home_city?.trim() || "";
-  const { data } = await supabase.rpc("club_directory", { p_city: city || null, p_limit: 24 });
-  const clubs = (data ?? []) as ClubDirectoryRow[];
+  // Open discovery, like vibes: no city gate by default - every discoverable
+  // club shows (cards carry their city), the search box narrows on demand,
+  // and the viewer's home-city clubs float to the top.
+  const city = searchParams.city?.trim() || "";
+  const homeCity = profile?.home_city?.trim().toLowerCase() || "";
+  const { data } = await supabase.rpc("club_directory", { p_city: city || null, p_limit: 48 });
+  let clubs = (data ?? []) as ClubDirectoryRow[];
+  if (!city && homeCity) {
+    clubs = [...clubs].sort(
+      (a, b) =>
+        Number((b.city ?? "").toLowerCase() === homeCity) -
+        Number((a.city ?? "").toLowerCase() === homeCity)
+    );
+  }
 
   // Clubs I host or belong to - ALWAYS visible, regardless of the city filter
   // (a club inherits its city from the founding vibe, which can differ from
