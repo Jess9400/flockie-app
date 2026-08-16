@@ -2,7 +2,9 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/supabase/user";
+import { isAdminEmail } from "@/lib/admin";
 import TripVibeForm from "@/components/TripVibeForm";
 
 // The Trips hub (nav tab): everything travel-shaped lives here - find a buddy
@@ -10,6 +12,8 @@ import TripVibeForm from "@/components/TripVibeForm";
 export default async function TripsHubPage() {
   const supabase = await createClient();
   const user = await getSessionUser();
+  // Trips is under construction - admin only for now (nav shows "Soon").
+  if (!isAdminEmail(user?.email)) redirect("/home");
   const tr = await getTranslations("trips");
 
   // One-time travel form at the door (founder call): complete it here, then

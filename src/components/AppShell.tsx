@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home, Compass, Map, Sparkles, MessageCircle, User, Bell, Menu, X, ArrowLeft, Plane, UsersRound,
+  Home, Compass, Map, Sparkles, MessageCircle, User, Bell, Menu, X, ArrowLeft, Plane, UsersRound, Tag,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Footer from "@/components/Footer";
@@ -60,6 +60,9 @@ type NavItem = {
   labelKey: string;
   icon: typeof Home;
   sections: string[];
+  // Under construction: renders disabled with a "Soon" chip for everyone
+  // except admin accounts (src/lib/admin.ts), who keep the working link.
+  soon?: boolean;
 };
 
 // The drawer/sidebar holds the primary app surfaces (+ Profile below). The
@@ -72,10 +75,11 @@ const PRIMARY_NAV: NavItem[] = [
   { href: "/vibes", labelKey: "vibes", icon: Sparkles, sections: ["vibes"] },
   { href: "/clubs", labelKey: "clubs", icon: UsersRound, sections: ["clubs"] },
   { href: "/match", labelKey: "findABuddy", icon: Compass, sections: ["match"] },
-  // Trips hub: find a trip buddy (soon) + find a flock live here.
-  { href: "/trips", labelKey: "trips", icon: Plane, sections: ["trips-hub"] },
-  // My Plans owns everything "yours": My Vibes, activities, deals, trips.
-  { href: "/my-vibes", labelKey: "myTrips", icon: Map, sections: ["trips", "deals", "my-vibes"] },
+  { href: "/deals", labelKey: "deals", icon: Tag, sections: ["deals"] },
+  // Trips hub (find a trip buddy + flocks): under construction - admin only.
+  { href: "/trips", labelKey: "trips", icon: Plane, sections: ["trips-hub"], soon: true },
+  // My Plans owns everything "yours": My Vibes, activities, trips, clubs.
+  { href: "/my-vibes", labelKey: "myTrips", icon: Map, sections: ["trips", "my-vibes"] },
   { href: "/chats", labelKey: "chats", icon: MessageCircle, sections: ["chats"] },
 ];
 
@@ -90,16 +94,22 @@ const TABS: NavItem[] = [
   { href: "/my-vibes", labelKey: "myTrips", icon: Map, sections: ["trips", "deals", "my-vibes"] },
 ];
 
+const SOON_ROW_CLS =
+  "flex cursor-not-allowed items-center gap-3 rounded-2xl px-4 py-2.5 font-bold text-ink/35";
+
 export default function AppShell({
   children,
   userId,
+  isAdmin = false,
 }: {
   children: React.ReactNode;
   userId: string;
+  isAdmin?: boolean;
 }) {
   const pathname = usePathname();
   const t = useTranslations("nav");
   const tc = useTranslations("components");
+  const tcm = useTranslations("common");
   const section = sectionFor(pathname);
   // Chat rooms fill the viewport exactly (no page scroll, no footer) so the
   // chat window stays static and only the message list scrolls inside it.
@@ -197,6 +207,17 @@ export default function AppShell({
     <nav className="flex h-full flex-col gap-1">
       {PRIMARY_NAV.map((item) => {
         const Icon = item.icon;
+        if (item.soon && !isAdmin) {
+          return (
+            <span key={item.href} aria-disabled="true" className={SOON_ROW_CLS}>
+              <Icon size={18} />
+              <span className="flex-1">{t(item.labelKey)}</span>
+              <span className="rounded-full bg-white px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-ink/40">
+                {tcm("soon")}
+              </span>
+            </span>
+          );
+        }
         return (
           <Link
             key={item.href}

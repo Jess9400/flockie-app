@@ -3,7 +3,9 @@ import Image from "next/image";
 import { MapPin, CalendarClock, Users, Plus, ArrowLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/supabase/user";
+import { isAdminEmail } from "@/lib/admin";
 import TripJoinButton from "@/components/TripJoinButton";
 import FilterSheet from "@/components/FilterSheet";
 import SearchBar from "@/components/SearchBar";
@@ -50,6 +52,9 @@ export default async function TripBoardPage(
 ) {
   const searchParams = await props.searchParams;
   const supabase = await createClient();
+  // Flocks is under construction - admin only for now (nav shows "Soon").
+  const viewer = await getSessionUser();
+  if (!isAdminEmail(viewer?.email)) redirect("/home");
   const user = await getSessionUser();
   void user;
   const tr = await getTranslations("flocks");

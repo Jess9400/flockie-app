@@ -37,7 +37,6 @@ export default async function MyActivitiesPage(
   const TRIP_TABS = [
     { href: "/my-vibes", label: tmv("tabMyVibes") },
     { href: "/my-activities", label: t("tabActivities") },
-    { href: "/deals", label: t("tabDeals") },
     { href: "/my-trips", label: t("tabTrips") },
     { href: "/my-clubs", label: tmv("tabClubs") },
   ];

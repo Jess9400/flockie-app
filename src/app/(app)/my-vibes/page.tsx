@@ -69,7 +69,6 @@ export default async function MyVibesPage(
   const VIBE_TABS = [
     { href: "/my-vibes", label: t("tabMyVibes") },
     { href: "/my-activities", label: ta("tabActivities") },
-    { href: "/deals", label: ta("tabDeals") },
     { href: "/my-trips", label: ta("tabTrips") },
     { href: "/my-clubs", label: t("tabClubs") },
   ];

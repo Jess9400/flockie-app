@@ -131,6 +131,15 @@ export default async function ClubsPage(props: { searchParams: Promise<{ city?: 
           })}
         </div>
       )}
+
+      {/* Quick link to your own clubs - same bottom-row pattern as Vibes/Trips. */}
+      <Link
+        href="/my-clubs"
+        className="mb-6 mt-6 flex items-center justify-between rounded-2xl border border-ink/15 bg-white px-4 py-3 text-sm font-bold text-ink shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5"
+      >
+        <span>🫶 {t("myClubs")}</span>
+        <ArrowRight size={16} className="text-ink/50" />
+      </Link>
     </main>
   );
 }
