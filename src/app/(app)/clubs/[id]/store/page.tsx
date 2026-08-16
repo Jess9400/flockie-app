@@ -84,7 +84,12 @@ export default async function ClubStorePage(props: { params: Promise<{ id: strin
       {club.is_host ? (
         <ClubStoreManager clubId={club.id} userId={user!.id} products={products} orders={hostOrders} />
       ) : (
-        <ClubStoreFront products={products.filter((p) => p.active)} myOrders={myOrders} />
+        <ClubStoreFront
+          clubId={club.id}
+          products={products.filter((p) => p.active)}
+          myOrders={myOrders}
+          paymentsEnabled={!!process.env.NOWPAYMENTS_API_KEY}
+        />
       )}
     </main>
   );

@@ -68,6 +68,10 @@ this list only tracks what is approved and pending or recently applied.
 - 2026-08-16 `club-store.sql` - club merchandise store (products/orders,
   rail-agnostic); see `supabase/releases/2026-08-16-club-store.md`. Requires
   `club-moderators.sql`. Pending production run.
+- 2026-08-16 `club-payments.sql` - payments foundation + NowPayments
+  settlement (service-role-only settle RPC); see
+  `supabase/releases/2026-08-16-club-payments.md`. Requires `club-socio-tier.sql`
+  and `club-store.sql`. Pending production run.
 
 ## 4. Apply only an approved release
 

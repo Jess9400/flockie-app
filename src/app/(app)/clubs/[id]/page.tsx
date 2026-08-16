@@ -10,6 +10,7 @@ import ClubMembershipRequest from "@/components/ClubMembershipRequest";
 import ClubMembershipRequests from "@/components/ClubMembershipRequests";
 import ClubModeratorsPanel from "@/components/ClubModeratorsPanel";
 import ClubSocioPanel from "@/components/ClubSocioPanel";
+import PayButton from "@/components/PayButton";
 
 type ClubDetail = {
   id: string;
@@ -35,6 +36,8 @@ export default async function ClubPage(props: { params: Promise<{ id: string }> 
   const supabase = await createClient();
   const t = await getTranslations("clubs.detail");
   const ts = await getTranslations("clubs.socio");
+  // In-app checkout appears once the provider key is configured in the env.
+  const paymentsEnabled = !!process.env.NOWPAYMENTS_API_KEY;
   const { data } = await supabase.rpc("club_detail", { p_club: params.id }).maybeSingle();
   // Host-only extra: the operating mode drives the heartbeat (RLS limits this
   // read to the owner; non-hosts just get null).
@@ -314,7 +317,10 @@ export default async function ClubPage(props: { params: Promise<{ id: string }> 
             <p className="mt-3 whitespace-pre-wrap text-sm font-medium text-ink">{socioOffer.perks}</p>
           )}
           {!(socioOffer.my_tier === "paid" && socioOffer.my_paid_until && new Date(socioOffer.my_paid_until) > new Date()) && (
-            <p className="mt-3 rounded-2xl bg-cream p-3 text-sm font-medium text-muted">{ts("memberHow")}</p>
+            <div className="mt-3 space-y-2">
+              {paymentsEnabled && <PayButton kind="socio" clubId={club.id} months={1} />}
+              <p className="rounded-2xl bg-cream p-3 text-sm font-medium text-muted">{ts("memberHow")}</p>
+            </div>
           )}
         </section>
       )}

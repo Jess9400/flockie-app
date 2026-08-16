@@ -146,3 +146,43 @@ These make clubs feel earned and are mostly buildable without payments:
    experience; a crypto-native club can mint an on-chain skin later without changing
    the source of truth.
 5. NowPayments demoted to an optional extra rail for crypto-native clubs, not the backbone.
+
+---
+
+## Multi-provider payment architecture (added 2026-08-16, founder approved)
+
+One internal system (club_payments + the socio/order records), three provider
+adapters routed by currency. The platform fee is ALWAYS deducted at the
+provider layer - the host's balance is born at 95%, Flockie never holds funds:
+
+| Currency | Provider | Fee mechanism | Recurring | Status |
+|---|---|---|---|---|
+| Crypto | NowPayments | account-level / payout-minus-fee (confirm split with support) | manual renewals v1 | **INTEGRATED** - checkout + signed IPN webhook live behind env vars |
+| BRL cards | Asaas | split at origin on every charge, incl. assinaturas | native auto-charge | adapter slot ready; blocked on Asaas platform-account answers |
+| USD/intl cards | Stripe Connect | application_fee_amount per charge | Stripe Billing | **WAITS for the legal entity** (CNPJ or Atlas) - founder confirmed |
+
+Flow: member taps pay -> /api/pay/checkout validates + snapshots via
+create_club_payment -> provider hosted page -> provider webhook (HMAC-verified)
+-> settle_club_payment (service-role only, idempotent) -> socio activated /
+order marked paid + notifications. The host's manual "mark paid" remains as the
+offline fallback forever.
+
+To activate NowPayments: create the account, set payout wallet, add
+NOWPAYMENTS_API_KEY + NOWPAYMENTS_IPN_SECRET in Vercel env, redeploy. Crypto
+proceeds accrue in the platform NowPayments account; host payouts minus 5% are
+manual (mass-payout API later).
+
+### Draft message to Asaas sales (send via asaas.com chat/comercial)
+
+> Ola! Estamos construindo a Flockie (findflockie.com), uma plataforma de
+> comunidades locais onde organizadores de clubes cobram mensalidades e vendem
+> produtos aos membros. Queremos usar o Asaas como meio de pagamento com split:
+> o organizador recebe 95% e a plataforma 5% de cada cobranca, incluindo
+> assinaturas recorrentes no cartao. Tres perguntas:
+> 1. A conta-plataforma (que recebe os 5%) pode ser aberta como pessoa fisica
+>    (CPF) nesta fase pre-CNPJ, ou o split/subcontas exige CNPJ?
+> 2. O split funciona em assinaturas recorrentes criadas via API com cartao de
+>    credito, cobrando automaticamente todo mes?
+> 3. Os organizadores (recebedores dos 95%) podem ser pessoas fisicas com CPF,
+>    criando as subcontas via API white-label?
+> Obrigada!

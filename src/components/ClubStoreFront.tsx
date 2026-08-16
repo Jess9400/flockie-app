@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import PayButton from "@/components/PayButton";
 
 export type StoreProduct = {
   id: string;
@@ -28,11 +29,15 @@ const fmt = (cents: number, currency: string) => `${currency} ${(cents / 100).to
 // Member storefront: order = intent; the host confirms payment (v1 rail-
 // agnostic - card checkout replaces the manual step when the PSP lands).
 export default function ClubStoreFront({
+  clubId,
   products,
   myOrders,
+  paymentsEnabled,
 }: {
+  clubId: string;
   products: StoreProduct[];
   myOrders: MyOrder[];
+  paymentsEnabled: boolean;
 }) {
   const supabase = createClient();
   const router = useRouter();
@@ -108,14 +113,17 @@ export default function ClubStoreFront({
                   </p>
                 </div>
                 {order.status === "pending" && (
-                  <button
-                    type="button"
-                    onClick={() => cancel(order.id)}
-                    disabled={busy === order.id}
-                    className="shrink-0 rounded-full border border-ink/15 bg-white px-3 py-1.5 text-xs font-bold text-ink disabled:opacity-50"
-                  >
-                    {t("cancel")}
-                  </button>
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    {paymentsEnabled && <PayButton kind="order" clubId={clubId} orderId={order.id} />}
+                    <button
+                      type="button"
+                      onClick={() => cancel(order.id)}
+                      disabled={busy === order.id}
+                      className="rounded-full border border-ink/15 bg-white px-3 py-1.5 text-xs font-bold text-ink disabled:opacity-50"
+                    >
+                      {t("cancel")}
+                    </button>
+                  </div>
                 )}
               </div>
             ))}

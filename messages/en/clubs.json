@@ -366,5 +366,10 @@
     "status_paid": "Paid",
     "status_delivered": "Delivered",
     "status_cancelled": "Cancelled"
+  },
+  "pay": {
+    "payCrypto": "Pay with crypto",
+    "redirecting": "Opening checkout…",
+    "error": "Could not start the payment - try again."
   }
 }

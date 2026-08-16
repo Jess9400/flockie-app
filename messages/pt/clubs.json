@@ -366,5 +366,10 @@
     "status_paid": "Pago",
     "status_delivered": "Entregue",
     "status_cancelled": "Cancelado"
+  },
+  "pay": {
+    "payCrypto": "Pagar com cripto",
+    "redirecting": "Abrindo pagamento…",
+    "error": "Não foi possível iniciar o pagamento - tente de novo."
   }
 }
