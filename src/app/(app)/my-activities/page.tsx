@@ -36,9 +36,9 @@ export default async function MyActivitiesPage(
   const tmv = await getTranslations("myVibes");
   const TRIP_TABS = [
     { href: "/my-vibes", label: tmv("tabMyVibes") },
+    { href: "/my-clubs", label: tmv("tabClubs") },
     { href: "/my-activities", label: t("tabActivities") },
     { href: "/my-trips", label: t("tabTrips") },
-    { href: "/my-clubs", label: tmv("tabClubs") },
   ];
 
   const { data: activities } = await supabase

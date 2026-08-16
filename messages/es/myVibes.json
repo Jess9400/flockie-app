@@ -1,6 +1,6 @@
 {
   "tabVibes": "Vibes",
-  "tabMyVibes": "Mis Vibes",
+  "tabMyVibes": "Vibes",
   "title": "Mis Vibes",
   "create": "Crear",
   "subtitle": "Las Vibes que organizas y a las que te has unido.",
@@ -37,5 +37,5 @@
     "shortlisted": "Preseleccionado",
     "invited": "Invitado"
   },
-  "tabClubs": "Mis Clubs"
+  "tabClubs": "Clubs"
 }

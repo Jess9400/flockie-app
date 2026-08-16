@@ -16,9 +16,9 @@ export default async function MyClubsPage() {
 
   const TABS = [
     { href: "/my-vibes", label: tmv("tabMyVibes") },
+    { href: "/my-clubs", label: tmv("tabClubs") },
     { href: "/my-activities", label: ta("tabActivities") },
     { href: "/my-trips", label: ta("tabTrips") },
-    { href: "/my-clubs", label: tmv("tabClubs") },
   ];
 
   // Hosted + member clubs in one definer call; owned ids mark the Host badge.

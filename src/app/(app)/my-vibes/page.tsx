@@ -68,9 +68,9 @@ export default async function MyVibesPage(
   const ta = await getTranslations("activities");
   const VIBE_TABS = [
     { href: "/my-vibes", label: t("tabMyVibes") },
+    { href: "/my-clubs", label: t("tabClubs") },
     { href: "/my-activities", label: ta("tabActivities") },
     { href: "/my-trips", label: ta("tabTrips") },
-    { href: "/my-clubs", label: t("tabClubs") },
   ];
 
   const { data: vibes } = await supabase
