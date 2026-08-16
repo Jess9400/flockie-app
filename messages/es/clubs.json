@@ -80,7 +80,10 @@
     "openChat": "Abrir",
     "mediaCard": "Multimedia del club",
     "mediaCardSub": "Fotos, videos y archivos del club",
-    "openMedia": "Abrir"
+    "openMedia": "Abrir",
+    "storeCard": "Tiendita del club",
+    "storeCardSub": "Kits, camisetas y productos del club",
+    "openStore": "Abrir"
   },
   "founders": {
     "title": "Invitar miembros fundadores",
@@ -331,5 +334,37 @@
     "memberPrice": "{currency} {price} / mes",
     "memberActive": "Socio hasta {date}",
     "memberHow": "Para ser socio, paga directo al anfitrión (Pix o en persona) - él activa tu membresía aquí."
+  },
+  "store": {
+    "title": "Tiendita del club",
+    "subtitleHost": "Publica productos (kits, camisetas, prints); los miembros piden y tú confirmas pago y entrega.",
+    "subtitleMember": "Productos del club. Pide aquí, paga al anfitrión y recógelo en un encuentro.",
+    "buy": "Pedir",
+    "orderPlaced": "¡Pedido hecho! Paga al anfitrión y él lo confirma aquí.",
+    "myOrders": "Mis pedidos",
+    "cancel": "Cancelar",
+    "payHint": "Por ahora, paga directo al anfitrión - el pago con tarjeta en la app está en camino.",
+    "emptyMember": "Aún no hay productos - el anfitrión publicará los productos del club aquí.",
+    "addProduct": "Agregar producto",
+    "productTitle": "Nombre del producto",
+    "productDescription": "Descripción (opcional)",
+    "productPrice": "Precio, ej.: 49.90",
+    "addPhoto": "Foto",
+    "photoReady": "Foto ✓",
+    "saveProduct": "Agregar a la tiendita",
+    "productAdded": "Producto agregado.",
+    "errProduct": "Ingresa un nombre y un precio válido.",
+    "deactivate": "Ocultar",
+    "activate": "Mostrar",
+    "ordersHeading": "Pedidos",
+    "noOrders": "Aún no hay pedidos.",
+    "markPaid": "Marcar pagado",
+    "markDelivered": "Entregado",
+    "buyerFallback": "Miembro",
+    "productFallback": "Producto",
+    "status_pending": "Esperando pago",
+    "status_paid": "Pagado",
+    "status_delivered": "Entregado",
+    "status_cancelled": "Cancelado"
   }
 }

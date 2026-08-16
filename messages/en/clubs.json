@@ -80,7 +80,10 @@
     "openChat": "Open",
     "mediaCard": "Club media",
     "mediaCardSub": "Photos, videos & files from the club",
-    "openMedia": "Open"
+    "openMedia": "Open",
+    "storeCard": "Club store",
+    "storeCardSub": "Kits, shirts & club merchandise",
+    "openStore": "Open"
   },
   "founders": {
     "title": "Invite founding members",
@@ -331,5 +334,37 @@
     "memberPrice": "{currency} {price} / month",
     "memberActive": "Socio until {date}",
     "memberHow": "To become a socio, pay the host directly (Pix or in person) - they'll activate your membership here."
+  },
+  "store": {
+    "title": "Club store",
+    "subtitleHost": "List merchandise (kits, shirts, prints); members order and you confirm payment and delivery.",
+    "subtitleMember": "Merchandise from the club. Order here, pay the host, and pick it up at a gathering.",
+    "buy": "Order",
+    "orderPlaced": "Order placed! Pay the host and they'll confirm it here.",
+    "myOrders": "My orders",
+    "cancel": "Cancel",
+    "payHint": "Pay the host directly for now - in-app card checkout is coming.",
+    "emptyMember": "No products yet - the host will list club merchandise here.",
+    "addProduct": "Add a product",
+    "productTitle": "Product name",
+    "productDescription": "Description (optional)",
+    "productPrice": "Price, e.g. 49.90",
+    "addPhoto": "Photo",
+    "photoReady": "Photo ✓",
+    "saveProduct": "Add to store",
+    "productAdded": "Product added.",
+    "errProduct": "Add a name and a valid price.",
+    "deactivate": "Hide",
+    "activate": "Show",
+    "ordersHeading": "Orders",
+    "noOrders": "No orders yet.",
+    "markPaid": "Mark paid",
+    "markDelivered": "Delivered",
+    "buyerFallback": "Member",
+    "productFallback": "Product",
+    "status_pending": "Waiting for payment",
+    "status_paid": "Paid",
+    "status_delivered": "Delivered",
+    "status_cancelled": "Cancelled"
   }
 }

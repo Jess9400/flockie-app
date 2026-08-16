@@ -80,7 +80,10 @@
     "openChat": "Abrir",
     "mediaCard": "Mídia do club",
     "mediaCardSub": "Fotos, vídeos e arquivos do club",
-    "openMedia": "Abrir"
+    "openMedia": "Abrir",
+    "storeCard": "Lojinha do club",
+    "storeCardSub": "Kits, camisas e produtos do club",
+    "openStore": "Abrir"
   },
   "founders": {
     "title": "Convidar membros fundadores",
@@ -331,5 +334,37 @@
     "memberPrice": "{currency} {price} / mês",
     "memberActive": "Sócio até {date}",
     "memberHow": "Para virar sócio, pague direto para o anfitrião (Pix ou pessoalmente) - ele ativa sua mensalidade aqui."
+  },
+  "store": {
+    "title": "Lojinha do club",
+    "subtitleHost": "Liste produtos (kits, camisas, prints); os membros pedem e você confirma pagamento e entrega.",
+    "subtitleMember": "Produtos do club. Peça aqui, pague o anfitrião e retire em um encontro.",
+    "buy": "Pedir",
+    "orderPlaced": "Pedido feito! Pague o anfitrião e ele confirma aqui.",
+    "myOrders": "Meus pedidos",
+    "cancel": "Cancelar",
+    "payHint": "Por enquanto, pague direto ao anfitrião - o pagamento por cartão no app está chegando.",
+    "emptyMember": "Ainda não há produtos - o anfitrião vai listar os produtos do club aqui.",
+    "addProduct": "Adicionar produto",
+    "productTitle": "Nome do produto",
+    "productDescription": "Descrição (opcional)",
+    "productPrice": "Preço, ex.: 49,90",
+    "addPhoto": "Foto",
+    "photoReady": "Foto ✓",
+    "saveProduct": "Adicionar à lojinha",
+    "productAdded": "Produto adicionado.",
+    "errProduct": "Informe um nome e um preço válido.",
+    "deactivate": "Ocultar",
+    "activate": "Mostrar",
+    "ordersHeading": "Pedidos",
+    "noOrders": "Nenhum pedido ainda.",
+    "markPaid": "Marcar pago",
+    "markDelivered": "Entregue",
+    "buyerFallback": "Membro",
+    "productFallback": "Produto",
+    "status_pending": "Aguardando pagamento",
+    "status_paid": "Pago",
+    "status_delivered": "Entregue",
+    "status_cancelled": "Cancelado"
   }
 }
