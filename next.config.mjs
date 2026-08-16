@@ -31,7 +31,10 @@ const contentSecurityPolicy = [
   // CSP silently kills browser-side Places geocoding.
   "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com https://maps.googleapis.com",
   `connect-src ${connectSources}`,
-  "frame-src https://maps.google.com",
+  // Both hosts required: the free map iframes load maps.google.com/maps?...
+  // &output=embed, which now 301s to www.google.com/maps/embed - the browser
+  // checks frame-src against every hop, so missing either breaks the preview.
+  "frame-src https://maps.google.com https://www.google.com",
   "manifest-src 'self'",
   "worker-src 'self' blob:",
   ...(isDevelopment ? [] : ["upgrade-insecure-requests"]),
