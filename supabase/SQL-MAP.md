@@ -50,7 +50,7 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | host RPCs (`notify`, `cancel_vibe`, `update_vibe_when`, commit/remove/appeal) | `host-controls.sql` |
 | Vibes-only onboarding profile fields | `onboarding-v3-vibes-only.sql` |
 
-## July 18–25 additions — audited 2026-07-27
+## July 18-25 additions - audited 2026-07-27
 
 This section records **repository ownership only**. It does not prove that a
 script has run on production; use `DEPLOYMENT.md` to perform the read-only
