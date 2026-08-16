@@ -158,7 +158,8 @@
     "view": "Ver Club",
     "emptyTitle": "Aún no hay Clubs en {city}",
     "emptyEverywhere": "Aún no hay Clubs",
-    "emptyBody": "Crea uno alrededor de algo que de verdad quieras seguir haciendo. Empieza en formación, sin miembros falsos."
+    "emptyBody": "Crea uno alrededor de algo que de verdad quieras seguir haciendo. Empieza en formación, sin miembros falsos.",
+    "myClubs": "Mis clubs"
   },
   "attendance": {
     "title": "Registrar quién asistió",

@@ -39,6 +39,13 @@ export default async function ClubsPage(props: { searchParams: Promise<{ city?: 
   const { data } = await supabase.rpc("club_directory", { p_city: city || null, p_limit: 24 });
   const clubs = (data ?? []) as ClubDirectoryRow[];
 
+  // Clubs I host or belong to - ALWAYS visible, regardless of the city filter
+  // (a club inherits its city from the founding vibe, which can differ from
+  // the host's home city, making it invisible in the directory below).
+  const { data: mineRows } = await supabase.rpc("my_club_chats");
+  const myClubs = ((mineRows ?? []) as { club_id: string; title: string; cover_photo: string | null }[])
+    .filter((row, i, all) => all.findIndex((r) => r.club_id === row.club_id) === i);
+
   return (
     <main className="px-5 pb-10 pt-6">
       <div className="flex items-start justify-between gap-3">
@@ -54,6 +61,27 @@ export default async function ClubsPage(props: { searchParams: Promise<{ city?: 
           <Plus size={16} /> {t("start")}
         </Link>
       </div>
+
+      {myClubs.length > 0 && (
+        <section className="mt-6">
+          <h2 className="text-sm font-extrabold uppercase tracking-wide text-muted">{t("myClubs")}</h2>
+          <div className="mt-2 flex gap-3 overflow-x-auto pb-1">
+            {myClubs.map((club) => (
+              <Link
+                key={club.club_id}
+                href={`/clubs/${club.club_id}`}
+                className="flex w-44 shrink-0 flex-col overflow-hidden rounded-2xl border border-ink/15 bg-white shadow-[0_2px_10px_rgba(10,37,69,0.06)] transition-transform hover:-translate-y-0.5"
+              >
+                <div
+                  className="h-20 w-full bg-cream bg-cover bg-center"
+                  style={club.cover_photo ? { backgroundImage: `url(${club.cover_photo})` } : undefined}
+                />
+                <p className="truncate p-3 text-sm font-extrabold text-ink">{club.title}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       <form action="/clubs" className="mt-6 flex gap-2 rounded-2xl border border-ink/15 bg-white p-2 shadow-[0_2px_10px_rgba(10,37,69,0.05)]">
         <label className="sr-only" htmlFor="club-city">{t("cityLabel")}</label>

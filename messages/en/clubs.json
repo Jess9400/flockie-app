@@ -158,7 +158,8 @@
     "view": "View Club",
     "emptyTitle": "No Clubs in {city} yet",
     "emptyEverywhere": "No Clubs yet",
-    "emptyBody": "Start one around something you would genuinely like to keep doing. It begins as Forming - no fake members needed."
+    "emptyBody": "Start one around something you would genuinely like to keep doing. It begins as Forming - no fake members needed.",
+    "myClubs": "My clubs"
   },
   "attendance": {
     "title": "Record who came",
