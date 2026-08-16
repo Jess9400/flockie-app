@@ -9,6 +9,7 @@ import ClubModeToggle from "@/components/ClubModeToggle";
 import ClubMembershipRequest from "@/components/ClubMembershipRequest";
 import ClubMembershipRequests from "@/components/ClubMembershipRequests";
 import ClubModeratorsPanel from "@/components/ClubModeratorsPanel";
+import ClubSocioPanel from "@/components/ClubSocioPanel";
 
 type ClubDetail = {
   id: string;
@@ -33,6 +34,7 @@ export default async function ClubPage(props: { params: Promise<{ id: string }> 
   const params = await props.params;
   const supabase = await createClient();
   const t = await getTranslations("clubs.detail");
+  const ts = await getTranslations("clubs.socio");
   const { data } = await supabase.rpc("club_detail", { p_club: params.id }).maybeSingle();
   // Host-only extra: the operating mode drives the heartbeat (RLS limits this
   // read to the owner; non-hosts just get null).
@@ -94,13 +96,65 @@ export default async function ClubPage(props: { params: Promise<{ id: string }> 
   }
   const canManage = club.is_host || isModerator;
 
-  // Host-only: active roster for the promote-to-moderator panel.
+  // Host-only: active roster for the promote-to-moderator panel + socio tiers.
   let rosterMembers: { id: string; display_name: string | null; photo: string | null; role: string }[] = [];
+  let socioMembers: {
+    id: string;
+    display_name: string | null;
+    photo: string | null;
+    tier: "free" | "paid";
+    paid_until: string | null;
+  }[] = [];
+  let socioOfferHost: { price_cents: number | null; currency: string; perks: string | null } = {
+    price_cents: null,
+    currency: "BRL",
+    perks: null,
+  };
   if (club.is_host) {
-    const { data: roster } = await supabase.rpc("club_members", { p_club: club.id });
+    const [{ data: roster }, { data: tierRows }, { data: offerRow }] = await Promise.all([
+      supabase.rpc("club_members", { p_club: club.id }),
+      supabase
+        .from("club_memberships")
+        .select("user_id, tier, paid_until")
+        .eq("club_id", club.id)
+        .in("status", ["founding", "regular"]),
+      supabase
+        .from("clubs")
+        .select("socio_price_cents, socio_currency, socio_perks")
+        .eq("id", club.id)
+        .maybeSingle(),
+    ]);
     rosterMembers = (
       (roster ?? []) as { id: string; display_name: string | null; photo: string | null; role: string }[]
     ).filter((member) => member.role !== "host");
+    const tierByUser = new Map(
+      (tierRows ?? []).map((r) => [r.user_id, r as { tier: "free" | "paid"; paid_until: string | null }])
+    );
+    socioMembers = rosterMembers.map((member) => ({
+      ...member,
+      tier: tierByUser.get(member.id)?.tier ?? "free",
+      paid_until: tierByUser.get(member.id)?.paid_until ?? null,
+    }));
+    socioOfferHost = {
+      price_cents: offerRow?.socio_price_cents ?? null,
+      currency: offerRow?.socio_currency ?? "BRL",
+      perks: offerRow?.socio_perks ?? null,
+    };
+  }
+
+  // Member view: the socio offer + own standing (definer RPC - the clubs base
+  // table is host-read-only).
+  type SocioOfferRow = {
+    price_cents: number | null;
+    currency: string;
+    perks: string | null;
+    my_tier: string;
+    my_paid_until: string | null;
+  };
+  let socioOffer: SocioOfferRow | null = null;
+  if (!club.is_host && ["founding", "regular"].includes(club.membership_status ?? "")) {
+    const { data: offer } = await supabase.rpc("club_socio_offer", { p_club: club.id }).maybeSingle();
+    socioOffer = (offer as SocioOfferRow | null) ?? null;
   }
 
   let membershipRequests: { id: string; display_name: string | null; photos: string[] | null }[] = [];
@@ -208,6 +262,49 @@ export default async function ClubPage(props: { params: Promise<{ id: string }> 
       )}
 
       {canManage && <ClubMembershipRequests clubId={club.id} requests={membershipRequests} />}
+
+      {club.is_host && (
+        <ClubSocioPanel
+          clubId={club.id}
+          initialPriceCents={socioOfferHost.price_cents}
+          initialCurrency={socioOfferHost.currency}
+          initialPerks={socioOfferHost.perks}
+          members={socioMembers}
+        />
+      )}
+
+      {socioOffer && socioOffer.price_cents != null && (
+        <section className="mt-5 rounded-3xl border border-ink/15 bg-white p-5 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-black text-ink">⭐ {ts("memberTitle")}</h2>
+              <p className="mt-0.5 text-sm font-medium text-muted">
+                {ts("memberPrice", {
+                  price: (socioOffer.price_cents / 100).toFixed(2),
+                  currency: socioOffer.currency,
+                })}
+              </p>
+            </div>
+            {socioOffer.my_tier === "paid" &&
+            socioOffer.my_paid_until &&
+            new Date(socioOffer.my_paid_until) > new Date() ? (
+              <span className="shrink-0 rounded-full bg-flockie-orange px-3 py-1.5 text-xs font-extrabold text-white">
+                {ts("memberActive", { date: new Date(socioOffer.my_paid_until).toLocaleDateString() })}
+              </span>
+            ) : (
+              <span className="shrink-0 rounded-full bg-cream px-3 py-1.5 text-xs font-extrabold text-muted">
+                {ts("freeTier")}
+              </span>
+            )}
+          </div>
+          {socioOffer.perks && (
+            <p className="mt-3 whitespace-pre-wrap text-sm font-medium text-ink">{socioOffer.perks}</p>
+          )}
+          {!(socioOffer.my_tier === "paid" && socioOffer.my_paid_until && new Date(socioOffer.my_paid_until) > new Date()) && (
+            <p className="mt-3 rounded-2xl bg-cream p-3 text-sm font-medium text-muted">{ts("memberHow")}</p>
+          )}
+        </section>
+      )}
 
       {club.is_host && <ClubModeratorsPanel clubId={club.id} members={rosterMembers} />}
 

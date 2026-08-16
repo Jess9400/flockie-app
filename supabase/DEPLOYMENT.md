@@ -62,6 +62,9 @@ this list only tracks what is approved and pending or recently applied.
 - 2026-08-16 `club-media.sql` - private club media bucket + gallery table and
   storage policies; see `supabase/releases/2026-08-16-club-media.md`. Requires
   `club-moderators.sql`. Pending production run.
+- 2026-08-16 `club-socio-tier.sql` - paid Socio membership entitlement layer
+  (no money through Flockie); see `supabase/releases/2026-08-16-club-socio-tier.md`.
+  Requires `club-moderators.sql` and `club-media.sql`. Pending production run.
 
 ## 4. Apply only an approved release
 

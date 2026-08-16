@@ -13,6 +13,7 @@ export type ClubMediaItem = {
   title: string | null;
   url: string | null;
   uploadedBy: string;
+  paidOnly: boolean;
 };
 
 const MAX_FILE_BYTES = 50 * 1024 * 1024; // matches the bucket's file_size_limit
@@ -45,6 +46,9 @@ export default function ClubMediaGallery({
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [gone, setGone] = useState<Set<string>>(new Set());
+  // Next upload lands as socio-only content (paid tier); RLS hides those
+  // items from free members - see supabase/club-socio-tier.sql.
+  const [uploadPaidOnly, setUploadPaidOnly] = useState(false);
 
   async function onFiles(files: FileList | null) {
     if (!files?.length) return;
@@ -68,6 +72,7 @@ export default function ClubMediaGallery({
         kind: kindOf(file),
         title: file.name.slice(0, 140),
         uploaded_by: userId,
+        paid_only: uploadPaidOnly,
       });
       if (rowErr) {
         // Keep storage consistent with the table if the metadata insert fails.
@@ -103,14 +108,25 @@ export default function ClubMediaGallery({
             className="hidden"
             onChange={(e) => onFiles(e.target.files)}
           />
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            disabled={busy}
-            className="inline-flex items-center gap-2 rounded-full border border-ink/15 bg-flockie-blue px-5 py-2.5 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
-          >
-            <Upload size={16} /> {busy ? t("uploading") : t("upload")}
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              disabled={busy}
+              className="inline-flex items-center gap-2 rounded-full border border-ink/15 bg-flockie-blue px-5 py-2.5 font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
+            >
+              <Upload size={16} /> {busy ? t("uploading") : t("upload")}
+            </button>
+            <label className="flex cursor-pointer items-center gap-2 text-sm font-bold text-ink">
+              <input
+                type="checkbox"
+                checked={uploadPaidOnly}
+                onChange={(e) => setUploadPaidOnly(e.target.checked)}
+                className="h-4 w-4 accent-flockie-orange"
+              />
+              {t("paidOnlyToggle")}
+            </label>
+          </div>
         </>
       )}
       {err && <p className="mt-2 text-sm font-bold text-flockie-coral">{err}</p>}
@@ -148,6 +164,11 @@ export default function ClubMediaGallery({
                     {item.title ?? t("fileFallback")}
                   </span>
                 </a>
+              )}
+              {item.paidOnly && (
+                <span className="absolute left-2 top-2 rounded-full bg-flockie-orange px-2 py-0.5 text-[10px] font-extrabold text-white">
+                  ⭐ {t("paidOnlyBadge")}
+                </span>
               )}
               {canDelete && (
                 <button

@@ -297,7 +297,9 @@
     "errTooLarge": "{name} supera el límite de 50 MB.",
     "deleteConfirm": "¿Quitar de la multimedia del club?",
     "deleteAria": "Quitar",
-    "fileFallback": "Archivo"
+    "fileFallback": "Archivo",
+    "paidOnlyToggle": "Solo socios",
+    "paidOnlyBadge": "Socios"
   },
   "mine": {
     "title": "Mis Clubs",
@@ -306,5 +308,28 @@
     "emptyTitle": "Aún no hay clubs",
     "emptyBody": "Únete a un club a través de sus encuentros, o crea el tuyo en torno a algo que te encantaría repetir.",
     "explore": "Explorar clubs"
+  },
+  "socio": {
+    "title": "Plan Socio",
+    "subtitle": "Una membresía mensual paga para el club. Los miembros te pagan directo (Pix, efectivo, link) - márcalo aquí y la app garantiza los beneficios. Ningún dinero pasa por Flockie.",
+    "priceLabel": "Mensualidad",
+    "pricePlaceholder": "ej.: 29.90 (vacío = sin plan pago)",
+    "currencyLabel": "Moneda",
+    "perksLabel": "Qué reciben los socios",
+    "perksPlaceholder": "ej.: entrada libre a los encuentros, contenido exclusivo, el kit del mes…",
+    "saveOffer": "Guardar plan Socio",
+    "offerSaved": "Plan Socio guardado.",
+    "errPrice": "Ingresa un valor válido.",
+    "membersHeading": "Miembros",
+    "memberFallback": "Miembro",
+    "activeUntil": "Socio hasta {date}",
+    "freeTier": "Miembro gratuito",
+    "markPaid": "Marcar pagado (1 mes)",
+    "extendMonth": "+1 mes",
+    "setFree": "Volver gratuito",
+    "memberTitle": "Plan Socio",
+    "memberPrice": "{currency} {price} / mes",
+    "memberActive": "Socio hasta {date}",
+    "memberHow": "Para ser socio, paga directo al anfitrión (Pix o en persona) - él activa tu membresía aquí."
   }
 }

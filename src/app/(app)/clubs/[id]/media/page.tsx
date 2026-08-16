@@ -36,7 +36,7 @@ export default async function ClubMediaPage(props: { params: Promise<{ id: strin
 
   const { data: rows } = await supabase
     .from("club_media")
-    .select("id, path, kind, title, uploaded_by, created_at")
+    .select("id, path, kind, title, uploaded_by, created_at, paid_only")
     .eq("club_id", club.id)
     .order("created_at", { ascending: false })
     .limit(200);
@@ -63,6 +63,7 @@ export default async function ClubMediaPage(props: { params: Promise<{ id: strin
       title: m.title,
       url: urlByPath.get(m.path) ?? null,
       uploadedBy: m.uploaded_by,
+      paidOnly: !!(m as { paid_only?: boolean }).paid_only,
     }))
     .filter((m) => m.url !== null);
 

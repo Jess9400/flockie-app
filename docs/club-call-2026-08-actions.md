@@ -127,3 +127,22 @@ These make clubs feel earned and are mostly buildable without payments:
 6. Taya's friend on club tools: set the call, capture requirements.
 7. Translation: on-tap (cheap) or always-on (costly)?
 8. KPI targets beyond "2 clubs / 100 users".
+
+---
+
+## Decisions drafted 2026-08-16 (brainstorm follow-up, pending Taya sign-off)
+
+1. Paid tier is named **Socio** (socio-torcedor framing), monthly, host-priced, BRL default.
+2. **V1 money path: none through Flockie.** Members pay the host directly; the host
+   marks payments in the app; the app enforces perks (badge, socio-only media,
+   lapsed -> free). BUILT: `supabase/club-socio-tier.sql` + Socio panel + member card.
+3. **The 5% without custody:** v1 = recorded volume + monthly invoice to the host
+   (enforced by feature access, not collections). Endgame after the CNPJ = Brazilian
+   PSP split payments over Pix (Mercado Pago / Asaas / Pagar.me marketplace
+   sub-accounts: member pays, processor auto-splits 95/5, Flockie never holds funds).
+   Host "wallets" = PSP sub-accounts, not crypto wallets.
+4. **Smart contracts: no** (forces crypto UX on beer-money payments, removes no legal
+   obligations). **NFT passes: parked** - digital socio card (QR in app) covers the
+   experience; a crypto-native club can mint an on-chain skin later without changing
+   the source of truth.
+5. NowPayments demoted to an optional extra rail for crypto-native clubs, not the backbone.
