@@ -71,8 +71,9 @@ this list only tracks what is approved and pending or recently applied.
 - 2026-08-16 `club-payments.sql` - payments foundation + NowPayments
   settlement; see `supabase/releases/2026-08-16-club-payments.md`. Applied to
   production 2026-08-16 (probe-verified) and ACTIVATED (env keys live).
-- 2026-08-17 `club-member-settings.sql` - club reporting (leave/visibility
-  reuse existing RPCs). Pending production run.
+- 2026-08-17 `club-member-settings.sql` - club reporting + member-side
+  paid-tier cancel (leave/visibility reuse existing RPCs); see the release
+  record addendum. Pending production run (re-run if the first version ran).
 - 2026-08-17 `vibe-logistics-club-members.sql` - club members see the exact
   gathering address pre-confirmation. Pending production run.
 - 2026-08-17 RE-RUN `vibe-express-interest-autoconfirm.sql` - club members
