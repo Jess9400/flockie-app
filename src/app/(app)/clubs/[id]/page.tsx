@@ -96,15 +96,20 @@ export default async function ClubPage(props: {
   // record attendance) - see supabase/club-moderators.sql.
   let isModerator = false;
   let myShowOnProfile = true;
+  let myPaidUntil: string | null = null;
   if (!club.is_host && ["founding", "regular"].includes(club.membership_status ?? "")) {
     const { data: myRow } = await supabase
       .from("club_memberships")
-      .select("role, show_on_profile")
+      .select("role, show_on_profile, tier, paid_until")
       .eq("club_id", club.id)
       .eq("user_id", (await supabase.auth.getUser()).data.user?.id ?? "")
       .maybeSingle();
     isModerator = myRow?.role === "moderator";
     myShowOnProfile = myRow?.show_on_profile ?? true;
+    myPaidUntil =
+      (myRow as { tier?: string; paid_until?: string | null } | null)?.tier === "paid"
+        ? ((myRow as { paid_until?: string | null })?.paid_until ?? null)
+        : null;
   }
   const canManage = club.is_host || isModerator;
 
@@ -420,6 +425,7 @@ export default async function ClubPage(props: {
           clubId={club.id}
           isActiveMember={["founding", "regular"].includes(club.membership_status ?? "")}
           initialShowOnProfile={myShowOnProfile}
+          paidUntil={myPaidUntil}
         />
       )}
     </main>

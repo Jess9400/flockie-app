@@ -403,6 +403,11 @@
     "cancel": "Cancelar",
     "reported": "Obrigada - vamos revisar.",
     "leaveClub": "Sair deste club",
-    "leaveConfirm": "Sair deste club? Você pode pedir para voltar depois pelos encontros."
+    "leaveConfirm": "Sair deste club? Você pode pedir para voltar depois pelos encontros.",
+    "paidStatus": "Membro pagante até {date}",
+    "paidNoRenew": "Nada renova automaticamente - se você não pagar de novo, simplesmente volta a ser membro gratuito quando terminar.",
+    "endPaidNow": "Encerrar plano pago agora",
+    "endPaidConfirm": "Encerrar seu plano pago agora? Você abre mão dos dias restantes e volta a ser membro gratuito imediatamente.",
+    "endPaidDone": "Plano pago encerrado - você agora é membro gratuito."
   }
 }

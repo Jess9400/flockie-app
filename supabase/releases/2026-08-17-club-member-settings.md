@@ -28,3 +28,12 @@
 ## Rollback
 
 - Drop `report_club` and `club_reports`. Leave/visibility are untouched features.
+
+## Addendum (same day): member-side paid-tier cancel
+
+New `end_my_club_paid_tier(uuid)` in the same canonical file: a paid member
+can end their own tier early (forfeits remaining days, becomes free, host
+notified). The settings section shows "Paid member until {date}" with the
+explicit "nothing renews automatically" note - and this button is where the
+future recurring rail's real cancel will hook in. RE-RUN the file if the
+first version was already applied.

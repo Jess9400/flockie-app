@@ -403,6 +403,11 @@
     "cancel": "Cancel",
     "reported": "Thanks - we'll review it.",
     "leaveClub": "Leave this club",
-    "leaveConfirm": "Leave this club? You can ask to join again later through its gatherings."
+    "leaveConfirm": "Leave this club? You can ask to join again later through its gatherings.",
+    "paidStatus": "Paid member until {date}",
+    "paidNoRenew": "Nothing renews automatically - if you don't pay again, you simply become a free member when it ends.",
+    "endPaidNow": "End paid membership now",
+    "endPaidConfirm": "End your paid membership now? You'll give up the remaining days and become a free member immediately.",
+    "endPaidDone": "Paid membership ended - you're a free member now."
   }
 }

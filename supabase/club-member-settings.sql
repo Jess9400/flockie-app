@@ -44,3 +44,30 @@ end;
 $$;
 revoke execute on function public.report_club(uuid, text, text) from public, anon;
 grant execute on function public.report_club(uuid, text, text) to authenticated;
+
+-- ── Member ends their own paid tier (added same day) ────────────────────────
+-- Prepaid months never auto-renew, so normally the tier just lapses at
+-- paid_until. This gives the member an explicit way out early - forfeiting
+-- the remaining days (no refunds move through Flockie). Also the surface the
+-- future recurring rail (Asaas assinaturas) will hook its real cancel into.
+create or replace function public.end_my_club_paid_tier(p_club uuid)
+returns void
+language plpgsql security definer set search_path = public as $$
+declare v_title text; v_host uuid; v_name text;
+begin
+  update public.club_memberships
+  set tier = 'free', paid_until = null, updated_at = now()
+  where club_id = p_club and user_id = auth.uid()
+    and status in ('founding', 'regular') and tier = 'paid';
+  if not found then raise exception 'no active paid membership to end'; end if;
+
+  select title, owner_id into v_title, v_host from public.clubs where id = p_club;
+  v_name := coalesce((select display_name from public.profiles where id = auth.uid()), 'A member');
+  perform public.notify(v_host, 'club_socio_payment',
+    v_name || ' ended their paid membership',
+    'They stay in ' || v_title || ' as a free member.',
+    jsonb_build_object('href', '/clubs/' || p_club));
+end;
+$$;
+revoke execute on function public.end_my_club_paid_tier(uuid) from public, anon;
+grant execute on function public.end_my_club_paid_tier(uuid) to authenticated;

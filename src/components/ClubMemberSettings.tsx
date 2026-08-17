@@ -11,10 +11,12 @@ export default function ClubMemberSettings({
   clubId,
   isActiveMember,
   initialShowOnProfile,
+  paidUntil,
 }: {
   clubId: string;
   isActiveMember: boolean;
   initialShowOnProfile: boolean;
+  paidUntil: string | null;
 }) {
   const supabase = createClient();
   const router = useRouter();
@@ -54,6 +56,21 @@ export default function ClubMemberSettings({
     setMsg(t("reported"));
   }
 
+  const paidActive = !!paidUntil && new Date(paidUntil) > new Date();
+  const [paidEnded, setPaidEnded] = useState(false);
+
+  async function endPaid() {
+    if (!confirm(t("endPaidConfirm"))) return;
+    setBusy("endPaid");
+    setMsg(null);
+    const { error } = await supabase.rpc("end_my_club_paid_tier", { p_club: clubId });
+    setBusy(null);
+    if (error) return setMsg(error.message);
+    setPaidEnded(true);
+    setMsg(t("endPaidDone"));
+    router.refresh();
+  }
+
   async function leave() {
     if (!confirm(t("leaveConfirm"))) return;
     setBusy("leave");
@@ -80,6 +97,23 @@ export default function ClubMemberSettings({
             className="h-5 w-5 accent-flockie-orange"
           />
         </label>
+      )}
+
+      {isActiveMember && paidActive && !paidEnded && (
+        <div className="mt-3 border-t border-ink/10 pt-3">
+          <p className="text-sm font-bold text-ink">
+            {t("paidStatus", { date: new Date(paidUntil!).toLocaleDateString() })}
+          </p>
+          <p className="mt-0.5 text-xs font-medium text-muted">{t("paidNoRenew")}</p>
+          <button
+            type="button"
+            onClick={endPaid}
+            disabled={busy === "endPaid"}
+            className="mt-2 text-sm font-bold text-muted hover:text-ink disabled:opacity-50"
+          >
+            {t("endPaidNow")}
+          </button>
+        </div>
       )}
 
       <div className="mt-3 border-t border-ink/10 pt-3">
