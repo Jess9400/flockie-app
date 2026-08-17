@@ -8,16 +8,22 @@ export default function ShareVibeButton({
   vibeId,
   tile,
   fill,
+  inviteCode,
 }: {
   vibeId: string;
   tile?: boolean;
   fill?: boolean;
+  // Club gatherings are invite-only: the shared link carries the host's code
+  // so the recipient can actually get in ("join with host code" flow).
+  inviteCode?: string;
 }) {
   const t = useTranslations("vibes");
   const [copied, setCopied] = useState(false);
 
   async function share() {
-    const url = `${window.location.origin}/invite/${vibeId}`;
+    const url =
+      `${window.location.origin}/invite/${vibeId}` +
+      (inviteCode ? `?code=${encodeURIComponent(inviteCode)}` : "");
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share({ title: t("share.shareTitle"), url });

@@ -177,8 +177,10 @@ export default async function HomePage(
     allQuery,
     cityWeekQuery,
   ]);
-  const near = (nearRaw ?? []) as VibeRow[];
-  const allVibes = (allRaw ?? []) as VibeRow[];
+  // Club gatherings are invite-only - keep them out of both carousels.
+  const notClub = (v: VibeRow) => (v as { club_id?: string | null }).club_id == null;
+  const near = ((nearRaw ?? []) as VibeRow[]).filter(notClub);
+  const allVibes = ((allRaw ?? []) as VibeRow[]).filter(notClub);
 
   // One metadata pass over the union of both lists.
   const vibeUnion = Array.from(new Map([...near, ...allVibes].map((v) => [v.id, v])).values());

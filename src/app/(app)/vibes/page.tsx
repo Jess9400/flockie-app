@@ -107,7 +107,9 @@ export default async function VibesPage(
     .order("starts_at", { ascending: !isPast })
     .range(from, from + PAGE_SIZE - 1);
 
-  const list = vibes ?? [];
+  // Club gatherings are invite-only - never in public browse. (JS-side filter
+  // so the page degrades gracefully until the view exposes club_id.)
+  const list = (vibes ?? []).filter((v) => (v as { club_id?: string | null }).club_id == null);
   const totalPages = Math.max(1, Math.ceil((count ?? 0) / PAGE_SIZE));
   const hrefFor = (p: number) => {
     const sp = new URLSearchParams();

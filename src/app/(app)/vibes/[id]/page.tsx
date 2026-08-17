@@ -114,6 +114,23 @@ export default async function VibeDetailPage(
       : loadVibeMatch(supabase, [params.id]),
   ]);
 
+  // Club gatherings are invite-only: a non-member with no interest row and no
+  // invite code sees a locked card instead of the join flow. (club_id reaches
+  // the view via club-gatherings-privacy.sql; undefined degrades open.)
+  const gatheringClubId = (vibe as { club_id?: string | null }).club_id ?? null;
+  let viewerIsClubMember = false;
+  if (gatheringClubId && !isHost) {
+    const { data: mm } = await supabase
+      .from("club_memberships")
+      .select("status")
+      .eq("club_id", gatheringClubId)
+      .eq("user_id", user!.id)
+      .maybeSingle();
+    viewerIsClubMember = ["founding", "regular"].includes(mm?.status ?? "");
+  }
+  const clubLocked =
+    !!gatheringClubId && !isHost && !viewerIsClubMember && !myInterest && !searchParams.code;
+
   // For Vibe interest we only need the activity vibe check (not full onboarding).
   const activitiesDone = (me?.activities ?? []).length > 0;
   // Warn before registering for a Vibe outside the user's home city.
@@ -494,7 +511,21 @@ export default async function VibeDetailPage(
         />
       )}
 
-      {!isHost && (
+      {clubLocked && (
+        <section className="mt-5 rounded-3xl border-2 border-dashed border-ink/20 bg-white p-6 text-center">
+          <p className="text-3xl">🔒</p>
+          <h2 className="mt-2 text-lg font-black text-ink">{t("detail.clubOnlyTitle")}</h2>
+          <p className="mx-auto mt-1 max-w-md text-sm font-medium text-muted">{t("detail.clubOnlyBody")}</p>
+          <Link
+            href={`/clubs/${gatheringClubId}`}
+            className="mt-4 inline-flex rounded-full border border-ink/15 bg-flockie-blue px-5 py-2.5 text-sm font-bold text-white"
+          >
+            {t("detail.clubOnlyCta")}
+          </Link>
+        </section>
+      )}
+
+      {!isHost && !clubLocked && (
         <section className="mt-5">
           {differentCity && !ended && vibe.status !== "cancelled" && (
             <div className="mb-3 flex items-start gap-2 rounded-2xl bg-cream p-3 text-sm font-bold text-ink">
@@ -660,7 +691,10 @@ export default async function VibeDetailPage(
             </details>
           )}
           <div className="flex justify-center">
-            <ShareVibeButton vibeId={vibe.id} />
+            <ShareVibeButton
+              vibeId={vibe.id}
+              inviteCode={isHost && clubId && hostInviteCode ? hostInviteCode : undefined}
+            />
           </div>
         </section>
       )}

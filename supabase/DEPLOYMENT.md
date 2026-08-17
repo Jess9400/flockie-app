@@ -71,6 +71,10 @@ this list only tracks what is approved and pending or recently applied.
 - 2026-08-16 `club-payments.sql` - payments foundation + NowPayments
   settlement; see `supabase/releases/2026-08-16-club-payments.md`. Applied to
   production 2026-08-16 (probe-verified) and ACTIVATED (env keys live).
+- 2026-08-17 `club-gatherings-privacy.sql` - club gatherings invite-only +
+  member notifications; see
+  `supabase/releases/2026-08-17-club-gatherings-privacy.md`. Pending
+  production run.
 - 2026-08-17 RE-RUN `club-socio-tier.sql` + `club-payments.sql` - copy only:
   paid tier renamed Socio -> Member in notification texts (founder call).
   Idempotent re-runs, no schema change.

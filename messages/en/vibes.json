@@ -76,7 +76,10 @@
     "rsvpTitle": "You're in! 🎉",
     "rsvpBody": "Your spot is locked - no need to do anything else. Confirming you'll be there helps the host plan the meet-up (optional).",
     "rsvpButton": "I'll be there ✓",
-    "rsvpDone": "Attendance confirmed - see you there!"
+    "rsvpDone": "Attendance confirmed - see you there!",
+    "clubOnlyTitle": "A club gathering",
+    "clubOnlyBody": "This meetup is for club members and invited guests. Ask a member for an invite link, or get to know the club first.",
+    "clubOnlyCta": "See the club"
   },
   "create": {
     "back": "Back",

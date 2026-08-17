@@ -437,8 +437,10 @@ export default function CreateVibeForm({
     setSaving(false);
 
     if (error) return setErr(error.message);
-    // Announce a newly scheduled gathering into the club chat.
+    // Announce a newly scheduled gathering into the club chat + notify every
+    // member (club gatherings are invite-only, so this IS their discovery).
     if (effectiveClub) {
+      supabase.rpc("notify_club_gathering", { p_vibe: data.id }).then(() => {});
       supabase
         .rpc("post_workspace_event", {
           p_kind: "club",

@@ -76,7 +76,10 @@
     "rsvpTitle": "¡Estás dentro! 🎉",
     "rsvpBody": "Tu lugar está asegurado - no necesitas hacer nada más. Confirmar que irás ayuda al anfitrión a organizar el encuentro (opcional).",
     "rsvpButton": "Ahí estaré ✓",
-    "rsvpDone": "Asistencia confirmada - ¡nos vemos!"
+    "rsvpDone": "Asistencia confirmada - ¡nos vemos!",
+    "clubOnlyTitle": "Encuentro de club",
+    "clubOnlyBody": "Este encuentro es para miembros del club e invitados. Pide un link de invitación a un miembro, o conoce el club primero.",
+    "clubOnlyCta": "Ver el club"
   },
   "create": {
     "back": "Atrás",
