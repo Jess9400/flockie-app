@@ -6,7 +6,17 @@ import { Check, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 
-export default function AcceptFounderInvite({ token, clubId, clubTitle }: { token: string; clubId: string; clubTitle: string }) {
+export default function AcceptFounderInvite({
+  token,
+  clubId,
+  clubTitle,
+  nextVibeId,
+}: {
+  token: string;
+  clubId: string;
+  clubTitle: string;
+  nextVibeId?: string | null;
+}) {
   const supabase = createClient();
   const t = useTranslations("clubs.invite");
   const [saving, setSaving] = useState(false);
@@ -31,9 +41,23 @@ export default function AcceptFounderInvite({ token, clubId, clubTitle }: { toke
         <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-flockie-blue text-white"><Check size={25} /></span>
         <h2 className="mt-4 text-xl font-black text-ink">{t("acceptedTitle")}</h2>
         <p className="mt-2 text-sm font-medium leading-relaxed text-muted">{t("acceptedBody", { club: clubTitle })}</p>
-        <Link href={`/clubs/${clubId}?welcome=1`} className="mt-5 inline-flex rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white shadow-[0_3px_0_#d84e32]">
-          {t("viewClub")}
-        </Link>
+        <div className="mt-5 flex flex-col items-center gap-3">
+          {nextVibeId && (
+            <Link href={`/vibes/${nextVibeId}`} className="inline-flex items-center gap-2 rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white shadow-[0_3px_0_#d84e32]">
+              <Check size={16} /> {t("confirmNext")}
+            </Link>
+          )}
+          <Link
+            href={`/clubs/${clubId}?welcome=1`}
+            className={
+              nextVibeId
+                ? "inline-flex rounded-full border border-ink/15 bg-white px-5 py-3 text-sm font-extrabold text-navy"
+                : "inline-flex rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white shadow-[0_3px_0_#d84e32]"
+            }
+          >
+            {t("viewClub")}
+          </Link>
+        </div>
       </section>
     );
   }

@@ -124,7 +124,8 @@
     "notFoundBody": "It may have expired, been used, or been revoked by the host.",
     "explore": "Explore Clubs",
     "nextGathering": "Next gathering",
-    "nextGatheringHint": "Accept the invite and you can grab your spot right away."
+    "nextGatheringHint": "Accept the invite and you can grab your spot right away.",
+    "confirmNext": "Confirm attendance for the next event"
   },
   "heartbeat": {
     "readyTitle": "Your first gathering is complete.",

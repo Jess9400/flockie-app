@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarDays, MapPin, Sparkles } from "lucide-react";
+import { CalendarDays, ChevronRight, MapPin, Sparkles } from "lucide-react";
 import { getTranslations, getLocale } from "next-intl/server";
 import { formatVibeWhen } from "@/lib/vibes";
 import { createClient } from "@/lib/supabase/server";
@@ -70,19 +70,30 @@ export default async function ClubFounderInvitePage(props: { params: Promise<{ t
             {invite.category && <span className="rounded-full border border-ink/15 bg-cream px-3 py-1.5 text-sm font-bold text-ink">{invite.category}</span>}
           </div>
           {invite.next_vibe_starts_at && (
-            <div className="mt-5 rounded-2xl border border-flockie-coral/30 bg-cream p-4">
-              <p className="text-xs font-extrabold uppercase tracking-wide text-flockie-coral">
-                {t("nextGathering")}
-              </p>
-              <p className="mt-1 text-base font-black text-ink">{invite.next_vibe_title}</p>
-              <p className="mt-0.5 flex items-center gap-1.5 text-sm font-bold text-muted">
-                <CalendarDays size={15} className="text-flockie-coral" />
-                {formatVibeWhen(invite.next_vibe_starts_at, locale, invite.next_vibe_timezone ?? undefined)}
-              </p>
-              <p className="mt-1 text-xs font-medium text-muted">{t("nextGatheringHint")}</p>
-            </div>
+            <Link
+              href={invite.next_vibe_id ? `/vibes/${invite.next_vibe_id}` : `/clubs/${invite.club_id}`}
+              className="mt-5 flex items-center justify-between gap-3 rounded-2xl border border-flockie-coral/30 bg-cream p-4 transition hover:border-flockie-coral/60"
+            >
+              <div>
+                <p className="text-xs font-extrabold uppercase tracking-wide text-flockie-coral">
+                  {t("nextGathering")}
+                </p>
+                <p className="mt-1 text-base font-black text-ink">{invite.next_vibe_title}</p>
+                <p className="mt-0.5 flex items-center gap-1.5 text-sm font-bold text-muted">
+                  <CalendarDays size={15} className="text-flockie-coral" />
+                  {formatVibeWhen(invite.next_vibe_starts_at, locale, invite.next_vibe_timezone ?? undefined)}
+                </p>
+                <p className="mt-1 text-xs font-medium text-muted">{t("nextGatheringHint")}</p>
+              </div>
+              <ChevronRight size={20} className="shrink-0 text-flockie-coral" />
+            </Link>
           )}
-          <AcceptFounderInvite token={params.token} clubId={invite.club_id} clubTitle={invite.club_title} />
+          <AcceptFounderInvite
+            token={params.token}
+            clubId={invite.club_id}
+            clubTitle={invite.club_title}
+            nextVibeId={invite.next_vibe_id}
+          />
         </div>
       </section>
     </main>

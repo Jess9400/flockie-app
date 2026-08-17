@@ -124,7 +124,8 @@
     "notFoundBody": "Ele pode ter expirado, sido usado ou revogado pelo anfitrião.",
     "explore": "Explorar Clubs",
     "nextGathering": "Próximo evento",
-    "nextGatheringHint": "Aceite o convite e já garanta sua vaga."
+    "nextGatheringHint": "Aceite o convite e já garanta sua vaga.",
+    "confirmNext": "Confirmar presença no próximo evento"
   },
   "heartbeat": {
     "readyTitle": "Seu primeiro evento terminou.",

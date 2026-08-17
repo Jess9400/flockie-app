@@ -124,7 +124,8 @@
     "notFoundBody": "Puede haber caducado, haberse usado o haber sido revocada por el anfitrión.",
     "explore": "Explorar Clubs",
     "nextGathering": "Próximo encuentro",
-    "nextGatheringHint": "Acepta la invitación y asegura tu lugar de inmediato."
+    "nextGatheringHint": "Acepta la invitación y asegura tu lugar de inmediato.",
+    "confirmNext": "Confirmar asistencia al próximo evento"
   },
   "heartbeat": {
     "readyTitle": "Tu primer encuentro ya terminó.",
