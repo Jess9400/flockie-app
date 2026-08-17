@@ -571,6 +571,23 @@ export default async function VibeDetailPage(
 
       {guestRemaining !== null && <BringGuestButton vibeId={vibe.id} initialRemaining={guestRemaining} />}
 
+      {/* Guests and code-joiners at a club gathering: the door into membership
+          (attend -> apply with your story -> the members vote). */}
+      {gatheringClubId && !isHost && !viewerIsClubMember && !clubLocked && (
+        <Link
+          href={`/clubs/${gatheringClubId}`}
+          className="mt-4 flex items-center justify-between rounded-2xl border border-flockie-coral/40 bg-white px-4 py-3 shadow-[0_2px_10px_rgba(10,37,69,0.08)] transition-transform hover:-translate-y-0.5"
+        >
+          <span>
+            <span className="block text-sm font-extrabold text-ink">⭐ {t("detail.becomeMember")}</span>
+            <span className="block text-xs font-medium text-muted">{t("detail.becomeMemberHint")}</span>
+          </span>
+          <span className="shrink-0 rounded-full bg-flockie-coral px-4 py-2 text-sm font-bold text-white">
+            {t("detail.becomeMemberCta")}
+          </span>
+        </Link>
+      )}
+
       {!isHost && !clubLocked && !guestPending && (
         <section className="mt-5">
           {differentCity && !ended && vibe.status !== "cancelled" && (

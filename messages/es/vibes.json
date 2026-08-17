@@ -93,7 +93,10 @@
     "clubJoiningStep1": "Eres miembro del club - toca Confirmar asistencia y estás en la lista. Sin postulación, sin matching.",
     "clubJoiningStep2": "La dirección exacta ya está visible para ti abajo - el club es tuyo.",
     "clubJoiningStep3": "¿Cambiaron los planes? Toca Salir para que el anfitrión ajuste el conteo.",
-    "openClubChat": "Abrir chat del club"
+    "openClubChat": "Abrir chat del club",
+    "becomeMember": "¿Te gustó este club?",
+    "becomeMemberHint": "Participa y luego preséntate - los miembros votan tu entrada.",
+    "becomeMemberCta": "Quiero ser miembro"
   },
   "create": {
     "back": "Atrás",
