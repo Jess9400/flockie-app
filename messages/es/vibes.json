@@ -92,7 +92,8 @@
     "confirmAttendanceHint": "Eres miembro del club - no necesitas postularte. Esto solo te cuenta en la lista de asistencia.",
     "clubJoiningStep1": "Eres miembro del club - toca Confirmar asistencia y estás en la lista. Sin postulación, sin matching.",
     "clubJoiningStep2": "La dirección exacta ya está visible para ti abajo - el club es tuyo.",
-    "clubJoiningStep3": "¿Cambiaron los planes? Toca Salir para que el anfitrión ajuste el conteo."
+    "clubJoiningStep3": "¿Cambiaron los planes? Toca Salir para que el anfitrión ajuste el conteo.",
+    "openClubChat": "Abrir chat del club"
   },
   "create": {
     "back": "Atrás",

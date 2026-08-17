@@ -757,16 +757,17 @@ export default async function VibeDetailPage(
               </ol>
             </details>
           )}
-          <div className="flex justify-center">
-            <ShareVibeButton
-              vibeId={vibe.id}
-              inviteCode={isHost && clubId && hostInviteCode ? hostInviteCode : undefined}
-            />
-          </div>
+          {/* Club gatherings are private: no public share (guests come via a
+              member's bring-a-guest invite above). */}
+          {!gatheringClubId && (
+            <div className="flex justify-center">
+              <ShareVibeButton vibeId={vibe.id} />
+            </div>
+          )}
         </section>
       )}
 
-      {isHost && !ended && (
+      {isHost && !ended && !gatheringClubId && (
         <div className="mt-6 rounded-2xl border border-ink/15 bg-white p-4">
           <p className="text-sm font-extrabold">{t("detail.matchingResults")}</p>
           <p className="mt-0.5 text-xs font-medium text-muted">
@@ -788,7 +789,7 @@ export default async function VibeDetailPage(
         </div>
       )}
 
-      {isHost && !ended && vibe.status === "reviewing" && (
+      {isHost && !ended && vibe.status === "reviewing" && !gatheringClubId && (
         <HostVibeShortlist
           vibeId={vibe.id}
           candidates={shortlist}
@@ -798,7 +799,7 @@ export default async function VibeDetailPage(
         />
       )}
 
-      {isHost && !ended && hostSpots > 0 && (
+      {isHost && !ended && hostSpots > 0 && !gatheringClubId && (
         <HostVibePrivateRequests
           vibeId={vibe.id}
           code={hostInviteCode}
@@ -860,6 +861,15 @@ export default async function VibeDetailPage(
               className="flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-flockie-orange py-3.5 text-center font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
             >
               <RefreshCw size={18} /> {t("detail.reRun")}
+            </Link>
+          ) : gatheringClubId ? (
+            // Club gathering: no matching to run, no public sharing, and the
+            // conversation lives in the CLUB chat.
+            <Link
+              href={`/clubs/${gatheringClubId}/chat`}
+              className="flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-flockie-blue py-3.5 text-center font-bold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
+            >
+              {t("detail.openClubChat")}
             </Link>
           ) : (
             <HostVibeControls vibeId={vibe.id} status={vibe.status} />

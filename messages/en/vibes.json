@@ -92,7 +92,8 @@
     "confirmAttendanceHint": "You're a club member - no need to apply. This just counts you in for the head count.",
     "clubJoiningStep1": "You're a club member - tap Confirm attendance and you're on the list. No application, no matching.",
     "clubJoiningStep2": "The exact address is already visible to you below - it's your club.",
-    "clubJoiningStep3": "Plans changed? Tap Leave so the host can plan the head count."
+    "clubJoiningStep3": "Plans changed? Tap Leave so the host can plan the head count.",
+    "openClubChat": "Open the club chat"
   },
   "create": {
     "back": "Back",
