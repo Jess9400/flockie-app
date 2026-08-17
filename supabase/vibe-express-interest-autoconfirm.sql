@@ -12,7 +12,7 @@
 
 create or replace function public.express_interest(p_vibe uuid)
 returns jsonb language plpgsql security definer set search_path = public as $$
-declare v public.vibes; v_existing text; v_held int; v_chat uuid; v_name text; v_same_city boolean;
+declare v public.vibes; v_existing text; v_held int; v_chat uuid; v_name text; v_same_city boolean; v_is_club_member boolean := false;
 begin
   select * into v from public.vibes where id = p_vibe for update;
   if v.id is null then raise exception 'vibe not found'; end if;
@@ -39,11 +39,22 @@ begin
     into v_same_city
     from public.profiles p where p.id = auth.uid();
 
+  -- Club members are pre-vetted: a club gathering is a direct one-tap
+  -- confirmation for them, whatever the matching state.
+  if v.club_id is not null then
+    select exists (
+      select 1 from public.club_memberships m
+      where m.club_id = v.club_id and m.user_id = auth.uid()
+        and m.status in ('founding', 'regular')
+    ) into v_is_club_member;
+  end if;
+
   -- TEMP (2026-07-31): same-city gate disabled — small-city event draws people
   -- from surrounding cities, so anyone can one-tap join post-matching. To
   -- restore, add `and coalesce(v_same_city, false)` back to the condition below.
-  -- Post-matching fast path: ranked + genuine room → confirm directly.
-  if v.status in ('ranking','finalized') then
+  -- Fast path: ranked vibe, OR club member on their club's gathering →
+  -- genuine room → confirm directly.
+  if v.status in ('ranking','finalized') or v_is_club_member then
     select count(*) into v_held from public.vibe_interests
       where vibe_id = p_vibe
         and (status='confirmed'

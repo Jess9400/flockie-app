@@ -384,8 +384,10 @@ export default async function VibeDetailPage(
   }
   // TEMP (2026-07-31): same-city guard removed so people from surrounding
   // cities can one-tap join; restore `!differentCity &&` to re-enable.
+  // Club members one-tap confirm into their club's gatherings regardless of
+  // matching state (mirrors the express_interest fast path).
   const directConfirm =
-    ["ranking", "finalized"].includes(vibe.status) &&
+    (viewerIsClubMember || ["ranking", "finalized"].includes(vibe.status)) &&
     confirmedCount < vibe.capacity &&
     new Date(vibe.starts_at) > new Date();
   const matchingRunAt = getVibeMatchingRunAt(vibe.starts_at, vibe.signup_deadline);

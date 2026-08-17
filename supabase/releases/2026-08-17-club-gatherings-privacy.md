@@ -31,3 +31,12 @@
 ## Rollback
 
 - Re-run `recommended-vibes-joinable.sql` and `vibe-city-fallback-recommend.sql` (previous canonicals); drop `notify_club_gathering`; the view column and `club_notified_at` can stay (inert).
+
+## Addendum 2026-08-17 (same day)
+
+`express_interest` (canonical `vibe-express-interest-autoconfirm.sql`) gains a
+club-member fast path: an active member tapping join on their club's gathering
+is CONFIRMED directly (capacity-guarded, same side effects), whatever the
+matching state - members are pre-vetted, matching is irrelevant inside a club.
+The detail page shows them the "Join now" direct-confirm button accordingly.
+RE-RUN `vibe-express-interest-autoconfirm.sql` on prod.
