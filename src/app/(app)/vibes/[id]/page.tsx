@@ -741,9 +741,19 @@ export default async function VibeDetailPage(
                 </span>
               </summary>
               <ol className="mt-3 space-y-2 pl-5 text-sm font-medium leading-relaxed text-muted">
-                <li className="list-decimal">{t("detail.joiningStep1")}</li>
-                <li className="list-decimal">{t("detail.joiningStep2")}</li>
-                <li className="list-decimal">{t("detail.joiningStep3")}</li>
+                {viewerIsClubMember ? (
+                  <>
+                    <li className="list-decimal">{t("detail.clubJoiningStep1")}</li>
+                    <li className="list-decimal">{t("detail.clubJoiningStep2")}</li>
+                    <li className="list-decimal">{t("detail.clubJoiningStep3")}</li>
+                  </>
+                ) : (
+                  <>
+                    <li className="list-decimal">{t("detail.joiningStep1")}</li>
+                    <li className="list-decimal">{t("detail.joiningStep2")}</li>
+                    <li className="list-decimal">{t("detail.joiningStep3")}</li>
+                  </>
+                )}
               </ol>
             </details>
           )}

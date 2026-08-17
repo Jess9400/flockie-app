@@ -89,7 +89,10 @@
     "guestAccept": "Aceitar convite",
     "goingWithRsvp": "Confirmados ({count}) · {rsvped} confirmaram presença",
     "confirmAttendance": "Confirmar presença ✓",
-    "confirmAttendanceHint": "Você é membro do club - não precisa se inscrever. Isso só conta você na lista de presença."
+    "confirmAttendanceHint": "Você é membro do club - não precisa se inscrever. Isso só conta você na lista de presença.",
+    "clubJoiningStep1": "Você é membro do club - toque em Confirmar presença e você está na lista. Sem inscrição, sem matching.",
+    "clubJoiningStep2": "O endereço exato já está visível para você abaixo - o club é seu.",
+    "clubJoiningStep3": "Mudou de planos? Toque em Sair para o anfitrião ajustar a contagem."
   },
   "create": {
     "back": "Voltar",
