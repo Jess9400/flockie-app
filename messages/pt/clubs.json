@@ -117,7 +117,9 @@
     "viewClub": "Ver Club",
     "notFoundTitle": "Este convite não está disponível",
     "notFoundBody": "Ele pode ter expirado, sido usado ou revogado pelo anfitrião.",
-    "explore": "Explorar Clubs"
+    "explore": "Explorar Clubs",
+    "nextGathering": "Próximo encontro",
+    "nextGatheringHint": "Aceite o convite e já garanta sua vaga."
   },
   "heartbeat": {
     "readyTitle": "Seu primeiro encontro terminou.",

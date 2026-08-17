@@ -71,6 +71,10 @@ this list only tracks what is approved and pending or recently applied.
 - 2026-08-16 `club-payments.sql` - payments foundation + NowPayments
   settlement; see `supabase/releases/2026-08-16-club-payments.md`. Applied to
   production 2026-08-16 (probe-verified) and ACTIVATED (env keys live).
+- 2026-08-17 `club-invite-multiuse.sql` - club invite links multi-use +
+  next-gathering preview (includes a data fix reactivating consumed links);
+  see `supabase/releases/2026-08-17-club-invite-multiuse.md`. Pending
+  production run.
 - 2026-08-17 `club-democratic-entry.sql` - member voting on join requests;
   see `supabase/releases/2026-08-17-club-democratic-entry.md`. Requires
   `club-moderators.sql` + `clubs-loop.sql`. Pending production run.

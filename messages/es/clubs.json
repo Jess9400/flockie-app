@@ -117,7 +117,9 @@
     "viewClub": "Ver Club",
     "notFoundTitle": "Esta invitación no está disponible",
     "notFoundBody": "Puede haber caducado, haberse usado o haber sido revocada por el anfitrión.",
-    "explore": "Explorar Clubs"
+    "explore": "Explorar Clubs",
+    "nextGathering": "Próximo encuentro",
+    "nextGatheringHint": "Acepta la invitación y asegura tu lugar de inmediato."
   },
   "heartbeat": {
     "readyTitle": "Tu primer encuentro ya terminó.",

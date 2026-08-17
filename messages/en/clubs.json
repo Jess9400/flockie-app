@@ -117,7 +117,9 @@
     "viewClub": "View Club",
     "notFoundTitle": "This invitation isn’t available",
     "notFoundBody": "It may have expired, been used, or been revoked by the host.",
-    "explore": "Explore Clubs"
+    "explore": "Explore Clubs",
+    "nextGathering": "Next gathering",
+    "nextGatheringHint": "Accept the invite and you can grab your spot right away."
   },
   "heartbeat": {
     "readyTitle": "Your first gathering is complete.",

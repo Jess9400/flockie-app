@@ -44,7 +44,8 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | `vibe_takes`, `save_vibe_take` | `vibe-takes.sql` |
 | Club tables, Vibe-link ownership guard, membership/attendance RPCs, `club_directory`, `public_profile_clubs` | `clubs-foundation.sql` |
 | `club_detail` (safe Club detail; no roster or exact location) | `club-detail-access.sql` |
-| Founding member invite links and acceptance RPCs | `club-founder-invites.sql` |
+| Founding member invite links (creation/revoke) | `club-founder-invites.sql` |
+| `accept_club_founder_invite` (multi-use) + `club_founder_invite_detail` (next gathering) (2026-08-17) | `club-invite-multiuse.sql` |
 | `set_club_status` (activate, pause, close) | `club-heartbeat.sql` |
 | `is_club_moderator`, `is_club_manager`, `set_club_member_role`, `approve_club_membership`, `decline_club_membership`, `record_club_attendance`, memberships/attendance read policies (moderators, 2026-08-14) | `club-moderators.sql` |
 | `club-media` private bucket, `club_media` table + RLS, `_club_media_club`, club-media storage policies (2026-08-16) | `club-media.sql` |

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CalendarDays, MapPin, Sparkles } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
+import { formatVibeWhen } from "@/lib/vibes";
 import { createClient } from "@/lib/supabase/server";
 import AcceptFounderInvite from "@/components/AcceptFounderInvite";
 
@@ -13,12 +14,17 @@ type FounderInviteDetail = {
   category: string | null;
   cadence: "weekly" | "biweekly" | "monthly";
   expires_at: string;
+  next_vibe_id: string | null;
+  next_vibe_title: string | null;
+  next_vibe_starts_at: string | null;
+  next_vibe_timezone: string | null;
 };
 
 export default async function ClubFounderInvitePage(props: { params: Promise<{ token: string }> }) {
   const params = await props.params;
   const supabase = await createClient();
   const t = await getTranslations("clubs.invite");
+  const locale = await getLocale();
   const { data } = await supabase.rpc("club_founder_invite_detail", { p_token: params.token }).maybeSingle();
   const invite = data as FounderInviteDetail | null;
 
@@ -63,6 +69,19 @@ export default async function ClubFounderInvitePage(props: { params: Promise<{ t
             </span>
             {invite.category && <span className="rounded-full border border-ink/15 bg-cream px-3 py-1.5 text-sm font-bold text-ink">{invite.category}</span>}
           </div>
+          {invite.next_vibe_starts_at && (
+            <div className="mt-5 rounded-2xl border border-flockie-coral/30 bg-cream p-4">
+              <p className="text-xs font-extrabold uppercase tracking-wide text-flockie-coral">
+                {t("nextGathering")}
+              </p>
+              <p className="mt-1 text-base font-black text-ink">{invite.next_vibe_title}</p>
+              <p className="mt-0.5 flex items-center gap-1.5 text-sm font-bold text-muted">
+                <CalendarDays size={15} className="text-flockie-coral" />
+                {formatVibeWhen(invite.next_vibe_starts_at, locale, invite.next_vibe_timezone ?? undefined)}
+              </p>
+              <p className="mt-1 text-xs font-medium text-muted">{t("nextGatheringHint")}</p>
+            </div>
+          )}
           <AcceptFounderInvite token={params.token} clubId={invite.club_id} clubTitle={invite.club_title} />
         </div>
       </section>
