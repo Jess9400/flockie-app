@@ -96,7 +96,8 @@
     "openClubChat": "Open the club chat",
     "becomeMember": "Like this club?",
     "becomeMemberHint": "Attend, then apply with your story - the members vote you in.",
-    "becomeMemberCta": "Become a member"
+    "becomeMemberCta": "Become a member",
+    "backToClub": "Back to the club"
   },
   "create": {
     "back": "Back",

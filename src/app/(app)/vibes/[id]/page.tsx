@@ -411,10 +411,10 @@ export default async function VibeDetailPage(
     <main className="mx-auto w-full max-w-5xl px-5 pb-10 pt-6">
       {!isHost && <VibeDetailBehavior vibeId={vibe.id} />}
       <Link
-        href="/vibes"
+        href={gatheringClubId ? `/clubs/${gatheringClubId}` : "/vibes"}
         className="mb-3 flex w-fit items-center gap-1 text-sm font-bold text-muted"
       >
-        <ChevronLeft size={16} /> {t("detail.back")}
+        <ChevronLeft size={16} /> {gatheringClubId ? t("detail.backToClub") : t("detail.back")}
       </Link>
 
       {vibe.status === "cancelled" && (

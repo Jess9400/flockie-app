@@ -96,7 +96,8 @@
     "openClubChat": "Abrir chat do club",
     "becomeMember": "Curtiu este club?",
     "becomeMemberHint": "Participe, depois se apresente - os membros votam para você entrar.",
-    "becomeMemberCta": "Quero ser membro"
+    "becomeMemberCta": "Quero ser membro",
+    "backToClub": "Voltar para o club"
   },
   "create": {
     "back": "Voltar",
