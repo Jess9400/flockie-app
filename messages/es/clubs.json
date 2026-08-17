@@ -283,7 +283,8 @@
     "goingCount": "{count} van",
     "attendedLabel": "Encuentro pasado",
     "eventGoing": "{name} va a {title}",
-    "eventScheduled": "Nuevo encuentro programado: {title}"
+    "eventScheduled": "Nuevo encuentro programado: {title}",
+    "leaveConfirm": "¿Liberar tu lugar en este encuentro? El conteo del club se actualiza y otra persona puede entrar."
   },
   "moderators": {
     "title": "Moderadores",

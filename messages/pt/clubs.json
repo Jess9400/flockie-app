@@ -283,7 +283,8 @@
     "goingCount": "{count} vão",
     "attendedLabel": "Encontro passado",
     "eventGoing": "{name} vai a {title}",
-    "eventScheduled": "Novo encontro agendado: {title}"
+    "eventScheduled": "Novo encontro agendado: {title}",
+    "leaveConfirm": "Liberar sua vaga neste encontro? A contagem do club é atualizada e outra pessoa pode entrar."
   },
   "moderators": {
     "title": "Moderadores",

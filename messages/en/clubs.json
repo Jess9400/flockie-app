@@ -283,7 +283,8 @@
     "goingCount": "{count} going",
     "attendedLabel": "Past meetup",
     "eventGoing": "{name} is going to {title}",
-    "eventScheduled": "New gathering scheduled: {title}"
+    "eventScheduled": "New gathering scheduled: {title}",
+    "leaveConfirm": "Free your spot at this gathering? The club's head count updates and someone else can take it."
   },
   "moderators": {
     "title": "Moderators",

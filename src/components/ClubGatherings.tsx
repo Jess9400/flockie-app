@@ -44,26 +44,18 @@ export default function ClubGatherings({
       const { data: gRows } = await supabase.rpc("club_gatherings", { p_club: clubId });
       const gatherings = (gRows ?? []) as Gathering[];
       const ids = gatherings.map((g) => g.id);
+      // Unified with the gathering page: "going" = CONFIRMED attendees (the
+      // same list that holds seats, unlocks the address, and feeds the host
+      // tally) - not a separate RSVP table.
       const map: Record<string, Attendee[]> = {};
       if (ids.length) {
-        const { data: rsvps } = await supabase
-          .from("club_gathering_rsvps")
-          .select("vibe_id, user_id")
-          .eq("going", true)
-          .in("vibe_id", ids);
-        const userIds = Array.from(new Set((rsvps ?? []).map((r) => r.user_id)));
-        const byId: Record<string, Attendee> = {};
-        if (userIds.length) {
-          const { data: profs } = await supabase
-            .from("public_profiles")
-            .select("id, display_name, photos")
-            .in("id", userIds);
-          (profs ?? []).forEach((p) => {
-            byId[p.id] = { id: p.id, name: p.display_name ?? "Flockie", photo: p.photos?.[0] ?? null };
-          });
-        }
-        (rsvps ?? []).forEach((r) => {
-          (map[r.vibe_id] ??= []).push(byId[r.user_id] ?? { id: r.user_id, name: "Flockie", photo: null });
+        const lists = await Promise.all(
+          ids.map((id) => supabase.rpc("vibe_attendees", { p_vibe: id }))
+        );
+        ids.forEach((id, i) => {
+          map[id] = (
+            (lists[i].data ?? []) as { id: string; display_name: string | null; photos: string[] | null }[]
+          ).map((a) => ({ id: a.id, name: a.display_name ?? "Flockie", photo: a.photos?.[0] ?? null }));
         });
       }
       if (!alive) return;
@@ -80,14 +72,27 @@ export default function ClubGatherings({
   async function toggle(vibeId: string) {
     const list = going[vibeId] ?? [];
     const iAmIn = list.some((a) => a.id === meId);
+    if (iAmIn && !confirm(t("leaveConfirm"))) return;
     // Optimistic
     setGoing((cur) => ({
       ...cur,
       [vibeId]: iAmIn ? (cur[vibeId] ?? []).filter((a) => a.id !== meId) : [...(cur[vibeId] ?? []), { id: meId, name: "You", photo: null }],
     }));
-    await supabase
-      .from("club_gathering_rsvps")
-      .upsert({ vibe_id: vibeId, user_id: meId, going: !iAmIn, updated_at: new Date().toISOString() }, { onConflict: "vibe_id,user_id" });
+    // Same rails as the gathering page: confirm-attendance in, leave to free
+    // the seat - so this tick IS the head count everywhere.
+    const { error } = iAmIn
+      ? await supabase.rpc("leave_vibe", { p_vibe: vibeId })
+      : await supabase.rpc("express_interest", { p_vibe: vibeId });
+    if (error) {
+      // Roll back the optimistic flip.
+      setGoing((cur) => ({
+        ...cur,
+        [vibeId]: iAmIn
+          ? [...(cur[vibeId] ?? []), { id: meId, name: "You", photo: null }]
+          : (cur[vibeId] ?? []).filter((a) => a.id !== meId),
+      }));
+      return;
+    }
     if (!iAmIn) {
       const g = items.find((x) => x.id === vibeId);
       announce?.(t("eventGoing", { name: (meName ?? "").split(" ")[0] || "Someone", title: g?.title ?? t("gatheringFallback") }));
