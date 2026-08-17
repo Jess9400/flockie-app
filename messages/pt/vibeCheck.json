@@ -291,7 +291,7 @@
       "activitiesHint": "Suas favoritas - não precisa escolher tudo.",
       "motivationLabel": "O que te tira de casa?",
       "motivationHint": "O que você realmente busca quando vai a um rolê local.",
-      "social": "Tamanho de grupo ideal para um encontro?",
+      "social": "Tamanho de grupo ideal para um evento?",
       "socialStyle": "Ao entrar numa sala cheia de desconhecidos, você…",
       "intensity": "Quanto você quer se esforçar?",
       "initiator": "Você é mais do tipo que…",
@@ -299,7 +299,7 @@
       "vibeHint": "Escolha até {max}.",
       "dealbreakersLabel": "Alguma preferência inegociável?",
       "dealbreakersHint": "São usadas como filtros. Pule se não houver nenhuma.",
-      "prioritiesLabel": "Para um encontro, o que mais importa?",
+      "prioritiesLabel": "Para um evento, o que mais importa?",
       "prioritiesHint": "Escolha até {max}."
     },
     "questions": {
