@@ -39,7 +39,8 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | `express_interest` (records self-expressed interest separately from algorithm-created rows) | `vibe-express-interest-autoconfirm.sql` |
 | `confirm_vibe` | `ranking.sql` |
 | `expire_invitations`, `decline_vibe` | `expiry.sql` |
-| `vibe_directory`, `vibe_private_logistics`, `public_vibe` | `vibe-location-privacy-prepare.sql` |
+| `vibe_directory` (base), `public_vibe` | `vibe-location-privacy-prepare.sql` |
+| `vibe_private_logistics` (club members see their gathering address, 2026-08-17) | `vibe-logistics-club-members.sql` |
 | `public_profiles` (including public Vibe persona), `public_profile_events/stats` | `profile-privacy-prepare.sql` |
 | `vibe_takes`, `save_vibe_take` | `vibe-takes.sql` |
 | Club tables, Vibe-link ownership guard, membership/attendance RPCs, `club_directory`, `public_profile_clubs` | `clubs-foundation.sql` |

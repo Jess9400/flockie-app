@@ -174,7 +174,9 @@ export default async function ClubPage(props: {
     joinCandidates = (cand ?? []) as typeof joinCandidates;
   }
   const showWelcome =
-    searchParams.welcome === "1" && !club.is_host && club.membership_status === "regular";
+    searchParams.welcome === "1" &&
+    !club.is_host &&
+    ["founding", "regular"].includes(club.membership_status ?? "");
 
   let membershipRequests: { id: string; display_name: string | null; photos: string[] | null }[] = [];
   if (canManage) {

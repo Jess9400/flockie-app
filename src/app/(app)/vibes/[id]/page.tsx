@@ -177,7 +177,7 @@ export default async function VibeDetailPage(
     location_lng: number | null;
     activity_url: string | null;
   } | null = null;
-  if (isHost || myInterest?.status === "confirmed") {
+  if (isHost || myInterest?.status === "confirmed" || viewerIsClubMember) {
     const { data } = await supabase.rpc("vibe_private_logistics", { p_vibe: params.id });
     privateLogistics = data?.[0] ?? null;
   }

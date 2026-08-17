@@ -31,7 +31,7 @@ export default function AcceptFounderInvite({ token, clubId, clubTitle }: { toke
         <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-flockie-blue text-white"><Check size={25} /></span>
         <h2 className="mt-4 text-xl font-black text-ink">{t("acceptedTitle")}</h2>
         <p className="mt-2 text-sm font-medium leading-relaxed text-muted">{t("acceptedBody", { club: clubTitle })}</p>
-        <Link href={`/clubs/${clubId}`} className="mt-5 inline-flex rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white shadow-[0_3px_0_#d84e32]">
+        <Link href={`/clubs/${clubId}?welcome=1`} className="mt-5 inline-flex rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white shadow-[0_3px_0_#d84e32]">
           {t("viewClub")}
         </Link>
       </section>
