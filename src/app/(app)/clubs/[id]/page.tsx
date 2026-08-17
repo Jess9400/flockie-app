@@ -217,14 +217,16 @@ export default async function ClubPage(props: {
 
       <section className="mt-6 overflow-hidden rounded-3xl border border-ink/15 bg-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
         <div className="bg-gradient-to-br from-flockie-blue via-[#80c5ea] to-[#d7eefb] p-6 sm:p-8">
-          <span className="inline-flex rounded-full bg-white/90 px-3 py-1 text-xs font-extrabold tracking-wide text-ink">
-            <CircleDot className="mr-1.5 text-flockie-coral" size={14} /> {t(statusKey)}
-          </span>
+          <div className="flex items-start justify-between gap-3">
+            <span className="inline-flex rounded-full bg-white/90 px-3 py-1 text-xs font-extrabold tracking-wide text-ink">
+              <CircleDot className="mr-1.5 text-flockie-coral" size={14} /> {t(statusKey)}
+            </span>
+            {club.is_host && (
+              <ClubEditPanel clubId={club.id} initialTitle={club.title} initialDescription={club.description} />
+            )}
+          </div>
           <h1 className="mt-7 max-w-xl text-2xl font-black text-ink sm:text-4xl">{club.title}</h1>
           {club.description && <p className="mt-3 max-w-xl text-base font-semibold leading-relaxed text-ink/75">{club.description}</p>}
-          {club.is_host && (
-            <ClubEditPanel clubId={club.id} initialTitle={club.title} initialDescription={club.description} />
-          )}
         </div>
 
         <div className="flex flex-wrap gap-2 border-t border-ink/10 px-5 py-4 sm:px-6">
