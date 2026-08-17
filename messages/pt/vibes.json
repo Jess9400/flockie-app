@@ -86,7 +86,8 @@
     "guestLinkShared": "Link de convidado compartilhado. Uso único.",
     "guestCardTitle": "Você foi convidado como convidado",
     "guestCardBody": "Um membro do club guardou uma vaga para você neste encontro. Aceite e você está dentro - com chat e local do encontro.",
-    "guestAccept": "Aceitar convite"
+    "guestAccept": "Aceitar convite",
+    "goingWithRsvp": "Confirmados ({count}) · {rsvped} confirmaram presença"
   },
   "create": {
     "back": "Voltar",

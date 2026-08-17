@@ -223,6 +223,9 @@ export default async function VibeDetailPage(
     attendance_confirmed_at: string | null;
   }[] = [];
   let normalRemovalCount = 0;
+  // Soft-RSVP tally: auto-confirm fills the room, but planning runs on who
+  // explicitly said "I'll be there" - surfaced to the host next to the count.
+  let rsvpedCount = 0;
   const normalRemovalLimit = Math.min(3, Math.max(1, Math.floor(vibe.capacity * 0.2)));
   // Pre-invite review (v2): the ranked shortlist the host can prune before invites.
   let shortlist: { id: string; name: string | null; photo: string | null; score: number | null }[] = [];
@@ -272,6 +275,9 @@ export default async function VibeDetailPage(
     hostFilled = (prRows ?? []).filter((r) => r.status === "invited" || r.status === "confirmed").length;
     const memberIds = (memberRows ?? []).map((r) => r.user_id);
     normalRemovalCount = count ?? 0;
+    rsvpedCount = (memberRows ?? []).filter(
+      (r) => r.status === "confirmed" && (r as { attendance_confirmed_at?: string | null }).attendance_confirmed_at
+    ).length;
 
     // Stage 2: the public_profiles lookups keyed by stage-1 id lists.
     const [{ data: slProfiles }, { data: pp }, { data: profiles }] = await Promise.all([
@@ -661,7 +667,9 @@ export default async function VibeDetailPage(
       {showAttendeeDetails && confirmedCount > 0 && (
         <div className="mt-5">
           <p className="text-sm font-bold">
-            {t("detail.goingWithCount", { count: confirmedCount })}
+            {isHost
+              ? t("detail.goingWithRsvp", { count: confirmedCount, rsvped: rsvpedCount })
+              : t("detail.goingWithCount", { count: confirmedCount })}
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
             {attendees.map((a) => (

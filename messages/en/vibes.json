@@ -86,7 +86,8 @@
     "guestLinkShared": "Guest link shared. One use only.",
     "guestCardTitle": "You're invited as a guest",
     "guestCardBody": "A club member saved you a spot at this gathering. Accept and you're in - chat and meeting spot included.",
-    "guestAccept": "Accept invitation"
+    "guestAccept": "Accept invitation",
+    "goingWithRsvp": "Going ({count}) · {rsvped} confirmed attendance"
   },
   "create": {
     "back": "Back",

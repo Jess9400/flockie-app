@@ -24,6 +24,9 @@ create table if not exists public.club_guest_invites (
 );
 create index if not exists club_guest_invites_inviter_idx
   on public.club_guest_invites (club_id, inviter_id);
+-- One guest per member PER GATHERING, regardless of remaining lifetime quota.
+create unique index if not exists club_guest_invites_one_per_gathering
+  on public.club_guest_invites (vibe_id, inviter_id);
 alter table public.club_guest_invites enable row level security;
 
 drop policy if exists "guest invites inviter or host read" on public.club_guest_invites;
@@ -66,6 +69,12 @@ begin
     where club_id = v.club_id and inviter_id = auth.uid();
   if v_used >= v_allowance then
     raise exception 'no guest invites left for this club';
+  end if;
+  if exists (
+    select 1 from public.club_guest_invites
+    where vibe_id = p_vibe and inviter_id = auth.uid()
+  ) then
+    raise exception 'one guest per gathering - you already invited someone to this one';
   end if;
 
   insert into public.club_guest_invites (club_id, vibe_id, inviter_id)
