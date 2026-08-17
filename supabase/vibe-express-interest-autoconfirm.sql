@@ -60,20 +60,33 @@ begin
         and (status='confirmed'
              or (status='invited' and (invitation_expires_at is null or invitation_expires_at > now())));
     if v_held < v.capacity then
-      insert into public.vibe_interests (vibe_id, user_id, status, source, confirmed_at)
-        values (p_vibe, auth.uid(), 'confirmed', 'self', now())
+      -- Club members are ALREADY in the club: this tap is an attendance
+      -- confirmation, so stamp attendance_confirmed_at in the same motion.
+      insert into public.vibe_interests (vibe_id, user_id, status, source, confirmed_at, attendance_confirmed_at)
+        values (p_vibe, auth.uid(), 'confirmed', 'self', now(),
+                case when v_is_club_member then now() end)
       on conflict (vibe_id, user_id) do update
-        set status='confirmed', source='self', confirmed_at=now();
+        set status='confirmed', source='self', confirmed_at=now(),
+            attendance_confirmed_at = coalesce(public.vibe_interests.attendance_confirmed_at,
+                                               case when v_is_club_member then now() end);
 
-      -- Mirror confirm_vibe's side effects so they land in the room cleanly.
+      -- The event chat exists for guests either way; members live in the CLUB
+      -- chat, so skip the join noise and the "chat is open" copy for them.
       insert into public.vibing_chats (vibe_id) values (p_vibe) on conflict (vibe_id) do nothing;
-      select id into v_chat from public.vibing_chats where vibe_id=p_vibe;
-      v_name := coalesce((select display_name from public.profiles where id=auth.uid()), 'Someone');
-      insert into public.vibing_messages (chat_id, sender_id, content)
-        values (v_chat, null, v_name || ' joined the chat');
-      insert into public.notifications (user_id, type, title, body, data)
-        values (auth.uid(), 'vibe_confirmed', 'You''re in for ' || v.title,
-                'Vibing Chat is now open.', jsonb_build_object('vibe_id', p_vibe));
+      if v_is_club_member then
+        insert into public.notifications (user_id, type, title, body, data)
+          values (auth.uid(), 'vibe_confirmed', 'Attendance confirmed: ' || v.title,
+                  'You''re on the list - the club counts on you. Details on the gathering page.',
+                  jsonb_build_object('vibe_id', p_vibe));
+      else
+        select id into v_chat from public.vibing_chats where vibe_id=p_vibe;
+        v_name := coalesce((select display_name from public.profiles where id=auth.uid()), 'Someone');
+        insert into public.vibing_messages (chat_id, sender_id, content)
+          values (v_chat, null, v_name || ' joined the chat');
+        insert into public.notifications (user_id, type, title, body, data)
+          values (auth.uid(), 'vibe_confirmed', 'You''re in for ' || v.title,
+                  'Vibing Chat is now open.', jsonb_build_object('vibe_id', p_vibe));
+      end if;
 
       return jsonb_build_object('status','confirmed','confirmed',true);
     end if;

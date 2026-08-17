@@ -87,7 +87,9 @@
     "guestCardTitle": "You're invited as a guest",
     "guestCardBody": "A club member saved you a spot at this gathering. Accept and you're in - chat and meeting spot included.",
     "guestAccept": "Accept invitation",
-    "goingWithRsvp": "Going ({count}) · {rsvped} confirmed attendance"
+    "goingWithRsvp": "Going ({count}) · {rsvped} confirmed attendance",
+    "confirmAttendance": "Confirm attendance ✓",
+    "confirmAttendanceHint": "You're a club member - no need to apply. This just counts you in for the head count."
   },
   "create": {
     "back": "Back",

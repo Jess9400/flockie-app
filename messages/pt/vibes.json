@@ -87,7 +87,9 @@
     "guestCardTitle": "Você foi convidado como convidado",
     "guestCardBody": "Um membro do club guardou uma vaga para você neste encontro. Aceite e você está dentro - com chat e local do encontro.",
     "guestAccept": "Aceitar convite",
-    "goingWithRsvp": "Confirmados ({count}) · {rsvped} confirmaram presença"
+    "goingWithRsvp": "Confirmados ({count}) · {rsvped} confirmaram presença",
+    "confirmAttendance": "Confirmar presença ✓",
+    "confirmAttendanceHint": "Você é membro do club - não precisa se inscrever. Isso só conta você na lista de presença."
   },
   "create": {
     "back": "Voltar",

@@ -11,6 +11,7 @@ import HostVibePrivateRequests from "@/components/HostVibePrivateRequests";
 import HostVibeMembers from "@/components/HostVibeMembers";
 import RsvpBanner from "@/components/RsvpBanner";
 import BringGuestButton from "@/components/BringGuestButton";
+import ConfirmAttendanceButton from "@/components/ConfirmAttendanceButton";
 import GuestRedeemCard from "@/components/GuestRedeemCard";
 import ClubAttendancePanel from "@/components/ClubAttendancePanel";
 import VibeAttendancePanel from "@/components/VibeAttendancePanel";
@@ -583,23 +584,32 @@ export default async function VibeDetailPage(
               </span>
             </div>
           )}
-          <InterestButton
-            vibeId={vibe.id}
-            userId={user!.id}
-            activitiesDone={activitiesDone}
-            initialStatus={(myInterest?.status as InterestStatus) ?? null}
-            invitationExpiresAt={myInterest?.invitation_expires_at ?? null}
-            cancelled={vibe.status === "cancelled"}
-            ended={ended}
-            autoInterest={searchParams.interested === "1"}
-            requestMode={searchParams.request === "1"}
-            hostCode={searchParams.code ?? null}
-            initialNotForMe={!!myFeedback}
-            hasCity={!!me?.home_city?.trim()}
-            directConfirm={directConfirm}
-            matchingRunAt={matchingRunAt}
-            matchingTimeZone={(vibe as { timezone?: string | null }).timezone}
-          />
+          {viewerIsClubMember ? (
+            // Members are already IN the club - the gathering only needs a
+            // head count, so no join funnel: one tap = attendance confirmed
+            // (the RSVP banner above becomes the "you're going" state).
+            myInterest?.status !== "confirmed" &&
+            !ended &&
+            vibe.status !== "cancelled" && <ConfirmAttendanceButton vibeId={vibe.id} />
+          ) : (
+            <InterestButton
+              vibeId={vibe.id}
+              userId={user!.id}
+              activitiesDone={activitiesDone}
+              initialStatus={(myInterest?.status as InterestStatus) ?? null}
+              invitationExpiresAt={myInterest?.invitation_expires_at ?? null}
+              cancelled={vibe.status === "cancelled"}
+              ended={ended}
+              autoInterest={searchParams.interested === "1"}
+              requestMode={searchParams.request === "1"}
+              hostCode={searchParams.code ?? null}
+              initialNotForMe={!!myFeedback}
+              hasCity={!!me?.home_city?.trim()}
+              directConfirm={directConfirm}
+              matchingRunAt={matchingRunAt}
+              matchingTimeZone={(vibe as { timezone?: string | null }).timezone}
+            />
+          )}
         </section>
       )}
 
