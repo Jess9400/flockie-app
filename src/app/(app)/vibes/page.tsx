@@ -62,7 +62,10 @@ export default async function VibesPage(
     .select(
       "id, host_id, title, category, categories, photos, city, area, country, starts_at, timezone, capacity, event_vibe_tags",
       { count: "exact" }
-    );
+    )
+    // Club gatherings are invite-only - never in public browse (server-side so
+    // pagination counts stay honest).
+    .is("club_id", null);
 
   if (isPast) {
     // Past: events that have started, within the last 45 days, that weren't cancelled.
@@ -107,9 +110,7 @@ export default async function VibesPage(
     .order("starts_at", { ascending: !isPast })
     .range(from, from + PAGE_SIZE - 1);
 
-  // Club gatherings are invite-only - never in public browse. (JS-side filter
-  // so the page degrades gracefully until the view exposes club_id.)
-  const list = (vibes ?? []).filter((v) => (v as { club_id?: string | null }).club_id == null);
+  const list = vibes ?? [];
   const totalPages = Math.max(1, Math.ceil((count ?? 0) / PAGE_SIZE));
   const hrefFor = (p: number) => {
     const sp = new URLSearchParams();

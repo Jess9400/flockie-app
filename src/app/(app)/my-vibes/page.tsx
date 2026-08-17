@@ -76,6 +76,8 @@ export default async function MyVibesPage(
   const { data: vibes } = await supabase
     .from("vibes")
     .select("id, title, category, photos, city, location_name, starts_at, ends_at, timezone, capacity, status")
+    // Club gatherings live under the club (its page + calendar), not here.
+    .is("club_id", null)
     .eq("host_id", user!.id)
     .order("starts_at", { ascending: false });
 
@@ -134,6 +136,7 @@ export default async function MyVibesPage(
     const { data: dir } = await supabase
       .from("vibe_directory")
       .select("id, title, photos, city, area, starts_at, ends_at, timezone, status")
+      .is("club_id", null)
       .in("id", runningIds);
     const rows = (dir ?? []) as JoinedVibe[];
     const hasEnded = (v: JoinedVibe) => new Date(v.ends_at ?? v.starts_at).getTime() < now;

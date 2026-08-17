@@ -140,6 +140,7 @@ export default async function HomePage(
   let nearQuery = supabase
     .from("vibe_directory")
     .select(VIBE_COLS)
+    .is("club_id", null)
     .in("status", ["open", "reviewing", "ranking", "finalized"])
     .gte("starts_at", nowIso)
     .order("starts_at", { ascending: true })
@@ -156,6 +157,7 @@ export default async function HomePage(
   let allQuery = supabase
     .from("vibe_directory")
     .select(VIBE_COLS)
+    .is("club_id", null)
     .in("status", ["open", "reviewing", "ranking", "finalized"])
     .gte("starts_at", nowIso)
     .order("starts_at", { ascending: true })
@@ -167,6 +169,7 @@ export default async function HomePage(
   let cityWeekQuery = supabase
     .from("vibe_directory")
     .select("id", { count: "exact", head: true })
+    .is("club_id", null)
     .in("status", ["open", "reviewing", "ranking", "finalized"])
     .gte("starts_at", nowIso)
     .lte("starts_at", weekIso);
@@ -177,10 +180,8 @@ export default async function HomePage(
     allQuery,
     cityWeekQuery,
   ]);
-  // Club gatherings are invite-only - keep them out of both carousels.
-  const notClub = (v: VibeRow) => (v as { club_id?: string | null }).club_id == null;
-  const near = ((nearRaw ?? []) as VibeRow[]).filter(notClub);
-  const allVibes = ((allRaw ?? []) as VibeRow[]).filter(notClub);
+  const near = (nearRaw ?? []) as VibeRow[];
+  const allVibes = (allRaw ?? []) as VibeRow[];
 
   // One metadata pass over the union of both lists.
   const vibeUnion = Array.from(new Map([...near, ...allVibes].map((v) => [v.id, v])).values());
