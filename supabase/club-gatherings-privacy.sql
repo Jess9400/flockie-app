@@ -170,6 +170,21 @@ begin
     v_count := v_count + 1;
   end loop;
 
+  -- Auto-pin the gathering in the club chat (one pin per chat - the newest
+  -- gathering always replaces the previous pin).
+  insert into public.chat_pins (chat_id, content, author_name, pinned_by)
+  values (
+    v.club_id,
+    '📅 ' || v.title || ' · '
+      || to_char(v.starts_at at time zone coalesce(v.timezone, 'UTC'), 'DD Mon · HH24:MI')
+      || ' - confirm attendance on the gathering page!',
+    'Flockie',
+    v.host_id
+  )
+  on conflict (chat_id) do update
+    set content = excluded.content, author_name = excluded.author_name,
+        pinned_by = excluded.pinned_by, pinned_at = now();
+
   update public.vibes set club_notified_at = now() where id = p_vibe;
   return v_count;
 end;

@@ -40,3 +40,11 @@ is CONFIRMED directly (capacity-guarded, same side effects), whatever the
 matching state - members are pre-vetted, matching is irrelevant inside a club.
 The detail page shows them the "Join now" direct-confirm button accordingly.
 RE-RUN `vibe-express-interest-autoconfirm.sql` on prod.
+
+## Addendum 2 (same day): auto-pin in the club chat
+
+`notify_club_gathering` now also upserts the club chat's pin (chat_pins,
+one pin per chat) with the gathering title + event-local date and a
+confirm-attendance nudge - the newest gathering always replaces the previous
+pin. Requires `chat-pins.sql` live (it is). RE-RUN
+`club-gatherings-privacy.sql` on prod.

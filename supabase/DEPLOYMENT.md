@@ -71,6 +71,8 @@ this list only tracks what is approved and pending or recently applied.
 - 2026-08-16 `club-payments.sql` - payments foundation + NowPayments
   settlement; see `supabase/releases/2026-08-16-club-payments.md`. Applied to
   production 2026-08-16 (probe-verified) and ACTIVATED (env keys live).
+- 2026-08-17 RE-RUN `club-gatherings-privacy.sql` - scheduling a gathering
+  now auto-pins it in the club chat (addendum 2 in its release record).
 - 2026-08-17 `club-member-settings.sql` - club reporting + member-side
   paid-tier cancel (leave/visibility reuse existing RPCs); see the release
   record addendum. Pending production run (re-run if the first version ran).
