@@ -11,6 +11,7 @@ import ClubMembershipRequests from "@/components/ClubMembershipRequests";
 import ClubModeratorsPanel from "@/components/ClubModeratorsPanel";
 import ClubSocioPanel from "@/components/ClubSocioPanel";
 import PayButton from "@/components/PayButton";
+import ClubJoinVotePanel from "@/components/ClubJoinVotePanel";
 
 type ClubDetail = {
   id: string;
@@ -31,11 +32,16 @@ type ClubDetail = {
   last_completed_vibe_title: string | null;
 };
 
-export default async function ClubPage(props: { params: Promise<{ id: string }> }) {
+export default async function ClubPage(props: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ welcome?: string }>;
+}) {
   const params = await props.params;
+  const searchParams = await props.searchParams;
   const supabase = await createClient();
   const t = await getTranslations("clubs.detail");
   const ts = await getTranslations("clubs.socio");
+  const tw = await getTranslations("clubs.welcome");
   // In-app checkout appears once the provider key is configured in the env.
   const paymentsEnabled = !!process.env.NOWPAYMENTS_API_KEY;
   const { data } = await supabase.rpc("club_detail", { p_club: params.id }).maybeSingle();
@@ -160,6 +166,16 @@ export default async function ClubPage(props: { params: Promise<{ id: string }> 
     socioOffer = (offer as SocioOfferRow | null) ?? null;
   }
 
+  // Democratic entry: every active member sees the ballot.
+  const isActiveMember = club.is_host || ["founding", "regular"].includes(club.membership_status ?? "");
+  let joinCandidates: import("@/components/ClubJoinVotePanel").JoinCandidate[] = [];
+  if (isActiveMember) {
+    const { data: cand } = await supabase.rpc("club_membership_candidates", { p_club: club.id });
+    joinCandidates = (cand ?? []) as typeof joinCandidates;
+  }
+  const showWelcome =
+    searchParams.welcome === "1" && !club.is_host && club.membership_status === "regular";
+
   let membershipRequests: { id: string; display_name: string | null; photos: string[] | null }[] = [];
   if (canManage) {
     const { data: requestRows } = await supabase
@@ -276,6 +292,32 @@ export default async function ClubPage(props: { params: Promise<{ id: string }> 
           <span className="rounded-full bg-flockie-blue px-4 py-2 text-sm font-bold text-white">{t("openStore")}</span>
         </Link>
       )}
+
+      {showWelcome && (
+        <section className="mt-5 rounded-3xl border border-flockie-coral/40 bg-white p-6 text-center shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
+          <p className="text-4xl">🎉</p>
+          <h2 className="mt-2 font-fredoka text-2xl font-bold text-ink">{tw("title")}</h2>
+          <p className="mx-auto mt-1 max-w-md text-sm font-medium text-muted">{tw("body")}</p>
+          {socioOffer?.perks && (
+            <p className="mx-auto mt-3 max-w-md whitespace-pre-wrap rounded-2xl bg-cream p-3 text-left text-sm font-medium text-ink">
+              ⭐ {socioOffer.perks}
+            </p>
+          )}
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+            {paymentsEnabled && socioOffer?.price_cents != null && (
+              <PayButton kind="socio" clubId={club.id} months={1} />
+            )}
+            <Link
+              href={`/clubs/${club.id}`}
+              className="rounded-full border border-ink/15 bg-white px-5 py-2 text-sm font-bold text-ink"
+            >
+              {tw("continueFree")}
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {isActiveMember && <ClubJoinVotePanel clubId={club.id} candidates={joinCandidates} />}
 
       {canManage && <ClubMembershipRequests clubId={club.id} requests={membershipRequests} />}
 

@@ -198,7 +198,10 @@
     "declineBody": "A pessoa não será membro regular. Ainda pode entrar em futuros encontros se for elegível.",
     "declineConfirm": "Recusar solicitação",
     "cancel": "Cancelar",
-    "decisionError": "Não foi possível atualizar esta solicitação. Tente novamente."
+    "decisionError": "Não foi possível atualizar esta solicitação. Tente novamente.",
+    "introLabel": "Conte para o club sobre você",
+    "introPlaceholder": "O que você tem em comum com o club, sua história, suas habilidades - e por que adoraria fazer parte. Os membros vão ler isso e votar.",
+    "introTooShort": "Escreva pelo menos algumas frases - os membros votam com base nisso."
   },
   "convert": {
     "heading": "Transforme em um club",
@@ -371,5 +374,18 @@
     "payCrypto": "Pagar com cripto",
     "redirecting": "Abrindo pagamento…",
     "error": "Não foi possível iniciar o pagamento - tente de novo."
+  },
+  "voting": {
+    "title": "Votação de novo membro",
+    "subtitle": "O club decide junto - a maioria dos membros ativos resolve. Seu voto conta.",
+    "candidateFallback": "Candidato",
+    "tally": "SIM {yes} · NÃO {no} · {needed} para decidir",
+    "yes": "SIM",
+    "no": "NÃO"
+  },
+  "welcome": {
+    "title": "Você está dentro!",
+    "body": "O club votou para aceitar você. Você já é membro - e se quiser a experiência completa, existe o plano de membro pago:",
+    "continueFree": "Continuar como membro gratuito"
   }
 }

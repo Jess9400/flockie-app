@@ -15,6 +15,7 @@ export default function ClubMembershipRequest({
   const supabase = createClient();
   const t = useTranslations("clubs.membership");
   const [requestStatus, setRequestStatus] = useState(status);
+  const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,9 +37,16 @@ export default function ClubMembershipRequest({
   }
 
   async function requestMembership() {
+    if (message.trim().length < 20) {
+      setError(t("introTooShort"));
+      return;
+    }
     setError(null);
     setSaving(true);
-    const { error: rpcError } = await supabase.rpc("request_club_membership", { p_club: clubId });
+    const { error: rpcError } = await supabase.rpc("request_club_membership", {
+      p_club: clubId,
+      p_message: message.trim(),
+    });
     setSaving(false);
     if (rpcError) {
       setError(rpcError.message || t("requestError"));
@@ -56,6 +64,17 @@ export default function ClubMembershipRequest({
           <p className="mt-1 text-sm font-medium leading-relaxed text-muted">{t("requestBody")}</p>
         </div>
       </div>
+      <label className="mt-4 block text-sm font-bold text-ink">
+        {t("introLabel")}
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          maxLength={600}
+          rows={4}
+          placeholder={t("introPlaceholder")}
+          className="mt-1 w-full resize-y rounded-2xl border border-ink/25 bg-white px-3 py-2 text-sm font-medium outline-none"
+        />
+      </label>
       <button
         type="button"
         disabled={saving}

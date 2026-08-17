@@ -198,7 +198,10 @@
     "declineBody": "They will not become a regular member. They can still join future gatherings if eligible.",
     "declineConfirm": "Decline request",
     "cancel": "Cancel",
-    "decisionError": "Couldn’t update this request. Please try again."
+    "decisionError": "Couldn’t update this request. Please try again.",
+    "introLabel": "Tell the club about you",
+    "introPlaceholder": "What you have in common with the club, your story, your skills - and why you'd love to be part of it. The members will read this and vote.",
+    "introTooShort": "Write at least a few sentences - the members vote based on this."
   },
   "convert": {
     "heading": "Turn it into a club",
@@ -371,5 +374,18 @@
     "payCrypto": "Pay with crypto",
     "redirecting": "Opening checkout…",
     "error": "Could not start the payment - try again."
+  },
+  "voting": {
+    "title": "New member vote",
+    "subtitle": "The club decides together - majority of active members settles it. Your vote counts.",
+    "candidateFallback": "Applicant",
+    "tally": "YES {yes} · NO {no} · {needed} needed to decide",
+    "yes": "YES",
+    "no": "NO"
+  },
+  "welcome": {
+    "title": "You're in!",
+    "body": "The club voted to accept you. You're a member now - and if you want the full experience, there's the paid membership:",
+    "continueFree": "Continue as free member"
   }
 }
