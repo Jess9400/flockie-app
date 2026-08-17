@@ -284,7 +284,8 @@
     "attendedLabel": "Encontro passado",
     "eventGoing": "{name} vai a {title}",
     "eventScheduled": "Novo encontro agendado: {title}",
-    "leaveConfirm": "Liberar sua vaga neste encontro? A contagem do club é atualizada e outra pessoa pode entrar."
+    "leaveConfirm": "Liberar sua vaga neste encontro? A contagem do club é atualizada e outra pessoa pode entrar.",
+    "namesGoing": "{names} {extra, plural, =0 {} other {+# outros}} vão"
   },
   "moderators": {
     "title": "Moderadores",
