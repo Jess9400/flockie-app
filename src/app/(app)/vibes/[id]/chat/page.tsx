@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
@@ -15,6 +16,26 @@ export default async function VibeChatPage(
   const supabase = await createClient();
   const t = await getTranslations("buddies");
   const user = await getSessionUser();
+
+  // Club gatherings have NO event chat - the conversation lives in the CLUB
+  // chat. Members and the host land there; guests land on the gathering page.
+  const { data: vibeRow } = await supabase
+    .from("vibe_directory")
+    .select("club_id, host_id")
+    .eq("id", params.id)
+    .maybeSingle();
+  const chatClubId = (vibeRow as { club_id?: string | null } | null)?.club_id ?? null;
+  if (chatClubId) {
+    const { data: mm } = await supabase
+      .from("club_memberships")
+      .select("status")
+      .eq("club_id", chatClubId)
+      .eq("user_id", user!.id)
+      .maybeSingle();
+    const isClubSide =
+      vibeRow?.host_id === user!.id || ["founding", "regular"].includes(mm?.status ?? "");
+    redirect(isClubSide ? `/clubs/${chatClubId}/chat` : `/vibes/${params.id}`);
+  }
 
   // get_or_create_chat enforces membership (host or confirmed)
   const { data: chatId, error } = await supabase.rpc("get_or_create_chat", {

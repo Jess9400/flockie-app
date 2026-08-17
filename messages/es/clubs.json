@@ -410,6 +410,8 @@
     "paidNoRenew": "Nada se renueva automáticamente - si no vuelves a pagar, simplemente pasas a ser miembro gratuito cuando termine.",
     "endPaidNow": "Terminar plan pago ahora",
     "endPaidConfirm": "¿Terminar tu plan pago ahora? Renuncias a los días restantes y pasas a ser miembro gratuito de inmediato.",
-    "endPaidDone": "Plan pago terminado - ahora eres miembro gratuito."
+    "endPaidDone": "Plan pago terminado - ahora eres miembro gratuito.",
+    "upgradeTitle": "Ser miembro de pago - {currency} {price}/mes",
+    "upgradeHint": "Desbloquea los beneficios de miembro de pago. Paga por la app, o directo al anfitrión que lo activa."
   }
 }

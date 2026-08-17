@@ -426,6 +426,9 @@ export default async function ClubPage(props: {
           isActiveMember={["founding", "regular"].includes(club.membership_status ?? "")}
           initialShowOnProfile={myShowOnProfile}
           paidUntil={myPaidUntil}
+          offerPriceCents={socioOffer?.price_cents ?? null}
+          offerCurrency={socioOffer?.currency ?? "BRL"}
+          paymentsEnabled={paymentsEnabled}
         />
       )}
     </main>

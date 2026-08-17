@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import PayButton from "@/components/PayButton";
 
 // Member-side club controls: profile visibility, report, leave. Host never
 // sees this (they manage the club itself; closing it lives in their tools).
@@ -12,11 +13,17 @@ export default function ClubMemberSettings({
   isActiveMember,
   initialShowOnProfile,
   paidUntil,
+  offerPriceCents,
+  offerCurrency,
+  paymentsEnabled,
 }: {
   clubId: string;
   isActiveMember: boolean;
   initialShowOnProfile: boolean;
   paidUntil: string | null;
+  offerPriceCents: number | null;
+  offerCurrency: string;
+  paymentsEnabled: boolean;
 }) {
   const supabase = createClient();
   const router = useRouter();
@@ -97,6 +104,20 @@ export default function ClubMemberSettings({
             className="h-5 w-5 accent-flockie-orange"
           />
         </label>
+      )}
+
+      {isActiveMember && !paidActive && offerPriceCents != null && (
+        <div className="mt-3 border-t border-ink/10 pt-3">
+          <p className="text-sm font-bold text-ink">
+            ⭐ {t("upgradeTitle", { price: (offerPriceCents / 100).toFixed(2), currency: offerCurrency })}
+          </p>
+          <p className="mt-0.5 text-xs font-medium text-muted">{t("upgradeHint")}</p>
+          {paymentsEnabled && (
+            <div className="mt-2">
+              <PayButton kind="socio" clubId={clubId} months={1} />
+            </div>
+          )}
+        </div>
       )}
 
       {isActiveMember && paidActive && !paidEnded && (

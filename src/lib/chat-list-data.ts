@@ -136,15 +136,19 @@ export async function getChatList(
     latestPerChat(supabase, "vibing_messages", vibeList.map((v) => v.chat_id)),
     clubLastPromise,
     vibeList.length
-      ? supabase.from("vibe_directory").select("id, city, photos").in("id", vibeList.map((v) => v.vibe_id))
+      ? supabase.from("vibe_directory").select("id, city, photos, club_id").in("id", vibeList.map((v) => v.vibe_id))
       : Promise.resolve({ data: [] as { id: string; city: string; photos: string[] | null }[] }),
   ]);
 
   const cities: Record<string, string> = {};
   const vibeBanner: Record<string, string | null> = {};
+  // Club gatherings live in the CLUB chat - their event chats never appear in
+  // the list (one conversation per club, not one per gathering).
+  const clubGatheringIds = new Set<string>();
   vibeMeta?.forEach((r) => {
     cities[r.id] = r.city;
     vibeBanner[r.id] = (r.photos as string[] | null)?.[0] ?? null;
+    if ((r as { club_id?: string | null }).club_id) clubGatheringIds.add(r.id);
   });
 
   const buddyRows: ChatListRow[] = buddyList.map((b) => {
@@ -177,7 +181,9 @@ export async function getChatList(
     };
   });
 
-  const vibeRows: ChatListRow[] = vibeList.map((v) => {
+  const vibeRows: ChatListRow[] = vibeList
+    .filter((v) => !clubGatheringIds.has(v.vibe_id))
+    .map((v) => {
     const last = vibeLast[v.chat_id];
     const ctx = [formatVibeShort(v.starts_at, locale), cities[v.vibe_id]].filter(Boolean).join(" · ");
     return {
