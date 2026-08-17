@@ -119,3 +119,48 @@ end;
 $$;
 revoke all on function public.accept_club_founder_invite(uuid) from public, anon;
 grant execute on function public.accept_club_founder_invite(uuid) to authenticated;
+
+-- ── ONE canonical link per club (founder report 2026-08-17 night) ───────────
+-- The panel used to mint a new link on every tap (up to 10 concurrent) and
+-- shared copies kept dying. Now create is GET-OR-CREATE: an active unexpired
+-- link is returned as-is with its 14-day validity ROLLED FORWARD, so the link
+-- the host already shared keeps working. Revoke still kills a compromised
+-- link; the next create mints a fresh one. Supersedes the version in
+-- club-founder-invites.sql.
+create or replace function public.create_club_founder_invite(p_club uuid)
+returns uuid
+language plpgsql security definer set search_path = public as $$
+declare
+  v_token uuid;
+begin
+  if not public.is_club_host(p_club) then
+    raise exception 'only the club host can create invitations';
+  end if;
+  if not exists (
+    select 1 from public.clubs
+    where id = p_club and status in ('forming', 'active')
+  ) then
+    raise exception 'this club is not accepting invitations';
+  end if;
+
+  select token into v_token
+  from public.club_founder_invites
+  where club_id = p_club and status = 'active' and expires_at > now()
+  order by created_at desc
+  limit 1;
+
+  if v_token is not null then
+    update public.club_founder_invites
+    set expires_at = now() + interval '14 days'
+    where token = v_token;
+    return v_token;
+  end if;
+
+  insert into public.club_founder_invites (club_id, created_by)
+  values (p_club, auth.uid())
+  returning token into v_token;
+  return v_token;
+end;
+$$;
+revoke all on function public.create_club_founder_invite(uuid) from public, anon;
+grant execute on function public.create_club_founder_invite(uuid) to authenticated;

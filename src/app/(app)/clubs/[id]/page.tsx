@@ -13,6 +13,7 @@ import ClubSocioPanel from "@/components/ClubSocioPanel";
 import PayButton from "@/components/PayButton";
 import ClubJoinVotePanel from "@/components/ClubJoinVotePanel";
 import ClubMemberSettings from "@/components/ClubMemberSettings";
+import ClubEditPanel from "@/components/ClubEditPanel";
 
 type ClubDetail = {
   id: string;
@@ -330,6 +331,10 @@ export default async function ClubPage(props: {
       {isActiveMember && <ClubJoinVotePanel clubId={club.id} candidates={joinCandidates} />}
 
       {canManage && <ClubMembershipRequests clubId={club.id} requests={membershipRequests} />}
+
+      {club.is_host && (
+        <ClubEditPanel clubId={club.id} initialTitle={club.title} initialDescription={club.description} />
+      )}
 
       {club.is_host && (
         <ClubSocioPanel

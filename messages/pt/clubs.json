@@ -100,7 +100,12 @@
     "empty": "Ainda não há links privados para fundadores.",
     "help": "Os links expiram após 14 dias. Um link aceito não pode ser usado novamente.",
     "inviteError": "Não foi possível criar o link. Tente novamente.",
-    "revokeError": "Não foi possível revogar esse link. Tente novamente."
+    "revokeError": "Não foi possível revogar esse link. Tente novamente.",
+    "bodyOneLink": "Seu club tem UM link de convite. Compartilhe com quem você quiser dentro - ele aceita todo mundo que o tiver, e copiar renova a validade.",
+    "copyLink": "Copiar o link de convite do club",
+    "validUntil": "Válido até {date} - copiar renova",
+    "regenerate": "Gerar novo link (invalida este)",
+    "regenConfirm": "Gerar um novo link? O atual para de funcionar para todo mundo que o tem."
   },
   "invite": {
     "eyebrow": "CONVITE DE MEMBRO FUNDADOR",
@@ -413,5 +418,14 @@
     "endPaidDone": "Plano pago encerrado - você agora é membro gratuito.",
     "upgradeTitle": "Virar membro pagante - {currency} {price}/mês",
     "upgradeHint": "Desbloqueie os benefícios de membro pagante. Pague pelo app, ou direto ao anfitrião que ativa para você."
+  },
+  "edit": {
+    "cta": "Editar nome e descrição",
+    "titleLabel": "Nome do club",
+    "descriptionLabel": "Descrição",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "saved": "Club atualizado.",
+    "errTitle": "O nome precisa de pelo menos 3 caracteres."
   }
 }

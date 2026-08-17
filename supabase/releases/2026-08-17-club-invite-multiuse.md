@@ -30,3 +30,11 @@
 ## Rollback
 
 - Re-run the two function definitions from `club-founder-invites.sql` (restores single-use); `accepted_count` stays inert.
+
+## Addendum (same day): one canonical link per club
+
+`create_club_founder_invite` becomes get-or-create: an active unexpired link
+is returned unchanged with its 14-day validity rolled forward (copying the
+link keeps it alive); a new link is minted only when none exists or after a
+revoke. The panel is now a single copy-link button with a guarded
+"generate new" for compromised links. RE-RUN `club-invite-multiuse.sql`.

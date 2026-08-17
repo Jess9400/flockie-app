@@ -99,6 +99,10 @@ this list only tracks what is approved and pending or recently applied.
   paid tier renamed Socio -> Member in notification texts (founder call).
   Idempotent re-runs, no schema change.
 
+- 2026-08-17 RE-RUN `club-invite-multiuse.sql` - one canonical invite link
+  per club (get-or-create with rolling validity); see the release record
+  addendum. Pending production run.
+
 ## 4. Apply only an approved release
 
 Run the approved source or bundle once in the Supabase SQL editor, then wait
