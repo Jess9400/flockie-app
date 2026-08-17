@@ -12,6 +12,7 @@ import ClubModeratorsPanel from "@/components/ClubModeratorsPanel";
 import ClubSocioPanel from "@/components/ClubSocioPanel";
 import PayButton from "@/components/PayButton";
 import ClubJoinVotePanel from "@/components/ClubJoinVotePanel";
+import ClubMemberSettings from "@/components/ClubMemberSettings";
 
 type ClubDetail = {
   id: string;
@@ -94,14 +95,16 @@ export default async function ClubPage(props: {
   // Moderators run the club day-to-day alongside the host (approve requests,
   // record attendance) - see supabase/club-moderators.sql.
   let isModerator = false;
+  let myShowOnProfile = true;
   if (!club.is_host && ["founding", "regular"].includes(club.membership_status ?? "")) {
     const { data: myRow } = await supabase
       .from("club_memberships")
-      .select("role")
+      .select("role, show_on_profile")
       .eq("club_id", club.id)
       .eq("user_id", (await supabase.auth.getUser()).data.user?.id ?? "")
       .maybeSingle();
     isModerator = myRow?.role === "moderator";
+    myShowOnProfile = myRow?.show_on_profile ?? true;
   }
   const canManage = club.is_host || isModerator;
 
@@ -411,6 +414,14 @@ export default async function ClubPage(props: {
           <p className="mt-1 text-sm font-medium leading-relaxed text-muted">{t("privacyBody")}</p>
         </div>
       </section>
+
+      {!club.is_host && (
+        <ClubMemberSettings
+          clubId={club.id}
+          isActiveMember={["founding", "regular"].includes(club.membership_status ?? "")}
+          initialShowOnProfile={myShowOnProfile}
+        />
+      )}
     </main>
   );
 }

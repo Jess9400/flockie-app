@@ -389,5 +389,20 @@
     "title": "¡Estás dentro!",
     "body": "El club votó por aceptarte. Ya eres miembro - y si quieres la experiencia completa, existe el plan de miembro pago:",
     "continueFree": "Continuar como miembro gratuito"
+  },
+  "memberSettings": {
+    "title": "Tu participación",
+    "showOnProfile": "Mostrar este club en mi perfil",
+    "reportClub": "Denunciar este club",
+    "reasonSpam": "Spam o falso",
+    "reasonInappropriate": "Contenido inapropiado",
+    "reasonSafety": "Tema de seguridad",
+    "reasonOther": "Otra cosa",
+    "reportNote": "Cuéntanos más (opcional)",
+    "reportSend": "Enviar denuncia",
+    "cancel": "Cancelar",
+    "reported": "Gracias - lo revisaremos.",
+    "leaveClub": "Salir de este club",
+    "leaveConfirm": "¿Salir de este club? Puedes pedir volver más adelante a través de sus encuentros."
   }
 }

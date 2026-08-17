@@ -389,5 +389,20 @@
     "title": "You're in!",
     "body": "The club voted to accept you. You're a member now - and if you want the full experience, there's the paid membership:",
     "continueFree": "Continue as free member"
+  },
+  "memberSettings": {
+    "title": "Your membership",
+    "showOnProfile": "Show this club on my profile",
+    "reportClub": "Report this club",
+    "reasonSpam": "Spam or fake",
+    "reasonInappropriate": "Inappropriate content",
+    "reasonSafety": "Safety concern",
+    "reasonOther": "Something else",
+    "reportNote": "Tell us more (optional)",
+    "reportSend": "Send report",
+    "cancel": "Cancel",
+    "reported": "Thanks - we'll review it.",
+    "leaveClub": "Leave this club",
+    "leaveConfirm": "Leave this club? You can ask to join again later through its gatherings."
   }
 }
