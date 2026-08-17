@@ -222,6 +222,9 @@ export default async function ClubPage(props: {
           </span>
           <h1 className="mt-7 max-w-xl text-2xl font-black text-ink sm:text-4xl">{club.title}</h1>
           {club.description && <p className="mt-3 max-w-xl text-base font-semibold leading-relaxed text-ink/75">{club.description}</p>}
+          {club.is_host && (
+            <ClubEditPanel clubId={club.id} initialTitle={club.title} initialDescription={club.description} />
+          )}
         </div>
 
         <div className="flex flex-wrap gap-2 border-t border-ink/10 px-5 py-4 sm:px-6">
@@ -331,10 +334,6 @@ export default async function ClubPage(props: {
       {isActiveMember && <ClubJoinVotePanel clubId={club.id} candidates={joinCandidates} />}
 
       {canManage && <ClubMembershipRequests clubId={club.id} requests={membershipRequests} />}
-
-      {club.is_host && (
-        <ClubEditPanel clubId={club.id} initialTitle={club.title} initialDescription={club.description} />
-      )}
 
       {club.is_host && (
         <ClubSocioPanel

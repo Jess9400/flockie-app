@@ -45,7 +45,7 @@ export default function ClubEditPanel({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="mt-3 text-sm font-bold text-muted hover:text-ink"
+        className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-ink/20 bg-white/80 px-4 py-2 text-sm font-bold text-ink shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
       >
         ✏️ {t("cta")}
       </button>
