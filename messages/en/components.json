@@ -134,7 +134,9 @@
     "joinWithCode": "Join with host code",
     "locationFallback": "Location shared after confirmation",
     "requestToJoin": "Request to join",
-    "joinNow": "Join now"
+    "joinNow": "Join now",
+    "acceptInvite": "Accept your invitation",
+    "helperGuest": "A club member invited you personally - sign in and your spot is confirmed instantly."
   },
   "join": {
     "body": "Find people for a spontaneous dinner, a weekend trip, or the activity you keep meaning to try.",

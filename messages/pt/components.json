@@ -134,7 +134,9 @@
     "joinWithCode": "Entrar com código do anfitrião",
     "locationFallback": "Localização compartilhada após confirmação",
     "requestToJoin": "Solicitar participação",
-    "joinNow": "Entrar agora"
+    "joinNow": "Entrar agora",
+    "acceptInvite": "Aceitar seu convite",
+    "helperGuest": "Um membro do club convidou você pessoalmente - entre e sua vaga é confirmada na hora."
   },
   "join": {
     "body": "Encontre pessoas para um jantar espontâneo, uma viagem de fim de semana ou a atividade que você sempre quis fazer.",

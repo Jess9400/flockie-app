@@ -79,7 +79,14 @@
     "rsvpDone": "Presença confirmada - até lá!",
     "clubOnlyTitle": "Encontro de club",
     "clubOnlyBody": "Este encontro é para membros do club e convidados. Peça um link de convite a um membro, ou conheça o club primeiro.",
-    "clubOnlyCta": "Ver o club"
+    "clubOnlyCta": "Ver o club",
+    "bringGuest": "Levar um convidado ({count} restantes)",
+    "bringGuestNone": "Sem convites de convidado neste club",
+    "guestLinkCopied": "Link de convidado copiado - mande para o seu +1. Uso único.",
+    "guestLinkShared": "Link de convidado compartilhado. Uso único.",
+    "guestCardTitle": "Você foi convidado como convidado",
+    "guestCardBody": "Um membro do club guardou uma vaga para você neste encontro. Aceite e você está dentro - com chat e local do encontro.",
+    "guestAccept": "Aceitar convite"
   },
   "create": {
     "back": "Voltar",

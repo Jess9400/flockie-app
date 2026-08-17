@@ -51,7 +51,7 @@ export async function generateMetadata(props: { params: Promise<{ id: string }> 
 export default async function InvitePage(
   props: {
     params: Promise<{ id: string }>;
-    searchParams: Promise<{ via?: string; code?: string }>;
+    searchParams: Promise<{ via?: string; code?: string; guest?: string }>;
   }
 ) {
   const searchParams = await props.searchParams;
@@ -130,6 +130,13 @@ export default async function InvitePage(
             <div className="mt-6 rounded-full border border-navy/15 bg-cream py-3.5 text-center font-fredoka text-sm font-semibold text-navy/60">
               {t("invite.closed")}
             </div>
+          ) : searchParams.guest ? (
+            <Link
+              href={`/vibes/${v.id}?guest=${encodeURIComponent(searchParams.guest)}`}
+              className="mt-6 block rounded-full border border-navy/15 bg-flockie-coral py-3.5 text-center font-fredoka text-base font-semibold text-white shadow-[0_2px_10px_rgba(10,37,69,0.08)]"
+            >
+              {t("invite.acceptInvite")}
+            </Link>
           ) : hostCode ? (
             <Link
               href={`/vibes/${v.id}?code=${encodeURIComponent(hostCode)}`}

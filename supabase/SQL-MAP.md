@@ -28,6 +28,7 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | `autofill_open_vibes`, `auto_rank_due_vibes` + crons | `vibe-auto-matching.sql` |
 | `vibe_match` (regex-guarded `::int` cast, #98) | `recommended-vibes.sql` |
 | `recommended_vibes`, `invite_city_fallback`, `vibe_directory` (+club_id), `notify_club_gathering` (club gatherings invite-only, 2026-08-17) | `club-gatherings-privacy.sql` |
+| `club_guest_invites` + RLS, `_club_guest_allowance`, `create_club_guest_invite`, `redeem_club_guest_invite` (2026-08-17) | `club-guest-invites.sql` |
 | `vibe_display_match`, `vibe_display_match_scores` (card-only calibrated display score) | `vibe-display-match.sql` |
 | `vibe_review_fit` | `vibe-review-preferences.sql` |
 | `vibe_negative_fit`, `mark_/undo_vibe_not_for_me` | `vibe-not-for-me.sql` |

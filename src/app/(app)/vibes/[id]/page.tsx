@@ -10,6 +10,8 @@ import HostVibeShortlist from "@/components/HostVibeShortlist";
 import HostVibePrivateRequests from "@/components/HostVibePrivateRequests";
 import HostVibeMembers from "@/components/HostVibeMembers";
 import RsvpBanner from "@/components/RsvpBanner";
+import BringGuestButton from "@/components/BringGuestButton";
+import GuestRedeemCard from "@/components/GuestRedeemCard";
 import ClubAttendancePanel from "@/components/ClubAttendancePanel";
 import VibeAttendancePanel from "@/components/VibeAttendancePanel";
 import VibeSettingsButton from "@/components/VibeSettingsButton";
@@ -31,7 +33,7 @@ import { loadVibeMatch, type VibeDisplayMatch } from "@/lib/vibe-stats";
 export default async function VibeDetailPage(
   props: {
     params: Promise<{ id: string }>;
-    searchParams: Promise<{ interested?: string; request?: string; code?: string }>;
+    searchParams: Promise<{ interested?: string; request?: string; code?: string; guest?: string }>;
   }
 ) {
   const searchParams = await props.searchParams;
@@ -129,7 +131,36 @@ export default async function VibeDetailPage(
     viewerIsClubMember = ["founding", "regular"].includes(mm?.status ?? "");
   }
   const clubLocked =
-    !!gatheringClubId && !isHost && !viewerIsClubMember && !myInterest && !searchParams.code;
+    !!gatheringClubId &&
+    !isHost &&
+    !viewerIsClubMember &&
+    !myInterest &&
+    !searchParams.code &&
+    !searchParams.guest;
+  // A guest link holder who hasn't redeemed yet sees the redeem card instead
+  // of the normal join flow.
+  const guestPending = !!searchParams.guest && !myInterest && !isHost;
+
+  // Members' lifetime bring-a-guest quota for this club (paid 3 / free 1),
+  // computed from own rows (allowance = ever-paid ? 3 : 1, minus invites made).
+  let guestRemaining: number | null = null;
+  if (gatheringClubId && viewerIsClubMember && new Date(vibe.starts_at) > new Date() && vibe.status !== "cancelled") {
+    const [{ data: myMembership }, { count: usedCount }] = await Promise.all([
+      supabase
+        .from("club_memberships")
+        .select("tier, paid_until")
+        .eq("club_id", gatheringClubId)
+        .eq("user_id", user!.id)
+        .maybeSingle(),
+      supabase
+        .from("club_guest_invites")
+        .select("id", { count: "exact", head: true })
+        .eq("club_id", gatheringClubId)
+        .eq("inviter_id", user!.id),
+    ]);
+    const allowance = myMembership?.tier === "paid" || myMembership?.paid_until ? 3 : 1;
+    guestRemaining = Math.max(0, allowance - (usedCount ?? 0));
+  }
 
   // For Vibe interest we only need the activity vibe check (not full onboarding).
   const activitiesDone = (me?.activities ?? []).length > 0;
@@ -525,7 +556,13 @@ export default async function VibeDetailPage(
         </section>
       )}
 
-      {!isHost && !clubLocked && (
+      {guestPending && !ended && vibe.status !== "cancelled" && (
+        <GuestRedeemCard inviteId={searchParams.guest!} />
+      )}
+
+      {guestRemaining !== null && <BringGuestButton vibeId={vibe.id} initialRemaining={guestRemaining} />}
+
+      {!isHost && !clubLocked && !guestPending && (
         <section className="mt-5">
           {differentCity && !ended && vibe.status !== "cancelled" && (
             <div className="mb-3 flex items-start gap-2 rounded-2xl bg-cream p-3 text-sm font-bold text-ink">
