@@ -439,6 +439,7 @@ export default async function VibeDetailPage(
             locationLng={privateLogistics?.location_lng ?? null}
             description={vibe.description ?? ""}
             timezone={(vibe as { timezone?: string | null }).timezone ?? null}
+            photos={vibe.photos ?? []}
             vibeClubId={clubId}
             clubOptions={hostClubs}
           />

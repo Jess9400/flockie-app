@@ -357,7 +357,13 @@
     "clubHelp": "Vincula esta Vibe a tu Club: la asistencia cuenta para el Club y los asistentes que aún no son miembros reciben invitación para unirse.",
     "clubPick": "Elige un Club…",
     "attachClub": "Vincular al Club",
-    "clubAttached": "Vinculada - esta Vibe ahora cuenta para tu Club."
+    "clubAttached": "Vinculada - esta Vibe ahora cuenta para tu Club.",
+    "photos": "Fotos",
+    "photosHelp": "La primera foto es la portada que aparece en las tarjetas y el chat.",
+    "cover": "Portada",
+    "removePhoto": "Eliminar foto",
+    "savePhotos": "Guardar fotos",
+    "photosUpdated": "¡Fotos actualizadas!"
   },
   "share": {
     "shareTitle": "Únete a mi Vibe en Flockie",

@@ -357,7 +357,13 @@
     "clubHelp": "Attach this Vibe to your Club: attendance counts for the Club and attendees who aren't members yet get invited to join it.",
     "clubPick": "Pick a Club…",
     "attachClub": "Attach to Club",
-    "clubAttached": "Attached - this Vibe now counts for your Club."
+    "clubAttached": "Attached - this Vibe now counts for your Club.",
+    "photos": "Photos",
+    "photosHelp": "The first photo is the cover shown on cards and in the chat.",
+    "cover": "Cover",
+    "removePhoto": "Remove photo",
+    "savePhotos": "Save photos",
+    "photosUpdated": "Photos updated!"
   },
   "share": {
     "shareTitle": "Join my Vibe on Flockie",

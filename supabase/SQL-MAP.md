@@ -55,6 +55,7 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | Club store: `club_products`/`club_orders` + RLS, `place_club_order`, `set_club_order_status`, `cancel_my_club_order` (2026-08-16) | `club-store.sql` |
 | Payments foundation: `club_payments` + RLS, `create_club_payment`, `set_club_payment_invoice`, `settle_club_payment` (service-role only) (2026-08-16) | `club-payments.sql` |
 | `trip_join_requests` SELECT policy (`can_see_trip_requests`) | `trip-requests-rls-enforce.sql` |
+| `update_vibe_photos` (host edits gathering photos, 2026-08-18) | `vibe-edit-photos.sql` |
 | host RPCs (`notify`, `cancel_vibe`, `update_vibe_when`, commit/remove/appeal) | `host-controls.sql` |
 | Vibes-only onboarding profile fields | `onboarding-v3-vibes-only.sql` |
 

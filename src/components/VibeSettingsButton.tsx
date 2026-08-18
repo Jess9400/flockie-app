@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Settings, X } from "lucide-react";
+import { Plus, Settings, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { lookupVibePlace } from "@/lib/vibe-place";
@@ -31,6 +31,7 @@ export default function VibeSettingsButton({
   locationLng,
   description,
   timezone,
+  photos: initialPhotos,
   vibeClubId,
   clubOptions,
 }: {
@@ -47,6 +48,7 @@ export default function VibeSettingsButton({
   locationLng: number | null;
   description: string;
   timezone: string | null;
+  photos: string[];
   // Attach-to-club: the vibe's current club (null = standalone) and the
   // host's own clubs it could be attached to.
   vibeClubId: string | null;
@@ -94,6 +96,9 @@ export default function VibeSettingsButton({
   const [pinning, setPinning] = useState(false);
   const [pinMsg, setPinMsg] = useState<string | null>(null);
   const [desc, setDesc] = useState(description);
+  const [photos, setPhotos] = useState<string[]>(initialPhotos);
+  const [uploading, setUploading] = useState(false);
+  const photoInput = useRef<HTMLInputElement>(null);
   const [attachClub, setAttachClub] = useState("");
   const [attachedClub, setAttachedClub] = useState<string | null>(vibeClubId);
 
@@ -220,6 +225,48 @@ export default function VibeSettingsButton({
     setBusy(false);
     if (error) return setMsg(error.message);
     setMsg(t("settings.descriptionUpdated"));
+    router.refresh();
+  }
+
+  // Same upload path convention as CreateVibeForm (avatars bucket, per-user
+  // folder); the first photo is the cover everywhere.
+  async function onPhotos(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    setUploading(true);
+    setMsg(null);
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) throw new Error();
+      const room = 5 - photos.length;
+      const urls: string[] = [];
+      for (const file of files.slice(0, room)) {
+        const ext = file.name.split(".").pop() ?? "jpg";
+        const path = `${auth.user.id}/vibe-${crypto.randomUUID()}.${ext}`;
+        const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+        if (error) throw error;
+        urls.push(supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl);
+      }
+      setPhotos((p) => [...p, ...urls]);
+    } catch {
+      setMsg(t("create.errPhotoUpload"));
+    } finally {
+      setUploading(false);
+      if (photoInput.current) photoInput.current.value = "";
+    }
+  }
+
+  async function savePhotos() {
+    if (!photos.length) return;
+    setBusy(true);
+    setMsg(null);
+    const { error } = await supabase.rpc("update_vibe_photos", {
+      p_vibe: vibeId,
+      p_photos: photos,
+    });
+    setBusy(false);
+    if (error) return setMsg(error.message);
+    setMsg(t("settings.photosUpdated"));
     router.refresh();
   }
 
@@ -363,6 +410,53 @@ export default function VibeSettingsButton({
                   className="mt-2 w-full rounded-full border border-ink/15 bg-white py-2.5 font-bold text-ink shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
                 >
                   {t("settings.saveDescription")}
+                </button>
+              </div>
+
+              <div className="border-t-2 border-ink/10 pt-4">
+                <p className="text-sm font-bold">{t("settings.photos")}</p>
+                <p className="mt-1 text-xs font-medium text-muted">{t("settings.photosHelp")}</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {photos.map((url, i) => (
+                    <div key={url} className="relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={url} alt="" className="h-20 w-20 rounded-xl border border-ink/15 object-cover" />
+                      {i === 0 && (
+                        <span className="absolute bottom-1 left-1 rounded-full bg-flockie-coral px-1.5 py-0.5 text-[9px] font-extrabold text-white">
+                          {t("settings.cover")}
+                        </span>
+                      )}
+                      {photos.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => setPhotos(photos.filter((_, idx) => idx !== i))}
+                          aria-label={t("settings.removePhoto")}
+                          className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-ink text-white"
+                        >
+                          <X size={12} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  {photos.length < 5 && (
+                    <button
+                      type="button"
+                      onClick={() => photoInput.current?.click()}
+                      disabled={uploading || busy}
+                      className="flex h-20 w-20 items-center justify-center rounded-xl border-2 border-dashed border-ink/25 text-muted disabled:opacity-50"
+                    >
+                      <Plus size={20} />
+                    </button>
+                  )}
+                </div>
+                <input ref={photoInput} type="file" accept="image/*" multiple hidden onChange={onPhotos} />
+                {uploading && <p className="mt-1 text-xs font-bold text-flockie-orange">{t("create.uploading")}</p>}
+                <button
+                  onClick={savePhotos}
+                  disabled={busy || uploading || !photos.length || JSON.stringify(photos) === JSON.stringify(initialPhotos)}
+                  className="mt-2 w-full rounded-full border border-ink/15 bg-white py-2.5 font-bold text-ink shadow-[0_2px_10px_rgba(10,37,69,0.08)] disabled:opacity-50"
+                >
+                  {t("settings.savePhotos")}
                 </button>
               </div>
 

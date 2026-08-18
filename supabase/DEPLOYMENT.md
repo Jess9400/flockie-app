@@ -102,6 +102,9 @@ this list only tracks what is approved and pending or recently applied.
 - 2026-08-17 RE-RUN `club-invite-multiuse.sql` - one canonical invite link
   per club (get-or-create with rolling validity); see the release record
   addendum. Pending production run.
+- 2026-08-18 `vibe-edit-photos.sql` - `update_vibe_photos` host RPC (edit
+  gathering photos from the settings sheet); see
+  `supabase/releases/2026-08-18-vibe-edit-photos.md`. Pending production run.
 
 ## 4. Apply only an approved release
 
