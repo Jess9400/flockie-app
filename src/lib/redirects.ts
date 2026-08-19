@@ -22,6 +22,17 @@ export function safeRedirectPath(
   }
 }
 
+// Destinations someone reaches because a human invited them by name: a club
+// invite link, or a club page a member sent them. These skip the Vibe
+// questionnaire. Matching plays no part in club entry - the host already
+// chose these people - so four taste questions at the door is friction at the
+// moment of highest intent. The soft nudges on Home and Vibes pick the
+// questionnaire up later, once they have a reason to care about matching.
+export function isInvitedDestination(path?: string | null) {
+  const safe = safeRedirectPath(path, "");
+  return !!safe && safe.startsWith("/clubs/");
+}
+
 export function withReturnTo(path: string, returnTo?: string | null) {
   const safeReturnTo = safeRedirectPath(returnTo, "");
   if (!safeReturnTo) return path;

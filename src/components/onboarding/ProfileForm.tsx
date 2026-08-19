@@ -10,7 +10,7 @@ import {
   ProfileInput,
   saveOnboardingProfile,
 } from "@/lib/onboarding/profile-actions";
-import { withReturnTo } from "@/lib/redirects";
+import { isInvitedDestination, withReturnTo } from "@/lib/redirects";
 
 const GENDERS: { value: ProfileInput["gender"]; labelKey: string }[] = [
   { value: "woman", labelKey: "woman" },
@@ -92,7 +92,11 @@ export function ProfileForm({ defaults, returnTo }: ProfileFormProps) {
         gender,
         city: city.trim(),
       });
-      router.push(withReturnTo("/onboarding/vibe-check", returnTo));
+      router.push(
+        isInvitedDestination(returnTo)
+          ? (returnTo as string)
+          : withReturnTo("/onboarding/vibe-check", returnTo)
+      );
     } catch (caught) {
       setError(
         caught instanceof Error ? caught.message : t("errors.generic")

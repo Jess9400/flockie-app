@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { safeRedirectPath, withReturnTo } from "@/lib/redirects";
+import { isInvitedDestination, safeRedirectPath, withReturnTo } from "@/lib/redirects";
 
 // Handles the OAuth / email-confirmation redirect: exchanges the code for a
 // session, then sends the user into the app.
@@ -44,7 +44,7 @@ export async function GET(request: Request) {
         if (!profile?.vibe_completed_at && !quickDone) {
           return NextResponse.redirect(`${origin}${withReturnTo("/onboarding/profile", next)}`);
         }
-        if (!profile.onboarding_complete && !quickDone) {
+        if (!profile.onboarding_complete && !quickDone && !isInvitedDestination(next)) {
           return NextResponse.redirect(`${origin}${withReturnTo("/profile", next)}`);
         }
       }
