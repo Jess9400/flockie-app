@@ -114,6 +114,11 @@ this list only tracks what is approved and pending or recently applied.
   plus the new host-only `vibe_people` lookup. See
   `supabase/releases/2026-08-20-vibe-attendees-complete.md`. Pending
   production run.
+- 2026-08-20 `club-directory-gatherings.sql` - club cards showed "First
+  gathering being planned" for clubs that had one, because the directory only
+  matched `status = 'open'`. See
+  `supabase/releases/2026-08-20-club-directory-gatherings.md`. Pending
+  production run.
 
 ## 4. Apply only an approved release
 
