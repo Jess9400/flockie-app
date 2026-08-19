@@ -1,9 +1,9 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
-import { locales } from "@/i18n/request";
+import { resolveLocale } from "@/i18n/locale-detect";
 
 export interface ProfileInput {
   firstName: string;
@@ -55,10 +55,15 @@ export async function saveOnboardingProfile(input: ProfileInput) {
   // Seed the persisted language from the UI locale cookie at profile creation
   // (the auth trigger creates the bare row with the 'en' default). Drives
   // localized transactional emails; the user can change it later in Settings.
-  const cookieLocale = (await cookies()).get("NEXT_LOCALE")?.value;
-  const locale = (locales as readonly string[]).includes(cookieLocale ?? "")
-    ? cookieLocale
-    : "en";
+  // Same resolution the UI used, not cookie-or-English: a first-time visitor
+  // whose language came from geo-IP would otherwise be stored as 'en' and get
+  // English emails while reading a Portuguese app.
+  const h = await headers();
+  const locale = resolveLocale({
+    cookie: (await cookies()).get("NEXT_LOCALE")?.value,
+    country: h.get("x-vercel-ip-country"),
+    acceptLanguage: h.get("accept-language"),
+  });
 
   const { error } = await supabase.from("profiles").upsert({
     id: user.id,
