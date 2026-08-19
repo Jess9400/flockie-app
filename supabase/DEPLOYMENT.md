@@ -109,6 +109,11 @@ this list only tracks what is approved and pending or recently applied.
   depends on the status flag (a single-use write was locking out later
   joiners); resurrects links flagged accepted/expired in the last 30 days.
   See addendum 2 in the release record. Pending production run.
+- 2026-08-20 RE-RUN `vibe-attendees-rls.sql` - attendee lists no longer hide
+  people with unfinished onboarding (host saw "Going (4) - 6 confirmed"),
+  plus the new host-only `vibe_people` lookup. See
+  `supabase/releases/2026-08-20-vibe-attendees-complete.md`. Pending
+  production run.
 
 ## 4. Apply only an approved release
 

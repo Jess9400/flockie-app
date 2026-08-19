@@ -18,18 +18,45 @@
 --                                      no user ids leave the database.
 
 -- ── attendee strip: confirmed attendees of one vibe (safe fields only) ─────
+-- Reads `profiles`, NOT `public_profiles` (2026-08-20). The safe view hides
+-- anyone whose onboarding is unfinished, which is correct for discovery but
+-- wrong here: those people are counted in the tallies, so the host saw
+-- "Going (4) - 6 confirmed attendance" and two attendees with no face. Who is
+-- coming is not a discovery question. Same three safe fields either way.
 create or replace function public.vibe_attendees(p_vibe uuid)
 returns table (id uuid, display_name text, photos text[])
 language sql security definer set search_path = public stable as $$
   select p.id, p.display_name, p.photos
   from public.vibe_interests i
-  join public.public_profiles p on p.id = i.user_id
+  join public.profiles p on p.id = i.user_id
   where i.vibe_id = p_vibe
     and i.status = 'confirmed'
   order by i.confirmed_at nulls last, i.created_at;
 $$;
 revoke all on function public.vibe_attendees(uuid) from public, anon;
 grant execute on function public.vibe_attendees(uuid) to authenticated;
+
+-- ── host roster lookup: names/photos for people on the host's own vibe ─────
+-- The host panels (shortlist, private requests, invited & going) looked these
+-- up through `public_profiles` and silently dropped unfinished profiles from
+-- lists the host must act on. Host-only, one vibe, safe fields.
+create or replace function public.vibe_people(p_vibe uuid, p_ids uuid[])
+returns table (id uuid, display_name text, photos text[])
+language sql security definer set search_path = public stable as $$
+  select p.id, p.display_name, p.photos
+  from public.profiles p
+  where p.id = any (p_ids)
+    and exists (
+      select 1 from public.vibes v
+      where v.id = p_vibe and v.host_id = auth.uid()
+    )
+    and exists (
+      select 1 from public.vibe_interests i
+      where i.vibe_id = p_vibe and i.user_id = p.id
+    );
+$$;
+revoke all on function public.vibe_people(uuid, uuid[]) from public, anon;
+grant execute on function public.vibe_people(uuid, uuid[]) to authenticated;
 
 -- ── card counts: confirmed ("going") tallies for a set of vibes ────────────
 create or replace function public.vibe_confirmed_counts(p_vibes uuid[])

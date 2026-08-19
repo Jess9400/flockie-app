@@ -280,21 +280,24 @@ export default async function VibeDetailPage(
       (r) => r.status === "confirmed" && (r as { attendance_confirmed_at?: string | null }).attendance_confirmed_at
     ).length;
 
-    // Stage 2: the public_profiles lookups keyed by stage-1 id lists.
+    // Stage 2: name/photo lookups keyed by stage-1 id lists. vibe_people, not
+    // public_profiles: the safe view hides unfinished profiles, which dropped
+    // real attendees out of lists the host has to act on.
     const [{ data: slProfiles }, { data: pp }, { data: profiles }] = await Promise.all([
       slIds.length
-        ? supabase.from("public_profiles").select("id, display_name, photos").in("id", slIds)
+        ? supabase.rpc("vibe_people", { p_vibe: params.id, p_ids: slIds })
         : Promise.resolve({ data: null }),
       reqIds.length
-        ? supabase.from("public_profiles").select("id, display_name, photos").in("id", reqIds)
+        ? supabase.rpc("vibe_people", { p_vibe: params.id, p_ids: reqIds })
         : Promise.resolve({ data: null }),
       memberIds.length
-        ? supabase.from("public_profiles").select("id, display_name, photos").in("id", memberIds)
+        ? supabase.rpc("vibe_people", { p_vibe: params.id, p_ids: memberIds })
         : Promise.resolve({ data: null }),
     ]);
 
+    type PersonRow = { id: string; display_name: string | null; photos: string[] | null };
     if (slIds.length) {
-      const byId = new Map((slProfiles ?? []).map((p) => [p.id, p]));
+      const byId = new Map(((slProfiles ?? []) as PersonRow[]).map((p) => [p.id, p]));
       shortlist = (slRows ?? []).map((r) => ({
         id: r.user_id,
         name: byId.get(r.user_id)?.display_name ?? null,
@@ -303,7 +306,7 @@ export default async function VibeDetailPage(
       }));
     }
     if (reqIds.length) {
-      const byId = new Map((pp ?? []).map((p) => [p.id, p]));
+      const byId = new Map(((pp ?? []) as PersonRow[]).map((p) => [p.id, p]));
       privateRequests = reqIds.map((id) => ({
         id,
         name: byId.get(id)?.display_name ?? null,
@@ -317,12 +320,13 @@ export default async function VibeDetailPage(
           r as { status: "invited" | "confirmed"; attendance_confirmed_at: string | null },
         ])
       );
-      hostMembers = (profiles ?? []).map((profile) => ({
-        id: profile.id,
-        display_name: profile.display_name,
-        photos: profile.photos,
-        status: rowByUser.get(profile.id)?.status ?? "invited",
-        attendance_confirmed_at: rowByUser.get(profile.id)?.attendance_confirmed_at ?? null,
+      const profileById = new Map(((profiles ?? []) as PersonRow[]).map((p) => [p.id, p]));
+      hostMembers = memberIds.map((id) => ({
+        id,
+        display_name: profileById.get(id)?.display_name ?? null,
+        photos: profileById.get(id)?.photos ?? null,
+        status: rowByUser.get(id)?.status ?? "invited",
+        attendance_confirmed_at: rowByUser.get(id)?.attendance_confirmed_at ?? null,
       }));
     }
   }
