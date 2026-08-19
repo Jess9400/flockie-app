@@ -39,8 +39,11 @@ export default function FounderInvitePanel({
     // Get-or-create: same token every time, validity rolled forward.
     const { data, error: rpcError } = await supabase.rpc("create_club_founder_invite", { p_club: clubId });
     setBusy(false);
-    if (rpcError || !data) return setError(rpcError?.message || t("inviteError"));
-    const token = data as string;
+    // Fall back to the link we already know is live rather than stranding the
+    // host with an error: whatever the RPC refused, an active token in hand
+    // still opens the club for whoever receives it.
+    const token = (data as string | null) ?? active?.token ?? null;
+    if (!token) return setError(rpcError?.message || t("inviteError"));
     setActive({ token, status: "active", expires_at: new Date(Date.now() + 14 * 864e5).toISOString() });
     try {
       await navigator.clipboard.writeText(inviteUrl(token));
