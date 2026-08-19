@@ -125,7 +125,8 @@
     "explore": "Explorar Clubs",
     "nextGathering": "Próximo encuentro",
     "nextGatheringHint": "Acepta la invitación y asegura tu lugar de inmediato.",
-    "confirmNext": "Confirmar asistencia al próximo evento"
+    "confirmNext": "Confirmar asistencia al próximo evento",
+    "notFoundHostHint": "Si eres el anfitrión del club, tu propio enlace de invitación no se abre para ti - pide a otra persona que lo pruebe."
   },
   "heartbeat": {
     "readyTitle": "Tu primer encuentro ya terminó.",

@@ -38,3 +38,17 @@ is returned unchanged with its 14-day validity rolled forward (copying the
 link keeps it alive); a new link is minted only when none exists or after a
 revoke. The panel is now a single copy-link button with a guarded
 "generate new" for compromised links. RE-RUN `club-invite-multiuse.sql`.
+
+## Addendum 2 (2026-08-20): status flags no longer gate validity
+
+Founder report: links went "invalid after a few people join". Root cause: a
+single-use code path (legacy definition, or a partially applied run) sets
+`status = 'accepted'` on first acceptance, and every read path required
+`status = 'active'`, so one joiner locked out everyone else holding the same
+link. Hardened: `club_founder_invite_detail`, `accept_club_founder_invite`
+and the get-or-create lookup now treat a link as valid when it is NOT revoked
+and NOT past `expires_at`. The `accepted`/`expired` flags are ignored, so a
+legacy write cannot kill a live link. The data fix resurrects links flagged
+accepted/expired in the last 30 days and gives them a fresh 14-day window.
+Revoked stays dead: that kill is deliberate. RE-RUN
+`club-invite-multiuse.sql`.

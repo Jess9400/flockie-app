@@ -5,21 +5,33 @@
 -- revocation), clicking twice is a graceful no-op, and the landing page shows
 -- the club's NEXT GATHERING like a vibe invitation does.
 --
--- Also reactivates links that were consumed by the single-use rule but have
--- not actually expired, so already-sent links start working again.
+-- HARDENED 2026-08-20 (founder report: "invalid after a few people join").
+-- Only an explicit revoke or a real expiry may kill a link. The 'accepted'
+-- and 'expired' STATUS FLAGS are no longer trusted by any read path: a legacy
+-- single-use definition (or a partially applied run) writing status =
+-- 'accepted' used to lock every later joiner out of a link that was still
+-- perfectly valid. Validity is now the timestamp plus "not revoked", nothing
+-- else. The data fix below resurrects links killed that way.
 --
 -- Access model unchanged: token links, authenticated-only RPCs, anon revoked.
--- Supersedes accept_club_founder_invite + club_founder_invite_detail
--- (club-founder-invites.sql). Run in the Supabase SQL editor. Safe to re-run.
+-- Supersedes accept_club_founder_invite, club_founder_invite_detail and
+-- create_club_founder_invite (club-founder-invites.sql). Run in the Supabase
+-- SQL editor. Safe to re-run.
 
 alter table public.club_founder_invites
   add column if not exists accepted_count int not null default 0;
 
--- Resurrect links killed by the single-use rule (still within their window).
+-- Resurrect links killed by the single-use rule or by the stale-expiry sweep.
+-- Revoked links stay dead: that kill is deliberate. Anything touched in the
+-- last 30 days gets a fresh 14-day window so already-sent links work again.
 update public.club_founder_invites
-set status = 'active', accepted_by = null, accepted_at = null,
-    accepted_count = greatest(accepted_count, 1)
-where status = 'accepted' and expires_at > now();
+set status = 'active',
+    accepted_by = null,
+    accepted_at = null,
+    accepted_count = greatest(accepted_count, 1),
+    expires_at = greatest(expires_at, now() + interval '14 days')
+where status in ('accepted', 'expired')
+  and created_at > now() - interval '30 days';
 
 -- ── Detail for the landing page: club + the NEXT gathering ──────────────────
 drop function if exists public.club_founder_invite_detail(uuid);
@@ -54,7 +66,7 @@ language sql security definer set search_path = public stable as $$
     limit 1
   ) nv on true
   where i.token = p_token
-    and i.status = 'active'
+    and i.status <> 'revoked'
     and i.expires_at > now()
     and c.status in ('forming', 'active')
     and c.owner_id <> auth.uid();
@@ -75,7 +87,7 @@ begin
   where token = p_token
   for update;
 
-  if not found or v_invite.status <> 'active' or v_invite.expires_at <= now() then
+  if not found or v_invite.status = 'revoked' or v_invite.expires_at <= now() then
     raise exception 'this invitation is no longer available';
   end if;
   if v_invite.created_by = auth.uid() then
@@ -110,6 +122,7 @@ begin
   delete from public.club_join_votes
   where club_id = v_invite.club_id and candidate_id = auth.uid();
 
+  -- Counter only. Status stays 'active': accepting must never consume a link.
   update public.club_founder_invites
   set accepted_count = accepted_count + 1
   where token = v_invite.token;
@@ -122,7 +135,7 @@ grant execute on function public.accept_club_founder_invite(uuid) to authenticat
 
 -- ── ONE canonical link per club (founder report 2026-08-17 night) ───────────
 -- The panel used to mint a new link on every tap (up to 10 concurrent) and
--- shared copies kept dying. Now create is GET-OR-CREATE: an active unexpired
+-- shared copies kept dying. Now create is GET-OR-CREATE: a live unexpired
 -- link is returned as-is with its 14-day validity ROLLED FORWARD, so the link
 -- the host already shared keeps working. Revoke still kills a compromised
 -- link; the next create mints a fresh one. Supersedes the version in
@@ -143,15 +156,21 @@ begin
     raise exception 'this club is not accepting invitations';
   end if;
 
+  -- Any non-revoked, unexpired link is THE link (status flags are not trusted).
   select token into v_token
   from public.club_founder_invites
-  where club_id = p_club and status = 'active' and expires_at > now()
+  where club_id = p_club
+    and status <> 'revoked'
+    and expires_at > now()
   order by created_at desc
   limit 1;
 
   if v_token is not null then
     update public.club_founder_invites
-    set expires_at = now() + interval '14 days'
+    set status = 'active',
+        accepted_by = null,
+        accepted_at = null,
+        expires_at = now() + interval '14 days'
     where token = v_token;
     return v_token;
   end if;

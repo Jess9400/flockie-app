@@ -34,6 +34,7 @@ export default async function ClubFounderInvitePage(props: { params: Promise<{ t
         <div className="rounded-3xl border border-ink/15 bg-white p-8 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
           <h1 className="text-2xl font-black text-ink">{t("notFoundTitle")}</h1>
           <p className="mt-2 text-sm font-medium text-muted">{t("notFoundBody")}</p>
+          <p className="mt-3 text-xs font-medium text-muted">{t("notFoundHostHint")}</p>
           <Link href="/clubs" className="mt-6 inline-flex rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white">
             {t("explore")}
           </Link>

@@ -125,7 +125,8 @@
     "explore": "Explore Clubs",
     "nextGathering": "Next gathering",
     "nextGatheringHint": "Accept the invite and you can grab your spot right away.",
-    "confirmNext": "Confirm attendance for the next event"
+    "confirmNext": "Confirm attendance for the next event",
+    "notFoundHostHint": "If you are the club host, your own invite link will not open for you - ask someone else to test it."
   },
   "heartbeat": {
     "readyTitle": "Your first gathering is complete.",

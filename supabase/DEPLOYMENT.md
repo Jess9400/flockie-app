@@ -105,6 +105,10 @@ this list only tracks what is approved and pending or recently applied.
 - 2026-08-18 `vibe-edit-photos.sql` - `update_vibe_photos` host RPC (edit
   gathering photos from the settings sheet); see
   `supabase/releases/2026-08-18-vibe-edit-photos.md`. Pending production run.
+- 2026-08-20 RE-RUN `club-invite-multiuse.sql` - invite validity no longer
+  depends on the status flag (a single-use write was locking out later
+  joiners); resurrects links flagged accepted/expired in the last 30 days.
+  See addendum 2 in the release record. Pending production run.
 
 ## 4. Apply only an approved release
 
