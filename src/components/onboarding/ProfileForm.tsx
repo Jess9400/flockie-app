@@ -28,14 +28,9 @@ interface ProfileFormProps {
     city: string;
   };
   returnTo?: string | null;
-  // Someone arriving on a club invitation: a host already chose them by name.
-  // They answer only what a member roster needs - name, photo, age - and land
-  // in the club. Gender and city are asked later, in Settings or when they
-  // first touch a surface that needs them.
-  invited?: boolean;
 }
 
-export function ProfileForm({ defaults, returnTo, invited = false }: ProfileFormProps) {
+export function ProfileForm({ defaults, returnTo }: ProfileFormProps) {
   const router = useRouter();
   const supabase = createClient();
   const t = useTranslations("onboarding.profile");
@@ -53,7 +48,7 @@ export function ProfileForm({ defaults, returnTo, invited = false }: ProfileForm
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const photoInput = useRef<HTMLInputElement>(null);
   const canSubmit = Boolean(
-    firstName.trim() && photoUrl && birthday && (invited || (gender && city.trim()))
+    firstName.trim() && photoUrl && birthday && gender && city.trim()
   );
 
   function onPhotoSelected(event: React.ChangeEvent<HTMLInputElement>) {
@@ -85,7 +80,7 @@ export function ProfileForm({ defaults, returnTo, invited = false }: ProfileForm
   }
 
   async function handleSubmit() {
-    if (!canSubmit || submitting || (!gender && !invited)) return;
+    if (!canSubmit || submitting || !gender) return;
     setSubmitting(true);
     setError(null);
 
@@ -94,7 +89,7 @@ export function ProfileForm({ defaults, returnTo, invited = false }: ProfileForm
         firstName: firstName.trim(),
         photoUrl,
         birthday,
-        gender: gender ?? "prefer_not_to_say",
+        gender,
         city: city.trim(),
       });
       router.push(
@@ -162,40 +157,36 @@ export function ProfileForm({ defaults, returnTo, invited = false }: ProfileForm
           </p>
         </Field>
 
-{!invited && (
-          <>
-          <Field label={t("gender")}>
-            <div className="flex flex-wrap gap-1.5">
-              {GENDERS.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => setGender(option.value)}
-                  className={`rounded-full border-2 px-3.5 py-2 text-[13px] font-bold transition-colors ${
-                    gender === option.value
-                      ? "border-navy bg-flockie-blue/15 text-navy"
-                      : "border-ink/15 bg-white text-muted"
-                  }`}
-                >
-                  {t(`genders.${option.labelKey}`)}
-                </button>
-              ))}
-            </div>
-          </Field>
+        <Field label={t("gender")}>
+          <div className="flex flex-wrap gap-1.5">
+            {GENDERS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setGender(option.value)}
+                className={`rounded-full border-2 px-3.5 py-2 text-[13px] font-bold transition-colors ${
+                  gender === option.value
+                    ? "border-navy bg-flockie-blue/15 text-navy"
+                    : "border-ink/15 bg-white text-muted"
+                }`}
+              >
+                {t(`genders.${option.labelKey}`)}
+              </button>
+            ))}
+          </div>
+        </Field>
 
-          <Field label={t("city")}>
-            <CityAutocomplete
-              className="w-full rounded-xl border-2 border-ink/15 bg-white px-3.5 py-3 text-[15px] font-bold outline-none focus:border-flockie-blue"
-              value={city}
-              onChange={setCity}
-              placeholder={t("cityPlaceholder")}
-            />
-            <p className="mt-1.5 text-[11.5px] font-semibold text-muted">
-              {t("cityHelp")}
-            </p>
-          </Field>
-          </>
-        )}
+        <Field label={t("city")}>
+          <CityAutocomplete
+            className="w-full rounded-xl border-2 border-ink/15 bg-white px-3.5 py-3 text-[15px] font-bold outline-none focus:border-flockie-blue"
+            value={city}
+            onChange={setCity}
+            placeholder={t("cityPlaceholder")}
+          />
+          <p className="mt-1.5 text-[11.5px] font-semibold text-muted">
+            {t("cityHelp")}
+          </p>
+        </Field>
       </div>
 
       <div className="flex-none border-t border-ink/10 bg-white px-6 py-4">
