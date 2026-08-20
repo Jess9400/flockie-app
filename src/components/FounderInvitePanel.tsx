@@ -1,20 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, Link2, RefreshCw, UserPlus } from "lucide-react";
+import { Check, Copy, Pause, Play, UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 
 export type FounderInvite = {
   token: string;
-  status: "active" | "accepted" | "revoked" | "expired";
+  status: "active" | "accepted" | "revoked" | "expired" | "paused";
   expires_at: string;
 };
 
-// ONE canonical invite link per club. Copying fetches it via the get-or-create
-// RPC, which also rolls the 14-day validity forward - so the link the host
-// already shared keeps working. "Generate new" (revoke + create) exists only
-// for compromised links.
+// ONE PERMANENT invite link per club. It never expires; the only way it stops
+// working is the host pausing invitations, which is reversible. The old
+// "generate a new link" is gone - it silently broke every copy already shared,
+// which is exactly what kept happening.
 export default function FounderInvitePanel({
   clubId,
   initialInvites,
@@ -24,49 +24,43 @@ export default function FounderInvitePanel({
 }) {
   const supabase = createClient();
   const t = useTranslations("clubs.founders");
-  const [active, setActive] = useState<FounderInvite | null>(
-    initialInvites.find((i) => i.status === "active" && new Date(i.expires_at) > new Date()) ?? null
-  );
+  const live = initialInvites.find((i) => i.status !== "revoked") ?? null;
+  const [token, setToken] = useState<string | null>(live?.token ?? null);
+  const [paused, setPaused] = useState(live?.status === "paused");
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const inviteUrl = (token: string) => `${window.location.origin}/clubs/invite/${token}`;
+  const inviteUrl = (value: string) => `${window.location.origin}/clubs/invite/${value}`;
 
   async function copyLink() {
     setError(null);
     setBusy(true);
-    // Get-or-create: same token every time, validity rolled forward.
+    // Get-or-create: the same token every time, for the life of the club.
     const { data, error: rpcError } = await supabase.rpc("create_club_founder_invite", { p_club: clubId });
     setBusy(false);
-    // Fall back to the link we already know is live rather than stranding the
-    // host with an error: whatever the RPC refused, an active token in hand
-    // still opens the club for whoever receives it.
-    const token = (data as string | null) ?? active?.token ?? null;
-    if (!token) return setError(rpcError?.message || t("inviteError"));
-    setActive({ token, status: "active", expires_at: new Date(Date.now() + 14 * 864e5).toISOString() });
+    const value = (data as string | null) ?? token;
+    if (!value) return setError(rpcError?.message || t("inviteError"));
+    setToken(value);
     try {
-      await navigator.clipboard.writeText(inviteUrl(token));
+      await navigator.clipboard.writeText(inviteUrl(value));
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2200);
     } catch {
-      setError(inviteUrl(token));
+      setError(inviteUrl(value));
     }
   }
 
-  async function regenerate() {
-    if (!active) return copyLink();
-    if (!confirm(t("regenConfirm"))) return;
+  async function togglePaused() {
     setError(null);
     setBusy(true);
-    const { error: revokeErr } = await supabase.rpc("revoke_club_founder_invite", { p_token: active.token });
-    if (revokeErr) {
-      setBusy(false);
-      return setError(revokeErr.message);
-    }
-    setActive(null);
+    const { error: rpcError } = await supabase.rpc("set_club_invites_paused", {
+      p_club: clubId,
+      p_paused: !paused,
+    });
     setBusy(false);
-    await copyLink();
+    if (rpcError) return setError(rpcError.message);
+    setPaused(!paused);
   }
 
   return (
@@ -89,20 +83,29 @@ export default function FounderInvitePanel({
         {copied ? t("copied") : t("copyLink")}
       </button>
 
-      {active && (
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-bold text-muted">
-          <Link2 size={14} />
-          <span>{t("validUntil", { date: new Date(active.expires_at).toLocaleDateString() })}</span>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={regenerate}
-            className="inline-flex items-center gap-1 text-xs font-bold text-red-600/80 hover:text-red-700 disabled:opacity-60"
-          >
-            <RefreshCw size={12} /> {t("regenerate")}
-          </button>
-        </div>
+      {token && (
+        <p className="mt-3 break-all rounded-2xl bg-cream px-4 py-3 text-xs font-bold text-muted">
+          {`/clubs/invite/${token}`}
+        </p>
       )}
+
+      <p className="mt-3 text-xs font-medium text-muted">{t("neverExpires")}</p>
+
+      {paused && (
+        <p className="mt-3 rounded-2xl bg-flockie-coral/10 px-4 py-3 text-sm font-bold text-ink">
+          {t("pausedState")}
+        </p>
+      )}
+
+      <button
+        type="button"
+        disabled={busy}
+        onClick={togglePaused}
+        className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-ink/20 bg-white px-4 py-2 text-xs font-bold text-ink disabled:opacity-60"
+      >
+        {paused ? <Play size={13} /> : <Pause size={13} />}
+        {paused ? t("resumeCta") : t("pauseCta")}
+      </button>
 
       {error && (
         <p role="alert" className="mt-4 break-all rounded-2xl bg-red-50 px-4 py-3 text-sm font-bold text-red-700">

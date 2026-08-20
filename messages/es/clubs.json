@@ -105,7 +105,11 @@
     "copyLink": "Copiar el link de invitación del club",
     "validUntil": "Válido hasta {date} - copiarlo lo renueva",
     "regenerate": "Generar nuevo link (invalida este)",
-    "regenConfirm": "¿Generar un nuevo link? El actual deja de funcionar para todos los que lo tienen."
+    "regenConfirm": "¿Generar un nuevo link? El actual deja de funcionar para todos los que lo tienen.",
+    "neverExpires": "Este enlace nunca caduca. Cualquiera que lo reciba puede unirse.",
+    "pauseCta": "Pausar invitaciones",
+    "resumeCta": "Reanudar invitaciones",
+    "pausedState": "Las invitaciones están pausadas - nadie puede unirse con este enlace ahora."
   },
   "invite": {
     "eyebrow": "INVITACIÓN DE MIEMBRO FUNDADOR",
@@ -126,7 +130,14 @@
     "nextGathering": "Próximo encuentro",
     "nextGatheringHint": "Acepta la invitación y asegura tu lugar de inmediato.",
     "confirmNext": "Confirmar asistencia al próximo evento",
-    "notFoundHostHint": "Si eres el anfitrión del club, tu propio enlace de invitación no se abre para ti - pide a otra persona que lo pruebe."
+    "notFoundHostHint": "Si eres el anfitrión del club, tu propio enlace de invitación no se abre para ti - pide a otra persona que lo pruebe.",
+    "hostOwnTitle": "Este es el enlace de invitación de tu club",
+    "hostOwnBody": "Funciona para todos menos para ti - el anfitrión no puede unirse a su propio club. Envíaselo a otra persona y se abrirá con normalidad.",
+    "hostOwnStatus": "Estado: {status} - válido hasta {date}",
+    "openClub": "Abrir el club",
+    "incompleteTitle": "Este enlace parece incompleto",
+    "incompleteBody": "Puede haberse cortado al copiarlo o compartirlo. Pide al anfitrión que lo envíe de nuevo.",
+    "pausedNotice": "Las invitaciones de este club están pausadas. Reanúdalas en la página del club y este enlace vuelve a funcionar."
   },
   "heartbeat": {
     "readyTitle": "Tu primer encuentro ya terminó.",

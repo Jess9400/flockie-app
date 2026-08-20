@@ -105,7 +105,11 @@
     "copyLink": "Copy the club invite link",
     "validUntil": "Valid until {date} - copying renews it",
     "regenerate": "Generate a new link (kills this one)",
-    "regenConfirm": "Generate a new link? The current one stops working for everyone who has it."
+    "regenConfirm": "Generate a new link? The current one stops working for everyone who has it.",
+    "neverExpires": "This link never expires. Anyone you send it to can join.",
+    "pauseCta": "Pause invitations",
+    "resumeCta": "Resume invitations",
+    "pausedState": "Invitations are paused - nobody can join with this link right now."
   },
   "invite": {
     "eyebrow": "FOUNDING MEMBER INVITATION",
@@ -126,7 +130,14 @@
     "nextGathering": "Next gathering",
     "nextGatheringHint": "Accept the invite and you can grab your spot right away.",
     "confirmNext": "Confirm attendance for the next event",
-    "notFoundHostHint": "If you are the club host, your own invite link will not open for you - ask someone else to test it."
+    "notFoundHostHint": "If you are the club host, your own invite link will not open for you - ask someone else to test it.",
+    "hostOwnTitle": "This is your club's invite link",
+    "hostOwnBody": "It works for everyone except you - a host cannot join their own club. Send it to someone else and it will open normally for them.",
+    "hostOwnStatus": "Status: {status} - valid until {date}",
+    "openClub": "Open the club",
+    "incompleteTitle": "This link looks incomplete",
+    "incompleteBody": "It may have been cut short when it was copied or shared. Ask the host to send it again.",
+    "pausedNotice": "Invitations are paused for this club. Resume them on the club page and this link works again."
   },
   "heartbeat": {
     "readyTitle": "Your first gathering is complete.",

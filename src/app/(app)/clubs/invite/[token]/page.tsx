@@ -25,18 +25,45 @@ export default async function ClubFounderInvitePage(props: { params: Promise<{ t
   const supabase = await createClient();
   const t = await getTranslations("clubs.invite");
   const locale = await getLocale();
-  const { data } = await supabase.rpc("club_founder_invite_detail", { p_token: params.token }).maybeSingle();
+  const wellFormed = /^[0-9a-fA-F-]{36}$/.test(params.token);
+  const { data } = wellFormed
+    ? await supabase.rpc("club_founder_invite_detail", { p_token: params.token }).maybeSingle()
+    : { data: null };
   const invite = data as FounderInviteDetail | null;
 
   if (!invite) {
+    // Work out WHY, instead of one message covering four different situations.
+    // Only a club host can read its own invite rows (RLS), so a row coming
+    // back here means the viewer is the host looking at their own link - by
+    // far the most common way to land on this page.
+    const { data: ownRow } = wellFormed
+      ? await supabase
+          .from("club_founder_invites")
+          .select("status, club_id, clubs(title)")
+          .eq("token", params.token)
+          .maybeSingle()
+      : { data: null };
+    const own = ownRow as { status: string; club_id: string; clubs?: { title?: string } | null } | null;
+
     return (
       <main className="mx-auto max-w-xl px-5 pb-10 pt-12 text-center">
         <div className="rounded-3xl border border-ink/15 bg-white p-8 shadow-[0_2px_10px_rgba(10,37,69,0.08)]">
-          <h1 className="text-2xl font-black text-ink">{t("notFoundTitle")}</h1>
-          <p className="mt-2 text-sm font-medium text-muted">{t("notFoundBody")}</p>
-          <p className="mt-3 text-xs font-medium text-muted">{t("notFoundHostHint")}</p>
-          <Link href="/clubs" className="mt-6 inline-flex rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white">
-            {t("explore")}
+          <h1 className="text-2xl font-black text-ink">
+            {own ? t("hostOwnTitle") : wellFormed ? t("notFoundTitle") : t("incompleteTitle")}
+          </h1>
+          <p className="mt-2 text-sm font-medium leading-relaxed text-muted">
+            {own ? t("hostOwnBody") : wellFormed ? t("notFoundBody") : t("incompleteBody")}
+          </p>
+          {own && own.status === "paused" && (
+            <p className="mt-3 rounded-2xl bg-flockie-coral/10 px-4 py-3 text-sm font-bold text-ink">
+              {t("pausedNotice")}
+            </p>
+          )}
+          <Link
+            href={own ? `/clubs/${own.club_id}` : "/clubs"}
+            className="mt-6 inline-flex rounded-full bg-flockie-coral px-5 py-3 text-sm font-extrabold text-white"
+          >
+            {own ? t("openClub") : t("explore")}
           </Link>
         </div>
       </main>

@@ -105,7 +105,11 @@
     "copyLink": "Copiar o link de convite do club",
     "validUntil": "Válido até {date} - copiar renova",
     "regenerate": "Gerar novo link (invalida este)",
-    "regenConfirm": "Gerar um novo link? O atual para de funcionar para todo mundo que o tem."
+    "regenConfirm": "Gerar um novo link? O atual para de funcionar para todo mundo que o tem.",
+    "neverExpires": "Este link nunca expira. Qualquer pessoa que receber pode entrar.",
+    "pauseCta": "Pausar convites",
+    "resumeCta": "Retomar convites",
+    "pausedState": "Os convites estão pausados - ninguém consegue entrar com este link agora."
   },
   "invite": {
     "eyebrow": "CONVITE DE MEMBRO FUNDADOR",
@@ -126,7 +130,14 @@
     "nextGathering": "Próximo evento",
     "nextGatheringHint": "Aceite o convite e já garanta sua vaga.",
     "confirmNext": "Confirmar presença no próximo evento",
-    "notFoundHostHint": "Se você é o host do club, o seu próprio link de convite não abre para você - peça para outra pessoa testar."
+    "notFoundHostHint": "Se você é o host do club, o seu próprio link de convite não abre para você - peça para outra pessoa testar.",
+    "hostOwnTitle": "Este é o link de convite do seu club",
+    "hostOwnBody": "Ele funciona para todo mundo, menos para você - o host não pode entrar no próprio club. Envie para outra pessoa e vai abrir normalmente.",
+    "hostOwnStatus": "Status: {status} - válido até {date}",
+    "openClub": "Abrir o club",
+    "incompleteTitle": "Este link parece incompleto",
+    "incompleteBody": "Ele pode ter sido cortado ao copiar ou compartilhar. Peça para o host enviar de novo.",
+    "pausedNotice": "Os convites deste club estão pausados. Retome na página do club e este link volta a funcionar."
   },
   "heartbeat": {
     "readyTitle": "Seu primeiro evento terminou.",

@@ -119,6 +119,11 @@ this list only tracks what is approved and pending or recently applied.
   matched `status = 'open'`. See
   `supabase/releases/2026-08-20-club-directory-gatherings.md`. Pending
   production run.
+- 2026-08-20 `club-invite-permanent.sql` - invite links stop expiring
+  entirely; pause/resume replaces "generate a new link". Supersedes the invite
+  functions in `club-invite-multiuse.sql`. See
+  `supabase/releases/2026-08-20-club-invite-permanent.md`. Pending production
+  run.
 
 ## 4. Apply only an approved release
 

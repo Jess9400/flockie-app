@@ -90,7 +90,7 @@ export default async function ClubPage(props: {
         .from("club_founder_invites")
         .select("token, status, expires_at")
         .eq("club_id", club.id)
-        .in("status", ["active", "accepted"])
+        .in("status", ["active", "accepted", "paused"])
         .order("created_at", { ascending: false })
     : { data: [] as FounderInvite[] };
   // Moderators run the club day-to-day alongside the host (approve requests,
