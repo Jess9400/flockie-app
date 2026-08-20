@@ -11,11 +11,15 @@ export default function AcceptFounderInvite({
   clubId,
   clubTitle,
   nextVibeId,
+  signedIn = true,
 }: {
   token: string;
   clubId: string;
   clubTitle: string;
   nextVibeId?: string | null;
+  // A signed-out visitor sees the club first and signs in on this button,
+  // landing back here to accept - the same shape as a shared Vibe link.
+  signedIn?: boolean;
 }) {
   const supabase = createClient();
   const t = useTranslations("clubs.invite");
@@ -58,6 +62,19 @@ export default function AcceptFounderInvite({
             {t("viewClub")}
           </Link>
         </div>
+      </section>
+    );
+  }
+
+  if (!signedIn) {
+    return (
+      <section className="mt-6">
+        <Link
+          href={`/login?redirect=${encodeURIComponent(`/clubs/invite/${token}`)}`}
+          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-flockie-coral px-5 py-4 text-base font-extrabold text-white shadow-[0_4px_0_#d84e32]"
+        >
+          <Sparkles size={18} /> {t("accept")}
+        </Link>
       </section>
     );
   }

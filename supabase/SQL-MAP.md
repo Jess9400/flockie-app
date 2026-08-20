@@ -47,6 +47,7 @@ are **dangerous to re-run**. Generated from a repo audit on 2026-07-02.
 | `club_detail` (safe Club detail; no roster or exact location) | `club-detail-access.sql` |
 | Founding member invite links (creation/revoke) | `club-founder-invites.sql` |
 | `accept_club_founder_invite`, `club_founder_invite_detail`, `create_club_founder_invite`, `set_club_invites_paused`; ONE permanent link per club, no expiry, pause/resume replaces revoke (2026-08-20) | `club-invite-permanent.sql` |
+| `public_club_invite` (anon-callable club preview for invite links, allowlisted) (2026-08-20) | `club-invite-public-preview.sql` |
 | `club_reports` + `report_club` + `end_my_club_paid_tier` (member settings) (2026-08-17) | `club-member-settings.sql` |
 | `set_club_status` (activate, pause, close) | `club-heartbeat.sql` |
 | `is_club_moderator`, `is_club_manager`, `set_club_member_role`, `approve_club_membership`, `decline_club_membership`, `record_club_attendance`, memberships/attendance read policies (moderators, 2026-08-14) | `club-moderators.sql` |

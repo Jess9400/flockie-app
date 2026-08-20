@@ -124,6 +124,12 @@ this list only tracks what is approved and pending or recently applied.
   functions in `club-invite-multiuse.sql`. See
   `supabase/releases/2026-08-20-club-invite-permanent.md`. Pending production
   run.
+- 2026-08-20 `club-invite-public-preview.sql` - `public_club_invite`, a new
+  ANON-callable RPC (allowlist entry added) so a club invite link shows the
+  club before sign-in, like shared Vibe links. Run AFTER
+  `club-invite-permanent.sql`. See
+  `supabase/releases/2026-08-20-club-invite-public-preview.md`. Pending
+  production run.
 
 ## 4. Apply only an approved release
 

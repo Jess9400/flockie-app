@@ -11,6 +11,11 @@
       "owner": "Flockie product"
     },
     {
+      "name": "public_club_invite",
+      "reason": "Public club invite links need the safe club preview before sign-in, like public_vibe.",
+      "owner": "Flockie product"
+    },
+    {
       "name": "public_vibe",
       "reason": "Public Vibe share links need the safe public event view before sign-in.",
       "owner": "Flockie product"

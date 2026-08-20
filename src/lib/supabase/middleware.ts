@@ -41,7 +41,10 @@ export async function updateSession(request: NextRequest) {
   const path = request.nextUrl.pathname;
   // Segment-aware so "/v…" prefixes don't accidentally match (e.g. /vibes).
   const firstSeg = "/" + path.split("/")[1];
-  const isPublic = PUBLIC_PATHS.includes(firstSeg);
+  // Club invite links preview without an account, like shared Vibe links -
+  // signing in happens when the visitor accepts. The rest of /clubs stays
+  // behind auth.
+  const isPublic = PUBLIC_PATHS.includes(firstSeg) || path.startsWith("/clubs/invite/");
 
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();

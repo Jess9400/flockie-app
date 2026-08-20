@@ -26,8 +26,15 @@ export default async function ClubFounderInvitePage(props: { params: Promise<{ t
   const t = await getTranslations("clubs.invite");
   const locale = await getLocale();
   const wellFormed = /^[0-9a-fA-F-]{36}$/.test(params.token);
+  // Signed-out visitors preview the club through the anon-callable RPC, the
+  // way shared Vibe links work; they sign in when they accept.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const { data } = wellFormed
-    ? await supabase.rpc("club_founder_invite_detail", { p_token: params.token }).maybeSingle()
+    ? await supabase
+        .rpc(user ? "club_founder_invite_detail" : "public_club_invite", { p_token: params.token })
+        .maybeSingle()
     : { data: null };
   const invite = data as FounderInviteDetail | null;
 
@@ -121,6 +128,7 @@ export default async function ClubFounderInvitePage(props: { params: Promise<{ t
             clubId={invite.club_id}
             clubTitle={invite.club_title}
             nextVibeId={invite.next_vibe_id}
+            signedIn={!!user}
           />
         </div>
       </section>
