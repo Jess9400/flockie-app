@@ -20,8 +20,12 @@ type FounderInviteDetail = {
   next_vibe_timezone: string | null;
 };
 
-export default async function ClubFounderInvitePage(props: { params: Promise<{ token: string }> }) {
+export default async function ClubFounderInvitePage(props: {
+  params: Promise<{ token: string }>;
+  searchParams: Promise<{ joining?: string }>;
+}) {
   const params = await props.params;
+  const searchParams = await props.searchParams;
   const supabase = await createClient();
   const t = await getTranslations("clubs.invite");
   const locale = await getLocale();
@@ -129,6 +133,7 @@ export default async function ClubFounderInvitePage(props: { params: Promise<{ t
             clubTitle={invite.club_title}
             nextVibeId={invite.next_vibe_id}
             signedIn={!!user}
+            autoAccept={searchParams.joining === "1"}
           />
         </div>
       </section>

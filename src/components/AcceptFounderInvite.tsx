@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Check, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -12,6 +12,7 @@ export default function AcceptFounderInvite({
   clubTitle,
   nextVibeId,
   signedIn = true,
+  autoAccept = false,
 }: {
   token: string;
   clubId: string;
@@ -20,12 +21,17 @@ export default function AcceptFounderInvite({
   // A signed-out visitor sees the club first and signs in on this button,
   // landing back here to accept - the same shape as a shared Vibe link.
   signedIn?: boolean;
+  // They already tapped "join" before signing up; coming back from the sign-in
+  // and profile detour, joining again by hand is a second yes for the same
+  // decision. Accept on arrival and put them on confirming the next event.
+  autoAccept?: boolean;
 }) {
   const supabase = createClient();
   const t = useTranslations("clubs.invite");
   const [saving, setSaving] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const autoRan = useRef(false);
 
   async function accept() {
     setError(null);
@@ -38,6 +44,13 @@ export default function AcceptFounderInvite({
     }
     setAccepted(true);
   }
+
+  useEffect(() => {
+    if (!signedIn || !autoAccept || autoRan.current) return;
+    autoRan.current = true;
+    void accept();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signedIn, autoAccept]);
 
   if (accepted) {
     return (
@@ -70,11 +83,19 @@ export default function AcceptFounderInvite({
     return (
       <section className="mt-6">
         <Link
-          href={`/login?redirect=${encodeURIComponent(`/clubs/invite/${token}`)}`}
+          href={`/login?redirect=${encodeURIComponent(`/clubs/invite/${token}?joining=1`)}`}
           className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-flockie-coral px-5 py-4 text-base font-extrabold text-white shadow-[0_4px_0_#d84e32]"
         >
           <Sparkles size={18} /> {t("accept")}
         </Link>
+      </section>
+    );
+  }
+
+  if (autoAccept && saving) {
+    return (
+      <section className="mt-6 rounded-[2rem] border border-flockie-blue/30 bg-flockie-blue/10 p-6 text-center">
+        <p className="text-sm font-bold text-ink">{t("accepting")}</p>
       </section>
     );
   }
