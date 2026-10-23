@@ -3,21 +3,12 @@ import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/supabase/user";
 import { formatVibeWhen } from "@/lib/vibes";
 import DealsSearch, { type Plan, type VibePlan } from "@/components/DealsSearch";
-import PageTabs from "@/components/PageTabs";
 
 export default async function DealsPage() {
   const supabase = await createClient();
   const user = await getSessionUser();
   const t = await getTranslations("deals");
   const locale = await getLocale();
-
-  const tmv = await getTranslations("myVibes");
-  const TRIP_TABS = [
-    { href: "/my-vibes", label: tmv("tabMyVibes") },
-    { href: "/my-activities", label: t("tabMyActivities") },
-    { href: "/deals", label: t("tabDeals") },
-    { href: "/my-trips", label: t("tabMyTrips") },
-  ];
 
   const nowIso = new Date().toISOString();
 
@@ -82,7 +73,6 @@ export default async function DealsPage() {
 
   return (
     <main className="px-5 pt-6">
-      <PageTabs tabs={TRIP_TABS} />
       <h1 className="text-2xl font-black">{t("title")}</h1>
       <p className="mt-1 text-sm font-medium text-muted">
         {t("subtitle")}
